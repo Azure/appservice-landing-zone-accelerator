@@ -32,7 +32,7 @@ resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 module shared 'shared.bicep' = {
   name: 'sharedresources'
-  scope: resourceGroup(sharedResourceGroupName)
+  scope: resourceGroup(sharedRG.name)
   params: {
     location: location
     sharedResourceGroupResources : sharedResourceGroupResources
@@ -43,7 +43,7 @@ module ase 'ase.bicep' = {
   dependsOn: [
     shared
   ]
-  scope: resourceGroup(aseResourceGroupName)
+  scope: resourceGroup(aseResourceGroup.name)
   name: 'aseresources'
   params: {
     location: location
