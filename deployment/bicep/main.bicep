@@ -37,7 +37,6 @@ module shared 'shared.bicep' = {
     location: location
     sharedResourceGroupResources : sharedResourceGroupResources
   }
-  dependsOn: []
 }
 
 module ase 'ase.bicep' = {
