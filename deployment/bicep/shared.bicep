@@ -1,9 +1,9 @@
+targetScope='resourceGroup'
 param location string
-
-var appInsightsName = 'aseAppInsights'
+param sharedResourceGroupResources object
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
-  name: appInsightsName
+  name: sharedResourceGroupResources.appInsightsName
   location: location
   kind: 'web'
   properties: {
