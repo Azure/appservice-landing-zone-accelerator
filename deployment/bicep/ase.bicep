@@ -3,17 +3,17 @@
 @description('A short name for the workload being deployed')
 param workloadName string
 
-@description('The environment for which the deployment is being executed')
+@description('The-- environment for which the deployment is being executed')
 @allowed([
   'dev'
   'uat'
   'prod'
   'dr'
 ])
-param environment string = 'dev'
+param environment string
 
 @description('Azure location to which the resources are to be deployed, defaulting to the resource group location')
-param location string = resourceGroup().location
+param location string
 
 @description('The mode for the internal load balancing configuration to be applied to the ASE load balancer')
 @allowed([
@@ -36,13 +36,14 @@ param numberOfWorkers int = 1
 param workerPool string = '1'
 
 // Variables
-var resourceSuffix = '${workloadName}-${environment}-${location}'
+var resourceSuffix = '${workloadName}-${environment}-${location}-001'
 var aseName = 'ase-${resourceSuffix}'
 var appServicePlanName = 'asp-${resourceSuffix}'
+var vnetName = 'vnet-${resourceSuffix}'
 
 // Resources
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
-  name: 'vnet-01'
+  name: vnetName
   location: location
   properties: {
     addressSpace: {
@@ -71,7 +72,7 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
 resource ase 'Microsoft.Web/hostingEnvironments@2021-01-01' = {
   name: aseName
   location: location
-  kind: 'ASEV3'
+  kind: 'ASEV2'
   properties: {
     internalLoadBalancingMode: internalLoadBalancingMode
     virtualNetwork: {
@@ -94,7 +95,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-01' = {
     tier: 'Isolated'
     size: 'I${workerPool}'
     family: 'I'
-    capacity: numberOfWorkers 
+    capacity: numberOfWorkers
   }
 }
 
