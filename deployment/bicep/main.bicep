@@ -40,6 +40,9 @@ module shared 'shared.bicep' = {
 }
 
 module ase 'ase.bicep' = {
+  dependsOn: [
+    shared
+  ]
   scope: resourceGroup(aseResourceGroupName)
   name: 'aseresources'
   params: {
