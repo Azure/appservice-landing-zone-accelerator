@@ -1,18 +1,51 @@
 targetScope='subscription'
-
+param workloadName string
 param location string =  deployment().location
+@description('The-- environment for which the deployment is being executed')
+@allowed([
+  'dev'
+  'uat'
+  'prod'
+  'dr'
+])
+param environment string
 
-var sharedResourceGroupName = 'sharedResourceGroup'
+// Variables
+var resourceSuffix = '${workloadName}-${environment}-${location}-001'
+// RG Names Declaration
+var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
+var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
+// Create resources name using these objects and pass it as a params in module
+var sharedResourceGroupResources = {
+  'appInsightsName':'appin-${resourceSuffix}'
+}
 
-resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource sharedRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: sharedResourceGroupName
   location: location
 }
 
+resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: aseResourceGroupName
+  location: location
+}
+
 module shared 'shared.bicep' = {
-  name: 'shared'
-  scope: resourceGroup(sharedResourceGroup.name)
+  name: 'sharedresources'
+  scope: resourceGroup(sharedResourceGroupName)
   params: {
     location: location
+    sharedResourceGroupResources : sharedResourceGroupResources
+  }
+  dependsOn: []
+}
+
+module ase 'ase.bicep' = {
+  scope: resourceGroup(aseResourceGroupName)
+  name: 'aseresources'
+  params: {
+    location: location
+    workloadName: workloadName
+    environment: environment
   }
 }
