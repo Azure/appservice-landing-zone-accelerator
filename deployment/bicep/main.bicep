@@ -13,7 +13,7 @@ param environment string
 // Variables
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
 // RG Names Declaration
-var networkingResourceGroupName = 'rg-shared-${resourceSuffix}'
+var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
 var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
 // Create resources name using these objects and pass it as a params in module
@@ -39,7 +39,7 @@ resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 module networking 'networking.bicep' = {
   name: 'networkingresources'
-  scope: resourceGroup(sharedRG.name)
+  scope: resourceGroup(networkingRG.name)
   params: {
     workloadName: workloadName
     location: location
@@ -48,6 +48,9 @@ module networking 'networking.bicep' = {
 }
 
 module shared 'shared.bicep' = {
+  dependsOn: [
+    networking
+  ]
   name: 'sharedresources'
   scope: resourceGroup(sharedRG.name)
   params: {
@@ -58,6 +61,7 @@ module shared 'shared.bicep' = {
 
 module ase 'ase.bicep' = {
   dependsOn: [
+    networking
     shared
   ]
   scope: resourceGroup(aseResourceGroup.name)
@@ -66,5 +70,7 @@ module ase 'ase.bicep' = {
     location: location
     workloadName: workloadName
     environment: environment
+    aseSubnetName: networking.outputs.aseSNName
+    aseSubnetId: networking.outputs.aseSNID
   }
 }
