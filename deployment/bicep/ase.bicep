@@ -23,6 +23,11 @@ param location string
 ])
 param internalLoadBalancingMode string = 'Web, Publishing'
 
+@description('Requirements of ASE Subnet')
+param aseSubnetName string
+@description('Requirements of ASE Subnet')
+param aseSubnetId string
+
 @description('The number of workers to be deployed in the worker pool')
 param numberOfWorkers int = 1
 
@@ -38,36 +43,36 @@ param workerPool string = '1'
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
 var aseName = 'ase-${resourceSuffix}' // NOTE : ASE name cannot be more than 37 characters
 var appServicePlanName = 'asp-${resourceSuffix}'
-var vnetName = 'vnet-${resourceSuffix}'
-var subnetName = 'snet-${resourceSuffix}'
+// var vnetName =   'vnet-${resourceSuffix}'
+// var subnetName = 'snet-${resourceSuffix}'
 
 // Resources
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
-  name: vnetName
-  location: location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        '10.0.0.0/16'
-      ]
-    }
-  }
-}
+// resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+//   name: vnetName
+//   location: location
+//   properties: {
+//     addressSpace: {
+//       addressPrefixes: [
+//         '10.0.0.0/16'
+//       ]
+//     }
+//   }
+// }
 
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
-  name: '${virtualNetwork.name}/${subnetName}'
-  properties: {
-    addressPrefix: '10.0.1.0/24'
-    delegations: [
-      {
-        name: '${aseName}-delegation'
-        properties: {
-          serviceName: 'Microsoft.Web/hostingEnvironments'
-        }
-      }
-    ]
-  }
-}
+// resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
+//   name: '${virtualNetwork.name}/${subnetName}'
+//   properties: {
+//     addressPrefix: '10.0.1.0/24'
+//     delegations: [
+//       {
+//         name: '${aseName}-delegation'
+//         properties: {
+//           serviceName: 'Microsoft.Web/hostingEnvironments'
+//         }
+//       }
+//     ]
+//   }
+// }
 
 resource ase 'Microsoft.Web/hostingEnvironments@2021-01-01' = {
   name: aseName
@@ -77,8 +82,8 @@ resource ase 'Microsoft.Web/hostingEnvironments@2021-01-01' = {
     internalLoadBalancingMode: internalLoadBalancingMode
     // zoneRedundant: true -- not currently supported in bicep
     virtualNetwork: {
-      id: subnet.id
-      subnet: subnet.name
+      id: aseSubnetId
+      subnet: aseSubnetName
     }
   }
 }
