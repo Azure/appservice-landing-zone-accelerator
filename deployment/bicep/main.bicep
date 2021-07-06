@@ -41,6 +41,7 @@ module networking 'networking.bicep' = {
   name: 'networkingresources'
   scope: resourceGroup(sharedRG.name)
   params: {
+    workloadName: workloadName
     location: location
     environment: environment
   }
