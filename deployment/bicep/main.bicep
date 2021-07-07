@@ -18,6 +18,7 @@ var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
 // Create resources name using these objects and pass it as a params in module
 var sharedResourceGroupResources = {
   'appInsightsName':'appin-${resourceSuffix}'
+  'keyVaultName':'kv-${workloadName}-${environment}' // Must be between 3-24 alphanumeric characters 
 }
 
 resource sharedRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {

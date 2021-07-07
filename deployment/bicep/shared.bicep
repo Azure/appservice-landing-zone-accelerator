@@ -21,4 +21,37 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
   }
 }
 
+resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
+  name: sharedResourceGroupResources.keyVaultName
+  location: location
+  properties: {
+    tenantId: subscription().tenantId
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }    
+    accessPolicies: [
+      // {
+      //   tenantId: 'string'
+      //   objectId: 'string'
+      //   applicationId: 'string'
+      //   permissions: {
+      //     keys: [
+      //       'string'
+      //     ]
+      //     secrets: [
+      //       'string'
+      //     ]
+      //     certificates: [
+      //       'string'
+      //     ]
+      //     storage: [
+      //       'string'
+      //     ]
+      //   }
+      // }
+    ]
+  }
+}
+
 output appInsightsConnectionString string = appInsights.properties.ConnectionString
