@@ -2,10 +2,6 @@
 @description('A short name for the workload being deployed')
 param workloadName string
 
-var owner = 'ASE Const Set'
-@description('Azure location to which the resources are to be deployed, defaulting to the resource group location')
-param location string
-
 @description('The environment for which the deployment is being executed')
 @allowed([
   'dev'
@@ -25,6 +21,9 @@ param jumpBoxAddressPrefix string = '10.0.3.0/24'
 param aseAddressPrefix string = '10.1.1.0/24'
 
 // Variables
+var owner = 'ASE Const Set'
+var location = resourceGroup().location
+
 var hubVNetName = 'vnet-hub-${workloadName}-${environment}-${location}'
 var spokeVNetName = 'vnet-spoke-${workloadName}-${environment}-${location}-001'
 
@@ -38,7 +37,7 @@ var aseSubnetName = 'snet-ase-${workloadName}-${environment}-${location}-001'
 // Resources - VNet - SubNets
 resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: hubVNetName
-  location: resourceGroup().location
+  location: location
   tags: {
     Owner: owner
     // CostCenter: costCenter
