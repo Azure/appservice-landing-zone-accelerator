@@ -8,14 +8,14 @@
         "vmazdevopsPassword": {
             "value": "$1test_password"
         },
-        "azureDevOpsAccount": {
+        "vstsAccount": {
             "value": "https://dev.azure.com/ahmeds"
         },
         "personalAccessToken": {
             "value": "lbjxhqqxyovi5g6psgvcmncrlnv72o55fcfsqhwg33xaaurapykq"
         },
         "workloadName" :{ 
-            "value": "ahmsWL"
+            "value": "demoWL"
         },
         "environment" :{ 
             "value": "dev"

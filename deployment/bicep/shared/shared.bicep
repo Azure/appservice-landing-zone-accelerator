@@ -2,11 +2,10 @@ targetScope='resourceGroup'
 param location string
 param sharedResourceGroupResources object
 
-param jumpboxSubnetId string
-param agentSubnetId string
+param subnetId string
 param vmazdevopsUsername string
 param vmazdevopsPassword string
-param azureDevOpsAccount string
+param vstsAccount string
 
 
 param personalAccessToken string
@@ -33,13 +32,13 @@ module vm_devopswinvm './createvmwindows.bicep' = {
   name: 'azdevopsvm'
   scope: resourceGroup(resourceGroupName)
   params: {
-    subnetId: agentSubnetId
+    subnetId: subnetId
     username: vmazdevopsUsername
     password: vmazdevopsPassword
     vmName: 'azdevops-${sharedResourceGroupResources.vmSuffix}'
-    azureDevOpsAccount: azureDevOpsAccount
+    vstsAccount: vstsAccount
     personalAccessToken: personalAccessToken
-    deployAgent: true
+    deployAgent: false
   }
 }
  
@@ -47,43 +46,10 @@ module vm_jumpboxwinvm './createvmwindows.bicep' = {
   name: 'jumpboxwinvm'
   scope: resourceGroup(resourceGroupName)
   params: {
-    subnetId: jumpboxSubnetId
+    subnetId: subnetId
     username: vmazdevopsUsername
     password: vmazdevopsPassword
     vmName: 'jumpbox-${sharedResourceGroupResources.vmSuffix}'
-  }
-}
-
-resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
-  name: sharedResourceGroupResources.keyVaultName
-  location: location
-  properties: {
-    tenantId: subscription().tenantId
-    sku: {
-      family: 'A'
-      name: 'standard'
-    }    
-    accessPolicies: [
-      // {
-      //   tenantId: 'string'
-      //   objectId: 'string'
-      //   applicationId: 'string'
-      //   permissions: {
-      //     keys: [
-      //       'string'
-      //     ]
-      //     secrets: [
-      //       'string'
-      //     ]
-      //     certificates: [
-      //       'string'
-      //     ]
-      //     storage: [
-      //       'string'
-      //     ]
-      //   }
-      // }
-    ]
   }
 }
 
