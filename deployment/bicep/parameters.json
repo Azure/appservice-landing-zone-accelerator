@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmazdevopsUsername": {
+            "value": "test_username"
+        },
+        "vmazdevopsPassword": {
+            "value": "$1test_password"
+        },
+        "vstsAccount": {
+            "value": "https://dev.azure.com/ahmeds"
+        },
+        "personalAccessToken": {
+            "value": "lbjxhqqxyovi5g6psgvcmncrlnv72o55fcfsqhwg33xaaurapykq"
+        },
+        "workloadName" :{ 
+            "value": "demoWL"
+        },
+        "environment" :{ 
+            "value": "dev"
+        }
+
+    }
+}
