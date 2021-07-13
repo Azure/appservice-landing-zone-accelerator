@@ -1,4 +1,4 @@
-param namePrefix string = 'unique'
+
 param location string = resourceGroup().location
 param subnetId string
 param privateIPAddress string =  '10.0.0.4'
