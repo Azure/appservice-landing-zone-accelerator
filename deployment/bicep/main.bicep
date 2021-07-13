@@ -1,6 +1,6 @@
 targetScope='subscription'
 param workloadName string
-param location string =  deployment().location
+var location = deployment().location
 @description('The-- environment for which the deployment is being executed')
 @allowed([
   'dev'
@@ -42,7 +42,6 @@ module networking 'networking.bicep' = {
   scope: resourceGroup(networkingRG.name)
   params: {
     workloadName: workloadName
-    location: location
     environment: environment
   }
 }
