@@ -8,11 +8,11 @@
         "vmazdevopsPassword": {
             "value": "$1test_password"
         },
-        "vstsAccount": {
-            "value": "https://dev.azure.com/ahmeds"
+        "azureDevOpsAccount": {
+            "value": "https://dev.azure.com/ORGNAME"
         },
         "personalAccessToken": {
-            "value": "lbjxhqqxyovi5g6psgvcmncrlnv72o55fcfsqhwg33xaaurapykq"
+            "value": "PUTINTOKEN"
         },
         "workloadName" :{ 
             "value": "demoWL"

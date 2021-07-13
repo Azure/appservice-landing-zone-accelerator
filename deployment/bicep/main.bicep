@@ -13,7 +13,7 @@ param environment string
 // parameters for azure devops agent 
 param vmazdevopsUsername string
 param vmazdevopsPassword string
-param vstsAccount string
+param azureDevOpsAccount string
 param personalAccessToken string
 
 // Variables
@@ -81,7 +81,7 @@ module shared './shared/shared.bicep' = {
     vmazdevopsPassword:vmazdevopsPassword
     vmazdevopsUsername: vmazdevopsUsername
     personalAccessToken: personalAccessToken
-    vstsAccount: vstsAccount
+    azureDevOpsAccount: azureDevOpsAccount
     resourceGroupName: sharedRG.name
   }
 }

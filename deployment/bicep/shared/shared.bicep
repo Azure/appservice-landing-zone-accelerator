@@ -5,7 +5,7 @@ param sharedResourceGroupResources object
 param subnetId string
 param vmazdevopsUsername string
 param vmazdevopsPassword string
-param vstsAccount string
+param azureDevOpsAccount string
 
 
 param personalAccessToken string
@@ -36,7 +36,7 @@ module vm_devopswinvm './createvmwindows.bicep' = {
     username: vmazdevopsUsername
     password: vmazdevopsPassword
     vmName: 'azdevops-${sharedResourceGroupResources.vmSuffix}'
-    vstsAccount: vstsAccount
+    azureDevOpsAccount: azureDevOpsAccount
     personalAccessToken: personalAccessToken
     deployAgent: false
   }
