@@ -1,0 +1,41 @@
+name: AzureASEDeployDemo
+
+on:
+  workflow_dispatch:
+    inputs:
+      enterpriseScaleAppPrefix:
+        description: "Enter App Prefix"
+        required: true
+        default: "x15"
+      location:
+        description: "Enter Location(centralus)"
+        required: true
+        default: "australiaeast"
+      envName:
+        description: "Select Environment(dev/uat/prod)"
+        required: true
+        default: "dev"
+
+jobs:
+
+  build-and-deploy:
+      runs-on: ubuntu-latest
+      steps:
+
+        # Checkout code
+      - uses: actions/checkout@main
+
+        # Log into Azure
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      #   # Deploy Bicep file, need to point parameters to the main.parameters.json location
+      # - name: deploy
+      #   uses: azure/arm-deploy@v1
+      #   with:
+      #     subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+      #     scope: subscription
+      #     region: ${{ github.event.inputs.location }}
+      #     template: ./deployment/bicep/main.bicep
+      #     parameters: workloadName=${{ github.event.inputs.enterpriseScaleAppPrefix }} environment=${{ github.event.inputs.envName }}
