@@ -71,8 +71,9 @@ module networking 'networking.bicep' = {
   }
 }
 
-var jumpboxSubnetId= networking.outputs.jumpBoxSubnetId
-var agentSubnetId=networking.outputs.devOpsSubnetId
+var jumpboxSubnetId= networking.outputs.jumpBoxSubnetid
+var agentSubnetId=networking.outputs.devOpsSubnetid
+
 module shared './shared/shared.bicep' = {  dependsOn: [
     networking
   ]
@@ -91,18 +92,18 @@ module shared './shared/shared.bicep' = {  dependsOn: [
   }
 }
 
-// module ase 'ase.bicep' = {
-//   dependsOn: [
-//     networking
-//     shared
-//   ]
-//   scope: resourceGroup(aseResourceGroup.name)
-//   name: 'aseresources'
-//   params: {
-//     location: location
-//     workloadName: workloadName
-//     environment: environment
-//     aseSubnetName: networking.outputs.aseSubnetName
-//     aseSubnetId: '${networking.outputs.spokeVNetId}/subnets/${networking.outputs.aseSubnetName}'
-//   }
-// }
+module ase 'ase.bicep' = {
+  dependsOn: [
+    networking
+    shared
+  ]
+  scope: resourceGroup(aseResourceGroup.name)
+  name: 'aseresources'
+  params: {
+    location: location
+    workloadName: workloadName
+    environment: environment
+    aseSubnetName: networking.outputs.aseSubnetName
+    aseSubnetId: networking.outputs.aseSubnetid
+  }
+}
