@@ -9,10 +9,10 @@
             "value": "$1test_password"
         },
         "azureDevOpsAccount": {
-            "value": "https://dev.azure.com/ORGNAME"
+            "value": "https://dev.azure.com/ahmeds"
         },
         "personalAccessToken": {
-            "value": "PUTINTOKEN"
+            "value": "lbjxhqqxyovi5g6psgvcmncrlnv72o55fcfsqhwg33xaaurapykq"
         },
         "workloadName" :{ 
             "value": "demoWL"
