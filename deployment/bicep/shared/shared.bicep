@@ -53,5 +53,38 @@ module vm_jumpboxwinvm './createvmwindows.bicep' = {
   }
 }
 
+resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
+  name: sharedResourceGroupResources.keyVaultName
+  location: location
+  properties: {
+    tenantId: subscription().tenantId
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }    
+    accessPolicies: [
+      // {
+      //   tenantId: 'string'
+      //   objectId: 'string'
+      //   applicationId: 'string'
+      //   permissions: {
+      //     keys: [
+      //       'string'
+      //     ]
+      //     secrets: [
+      //       'string'
+      //     ]
+      //     certificates: [
+      //       'string'
+      //     ]
+      //     storage: [
+      //       'string'
+      //     ]
+      //   }
+      // }
+    ]
+  }
+}
+
 output devopsAgentvmName string = vm_devopswinvm.name
 output jumpBoxvmName string = vm_jumpboxwinvm.name
