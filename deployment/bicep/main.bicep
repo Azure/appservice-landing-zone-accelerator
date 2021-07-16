@@ -71,13 +71,28 @@ resource sharedRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 }
 
 
-module shared './shared/shared.bicep' = {
+
+module networking 'networking.bicep' = {
+  name: 'networkingresources'
+  scope: resourceGroup(networkingRG.name)
+  params: {
+    workloadName: workloadName
+    environment: environment
+  }
+}
+
+var jumpboxSubnetId= networking.outputs.jumpBoxSubnetId
+var agentSubnetId=networking.outputs.devOpsSubnetId
+module shared './shared/shared.bicep' = {  dependsOn: [
+    networking
+  ]
   name: 'sharedresources'
   scope: resourceGroup(sharedRG.name)
   params: {
     location: location
     sharedResourceGroupResources : sharedResourceGroupResources
-    subnetId: subnetId
+    jumpboxSubnetId: jumpboxSubnetId
+    agentSubnetId: agentSubnetId
     vmazdevopsPassword:vmazdevopsPassword
     vmazdevopsUsername: vmazdevopsUsername
     personalAccessToken: personalAccessToken
