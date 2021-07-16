@@ -71,6 +71,6 @@ module ase 'ase.bicep' = {
     workloadName: workloadName
     environment: environment
     aseSubnetName: networking.outputs.aseSubnetName
-    aseSubnetId: '${networking.outputs.spokeVNetId}/subnets/${networking.outputs.aseSubnetName}'
+    aseSubnetId: networking.outputs.aseSubnetid
   }
 }
