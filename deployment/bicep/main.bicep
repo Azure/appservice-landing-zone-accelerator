@@ -50,17 +50,8 @@ resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 
 
-// shared resource group 
 
 
-//  for testing -- need a subnet
-
-var NetworkResourceGroupName = 'rg-network-${resourceSuffix}'
-
-resource networkRg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: NetworkResourceGroupName
-  location: location
-}
 
 
 
@@ -100,18 +91,18 @@ module shared './shared/shared.bicep' = {  dependsOn: [
   }
 }
 
-module ase 'ase.bicep' = {
-  dependsOn: [
-    networking
-    shared
-  ]
-  scope: resourceGroup(aseResourceGroup.name)
-  name: 'aseresources'
-  params: {
-    location: location
-    workloadName: workloadName
-    environment: environment
-    aseSubnetName: networking.outputs.aseSubnetName
-    aseSubnetId: '${networking.outputs.spokeVNetId}/subnets/${networking.outputs.aseSubnetName}'
-  }
-}
+// module ase 'ase.bicep' = {
+//   dependsOn: [
+//     networking
+//     shared
+//   ]
+//   scope: resourceGroup(aseResourceGroup.name)
+//   name: 'aseresources'
+//   params: {
+//     location: location
+//     workloadName: workloadName
+//     environment: environment
+//     aseSubnetName: networking.outputs.aseSubnetName
+//     aseSubnetId: '${networking.outputs.spokeVNetId}/subnets/${networking.outputs.aseSubnetName}'
+//   }
+//}
