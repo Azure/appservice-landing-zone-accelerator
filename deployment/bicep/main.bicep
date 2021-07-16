@@ -1,6 +1,6 @@
 targetScope='subscription'
 param workloadName string
-param location string =  deployment().location
+var location = deployment().location
 @description('The-- environment for which the deployment is being executed')
 @allowed([
   'dev'
@@ -20,6 +20,7 @@ param personalAccessToken string
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
 var vmSuffix=environment
 // RG Names Declaration
+var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
 var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
 // Create resources name using these objects and pass it as a params in module
@@ -29,7 +30,16 @@ var sharedResourceGroupResources = {
    'environmentName': environment
    'resourceSuffix' : resourceSuffix
    'vmSuffix' : vmSuffix
+   'keyVaultName':'kv-${workloadName}-${environment}' // Must be between 3-24 alphanumeric characters 
 }
+
+
+
+resource networkingRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: networkingResourceGroupName
+  location: location
+}
+
 
 
 
@@ -52,17 +62,6 @@ resource networkRg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: location
 }
 
-module vnet_generic './vnettest/vnetWithOutBastian.bicep' = {
-  name: 'vnet'
-  scope: resourceGroup(networkRg.name)
-  params: {
-    namePrefix: 'test-vnet'
-  }
-}
-
-var subnetId=vnet_generic.outputs.subnetId
-
-// end testing subnet
 
 
 resource sharedRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -71,7 +70,19 @@ resource sharedRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 }
 
 
-module shared './shared/shared.bicep' = {
+
+module networking 'networking.bicep' = {
+  name: 'networkingresources'
+  scope: resourceGroup(networkingRG.name)
+  params: {
+    workloadName: workloadName
+    environment: environment
+  }
+}
+
+module shared './shared/shared.bicep' = {  dependsOn: [
+    networking
+  ]
   name: 'sharedresources'
   scope: resourceGroup(sharedRG.name)
   params: {
@@ -88,6 +99,7 @@ module shared './shared/shared.bicep' = {
 
 module ase 'ase.bicep' = {
   dependsOn: [
+    networking
     shared
   ]
   scope: resourceGroup(aseResourceGroup.name)
@@ -96,5 +108,7 @@ module ase 'ase.bicep' = {
     location: location
     workloadName: workloadName
     environment: environment
+    aseSubnetName: networking.outputs.aseSNName
+    aseSubnetId: networking.outputs.aseSNID
   }
 }
