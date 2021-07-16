@@ -80,6 +80,8 @@ module networking 'networking.bicep' = {
   }
 }
 
+var jumpboxSubnetId= networking.outputs.jumpBoxSubnetId
+var agentSubnetId=networking.outputs.devOpsSubnetId
 module shared './shared/shared.bicep' = {  dependsOn: [
     networking
   ]
@@ -88,7 +90,8 @@ module shared './shared/shared.bicep' = {  dependsOn: [
   params: {
     location: location
     sharedResourceGroupResources : sharedResourceGroupResources
-    subnetId: subnetId
+    jumpboxSubnetId: jumpboxSubnetId
+    agentSubnetId: agentSubnetId
     vmazdevopsPassword:vmazdevopsPassword
     vmazdevopsUsername: vmazdevopsUsername
     personalAccessToken: personalAccessToken

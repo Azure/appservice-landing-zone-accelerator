@@ -187,6 +187,9 @@ output spokeVNetName string = spokeVNetName
 output hubVNetId string = vnetHub.id
 output spokeVNetId string = vnetSpoke.id
 
+output devOpsSubnetId string=devOpsSubnet.id
+output jumpBoxSubnetId string=jumpBoxSubnet.id
+
 output bastionSubnetName string = bastionSubnetName
 output devOpsSubnetName string = devOpsSubnetName
 output jumpBoxSubnetName string = jumpBoxSubnetName
