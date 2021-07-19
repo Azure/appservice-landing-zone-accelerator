@@ -39,7 +39,7 @@ module vm_devopswinvm './createvmwindows.bicep' = {
     vmName: 'azdevops-${sharedResourceGroupResources.vmSuffix}'
     azureDevOpsAccount: azureDevOpsAccount
     personalAccessToken: personalAccessToken
-    deployAgent: false
+    deployAgent: true
   }
 }
  
