@@ -9,13 +9,13 @@
             "value": "$1test_password"
         },
         "azureDevOpsAccount": {
-            "value": "https://dev.azure.com/ahmeds"
+            "value": "https://dev.azure.com/ORGNAME"
         },
         "personalAccessToken": {
-            "value": "lbjxhqqxyovi5g6psgvcmncrlnv72o55fcfsqhwg33xaaurapykq"
+            "value": "ENTERPAT"
         },
         "workloadName" :{ 
-            "value": "ahmsWL"
+            "value": "wlname"
         },
         "environment" :{ 
             "value": "dev"
