@@ -6,7 +6,6 @@ param vmSize string = 'Standard_D4_v3'
 param username string
 param password string
 param windowsOSVersion string = '2016-Datacenter'
-
 param vmName string
 param deployAgent bool=false
 

@@ -1,7 +1,7 @@
 targetScope='subscription'
 param workloadName string
-param location string =  deployment().location
-@description('The-- environment for which the deployment is being executed')
+var location = deployment().location
+@description('The environment for which the deployment is being executed')
 @allowed([
   'dev'
   'uat'
@@ -24,12 +24,21 @@ var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
 // Create resources name using these objects and pass it as a params in module
 var sharedResourceGroupResources = {
-  'appInsightsName':'appin-${resourceSuffix}'
-  'logAnalyticsWorkspaceName': 'logananalyticsws-${resourceSuffix}'
-   'environmentName': environment
-   'resourceSuffix' : resourceSuffix
-   'vmSuffix' : vmSuffix
+  'appInsightsName':'appi-${resourceSuffix}'
+  'logAnalyticsWorkspaceName': 'log-${resourceSuffix}'
+  'environmentName': environment
+  'resourceSuffix' : resourceSuffix
+  'vmSuffix' : vmSuffix
+  'keyVaultName':'kv-${workloadName}-${environment}' // Must be between 3-24 alphanumeric characters 
 }
+
+
+
+resource networkingRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: networkingResourceGroupName
+  location: location
+}
+
 
 
 
@@ -104,6 +113,6 @@ module shared './shared/shared.bicep' = {  dependsOn: [
 //     workloadName: workloadName
 //     environment: environment
 //     aseSubnetName: networking.outputs.aseSubnetName
-//     aseSubnetId: '${networking.outputs.spokeVNetId}/subnets/${networking.outputs.aseSubnetName}'
+//     aseSubnetId: networking.outputs.aseSubnetid
 //   }
 // }
