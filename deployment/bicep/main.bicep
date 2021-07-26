@@ -1,7 +1,7 @@
 targetScope='subscription'
 param workloadName string
 var location = deployment().location
-@description('The-- environment for which the deployment is being executed')
+@description('The environment for which the deployment is being executed')
 @allowed([
   'dev'
   'uat'
@@ -25,12 +25,12 @@ var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
 // Create resources name using these objects and pass it as a params in module
 var sharedResourceGroupResources = {
-  'appInsightsName':'appin-${resourceSuffix}'
-  'logAnalyticsWorkspaceName': 'logananalyticsws-${resourceSuffix}'
-   'environmentName': environment
-   'resourceSuffix' : resourceSuffix
-   'vmSuffix' : vmSuffix
-   'keyVaultName':'kv-${workloadName}-${environment}' // Must be between 3-24 alphanumeric characters 
+  'appInsightsName':'appi-${resourceSuffix}'
+  'logAnalyticsWorkspaceName': 'log-${resourceSuffix}'
+  'environmentName': environment
+  'resourceSuffix' : resourceSuffix
+  'vmSuffix' : vmSuffix
+  'keyVaultName':'kv-${workloadName}-${environment}' // Must be between 3-24 alphanumeric characters 
 }
 
 
@@ -92,18 +92,18 @@ module shared './shared/shared.bicep' = {  dependsOn: [
   }
 }
 
-module ase 'ase.bicep' = {
-  dependsOn: [
-    networking
-    shared
-  ]
-  scope: resourceGroup(aseResourceGroup.name)
-  name: 'aseresources'
-  params: {
-    location: location
-    workloadName: workloadName
-    environment: environment
-    aseSubnetName: networking.outputs.aseSubnetName
-    aseSubnetId: networking.outputs.aseSubnetid
-  }
-}
+// module ase 'ase.bicep' = {
+//   dependsOn: [
+//     networking
+//     shared
+//   ]
+//   scope: resourceGroup(aseResourceGroup.name)
+//   name: 'aseresources'
+//   params: {
+//     location: location
+//     workloadName: workloadName
+//     environment: environment
+//     aseSubnetName: networking.outputs.aseSubnetName
+//     aseSubnetId: networking.outputs.aseSubnetid
+//   }
+// }
