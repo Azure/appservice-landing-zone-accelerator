@@ -92,18 +92,18 @@ module shared './shared/shared.bicep' = {  dependsOn: [
   }
 }
 
-// module ase 'ase.bicep' = {
-//   dependsOn: [
-//     networking
-//     shared
-//   ]
-//   scope: resourceGroup(aseResourceGroup.name)
-//   name: 'aseresources'
-//   params: {
-//     location: location
-//     workloadName: workloadName
-//     environment: environment
-//     aseSubnetName: networking.outputs.aseSubnetName
-//     aseSubnetId: networking.outputs.aseSubnetid
-//   }
-// }
+module ase 'ase.bicep' = {
+  dependsOn: [
+    networking
+    shared
+  ]
+  scope: resourceGroup(aseResourceGroup.name)
+  name: 'aseresources'
+  params: {
+    location: location
+    workloadName: workloadName
+    environment: environment
+    aseSubnetName: networking.outputs.aseSubnetName
+    aseSubnetId: networking.outputs.aseSubnetid
+  }
+}

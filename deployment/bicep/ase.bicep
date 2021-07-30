@@ -45,7 +45,7 @@ var aseName = 'ase-${resourceSuffix}' // NOTE : ASE name cannot be more than 37 
 var appServicePlanName = 'asp-${resourceSuffix}'
 
 // Resources
-resource ase 'Microsoft.Web/hostingEnvironments@2021-01-01' = {
+resource ase 'Microsoft.Web/hostingEnvironments@2020-12-01' = {
   name: aseName
   location: location
   kind: 'ASEV3'
@@ -59,7 +59,7 @@ resource ase 'Microsoft.Web/hostingEnvironments@2021-01-01' = {
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-01' = {
+resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
   name: appServicePlanName
   location: location
   properties: {

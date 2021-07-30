@@ -35,7 +35,7 @@ var aseSubnetName = 'snet-ase-${workloadName}-${environment}-${location}-001'
 
 
 // Resources - VNet - SubNets
-resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+resource vnetHub 'Microsoft.Network/virtualNetworks@2020-07-01' = {
   name: hubVNetName
   location: location
   tags: {
@@ -73,7 +73,7 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-// resource bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
+// resource bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-07-01' = {
 //   name: bastionSubnetName
 //    parent: vnetHub
 //    properties: {
@@ -83,7 +83,7 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 //      vnetHub
 //     ]
 // }
-// resource devOpsSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
+// resource devOpsSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-07-01' = {
 //   name: devOpsSubnetName
 //    parent: vnetHub
 //    properties: {
@@ -94,7 +94,7 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 //     bastionSubnet
 //    ]
 // }
-// resource jumpBoxSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
+// resource jumpBoxSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-07-01' = {
 //   name: jumpBoxSubnetName
 //    parent: vnetHub
 //    properties: {
@@ -107,7 +107,7 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 //    ]
 // }
 
-resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+resource vnetSpoke 'Microsoft.Network/virtualNetworks@2020-07-01' = {
   name: spokeVNetName
   location: resourceGroup().location
   tags: {
@@ -133,7 +133,7 @@ resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-// resource aseSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
+// resource aseSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-07-01' = {
 //   name: aseSubnetName
 //    parent: vnetSpoke
 //    properties: {
@@ -145,7 +145,7 @@ resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 // }
 
 // Peering
-resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
+resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-07-01' = {
   name: '${vnetHub.name}/${vnetHub.name}-${vnetSpoke.name}'
   properties: {
     allowVirtualNetworkAccess: true
@@ -162,7 +162,7 @@ resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2
    ]
 }
 
-resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
+resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-07-01' = {
   name: '${vnetSpoke.name}/${vnetSpoke.name}-${vnetHub.name}'
   properties: {
     allowVirtualNetworkAccess: true
