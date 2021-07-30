@@ -57,5 +57,5 @@ jobs:
           template: ./deployment/bicep/main.bicep
           parameters: > 
             workloadName=${{ fromJson(env.config).RESOURCE_NAME_PREFIX }} environment=${{ fromJson(env.config).ENVIRONMENT_TAG }} 
-            vmazdevopsUsername=${{ fromJson(env.config).VMAZDEVOPS_USERNAME }} vmazdevopsPassword=${{ fromJson(env.config).WMAZDEVOPS_PW }} 
+            vmazdevopsUsername=${{ fromJson(env.config).VMAZDEVOPS_USERNAME }} vmazdevopsPassword=${{ fromJson(env.config).VMAZDEVOPS_PW }} 
             azureDevOpsAccount=${{ fromJson(env.config).AZDEVOPS_ACCT }} personalAccessToken=${{ secrets.ADO_PAT }}
