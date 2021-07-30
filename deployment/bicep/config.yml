@@ -1,0 +1,4 @@
+AZURE_LOCATION: "westeurope"
+RESOURCE_NAME_PREFIX: "asev3-cs"
+ENVIRONMENT_TAG: "dev"
+DEPLOYMENT_NAME: "test3-we"
