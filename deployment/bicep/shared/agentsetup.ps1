@@ -12,23 +12,27 @@ Write-Output $POOL
 Write-Output $AGENT
 Write-Output $AGENTTYPE
 
-if ($AGENTTYPE -eq "AZUREDEVOPS")
+if ($AGENTTYPE.ToLower() -eq "azuredevops")
 {
     Write-Host "About to setup Azure DevOps Agent"
 Start-Transcript
 Write-Host "start"
 
-
+$azagentdir="c:\agent"
 
 #test if an old installation exists, if so, delete the folder
-if (test-path "c:\agent")
+if (test-path $azagentdir)
 {
-    Remove-Item -Path "c:\agent" -Force -Confirm:$false -Recurse
+    set-location $azagentdir
+    $servicename=(Get-Content .service)
+    Stop-Service $servicename -ErrorAction SilentlyContinue
+    set-location 'c:\'
+    Remove-Item -Path $azagentdir -Force -Confirm:$false -Recurse
 }
 
 #create a new folder
-new-item -ItemType Directory -Force -Path "c:\agent"
-set-location "c:\agent"
+new-item -ItemType Directory -Force -Path $azagentdir
+set-location $azagentdir
 $global:ProgressPreference = 'SilentlyContinue'
 $env:VSTS_AGENT_HTTPTRACE = $true
 

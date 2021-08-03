@@ -51,6 +51,7 @@ module vm_jumpboxwinvm './createvmwindows.bicep' = {
     subnetId: jumpboxSubnetId
     username: vmazdevopsUsername
     password: vmazdevopsPassword
+    orgtype: orgtype
     vmName: 'jumpbox-${sharedResourceGroupResources.vmSuffix}'
   }
 }
