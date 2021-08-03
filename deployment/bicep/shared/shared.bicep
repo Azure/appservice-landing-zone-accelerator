@@ -6,8 +6,8 @@ param jumpboxSubnetId string
 param agentSubnetId string
 param vmazdevopsUsername string
 param vmazdevopsPassword string
-param azureDevOpsAccount string
-
+param accountname string
+param orgtype string
 
 param personalAccessToken string
 param resourceGroupName string
@@ -37,8 +37,9 @@ module vm_devopswinvm './createvmwindows.bicep' = {
     username: vmazdevopsUsername
     password: vmazdevopsPassword
     vmName: 'azdevops-${sharedResourceGroupResources.vmSuffix}'
-    azureDevOpsAccount: azureDevOpsAccount
+    accountname: accountname
     personalAccessToken: personalAccessToken
+    orgtype: orgtype
     deployAgent: true
   }
 }

@@ -13,8 +13,15 @@ param environment string
 // parameters for azure devops agent 
 param vmazdevopsUsername string
 param vmazdevopsPassword string
-param azureDevOpsAccount string
+param accountName string
 param personalAccessToken string
+
+@description('The environment for which the deployment is being executed')
+@allowed([
+  'github'
+  'azuredevops'
+])
+param orgtype string
 
 // Variables
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
@@ -87,7 +94,8 @@ module shared './shared/shared.bicep' = {  dependsOn: [
     vmazdevopsPassword:vmazdevopsPassword
     vmazdevopsUsername: vmazdevopsUsername
     personalAccessToken: personalAccessToken
-    azureDevOpsAccount: azureDevOpsAccount
+    accountname: accountName
+    orgtype: orgtype
     resourceGroupName: sharedRG.name
   }
 }
