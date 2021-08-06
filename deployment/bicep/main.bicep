@@ -100,7 +100,7 @@ module ase 'ase.bicep' = {
   scope: resourceGroup(aseResourceGroup.name)
   name: 'aseresources'
   params: {
-    location: location
+    location: 'westus2'
     workloadName: workloadName
     environment: environment
     aseSubnetName: networking.outputs.aseSubnetName
