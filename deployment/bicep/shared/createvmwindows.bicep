@@ -9,7 +9,7 @@ param windowsOSVersion string = '2016-Datacenter'
 param vmName string
 param deployAgent bool=false
 
-@description('The Azure DevOps account name]')
+@description('The Azure DevOps account name')
 param azureDevOpsAccount string=''
 
 @description('The personal access token to connect to Azure DevOps')
