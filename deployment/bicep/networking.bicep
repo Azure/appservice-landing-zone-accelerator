@@ -126,6 +126,14 @@ resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
       {
         name: aseSubnetName
         properties: {
+          delegations: [
+            {
+              name: 'hostingEnvironment'
+              properties: {
+                serviceName: 'Microsoft.Web/hostingEnvironments'
+              }
+            }
+          ]
           addressPrefix: aseAddressPrefix
         }
       }
