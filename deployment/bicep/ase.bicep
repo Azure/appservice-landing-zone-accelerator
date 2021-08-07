@@ -11,8 +11,11 @@ param workloadName string
 ])
 param environment string
 
-@description('Azure location to which the resources are to be deployed, defaulting to the resource group location')
+@description('Azure location to which the resources are to be deployed')
 param location string
+
+@description('Azure location to which the ASE is to be deployed. Seperated out for now while there is a bug in specifying the ASE location. "West Europe" works, while "westeurope" does not')
+param aseLocation string
 
 @description('The mode for the internal load balancing configuration to be applied to the ASE load balancer')
 @allowed([
@@ -47,7 +50,7 @@ var appServicePlanName = 'asp-${resourceSuffix}'
 // Resources
 resource ase 'Microsoft.Web/hostingEnvironments@2021-01-01' = {
   name: aseName
-  location: location
+  location: aseLocation
   kind: 'ASEV3'
   properties: {
     internalLoadBalancingMode: internalLoadBalancingMode
