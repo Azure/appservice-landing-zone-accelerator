@@ -58,4 +58,4 @@ jobs:
           parameters: > 
             workloadName=${{ fromJson(env.config).RESOURCE_NAME_PREFIX }} environment=${{ fromJson(env.config).ENVIRONMENT_TAG }} 
             vmazdevopsUsername=${{ fromJson(env.config).VMAZDEVOPS_USERNAME }} vmazdevopsPassword=${{ fromJson(env.config).VMAZDEVOPS_PW }} 
-            azureDevOpsAccount=${{ fromJson(env.config).AZDEVOPS_ACCT }} personalAccessToken=${{ secrets.ADO_PAT }} aseLocation=${{ fromJson(env.config).ASELOCATION }}
+            azureDevOpsAccount=${{ fromJson(env.config).AZDEVOPS_ACCT }} personalAccessToken=${{ secrets.ADO_PAT }} aseLocation="${{ fromJson(env.config).ASELOCATION }}"
