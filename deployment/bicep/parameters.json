@@ -19,6 +19,9 @@
         },
         "environment" :{ 
             "value": "dev"
+        },
+        "aseLocation": {
+            "value": "West Europe"
         }
 
     }
