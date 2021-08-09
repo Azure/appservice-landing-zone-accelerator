@@ -16,6 +16,9 @@ param vmazdevopsPassword string
 param azureDevOpsAccount string
 param personalAccessToken string
 
+// temporary need to specify the aseLocation as "West Europe" and not as "westeurope"
+param aseLocation string
+
 // Variables
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
 var vmSuffix=environment
@@ -100,7 +103,8 @@ module ase 'ase.bicep' = {
   scope: resourceGroup(aseResourceGroup.name)
   name: 'aseresources'
   params: {
-    location: 'westus2'
+    location: location
+    aseLocation: aseLocation
     workloadName: workloadName
     environment: environment
     aseSubnetName: networking.outputs.aseSubnetName
