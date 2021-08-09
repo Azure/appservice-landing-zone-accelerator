@@ -90,7 +90,7 @@ resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2018-06-0
       fileUris: [
         artifactsLocation
       ]   
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./setupagent.ps1 -url ${azureDevOpsAccount} -pat ${personalAccessToken} -agent ${azureDevOpsAgentName} -pool ${poolName} -runAsAutoLogon ${enableAutologon} -vmAdminUserName ${username} -vmAdminPassword "${password}"'
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./setupagent.ps1 -url ${azureDevOpsAccount} -pat ${personalAccessToken} -agent ${azureDevOpsAgentName} -pool ${poolName} -runAsAutoLogon ${enableAutologon} -vmAdminUserName ${username} -vmAdminPassword ${password}'
     }
   }
 }
