@@ -23,6 +23,10 @@
         "orgtype": {
             "value": "azuredevops OR github"
         }
+            ,
+        "aseLocation": {
+            "value": "West Europe"
+        }
 
     }
 }

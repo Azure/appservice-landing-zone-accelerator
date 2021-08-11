@@ -22,6 +22,8 @@ param personalAccessToken string
   'azuredevops'
 ])
 param orgtype string
+// temporary need to specify the aseLocation as "West Europe" and not as "westeurope"
+param aseLocation string
 
 // Variables
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
@@ -100,18 +102,19 @@ module shared './shared/shared.bicep' = {  dependsOn: [
   }
 }
 
-// module ase 'ase.bicep' = {
-//   dependsOn: [
-//     networking
-//     shared
-//   ]
-//   scope: resourceGroup(aseResourceGroup.name)
-//   name: 'aseresources'
-//   params: {
-//     location: location
-//     workloadName: workloadName
-//     environment: environment
-//     aseSubnetName: networking.outputs.aseSubnetName
-//     aseSubnetId: networking.outputs.aseSubnetid
-//   }
-// }
+module ase 'ase.bicep' = {
+  dependsOn: [
+    networking
+    shared
+  ]
+  scope: resourceGroup(aseResourceGroup.name)
+  name: 'aseresources'
+  params: {
+    location: location
+    aseLocation: aseLocation
+    workloadName: workloadName
+    environment: environment
+    aseSubnetName: networking.outputs.aseSubnetName
+    aseSubnetId: networking.outputs.aseSubnetid
+  }
+}
