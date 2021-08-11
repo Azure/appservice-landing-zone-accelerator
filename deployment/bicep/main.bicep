@@ -11,8 +11,8 @@ var location = deployment().location
 param environment string
 
 // parameters for azure devops agent 
-param vmazdevopsUsername string
-param vmazdevopsPassword string
+param vmUsername string
+param vmPassword string
 param accountName string
 param personalAccessToken string
 
@@ -91,8 +91,8 @@ module shared './shared/shared.bicep' = {  dependsOn: [
     sharedResourceGroupResources : sharedResourceGroupResources
     jumpboxSubnetId: jumpboxSubnetId
     agentSubnetId: agentSubnetId
-    vmazdevopsPassword:vmazdevopsPassword
-    vmazdevopsUsername: vmazdevopsUsername
+    vmazdevopsPassword: vmPassword
+    vmazdevopsUsername: vmUsername
     personalAccessToken: personalAccessToken
     accountname: accountName
     orgtype: orgtype
