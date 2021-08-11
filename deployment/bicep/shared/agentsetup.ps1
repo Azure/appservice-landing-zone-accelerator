@@ -6,66 +6,74 @@ param (
     [string]$AGENTTYPE
 )
 
-Write-Output $URL
-Write-Output $PAT
-Write-Output $POOL
-Write-Output $AGENT
-Write-Output $AGENTTYPE
 
-if ($AGENTTYPE.ToLower() -eq "azuredevops")
-{
+function setupazdevops{
+    param(
+        [string]$URL,
+        [string]$PAT,
+        [string]$POOL,
+        [string]$AGENT
+    )
+    
     Write-Host "About to setup Azure DevOps Agent"
-Start-Transcript
-Write-Host "start"
-
-$azagentdir="c:\agent"
-
-#test if an old installation exists, if so, delete the folder
-if (test-path $azagentdir)
-{
+    Start-Transcript
+    Write-Host "start"
+    
+    $azagentdir="c:\agent"
+    
+    #test if an old installation exists, if so, delete the folder
+    if (test-path $azagentdir)
+    {
+        set-location $azagentdir
+        $servicename=(Get-Content .service)
+        Stop-Service $servicename -ErrorAction SilentlyContinue
+        set-location 'c:\'
+        Remove-Item -Path $azagentdir -Force -Confirm:$false -Recurse
+    }
+    
+    #create a new folder
+    new-item -ItemType Directory -Force -Path $azagentdir
     set-location $azagentdir
-    $servicename=(Get-Content .service)
-    Stop-Service $servicename -ErrorAction SilentlyContinue
-    set-location 'c:\'
-    Remove-Item -Path $azagentdir -Force -Confirm:$false -Recurse
+    $global:ProgressPreference = 'SilentlyContinue'
+    $env:VSTS_AGENT_HTTPTRACE = $true
+    
+    #github requires tls 1.2
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    
+    $ProgressPreference = 'SilentlyContinue'
+    #get the latest build agent version
+    $wr = Invoke-WebRequest https://api.github.com/repos/Microsoft/azure-pipelines-agent/releases/latest -UseBasicParsing
+    $tag = ($wr | ConvertFrom-Json)[0].tag_name
+    $tag = $tag.Substring(1)
+    
+    write-host "$tag is the latest version"
+    #build the url
+    $download = "https://vstsagentpackage.azureedge.net/agent/$tag/vsts-agent-win-x64-$tag.zip"
+    
+    #download the agent
+    Invoke-WebRequest $download -Out agent.zip
+    
+    #expand the zip
+    Expand-Archive -Path agent.zip -DestinationPath $PWD
+    
+    Write-Output "--unattended --url $URL --auth pat --token "$PAT" --pool $POOL --agent $AGENT --acceptTeeEula --runAsService"
+    #run the config script of the build agent
+    .\config.cmd --unattended --url $URL --auth pat --token "$PAT" --pool $POOL --agent $AGENT --acceptTeeEula --runAsService --replace
+    
+    #exit
+    Stop-Transcript
+    exit 0
 }
 
-#create a new folder
-new-item -ItemType Directory -Force -Path $azagentdir
-set-location $azagentdir
-$global:ProgressPreference = 'SilentlyContinue'
-$env:VSTS_AGENT_HTTPTRACE = $true
+function setupghrunner {
+    param(
 
-#github requires tls 1.2
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-$ProgressPreference = 'SilentlyContinue'
-#get the latest build agent version
-$wr = Invoke-WebRequest https://api.github.com/repos/Microsoft/azure-pipelines-agent/releases/latest -UseBasicParsing
-$tag = ($wr | ConvertFrom-Json)[0].tag_name
-$tag = $tag.Substring(1)
-
-write-host "$tag is the latest version"
-#build the url
-$download = "https://vstsagentpackage.azureedge.net/agent/$tag/vsts-agent-win-x64-$tag.zip"
-
-#download the agent
-Invoke-WebRequest $download -Out agent.zip
-
-#expand the zip
-Expand-Archive -Path agent.zip -DestinationPath $PWD
-
-Write-Output "--unattended --url $URL --auth pat --token "$PAT" --pool $POOL --agent $AGENT --acceptTeeEula --runAsService"
-#run the config script of the build agent
-.\config.cmd --unattended --url $URL --auth pat --token "$PAT" --pool $POOL --agent $AGENT --acceptTeeEula --runAsService --replace
-
-#exit
-Stop-Transcript
-exit 0
-}
-
-else
- {
+        [string]$URL,
+        [string]$PAT,
+        [string]$POOL,
+        [string]$AGENT
+    )
+    
     Start-Transcript
 
     Write-Host "About to setup GitHub Runner"
@@ -118,4 +126,24 @@ set-location $ghrunnerdirectory
 #exit
 Stop-Transcript
 exit 0
+
 }
+
+
+
+Write-Output $URL
+Write-Output $PAT
+Write-Output $POOL
+Write-Output $AGENT
+Write-Output $AGENTTYPE
+
+if ($AGENTTYPE.ToLower() -eq "azuredevops")
+{
+    setupazdevops -URL $URL -PAT $PAT -POOL $POOL -AGENT $AGENT
+}
+
+else
+ {
+    setupghrunner -URL $URL -PAT $PAT -POOL $POOL -AGENT $AGENT
+}
+

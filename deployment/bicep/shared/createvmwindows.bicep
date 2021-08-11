@@ -22,15 +22,13 @@ param poolName string = 'Default'
 @description('Is this Azure Devops or GitHub.')
 param orgtype string
 
-@description('Enable autologon to run the build agent in interactive mode that can sustain machine reboots.<br>Set this to true if the agents will be used to run UI tests.')
-param enableAutologon bool = false
 
 @description('The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated.')
 param artifactsLocation string = 'https://raw.githubusercontent.com/ahmedsza/azdevopsagent/main/setupagent.ps1'
 
 
 
-var azureDevOpsAgentName = 'agent-${vmName}'
+var AgentName = 'agent-${vmName}'
 
 // Bring in the nic
 module nic './vm-nic.bicep' = {
@@ -93,7 +91,7 @@ resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2018-06-0
       fileUris: [
         artifactsLocation
       ]   
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./setupagent.ps1 -url ${accountname} -pat ${personalAccessToken} -agent ${azureDevOpsAgentName} -pool ${poolName} -agenttype ${orgtype}  -runAsAutoLogon ${enableAutologon} -vmAdminUserName ${username} -vmAdminPassword ${password}'
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./setupagent.ps1 -url ${accountname} -pat ${personalAccessToken} -agent ${AgentName} -pool ${poolName} -agenttype ${orgtype} '
     }
   }
 }
