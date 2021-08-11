@@ -2,14 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vmazdevopsUsername": {
-            "value": "test_username"
+        "vmUsername": {
+            "value": "ENTERUSERNAME"
         },
-        "vmazdevopsPassword": {
-            "value": "$1test_password"
+        "vmPassword": {
+            "value": "ENTERPASSWORD"
         },
-        "azureDevOpsAccount": {
-            "value": "https://dev.azure.com/ORGNAME"
+        "accountName": {
+            "value": "https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME"
         },
         "personalAccessToken": {
             "value": "ENTERPAT"
@@ -20,6 +20,10 @@
         "environment" :{ 
             "value": "dev"
         },
+        "orgtype": {
+            "value": "azuredevops OR github"
+        }
+            ,
         "aseLocation": {
             "value": "West Europe"
         }
