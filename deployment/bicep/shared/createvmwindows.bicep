@@ -24,7 +24,7 @@ param orgtype string
 
 
 @description('The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated.')
-param artifactsLocation string = 'https://raw.githubusercontent.com/ahmedsza/azdevopsagent/main/setupagent.ps1'
+param artifactsLocation string = 'https://raw.githubusercontent.com/cykreng/Enterprise-Scale-AppService/main/deployment/bicep/shared/agentsetup.ps1'
 
 
 
