@@ -91,7 +91,7 @@ resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2018-06-0
       fileUris: [
         artifactsLocation
       ]   
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./setupagent.ps1 -url ${accountname} -pat ${personalAccessToken} -agent ${AgentName} -pool ${poolName} -agenttype ${orgtype} '
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./agentsetup.ps1 -url ${accountname} -pat ${personalAccessToken} -agent ${AgentName} -pool ${poolName} -agenttype ${orgtype} '
     }
   }
 }
