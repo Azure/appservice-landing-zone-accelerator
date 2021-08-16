@@ -11,11 +11,17 @@ var location = deployment().location
 param environment string
 
 // parameters for azure devops agent 
-param vmazdevopsUsername string
-param vmazdevopsPassword string
-param azureDevOpsAccount string
+param vmUsername string
+param vmPassword string
+param accountName string
 param personalAccessToken string
 
+@description('The environment for which the deployment is being executed')
+@allowed([
+  'github'
+  'azuredevops'
+])
+param orgtype string
 // temporary need to specify the aseLocation as "West Europe" and not as "westeurope"
 param aseLocation string
 
@@ -87,10 +93,11 @@ module shared './shared/shared.bicep' = {  dependsOn: [
     sharedResourceGroupResources : sharedResourceGroupResources
     jumpboxSubnetId: jumpboxSubnetId
     agentSubnetId: agentSubnetId
-    vmazdevopsPassword:vmazdevopsPassword
-    vmazdevopsUsername: vmazdevopsUsername
+    vmazdevopsPassword: vmPassword
+    vmazdevopsUsername: vmUsername
     personalAccessToken: personalAccessToken
-    azureDevOpsAccount: azureDevOpsAccount
+    accountname: accountName
+    orgtype: orgtype
     resourceGroupName: sharedRG.name
   }
 }
