@@ -24,10 +24,12 @@ param aseAddressPrefix string = '10.1.1.0/24'
 var owner = 'ASE Const Set'
 var location = resourceGroup().location
 
+var bastionHostName = 'snet-basthost-${workloadName}-${environment}-${location}'
+var bastionHostPip = '${bastionHostName}-pip'
 var hubVNetName = 'vnet-hub-${workloadName}-${environment}-${location}'
 var spokeVNetName = 'vnet-spoke-${workloadName}-${environment}-${location}-001'
 
-var bastionSubnetName = 'snet-bast-${workloadName}-${environment}-${location}'
+var bastionSubnetName = 'AzureBastionSubnet'
 var devOpsSubnetName = 'snet-devops-${workloadName}-${environment}-${location}'
 var jumpBoxSubnetName = 'snet-jbox-${workloadName}-${environment}-${location}-001'
 
@@ -73,39 +75,7 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-// resource bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
-//   name: bastionSubnetName
-//    parent: vnetHub
-//    properties: {
-//      addressPrefix: bastionAddressPrefix
-//    }
-//    dependsOn:[
-//      vnetHub
-//     ]
-// }
-// resource devOpsSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
-//   name: devOpsSubnetName
-//    parent: vnetHub
-//    properties: {
-//      addressPrefix: devOpsNameAddressPrefix
-//    }
-//    dependsOn:[
-//     vnetHub
-//     bastionSubnet
-//    ]
-// }
-// resource jumpBoxSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
-//   name: jumpBoxSubnetName
-//    parent: vnetHub
-//    properties: {
-//      addressPrefix: jumpBoxAddressPrefix
-//    }
-//    dependsOn:[
-//     vnetHub
-//     bastionSubnet
-//     devOpsSubnet
-//    ]
-// }
+
 
 resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: spokeVNetName
@@ -187,6 +157,40 @@ resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings
    ]
 }
 
+//bastionHost
+resource bastionHostPippublicIp 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: bastionHostPip
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+  }
+}
+resource bastionHost 'Microsoft.Network/bastionHosts@2020-06-01' = {
+  name: bastionHostName
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'IpConf'
+        properties: {
+          publicIPAddress: {
+            id: bastionHostPippublicIp.id
+          }
+          subnet: {
+            id: '${vnetHub.id}/subnets/${bastionSubnetName}'
+          }
+        }
+      }
+    ]
+  }
+  dependsOn:[
+     vnetSpoke
+     bastionHostPippublicIp
+  ]
+}
 
 // Output section
 output hubVNetName string = hubVNetName
@@ -206,4 +210,3 @@ output bastionSubnetid string = '${vnetHub.id}/subnets/${bastionSubnetName}'
 output devOpsSubnetid string = '${vnetHub.id}/subnets/${devOpsSubnetName}'
 output jumpBoxSubnetid string = '${vnetHub.id}/subnets/${jumpBoxSubnetName}'
 output aseSubnetid string = '${vnetSpoke.id}/subnets/${aseSubnetName}'
-
