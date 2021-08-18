@@ -1,4 +1,4 @@
-$RESOURCE_GROUP = "tesatase"
+$RESOURCE_GROUP = "tesatase2"
 $LOCATION = "westeurope"
 $BICEP_FILE="main.bicep"
 
@@ -12,4 +12,4 @@ az deployment sub  delete  --name testasedeployment
 copy parameters.json localparam.json
 
 
-az deployment sub  create --name testasedeployment   --template-file $BICEP_FILE   --parameters localparam.json --location $LOCATION -o json
+az deployment sub  create --name testasedeployment2   --template-file $BICEP_FILE   --parameters localparam.json --location $LOCATION -o json
