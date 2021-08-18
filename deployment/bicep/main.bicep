@@ -20,6 +20,7 @@ param personalAccessToken string
 @allowed([
   'github'
   'azuredevops'
+  'none'
 ])
 param orgtype string
 // temporary need to specify the aseLocation as "West Europe" and not as "westeurope"
