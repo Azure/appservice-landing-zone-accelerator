@@ -40,7 +40,7 @@ module nic './vm-nic.bicep' = {
 }
 
 // Create the vm
-resource vm 'Microsoft.Compute/virtualMachines@2019-07-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
   name: vmName
   location: location
   zones: [
@@ -79,7 +79,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2019-07-01' = {
   }
 }
 
-resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2018-06-01' = if (deployAgent) {
+resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-01' = if (deployAgent) {
   parent: vm
   name: 'CustomScript'
   location: location

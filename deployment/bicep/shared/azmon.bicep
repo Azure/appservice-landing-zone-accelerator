@@ -2,7 +2,7 @@ targetScope='resourceGroup'
 param location string =resourceGroup().location
 param sharedResourceGroupResources object
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: sharedResourceGroupResources.logAnalyticsWorkspaceName
   location: location
   tags: {
@@ -21,7 +21,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03
 }
 
 
-resource appInsights 'microsoft.insights/components@2020-02-02-preview' = {
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: sharedResourceGroupResources.appInsightsName
   location: location
   kind: 'string'
