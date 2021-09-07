@@ -5,7 +5,7 @@ param privateIPAddress string =  '10.0.0.4'
 
 param vmName string
 
-resource nic 'Microsoft.Network/networkInterfaces@2020-08-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   name: vmName
   location: location
   properties: {
