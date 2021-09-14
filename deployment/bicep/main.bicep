@@ -61,10 +61,6 @@ resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 
 
-
-
-
-
 resource sharedRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: sharedResourceGroupName
   location: location
