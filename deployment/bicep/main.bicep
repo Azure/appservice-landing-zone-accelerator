@@ -20,6 +20,7 @@ param personalAccessToken string
 @allowed([
   'github'
   'azuredevops'
+  'none'
 ])
 param orgtype string
 // temporary need to specify the aseLocation as "West Europe" and not as "westeurope"
@@ -93,8 +94,8 @@ module shared './shared/shared.bicep' = {  dependsOn: [
     sharedResourceGroupResources : sharedResourceGroupResources
     jumpboxSubnetId: jumpboxSubnetId
     agentSubnetId: agentSubnetId
-    vmazdevopsPassword: vmPassword
-    vmazdevopsUsername: vmUsername
+    vmdevopsPassword: vmPassword
+    vmdevopsUsername: vmUsername
     personalAccessToken: personalAccessToken
     accountname: accountName
     orgtype: orgtype
