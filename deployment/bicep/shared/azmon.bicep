@@ -1,14 +1,19 @@
 targetScope='resourceGroup'
-param location string =resourceGroup().location
-param sharedResourceGroupResources object
+// Parameters
+@description('Azure location to which the resources are to be deployed')
+param location string
 
+@description('Standardized suffix text to be added to resource names')
+param resourceSuffix string
+
+// Variables
+var appInsightsName = 'appi-${resourceSuffix}'
+var logAnalyticsWorkspaceName = 'log-${resourceSuffix}'
+
+// Resources
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: sharedResourceGroupResources.logAnalyticsWorkspaceName
+  name: logAnalyticsWorkspaceName
   location: location
-  tags: {
-    Environment: sharedResourceGroupResources.environmentName
-   
-  }
   properties: any({
     retentionInDays: 30
     features: {
@@ -22,19 +27,14 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
 
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: sharedResourceGroupResources.appInsightsName
+  name: appInsightsName
   location: location
-  kind: 'string'
-  tags: {
-    displayName: 'AppInsight'
-    Environment: sharedResourceGroupResources.environmentName
-   
-  }
+  kind: 'web'
   properties: {
     Application_Type: 'web'
     WorkspaceResourceId: logAnalyticsWorkspace.id
   }
 }
 
+// Outputs
 output appInsightsConnectionString string = appInsights.properties.ConnectionString
-

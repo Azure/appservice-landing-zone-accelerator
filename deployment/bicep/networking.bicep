@@ -1,49 +1,45 @@
 // Parameters
-@description('A short name for the workload being deployed')
-param workloadName string
+@description('Azure location to which the resources are to be deployed')
+param location string
 
-@description('The environment for which the deployment is being executed')
-@allowed([
-  'dev'
-  'uat'
-  'prod'
-  'dr'
-])
-param environment string
+@description('Standardized suffix text to be added to resource names')
+param resourceSuffix string
 
+@description('Indicator as to whether the CI/CD agent subnet should be created or not')
+param createCICDAgentSubnet bool = true
+
+@description('CIDR prefix to use for Hub VNet')
 param hubVNetNameAddressPrefix string = '10.0.0.0/16'
+
+@description('CIDR prefix to use for Spoke VNet')
 param spokeVNetNameAddressPrefix string = '10.1.0.0/16'
 
+@description('CIDR prefix to use for Bastion VNet')
 param bastionAddressPrefix string = '10.0.1.0/24'
-param devOpsNameAddressPrefix string = '10.0.2.0/24'
+
+@description('CIDR prefix to use CI/CD Agent VNet')
+param CICDAgentNameAddressPrefix string = '10.0.2.0/24'
+
+@description('CIDR prefix to use for Jumpbox VNet')
 param jumpBoxAddressPrefix string = '10.0.3.0/24'
 
+@description('CIDR prefix to use for ASE')
 param aseAddressPrefix string = '10.1.1.0/24'
 
 // Variables
-var owner = 'ASE Const Set'
-var location = resourceGroup().location
-
-var bastionHostName = 'snet-basthost-${workloadName}-${environment}-${location}'
+var bastionHostName = 'snet-basthost-${resourceSuffix}'
 var bastionHostPip = '${bastionHostName}-pip'
-var hubVNetName = 'vnet-hub-${workloadName}-${environment}-${location}'
-var spokeVNetName = 'vnet-spoke-${workloadName}-${environment}-${location}-001'
-
+var hubVNetName = 'vnet-hub-${resourceSuffix}'
+var spokeVNetName = 'vnet-spoke-${resourceSuffix}'
 var bastionSubnetName = 'AzureBastionSubnet'
-var devOpsSubnetName = 'snet-devops-${workloadName}-${environment}-${location}'
-var jumpBoxSubnetName = 'snet-jbox-${workloadName}-${environment}-${location}-001'
-
-var aseSubnetName = 'snet-ase-${workloadName}-${environment}-${location}-001'
-
+var CICDAgentSubnetName = 'snet-cicd-${resourceSuffix}'
+var jumpBoxSubnetName = 'snet-jbox-${resourceSuffix}'
+var aseSubnetName = 'snet-ase-${resourceSuffix}'
 
 // Resources - VNet - SubNets
 resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: hubVNetName
   location: location
-  tags: {
-    Owner: owner
-    // CostCenter: costCenter
-  }
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -60,12 +56,6 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
         }
       }
       {
-        name: devOpsSubnetName
-        properties: {
-          addressPrefix: devOpsNameAddressPrefix
-        }
-      }
-      {
         name: jumpBoxSubnetName
         properties: {
           addressPrefix: jumpBoxAddressPrefix
@@ -75,15 +65,21 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-
+// optionally create CICD Agent subnet
+resource CICDAgentSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (createCICDAgentSubnet) {
+  name: CICDAgentSubnetName
+   parent: vnetHub
+   properties: {
+     addressPrefix: CICDAgentNameAddressPrefix
+   }
+   dependsOn:[
+    vnetHub
+   ]
+}
 
 resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: spokeVNetName
   location: resourceGroup().location
-  tags: {
-    Owner: owner
-    // CostCenter: costCenter
-  }
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -111,17 +107,6 @@ resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-// resource aseSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
-//   name: aseSubnetName
-//    parent: vnetSpoke
-//    properties: {
-//      addressPrefix: aseAddressPrefix
-//    }
-//    dependsOn:[
-//     vnetSpoke
-//    ]
-// }
-
 // Peering
 resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
   name: '${vnetHub.name}/${vnetHub.name}-${vnetSpoke.name}'
@@ -137,6 +122,7 @@ resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2
   dependsOn:[
     vnetHub
     vnetSpoke
+    CICDAgentSubnet
    ]
 }
 
@@ -154,6 +140,7 @@ resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings
   dependsOn:[
     vnetHub
     vnetSpoke
+    CICDAgentSubnet
    ]
 }
 
@@ -195,18 +182,13 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2020-06-01' = {
 // Output section
 output hubVNetName string = hubVNetName
 output spokeVNetName string = spokeVNetName
-
 output hubVNetId string = vnetHub.id
 output spokeVNetId string = vnetSpoke.id
-
-
-
 output bastionSubnetName string = bastionSubnetName
-output devOpsSubnetName string = devOpsSubnetName
+output CICDAgentSubnetName string = (createCICDAgentSubnet ? CICDAgentSubnetName : '')
 output jumpBoxSubnetName string = jumpBoxSubnetName
 output aseSubnetName string = aseSubnetName
-
-output bastionSubnetid string = '${vnetHub.id}/subnets/${bastionSubnetName}'
-output devOpsSubnetid string = '${vnetHub.id}/subnets/${devOpsSubnetName}'
-output jumpBoxSubnetid string = '${vnetHub.id}/subnets/${jumpBoxSubnetName}'
-output aseSubnetid string = '${vnetSpoke.id}/subnets/${aseSubnetName}'
+output bastionSubnetId string = '${vnetHub.id}/subnets/${bastionSubnetName}'
+output CICDAgentSubnetId string = (createCICDAgentSubnet ? '${vnetHub.id}/subnets/${CICDAgentSubnetName}' : '')
+output jumpBoxSubnetId string = '${vnetHub.id}/subnets/${jumpBoxSubnetName}'
+output aseSubnetId string = '${vnetSpoke.id}/subnets/${aseSubnetName}'
