@@ -9,7 +9,7 @@
             "value": "ENTERPASSWORD"
         },
         "accountName": {
-            "value": "https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME"
+            "value": "https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none"
         },
         "personalAccessToken": {
             "value": "ENTERPAT"
@@ -20,12 +20,8 @@
         "environment" :{ 
             "value": "dev"
         },
-        "orgtype": {
-            "value": "azuredevops OR github"
-        }
-            ,
-        "aseLocation": {
-            "value": "West Europe"
+        "CICDAgentType": {
+            "value": "azuredevops OR github OR none"
         }
 
     }
