@@ -65,43 +65,6 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2020-07-01' = {
   }
 }
 
-<<<<<<< HEAD
-// resource bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-07-01' = {
-//   name: bastionSubnetName
-//    parent: vnetHub
-//    properties: {
-//      addressPrefix: bastionAddressPrefix
-//    }
-//    dependsOn:[
-//      vnetHub
-//     ]
-// }
-// resource devOpsSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-07-01' = {
-//   name: devOpsSubnetName
-//    parent: vnetHub
-//    properties: {
-//      addressPrefix: devOpsNameAddressPrefix
-//    }
-//    dependsOn:[
-//     vnetHub
-//     bastionSubnet
-//    ]
-// }
-// resource jumpBoxSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-07-01' = {
-//   name: jumpBoxSubnetName
-//    parent: vnetHub
-//    properties: {
-//      addressPrefix: jumpBoxAddressPrefix
-//    }
-//    dependsOn:[
-//     vnetHub
-//     bastionSubnet
-//     devOpsSubnet
-//    ]
-// }
-
-resource vnetSpoke 'Microsoft.Network/virtualNetworks@2020-07-01' = {
-=======
 // optionally create CICD Agent subnet
 resource CICDAgentSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (createCICDAgentSubnet) {
   name: CICDAgentSubnetName
@@ -115,7 +78,6 @@ resource CICDAgentSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' 
 }
 
 resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
->>>>>>> origin/main
   name: spokeVNetName
   location: resourceGroup().location
   properties: {
@@ -145,20 +107,6 @@ resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-<<<<<<< HEAD
-// resource aseSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-07-01' = {
-//   name: aseSubnetName
-//    parent: vnetSpoke
-//    properties: {
-//      addressPrefix: aseAddressPrefix
-//    }
-//    dependsOn:[
-//     vnetSpoke
-//    ]
-// }
-
-=======
->>>>>>> origin/main
 // Peering
 resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-07-01' = {
   name: '${vnetHub.name}/${vnetHub.name}-${vnetSpoke.name}'
