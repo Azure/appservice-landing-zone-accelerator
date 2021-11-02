@@ -125,7 +125,7 @@ resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
       attributes: {
         enabled: true
       }
-      value: vmdevopsPassword
+      value: vmPassword
     }
   }
 }
