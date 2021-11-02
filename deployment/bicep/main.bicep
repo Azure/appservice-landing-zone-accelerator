@@ -52,14 +52,7 @@ resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: location
 }
 
-<<<<<<< HEAD
-
-
-
-resource sharedRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-=======
 resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
->>>>>>> origin/main
   name: sharedResourceGroupName
   location: location
 }
