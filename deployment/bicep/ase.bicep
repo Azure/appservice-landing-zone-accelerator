@@ -17,6 +17,9 @@ param aseSubnetName string
 @description('The full id string identifying the target subnet for the ASE')
 param aseSubnetId string
 
+@description('The full id string identifying the target vnet for the ASE')
+param vnetId string
+
 @description('The number of workers to be deployed in the worker pool')
 param numberOfWorkers int = 1
 
@@ -34,6 +37,7 @@ param resourceSuffix string
 // Variables
 var aseName = take('ase-${resourceSuffix}', 37) // NOTE : ASE name cannot be more than 37 characters
 var appServicePlanName = 'asp-${resourceSuffix}'
+var privateDnsZoneName = '${aseName}.appserviceenvironment.net'
 
 // Resources
 resource ase 'Microsoft.Web/hostingEnvironments@2021-01-15' = {
@@ -63,6 +67,64 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
     tier: 'IsolatedV2'
     size: 'I${workerPool}V2'
     capacity: numberOfWorkers 
+  }
+}
+
+resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+  name: privateDnsZoneName
+  properties: {}
+  dependsOn: [
+    ase
+  ]
+}
+
+resource privateDnsZoneName_vnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+  parent: privateDnsZone
+  name: 'vnetLink'
+  properties: {
+    virtualNetwork: {
+      id: vnetId
+    }
+    registrationEnabled: false
+  }
+}
+
+resource Microsoft_Network_privateDnsZones_A_privateDnsZoneName 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
+  parent: privateDnsZone
+  name: '*'
+  properties: {
+    ttl: 3600
+    aRecords: [
+      {
+        ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+      }
+    ]
+  }
+}
+
+resource privateDnsZoneName_scm 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
+  parent: privateDnsZone
+  name: '*.scm'
+  properties: {
+    ttl: 3600
+    aRecords: [
+      {
+        ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+      }
+    ]
+  }
+}
+
+resource privateDnsZoneName_Amp 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
+  parent: privateDnsZone
+  name: '@'
+  properties: {
+    ttl: 3600
+    aRecords: [
+      {
+        ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+      }
+    ]
   }
 }
 

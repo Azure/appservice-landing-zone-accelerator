@@ -102,6 +102,7 @@ module ase 'ase.bicep' = {
   scope: resourceGroup(aseResourceGroup.name)
   name: 'aseresources'
   params: {
+    vnetId: networking.outputs.spokeVNetId
     aseSubnetId: networking.outputs.aseSubnetId
     aseSubnetName: networking.outputs.aseSubnetName
     location: location
