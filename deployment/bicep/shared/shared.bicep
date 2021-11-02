@@ -1,45 +1,75 @@
 targetScope='resourceGroup'
+// Parameters
+@description('Azure location to which the resources are to be deployed')
 param location string
-param sharedResourceGroupResources object
 
+@description('The full id string identifying the target subnet for the jumpbox VM')
 param jumpboxSubnetId string
-param agentSubnetId string
-param vmdevopsUsername string
-param vmdevopsPassword string
-param accountname string
-param orgtype string
 
+@description('The full id string identifying the target subnet for the CI/CD Agent VM')
+param CICDAgentSubnetId string
+
+@description('The user name to be used as the Administrator for all VMs created by this deployment')
+param vmUsername string
+
+@description('The password for the Administrator user for all VMs created by this deployment')
+param vmPassword string
+
+@description('The CI/CD platform to be used, and for which an agent will be configured for the ASE deployment. Specify \'none\' if no agent needed')
+@allowed([
+  'github'
+  'azuredevops'
+  'none'
+])
+param CICDAgentType string
+
+@description('The Azure DevOps or GitHub account name to be used when configuring the CI/CD agent, in the format https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none')
+param accountName string
+
+@description('The Azure DevOps or GitHub personal access token (PAT) used to setup the CI/CD agent')
+@secure()
 param personalAccessToken string
+
+@description('The name of the shared resource group')
 param resourceGroupName string
 
+@description('Standardized suffix text to be added to resource names')
+param resourceSuffix string
 
-//param environment string
-//param namePrefix string = 'not set'
+@description('The environment for which the deployment is being executed')
+@allowed([
+  'dev'
+  'uat'
+  'prod'
+  'dr'
+])
+param environment string
 
+// Variables
+var keyVaultName = take('kv-${resourceSuffix}', 24) // Must be between 3-24 alphanumeric characters 
 
+// Resources
 module appInsights './azmon.bicep' = {
   name: 'azmon'
   scope: resourceGroup(resourceGroupName)
   params: {
     location: location
-    sharedResourceGroupResources : sharedResourceGroupResources
-
+    resourceSuffix: resourceSuffix
   }
 }
-output appInsightsConnectionString string = appInsights.outputs.appInsightsConnectionString
 
-
-module vm_devopswinvm './createvmwindows.bicep' = if (orgtype!='none') {
+module vm_devopswinvm './createvmwindows.bicep' = if (CICDAgentType!='none') {
   name: 'devopsvm'
   scope: resourceGroup(resourceGroupName)
   params: {
-    subnetId: agentSubnetId
-    username: vmdevopsUsername
-    password: vmdevopsPassword
-    vmName: '${orgtype}-${sharedResourceGroupResources.vmSuffix}'
-    accountname: accountname
+    location: location
+    subnetId: CICDAgentSubnetId
+    username: vmUsername
+    password: vmPassword
+    vmName: '${CICDAgentType}-${environment}'
+    accountName: accountName
     personalAccessToken: personalAccessToken
-    orgtype: orgtype
+    CICDAgentType: CICDAgentType
     deployAgent: true
   }
 }
@@ -48,16 +78,17 @@ module vm_jumpboxwinvm './createvmwindows.bicep' = {
   name: 'jumpboxwinvm'
   scope: resourceGroup(resourceGroupName)
   params: {
+    location: location
     subnetId: jumpboxSubnetId
-    username: vmdevopsUsername
-    password: vmdevopsPassword
-    orgtype: orgtype
-    vmName: 'jumpbox-${sharedResourceGroupResources.vmSuffix}'
+    username: vmUsername
+    password: vmPassword
+    CICDAgentType: CICDAgentType
+    vmName: 'jumpbox-${environment}'
   }
 }
 
 resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
-  name: sharedResourceGroupResources.keyVaultName
+  name: keyVaultName
   location: location
   properties: {
     tenantId: subscription().tenantId
@@ -99,5 +130,7 @@ resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   }
 }
 
-output devopsAgentvmName string = vm_devopswinvm.name
+// Outputs
+output appInsightsConnectionString string = appInsights.outputs.appInsightsConnectionString
+output CICDAgentVmName string = vm_devopswinvm.name
 output jumpBoxvmName string = vm_jumpboxwinvm.name

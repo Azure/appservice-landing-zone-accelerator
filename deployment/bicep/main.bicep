@@ -1,6 +1,9 @@
 targetScope='subscription'
+
+// Parameters
+@description('A short name for the workload being deployed')
 param workloadName string
-var location = deployment().location
+
 @description('The environment for which the deployment is being executed')
 @allowed([
   'dev'
@@ -10,95 +13,94 @@ var location = deployment().location
 ])
 param environment string
 
-// parameters for azure devops agent 
+@description('The user name to be used as the Administrator for all VMs created by this deployment')
 param vmUsername string
-param vmPassword string
-param accountName string
-param personalAccessToken string
 
-@description('The environment for which the deployment is being executed')
+@description('The password for the Administrator user for all VMs created by this deployment')
+param vmPassword string
+
+@description('The CI/CD platform to be used, and for which an agent will be configured for the ASE deployment. Specify \'none\' if no agent needed')
 @allowed([
   'github'
   'azuredevops'
   'none'
 ])
-param orgtype string
-// temporary need to specify the aseLocation as "West Europe" and not as "westeurope"
-param aseLocation string
+param CICDAgentType string
+
+@description('The Azure DevOps or GitHub account name to be used when configuring the CI/CD agent, in the format https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none')
+param accountName string
+
+@description('The Azure DevOps or GitHub personal access token (PAT) used to setup the CI/CD agent')
+@secure()
+param personalAccessToken string
 
 // Variables
+var location = deployment().location
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
-var vmSuffix=environment
-// RG Names Declaration
 var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
 var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
-// Create resources name using these objects and pass it as a params in module
-var sharedResourceGroupResources = {
-  'appInsightsName':'appi-${resourceSuffix}'
-  'logAnalyticsWorkspaceName': 'log-${resourceSuffix}'
-  'environmentName': environment
-  'resourceSuffix' : resourceSuffix
-  'vmSuffix' : vmSuffix
-  'keyVaultName':'kv-${workloadName}-${environment}' // Must be between 3-24 alphanumeric characters 
-}
 
-
-
-resource networkingRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+// Create resource groups
+resource networkingResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: networkingResourceGroupName
   location: location
 }
-
-
-
 
 resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: aseResourceGroupName
   location: location
 }
 
+<<<<<<< HEAD
 
 
 
 resource sharedRG 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+=======
+resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+>>>>>>> origin/main
   name: sharedResourceGroupName
   location: location
 }
 
-
-
+// Create networking resources
 module networking 'networking.bicep' = {
   name: 'networkingresources'
-  scope: resourceGroup(networkingRG.name)
+  scope: resourceGroup(networkingResourceGroup.name)
   params: {
-    workloadName: workloadName
-    environment: environment
+    location: location
+    resourceSuffix: resourceSuffix
+    createCICDAgentSubnet: ((CICDAgentType == 'none') ? false : true)
   }
 }
 
-var jumpboxSubnetId= networking.outputs.jumpBoxSubnetid
-var agentSubnetId=networking.outputs.devOpsSubnetid
+// Get networking resource outputs
+var jumpboxSubnetId = networking.outputs.jumpBoxSubnetId
+var CICDAgentSubnetId = networking.outputs.CICDAgentSubnetId
 
+// Create shared resources
 module shared './shared/shared.bicep' = {  dependsOn: [
     networking
   ]
   name: 'sharedresources'
-  scope: resourceGroup(sharedRG.name)
+  scope: resourceGroup(sharedResourceGroup.name)
   params: {
-    location: location
-    sharedResourceGroupResources : sharedResourceGroupResources
+    accountName: accountName
+    CICDAgentSubnetId: CICDAgentSubnetId
+    CICDAgentType: CICDAgentType
+    environment: environment
     jumpboxSubnetId: jumpboxSubnetId
-    agentSubnetId: agentSubnetId
-    vmdevopsPassword: vmPassword
-    vmdevopsUsername: vmUsername
+    location: location
     personalAccessToken: personalAccessToken
-    accountname: accountName
-    orgtype: orgtype
-    resourceGroupName: sharedRG.name
+    resourceGroupName: sharedResourceGroup.name
+    resourceSuffix: resourceSuffix
+    vmPassword: vmPassword
+    vmUsername: vmUsername
   }
 }
 
+// Create ASE resources
 module ase 'ase.bicep' = {
   dependsOn: [
     networking
@@ -107,11 +109,9 @@ module ase 'ase.bicep' = {
   scope: resourceGroup(aseResourceGroup.name)
   name: 'aseresources'
   params: {
-    location: location
-    aseLocation: aseLocation
-    workloadName: workloadName
-    environment: environment
+    aseSubnetId: networking.outputs.aseSubnetId
     aseSubnetName: networking.outputs.aseSubnetName
-    aseSubnetId: networking.outputs.aseSubnetid
+    location: location
+    resourceSuffix: resourceSuffix
   }
 }
