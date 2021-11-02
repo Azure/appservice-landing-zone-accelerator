@@ -1,21 +1,6 @@
 // Parameters
-@description('A short name for the workload being deployed')
-param workloadName string
-
-@description('The environment for which the deployment is being executed')
-@allowed([
-  'dev'
-  'uat'
-  'prod'
-  'dr'
-])
-param environment string
-
 @description('Azure location to which the resources are to be deployed')
 param location string
-
-@description('Azure location to which the ASE is to be deployed. Seperated out for now while there is a bug in specifying the ASE location. "West Europe" works, while "westeurope" does not')
-param aseLocation string
 
 @description('The mode for the internal load balancing configuration to be applied to the ASE load balancer')
 @allowed([
@@ -26,9 +11,10 @@ param aseLocation string
 ])
 param internalLoadBalancingMode string = 'Web, Publishing'
 
-@description('Requirements of ASE Subnet')
+@description('The name of the subnet to be used for ASE')
 param aseSubnetName string
-@description('Requirements of ASE Subnet')
+
+@description('The full id string identifying the target subnet for the ASE')
 param aseSubnetId string
 
 @description('The number of workers to be deployed in the worker pool')
@@ -42,19 +28,21 @@ param numberOfWorkers int = 1
 ])
 param workerPool string = '1'
 
+@description('String to append to resources as part of naming standards')
+param resourceSuffix string
+
 // Variables
-var resourceSuffix = '${workloadName}-${environment}-${location}-001'
-var aseName = 'ase-${resourceSuffix}' // NOTE : ASE name cannot be more than 37 characters
+var aseName = take('ase-${resourceSuffix}', 37) // NOTE : ASE name cannot be more than 37 characters
 var appServicePlanName = 'asp-${resourceSuffix}'
 
 // Resources
-resource ase 'Microsoft.Web/hostingEnvironments@2020-12-01' = {
+resource ase 'Microsoft.Web/hostingEnvironments@2021-01-15' = {
   name: aseName
-  location: aseLocation
+  location: location
   kind: 'ASEV3'
   properties: {
     internalLoadBalancingMode: internalLoadBalancingMode
-    // zoneRedundant: true -- not currently supported in bicep
+    zoneRedundant: true // not currently supported in bicep
     virtualNetwork: {
       id: aseSubnetId
       subnet: aseSubnetName
@@ -62,7 +50,7 @@ resource ase 'Microsoft.Web/hostingEnvironments@2020-12-01' = {
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
+resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: appServicePlanName
   location: location
   properties: {
