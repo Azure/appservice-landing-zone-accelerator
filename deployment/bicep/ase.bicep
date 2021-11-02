@@ -42,7 +42,7 @@ resource ase 'Microsoft.Web/hostingEnvironments@2021-01-15' = {
   kind: 'ASEV3'
   properties: {
     internalLoadBalancingMode: internalLoadBalancingMode
-    zoneRedundant: true // not currently supported in bicep
+    // zoneRedundant: true // not currently supported in bicep
     virtualNetwork: {
       id: aseSubnetId
       subnet: aseSubnetName
