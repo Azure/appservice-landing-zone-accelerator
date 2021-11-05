@@ -72,6 +72,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDnsZoneName
+  location: location
   properties: {}
   dependsOn: [
     ase
