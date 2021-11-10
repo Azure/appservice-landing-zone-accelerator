@@ -45,7 +45,16 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+          
+      - name: RunPreflightValidation
+        uses: Azure/cli@v1
+        with:
+          azureSubscription: $(ServiceConnectionName)
+          inlineScript: |
+            az deployment group validate \
+              --location ${{ fromJson(env.config).AZURE_LOCATION }} \
+              --template-file ./deployment/bicep/main.bicep
+              
         # Deploy Bicep file, need to point parameters to the main.parameters.json location
       - name: deploy
         uses: azure/arm-deploy@v1
