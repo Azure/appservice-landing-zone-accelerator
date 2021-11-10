@@ -46,7 +46,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           
-      - name: RunPreflightValidation
+      - name: Run Preflight Validation
         uses: Azure/cli@v1
         with:
           azureSubscription: ${{ secrets.AZURE_SUBSCRIPTION }}
