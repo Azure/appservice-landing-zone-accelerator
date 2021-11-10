@@ -49,7 +49,7 @@ jobs:
       - name: RunPreflightValidation
         uses: Azure/cli@v1
         with:
-          azureSubscription: $(ServiceConnectionName)
+          azureSubscription: ${{ secrets.AZURE_SUBSCRIPTION }}
           inlineScript: |
             az deployment group validate \
               --location ${{ fromJson(env.config).AZURE_LOCATION }} \
