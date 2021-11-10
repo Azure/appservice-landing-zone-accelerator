@@ -50,7 +50,6 @@ jobs:
       - name: Run Preflight Validation
         uses: Azure/cli@v1
         with:
-          azureSubscription: ${{ secrets.AZURE_SUBSCRIPTION }}
           inlineScript: |
             az deployment group validate \
               --location ${{ fromJson(env.config).AZURE_LOCATION }} \
