@@ -50,7 +50,7 @@ jobs:
         run: |
             az deployment sub validate \
               --location ${{ fromJson(env.config).AZURE_LOCATION }} \
-              --template-file ./deployment/bicep/main.bicep
+              --template-file main.bicep
         working-directory: ./deployment/bicep
               
         # Deploy Bicep file, need to point parameters to the main.parameters.json location
