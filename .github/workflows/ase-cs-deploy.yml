@@ -6,7 +6,6 @@ on:
   push:
     branches:
     - workflow
-    - cenk/wfaddvalid
   pull_request:
  
 jobs:
@@ -48,12 +47,11 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           
       - name: Run Preflight Validation
-        uses: actions/github-script@v5.0.0
-        with:
-          script: |
+        run: |
             az deployment group validate \
               --location ${{ fromJson(env.config).AZURE_LOCATION }} \
               --template-file ./deployment/bicep/main.bicep
+        working-directory: ./deployment/bicep
               
         # Deploy Bicep file, need to point parameters to the main.parameters.json location
       - name: deploy
