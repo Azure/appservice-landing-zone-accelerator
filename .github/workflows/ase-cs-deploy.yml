@@ -48,7 +48,7 @@ jobs:
           
       - name: Run Preflight Validation
         run: |
-            az deployment group validate \
+            az deployment sub validate \
               --location ${{ fromJson(env.config).AZURE_LOCATION }} \
               --template-file ./deployment/bicep/main.bicep
         working-directory: ./deployment/bicep
