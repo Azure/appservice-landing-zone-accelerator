@@ -72,6 +72,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDnsZoneName
+  location: 'global'
   properties: {}
   dependsOn: [
     ase
@@ -81,6 +82,7 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 resource privateDnsZoneName_vnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   parent: privateDnsZone
   name: 'vnetLink'
+  location: 'global'
   properties: {
     virtualNetwork: {
       id: vnetId
