@@ -1,7 +1,7 @@
 AZURE_LOCATION: 'westus2'
 RESOURCE_NAME_PREFIX: 'asev3-ck4'
 ENVIRONMENT_TAG: 'dev'
-DEPLOYMENT_NAME: 'test92-wus2'
+DEPLOYMENT_NAME: 'test93-wus2'
 VM_USERNAME: 'agent'
 ACCOUNT_NAME: 'https://dev.azure.com/cykreng/'
 CICD_AGENT_TYPE: 'azuredevops'
