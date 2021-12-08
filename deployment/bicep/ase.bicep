@@ -40,13 +40,13 @@ var appServicePlanName = 'asp-${resourceSuffix}'
 var privateDnsZoneName = '${aseName}.appserviceenvironment.net'
 
 // Resources
-resource ase 'Microsoft.Web/hostingEnvironments@2021-01-15' = {
+resource ase 'Microsoft.Web/hostingEnvironments@2021-02-01' = {
   name: aseName
   location: location
   kind: 'ASEV3'
   properties: {
     internalLoadBalancingMode: internalLoadBalancingMode
-    // zoneRedundant: true // not currently supported in bicep
+    zoneRedundant: true
     virtualNetwork: {
       id: aseSubnetId
       subnet: aseSubnetName
