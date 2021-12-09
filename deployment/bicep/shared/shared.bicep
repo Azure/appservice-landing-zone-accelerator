@@ -97,6 +97,7 @@ resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
       family: 'A'
       name: 'standard'
     }    
+    enabledForTemplateDeployment: true // ARM is permitted to retrieve secrets from the key vault. 
     accessPolicies: [
       // {
       //   tenantId: 'string'
@@ -118,6 +119,15 @@ resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
       //   }
       // }
     ]
+  }
+  resource vmPasswordSecret 'secrets@2019-09-01' = {
+    name: 'vmPassword'
+    properties: {
+      attributes: {
+        enabled: true
+      }
+      value: vmPassword
+    }
   }
 }
 

@@ -21,7 +21,7 @@ param aseSubnetId string
 param vnetId string
 
 @description('The number of workers to be deployed in the worker pool')
-param numberOfWorkers int = 1
+param numberOfWorkers int = 3
 
 @description('Specify the worker pool size SKU (1, 2, or 3) to be created')
 @allowed([
@@ -40,13 +40,13 @@ var appServicePlanName = 'asp-${resourceSuffix}'
 var privateDnsZoneName = '${aseName}.appserviceenvironment.net'
 
 // Resources
-resource ase 'Microsoft.Web/hostingEnvironments@2021-01-15' = {
+resource ase 'Microsoft.Web/hostingEnvironments@2021-02-01' = {
   name: aseName
   location: location
   kind: 'ASEV3'
   properties: {
     internalLoadBalancingMode: internalLoadBalancingMode
-    zoneRedundant: true // not currently supported in bicep
+    zoneRedundant: true
     virtualNetwork: {
       id: aseSubnetId
       subnet: aseSubnetName
@@ -72,7 +72,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDnsZoneName
-  location: location
+  location: 'global'
   properties: {}
   dependsOn: [
     ase
@@ -82,6 +82,7 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 resource privateDnsZoneName_vnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   parent: privateDnsZone
   name: 'vnetLink'
+  location: 'global'
   properties: {
     virtualNetwork: {
       id: vnetId
