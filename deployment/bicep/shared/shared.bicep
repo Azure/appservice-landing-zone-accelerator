@@ -45,8 +45,9 @@ param resourceSuffix string
 ])
 param environment string
 
-// Variables
-var keyVaultName = take('kv-${resourceSuffix}', 24) // Must be between 3-24 alphanumeric characters 
+// Variables - ensure key vault name does not end with '-'
+var tempKeyVaultName = take('kv-${resourceSuffix}', 24) // Must be between 3-24 alphanumeric characters 
+var keyVaultName = endsWith(tempKeyVaultName, '-') ? substring(tempKeyVaultName, 0, length(tempKeyVaultName) - 1) : tempKeyVaultName
 
 // Resources
 module appInsights './azmon.bicep' = {
