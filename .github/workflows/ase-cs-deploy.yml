@@ -2,10 +2,11 @@ name: 'AzureBicepDeploy'
  
 on:
   workflow_dispatch:
-
+  
   push:
     branches:
-    - workflow
+    - main
+
   pull_request:
  
 jobs:
