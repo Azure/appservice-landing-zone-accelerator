@@ -61,21 +61,27 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
           addressPrefix: jumpBoxAddressPrefix
         }
       }
+      {
+        name: CICDAgentSubnetName
+        properties: {
+          addressPrefix: CICDAgentNameAddressPrefix
+        }
+      }
     ]
   }
 }
 
-// optionally create CICD Agent subnet
-resource CICDAgentSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (createCICDAgentSubnet) {
-  name: CICDAgentSubnetName
-   parent: vnetHub
-   properties: {
-     addressPrefix: CICDAgentNameAddressPrefix
-   }
-   dependsOn:[
-    vnetHub
-   ]
-}
+// // optionally create CICD Agent subnet
+// resource CICDAgentSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (createCICDAgentSubnet) {
+//   name: CICDAgentSubnetName
+//    parent: vnetHub
+//    properties: {
+//      addressPrefix: CICDAgentNameAddressPrefix
+//    }
+//    dependsOn:[
+//     vnetHub
+//    ]
+// }
 
 resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: spokeVNetName
@@ -122,7 +128,6 @@ resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2
   dependsOn:[
     vnetHub
     vnetSpoke
-    CICDAgentSubnet
    ]
 }
 
@@ -140,7 +145,6 @@ resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings
   dependsOn:[
     vnetHub
     vnetSpoke
-    CICDAgentSubnet
    ]
 }
 
