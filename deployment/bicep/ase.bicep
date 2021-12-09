@@ -21,7 +21,7 @@ param aseSubnetId string
 param vnetId string
 
 @description('The number of workers to be deployed in the worker pool')
-param numberOfWorkers int = 1
+param numberOfWorkers int = 3
 
 @description('Specify the worker pool size SKU (1, 2, or 3) to be created')
 @allowed([
