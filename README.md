@@ -1,6 +1,6 @@
 # App Service Landing Zone Accelerator
 
-This is a repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) that contains both enteprrise architecture (proven recommendations and considerations across both multi-tenant and App Service Enviroonment use cases) and reference implementaion (deployable artifacts for a common implementations). 
+This is a repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) that contains both enteprrise architecture (proven recommendations and considerations across both multi-tenant and App Service Environment use cases) and reference implementaion (deployable artifacts for a common implementations). 
 
 ## Enterprise-Scale Architecture
 The enterprise architecture is broken down into six different design areas, where you can find the links to each at:
