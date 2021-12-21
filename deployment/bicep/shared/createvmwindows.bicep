@@ -112,7 +112,9 @@ resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-0
     settings: {
       fileUris: [
         artifactsLocation
-      ]   
+      ]
+    }
+    protectedSettings: {
       commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./agentsetup.ps1 -url ${accountName} -pat ${personalAccessToken} -agent ${AgentName} -pool ${poolName} -agenttype ${CICDAgentType} '
     }
   }
