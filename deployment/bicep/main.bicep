@@ -73,7 +73,8 @@ var jumpboxSubnetId = networking.outputs.jumpBoxSubnetId
 var CICDAgentSubnetId = networking.outputs.CICDAgentSubnetId
 
 // Create shared resources
-module shared './shared/shared.bicep' = {  dependsOn: [
+module shared './shared/shared.bicep' = {  
+  dependsOn: [
     networking
   ]
   name: 'sharedresources'
