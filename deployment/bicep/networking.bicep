@@ -125,10 +125,6 @@ resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2
       id: vnetSpoke.id
     }
   }
-  dependsOn:[
-    vnetHub
-    vnetSpoke
-   ]
 }
 
 resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
@@ -142,10 +138,6 @@ resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings
       id: vnetHub.id
     }
   }
-  dependsOn:[
-    vnetHub
-    vnetSpoke
-   ]
 }
 
 //bastionHost
@@ -179,7 +171,6 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2020-06-01' = {
   }
   dependsOn:[
      vnetSpoke
-     bastionHostPippublicIp
   ]
 }
 
