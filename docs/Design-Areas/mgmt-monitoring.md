@@ -18,7 +18,7 @@
 - Use the [built-in application monitoring](https://docs.microsoft.com/en-us/azure/azure-monitor/app/azure-web-apps) 
 - Use [AutoHeal](https://docs.microsoft.com/en-us/azure/azure-monitor/app/azure-web-apps) (proactive or custom) to gather helpful data for performance or stability issue
 - Configure centralized log management solution and integrate your app services to send logs there
-- Enable [diagnostic logging](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs)
+- Enable [diagnostic logging](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs). But take care to performance/load test any such logging settings in a pre-production environment before deploying to production. For example, Failed Request Tracing has been known to induce a negative performance hit under various circumstances. Therefore it's generally recommended to only enable this in production when troubleshooting a specific issue where this logging may help.
 - Ensure that every defined alert also has a defined response.
 - Use deployment slots for resilient code deployments and to avoid unnecessary Worker restarts (some triggers include content deployment, app setting changes, VNet integration configuration changes, etc.)
 - Use [run from package](https://docs.microsoft.com/azure/app-service/deploy-run-package) to avoid deployment conflicts.
