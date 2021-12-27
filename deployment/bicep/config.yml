@@ -1,5 +1,5 @@
 AZURE_LOCATION: 'westus2'
-RESOURCE_NAME_PREFIX: 'demo-prefix'
+RESOURCE_NAME_PREFIX: 'ase-demo'
 ENVIRONMENT_TAG: 'dev'
 DEPLOYMENT_NAME: 'demo'
 VM_USERNAME: 'agent'
