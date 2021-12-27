@@ -1,8 +1,6 @@
 name: 'AzureBicepDeploy'
  
 on:
-  workflow_dispatch:
-  
   push:
     branches:
     - main
@@ -29,6 +27,13 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@main
 
+      - name: Variable substitution
+        uses: microsoft/variable-substitution@v1
+        with: 
+          files:  ./deployment/bicep/config.yml
+        env:
+          ACCOUNT_NAME: ${{ secrets.AZURE_SUBSCRIPTION }}
+
       - name: Install yq to parse yaml file
         run: |
           sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.5.0/yq_linux_amd64
@@ -41,7 +46,6 @@ jobs:
       - name: Write deployment information to log
         run: |
           echo "Deploying to ${{ fromJson(env.config).AZURE_LOCATION }} with name prefix ${{ fromJson(env.config).ENVIRONMENT_TAG }}"
-
         # Log into Azure
       - uses: azure/login@v1
         with:
