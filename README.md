@@ -14,7 +14,7 @@ The enterprise architecture is broken down into six different design areas, wher
 | Application Automation and DevOps|[Design Considerations](/docs/Design-Areas/automation-devops.md#design-considerations)|[Design Recommendations](/docs/Design-Areas/automation-devops.md#design-recommendations)|
 
 ## Enterprise-Scale Reference Implementation
-In this repo you will find reference implementations with supporting Infrastructe as Code templates. More reference implementations will be added as they become available. [User guide](/docs/user-guide.md) goes into details on how to deploy each reference implementations to your subscription. 
+In this repo you will find reference implementations with supporting Infrastructe as Code templates. More reference implementations will be added as they become available. [User guide](/docs/README.md) goes into details on how to deploy each reference implementations to your subscription. 
 
 ---
 
