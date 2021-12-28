@@ -1,4 +1,4 @@
-# User Guide for Referebce Implementation Deployment
+# User Guide for Reference Implementation Deployment
 
 ## Pre-requisite
 1. Active Azure subscription
