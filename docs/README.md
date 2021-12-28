@@ -42,7 +42,7 @@
    - (Optional) `ACTIONS_STEP_DEBUG` (set this to true if you want [additional information](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging) running the GitHub workflows)
 4. Navigate to [config.yml](reference-implementations/LOB-ILB-ASEv3/bicep/config.yml) and modify any of the following vlaues as required:
     
-    Below is the default values in config.yml
+    Below are the default values in config.yml
     
     ```yaml
     AZURE_LOCATION: 'westus2'
