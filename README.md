@@ -29,7 +29,7 @@ Deployed Resources:
 Deployment Details:
 | Deployment Methodology| GitHub Action YAML|
 |--------------|--------------|
-|[Bicep](https://github.com/cykreng/Enterprise-Scale-AppService/tree/main/deployment/bicep) |[ase-cs-deploy.yml](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/.github/workflows/ase-cs-deploy.yml)
+|[Bicep](https://github.com/cykreng/Enterprise-Scale-AppService/tree/main/reference-implementations/LOB-ILB-ASEv3/bicep)|[LOB-ILB-ASEv3-Bicep.yml](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
 | ARM (Coming soon) ||
 | Terraform (Coming soon)||
 ---
