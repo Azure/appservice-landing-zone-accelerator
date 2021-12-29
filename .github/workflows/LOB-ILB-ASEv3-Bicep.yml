@@ -22,8 +22,10 @@ jobs:
         working-directory: ./reference-implementations/LOB-ILB-ASEv3/bicep
 
   build-and-deploy:
-      runs-on: ubuntu-latest
-      steps:
+    name: "Deploy Bicep templates"
+    needs: validate_bicep
+    runs-on: ubuntu-latest
+    steps:
 
         # Checkout code
       - name: Checkout the code
