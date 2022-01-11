@@ -20,7 +20,6 @@
 - Use [App Service Diagnostics](https://docs.microsoft.com/en-us/azure/app-service/overview-diagnostics) to gain a greater understanding of your app service’s behavior in times of instability and/or performance problems.
 - Enable [diagnostic logging](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs) and be aware a storage account may be necessary to store the log files.
 - Configure centralized log management solution and integrate your app services to send logs there
-- For stateless app services, disable ARR Affinity
 - Ensure that every defined alert also has a defined response.
 - Use deployment slots for resilient code deployments and to avoid unnecessary Worker restarts (some triggers include content deployment, app setting changes, VNet integration configuration changes, etc.)
 - Use [run from package](https://docs.microsoft.com/azure/app-service/deploy-run-package) to avoid deployment conflicts.
