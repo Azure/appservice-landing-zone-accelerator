@@ -1,25 +1,26 @@
 # App Service Landing Zone Accelerator
 
-This is a repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) that contains both enteprrise architecture (proven recommendations and considerations across both multi-tenant and App Service Environment use cases) and reference implementaion (deployable artifacts for a common implementations). 
+This is a repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) that contains both enteprrise architecture (proven recommendations and considerations across both multi-tenant and App Service Environment use cases) and reference implementaion (deployable artifacts for a common implementation). 
 
 ## Enterprise-Scale Architecture
 The enterprise architecture is broken down into six different design areas, where you can find the links to each at:
-| Design Area      |
-|--------------|
-| [Identity and Access Management](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/docs/Design-Areas/identity-access-mgmt.md) |
-| [Network Topology and Connectivity ](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/docs/Design-Areas/networking.md)    |
-| [Management and Monitoring](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/docs/Design-Areas/mgmt-monitoring.md)|
-|[Business Continuity and Disaster Recovery](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/docs/Design-Areas/BCDR.md)|
-|[Security, Governance, and Compliance](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/docs/Design-Areas/security-governance-compliance.md)|
-|[Application Automation and DevOps](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/docs/Design-Areas/automation-devops.md)|
+| Design Area|Considerations|Recommendations|
+|:--------------:|:--------------:|:--------------:|
+| Identity and Access Management|[Design Considerations](/docs/Design-Areas/identity-access-mgmt.md#design-considerations)|[Design Recommendations](/docs/Design-Areas/identity-access-mgmt.md#design-recommendations)|
+| Network Topology and Connectivity|[Design Considerations](/docs/Design-Areas/networking.md#design-considerations)|[Design Recommendations](/docs/Design-Areas/networking.md#design-recommendations)|
+| Management and Monitoring|[Design Considerations](/docs/Design-Areas/mgmt-monitoring.md#design-consideration)|[Design Recommendations](/docs/Design-Areas/mgmt-monitoring.md#design-recommendation)|
+| Business Continuity and Disaster Recovery|[Design Considerations](/docs/Design-Areas/BCDR.md#design-considerations)|[Design Recommendations](/docs/Design-Areas/BCDR.md#design-recommendations)|
+| Security, Governance, and Compliance|[Design Considerations](/docs/Design-Areas/security-governance-compliance.md#design-considerations)|[Design Recommendations](/docs/Design-Areas/security-governance-compliance.md#design-recommendations)|
+| Application Automation and DevOps|[Design Considerations](/docs/Design-Areas/automation-devops.md#design-considerations)|[Design Recommendations](/docs/Design-Areas/automation-devops.md#design-recommendations)|
 
 ## Enterprise-Scale Reference Implementation
-In this repo you will also find reference implementations with supporting Infrastructe as Code templates. More reference implementations will be added as they become available. 
+In this repo you will find reference implementations with supporting Infrastructer as Code templates. More reference implementations will be added as they become available. [User guide](/docs/README.md) goes into details on how to deploy each reference implementations to your subscription. 
 
 ---
 
-### Reference Implementation 1: Line of Business application using internal App Service Environment v3
+### [Reference Implementation 1](/reference-implementations/LOB-ILB-ASEv3/bicep): Line of Business application using internal App Service Environment v3
 Architectural Diagram:
+
 ![image](https://user-images.githubusercontent.com/37597107/133897423-4de9c66f-d033-4839-81b2-4e9d8a12253d.png)
 
 Deployed Resources:
@@ -29,7 +30,7 @@ Deployed Resources:
 Deployment Details:
 | Deployment Methodology| GitHub Action YAML|
 |--------------|--------------|
-|[Bicep](https://github.com/cykreng/Enterprise-Scale-AppService/tree/main/reference-implementations/LOB-ILB-ASEv3/bicep)|[LOB-ILB-ASEv3-Bicep.yml](https://github.com/cykreng/Enterprise-Scale-AppService/blob/main/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
+|[Bicep](/reference-implementations/LOB-ILB-ASEv3/bicep)|[LOB-ILB-ASEv3-Bicep.yml](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
 | ARM (Coming soon) ||
 | Terraform (Coming soon)||
 ---
