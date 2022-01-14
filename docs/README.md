@@ -9,7 +9,7 @@
 ## Steps
 1. Clone this repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) to your organization/repository
    ![Clone Repo](/docs/Images/CloneRepo.png)
-2. Setup authentication between Azure and GitHub. Currently there are [two options](https://docs.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Cwindows) to configure this - through OpenID Connect(comming soon) or with a service principal. Only one of the two actions is required.  
+2. Setup authentication between Azure and GitHub. Currently there are [two options](https://docs.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Cwindows) to configure this - through OpenID Connect(coming soon) or with a service principal. Only one of the two actions is required.  
    - Use a service principal secret
         1. Open [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview) in the Azure Portal or [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) locally
         2. Create a new service principal in the Azure portal for your app and assign it **Contributor** role. Replace {subscription-id}. The service principal will be created at the scope of the subscription as multiple resource groups will be created.
