@@ -7,7 +7,7 @@
 ## Design Recommendations
 - If the App Service requires authentication:
     - If access to the entire app service needs to be restricted to authenticated users, disable anonymous access.
-    - Use the [Easy Auth](https://docs.microsoft.com/en-us/azure/app-service/overview-authentication-authorization') capabilities of App Services, instead of writing your own authentication and authorization code.
+    - Use the [Easy Auth](https://docs.microsoft.com/en-us/azure/app-service/overview-authentication-authorization) capabilities of App Services, instead of writing your own authentication and authorization code.
     - Use separate [application registrations](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) for separate [slots](https://docs.microsoft.com/en-us/azure/app-service/deploy-staging-slots) or environments.
     - If the App Service is intended for internal users only, use [client certificate authentication](https://docs.microsoft.com/en-us/azure/app-service/deploy-staging-slots) for increased security.
     - If the App Service is intended for external users, utilize [Azure AD B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/overview) to authenticate to social accounts and Azure AD accounts. 
