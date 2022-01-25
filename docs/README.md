@@ -50,12 +50,12 @@
     ENVIRONMENT_TAG: 'dev'
     DEPLOYMENT_NAME: 'ase-demo-deployment'
     VM_USERNAME: 'agent'
-    ACCOUNT_NAME: 'repalce me in repo secrets'
+    ACCOUNT_NAME: 'replace me in repo secrets'
     CICD_AGENT_TYPE: 'azuredevops'
     ```
 
    - `AZURE_LOCATION` (supported regions for the current subscription can be found with [az account list-locations](https://docs.microsoft.com/en-us/cli/azure/account?view=azure-cli-latest#az_account_list_locations))
-   - `RESOURCE_NAME_PREFIX` (prefix that's added to all reosurces and resource groups that gets created)
+   - `RESOURCE_NAME_PREFIX` (prefix that's added to all reosurces and resource groups that gets created. Prefix must be 12 characters or less and used to create a globaly unique name)
    - `ENVIRONMENT_TAG` (dev, uat, prod, or dr)
    - `DEPLOYMENT_NAME` (used for logging for deployment hisotry)
    - `VM_USERNAME` (user name for VMs created)
