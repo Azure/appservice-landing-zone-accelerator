@@ -1,14 +1,16 @@
 name: 'AzureBicepDeploy'
- 
+
 on:
   workflow_dispatch:
-  
+
   push:
     branches:
     - main
+    paths:
+      - reference-implementations/LOB-ILB-ASEv3/bicep/**
 
   pull_request:
- 
+
 jobs:
   validate_bicep:
     name: "Validate Bicep files"
@@ -33,7 +35,7 @@ jobs:
 
       - name: Variable substitution
         uses: microsoft/variable-substitution@v1
-        with: 
+        with:
           files:  ./reference-implementations/LOB-ILB-ASEv3/bicep/config.yml
         env:
           ACCOUNT_NAME: ${{ secrets.AZURE_SUBSCRIPTION }}
@@ -42,10 +44,10 @@ jobs:
         run: |
           sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.5.0/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
-    
+
       - name: Parse config.yaml as output to GitHub Actions matrix
         run: |
-          echo "config=$(yq e ./reference-implementations/LOB-ILB-ASEv3/bicep/config.yml -j -I=0)" >> $GITHUB_ENV  
+          echo "config=$(yq e ./reference-implementations/LOB-ILB-ASEv3/bicep/config.yml -j -I=0)" >> $GITHUB_ENV
 
       - name: Write deployment information to log
         run: |
@@ -54,7 +56,7 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
+
       - name: Run Preflight Validation
         working-directory: ./reference-implementations/LOB-ILB-ASEv3/bicep
         run: |
@@ -64,7 +66,7 @@ jobs:
               vmUsername=${{ fromJson(env.config).VM_USERNAME }} vmPassword=${{ secrets.VM_PW }}  \
               accountName=${{ secrets.ACCOUNT_NAME }} personalAccessToken=${{ secrets.PAT }} CICDAgentType=${{ fromJson(env.config).CICD_AGENT_TYPE}} \
               --template-file main.bicep
-              
+
         # Deploy Bicep file, need to point parameters to the main.parameters.json location
       - name: deploy
         uses: azure/arm-deploy@v1
@@ -74,7 +76,7 @@ jobs:
           region: ${{ fromJson(env.config).AZURE_LOCATION }}
           deploymentName:  ${{ fromJson(env.config).DEPLOYMENT_NAME }}
           template: ./reference-implementations/LOB-ILB-ASEv3/bicep/main.bicep
-          parameters: > 
-            workloadName=${{ fromJson(env.config).RESOURCE_NAME_PREFIX }} environment=${{ fromJson(env.config).ENVIRONMENT_TAG }} 
-            vmUsername=${{ fromJson(env.config).VM_USERNAME }} vmPassword=${{ secrets.VM_PW }} 
+          parameters: >
+            workloadName=${{ fromJson(env.config).RESOURCE_NAME_PREFIX }} environment=${{ fromJson(env.config).ENVIRONMENT_TAG }}
+            vmUsername=${{ fromJson(env.config).VM_USERNAME }} vmPassword=${{ secrets.VM_PW }}
             accountName=${{ secrets.ACCOUNT_NAME  }} personalAccessToken=${{ secrets.PAT }} CICDAgentType=${{ fromJson(env.config).CICD_AGENT_TYPE}}
