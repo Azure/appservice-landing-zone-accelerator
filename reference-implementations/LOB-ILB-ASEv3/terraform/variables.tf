@@ -15,3 +15,39 @@ variable "location" {
   type        = string
   default     = "westus2"
 }
+
+variable "hubVNetNameAddressPrefix" {
+  description = "CIDR prefix to use for Hub VNet"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "spokeVNetNameAddressPrefix" {
+  description = "CIDR prefix to use for Spoke VNet"
+  type        = string
+  default     = "10.1.0.0/16"
+}
+
+variable "bastionAddressPrefix" {
+  description = "CIDR prefix to use for Hub VNet"
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+variable "CICDAgentNameAddressPrefix" {
+  description = "CIDR prefix to use for Spoke VNet"
+  type        = string
+  default     = "10.0.2.0/24"
+}
+
+variable "jumpBoxAddressPrefix" {
+  description = "CIDR prefix to use for Jumpbox VNet"
+  type        = string
+  default     = "10.0.3.0/24"
+}
+
+variable "aseAddressPrefix" {
+  description = "CIDR prefix to use for ASE"
+  type        = string
+  default     = "10.1.1.0/24"
+}
