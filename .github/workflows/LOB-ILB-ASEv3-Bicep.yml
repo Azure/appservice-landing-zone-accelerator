@@ -7,7 +7,7 @@ on:
     branches:
     - main
     paths:
-      - reference-implementations/LOB-ILB-ASEv3/bicep/**
+      - 'reference-implementations/LOB-ILB-ASEv3/bicep/**'
 
   pull_request:
 
