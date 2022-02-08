@@ -1,7 +1,7 @@
 variable "workloadName" {
   description = "A short name for the workload being deployed"
   type        = string
-  default     = "sam"
+  default     = "ase"
 }
 
 variable "environment" {
