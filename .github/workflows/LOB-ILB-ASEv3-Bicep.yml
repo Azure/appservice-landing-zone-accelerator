@@ -10,6 +10,10 @@ on:
       - 'reference-implementations/LOB-ILB-ASEv3/bicep/**'
 
   pull_request:
+    branches:
+    - main
+    paths:
+      - 'reference-implementations/LOB-ILB-ASEv3/bicep/**'
 
 jobs:
   validate_bicep:
