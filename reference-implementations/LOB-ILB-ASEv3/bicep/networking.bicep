@@ -85,7 +85,7 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 
 resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: spokeVNetName
-  location: resourceGroup().location
+  location: location
   properties: {
     addressSpace: {
       addressPrefixes: [
