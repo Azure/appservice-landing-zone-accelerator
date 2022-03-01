@@ -1,7 +1,13 @@
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddHealthChecks().AddCheck("default", () => {
+    // TODO: need "real world" validation for dependencies
+    return HealthCheckResult.Healthy();
+});
 
 var app = builder.Build();
 
