@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddHealthChecks().AddCheck("default", () => {
     // TODO: need "real world" validation for dependencies
+    // see https://docs.microsoft.com/en-us/azure/architecture/patterns/health-endpoint-monitoring
     return HealthCheckResult.Healthy();
 });
 
@@ -27,5 +28,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.UseHealthChecks("/health");
 
 app.Run();
