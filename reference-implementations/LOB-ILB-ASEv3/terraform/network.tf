@@ -66,7 +66,7 @@ resource "azurerm_subnet" "vnetSpokeSubnet" {
 
 // Peering
 resource "azurerm_virtual_network_peering" "peerhubtospoke" {
-  name                      = "${azurerm_virtual_network.vnetHub.name}/${azurerm_virtual_network.vnetHub.name}-${azurerm_virtual_network.vnetSpoke.name}"
+  name                      = "peerhubtospoke"
   resource_group_name       = local.networkingResourceGroupName
   virtual_network_name      = azurerm_virtual_network.vnetHub.name
   remote_virtual_network_id = azurerm_virtual_network.vnetSpoke.id
@@ -78,7 +78,7 @@ resource "azurerm_virtual_network_peering" "peerhubtospoke" {
 }
 
 resource "azurerm_virtual_network_peering" "peerspoketohub" {
-  name                      = "${azurerm_virtual_network.vnetSpoke.name}/${azurerm_virtual_network.vnetSpoke.name}-${azurerm_virtual_network.vnetHub.name}"
+  name                      = "peerspoketohub"
   resource_group_name       = local.networkingResourceGroupName
   virtual_network_name      = azurerm_virtual_network.vnetSpoke.name
   remote_virtual_network_id = azurerm_virtual_network.vnetHub.id
