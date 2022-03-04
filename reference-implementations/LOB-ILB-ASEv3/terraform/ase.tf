@@ -16,6 +16,7 @@ resource "azurerm_app_service_environment_v3" "ase" {
   subnet_id                    = local.aseSubnetId
   internal_load_balancing_mode = "Web, Publishing"
   zone_redundant               = true
+  depends_on = [azurerm_bastion_host.bastionHost]
 }
 
 resource "azurerm_app_service_plan" "appServicePlan" {
@@ -23,11 +24,16 @@ resource "azurerm_app_service_plan" "appServicePlan" {
   location            = var.location
   resource_group_name = local.aseResourceGroupName
   app_service_environment_id = azurerm_app_service_environment_v3.ase.id
+  is_xenon            = false
+  per_site_scaling    = false
+  reserved            = false
+  zone_redundant      = true
   sku {
     tier = "IsolatedV2"
-    size = "I${local.workerPool}V2"
+    size = "I${local.workerPool}v2"
     capacity = local.numberOfWorkers
   }
+  depends_on = [azurerm_bastion_host.bastionHost]
 }
 
 resource "azurerm_private_dns_zone" "privateDnsZone" {
@@ -39,8 +45,9 @@ resource "azurerm_private_dns_zone" "privateDnsZone" {
 resource "azurerm_private_dns_zone_virtual_network_link" "privateDnsZoneName_vnetLink" {
   name                  = "vnetLink"
   resource_group_name   = local.aseResourceGroupName
-  private_dns_zone_name = azurerm_private_dns_zone.privateDnsZone.name
+  private_dns_zone_name = local.privateDnsZoneName
   virtual_network_id    = local.vnetId
+  registration_enabled  = false
   depends_on = [azurerm_app_service_environment_v3.ase,azurerm_private_dns_zone.privateDnsZone]
 }
 
