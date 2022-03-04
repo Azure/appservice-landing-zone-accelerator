@@ -51,3 +51,15 @@ variable "aseAddressPrefix" {
   type        = string
   default     = "10.1.1.0/24"
 }
+
+variable "numberOfWorkers" {
+  description = "numberOfWorkers for ASE"
+  type        = number
+  default     = 3
+}
+
+variable "workerPool" {
+  description = "workerPool for ASE"
+  type        = number
+  default     = 1
+}
