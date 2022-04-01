@@ -13,7 +13,7 @@ variable "environment" {
 variable "location" {
   description = "The Azure location where all resources should be created"
   type        = string
-  default     = "westus2"
+  default     = "eastus"
 }
 
 variable "hubVNetNameAddressPrefix" {
@@ -62,4 +62,14 @@ variable "workerPool" {
   description = "workerPool for ASE"
   type        = number
   default     = 1
+}
+
+variable "vmadminUserName" {
+  description = "admin username for the virtual machine (devops agent, jumpbox)"
+  type = string
+}
+
+variable "vmadminPassword" {
+  description = "admin password for the virtual machine (devops agent, jumpbox)"
+  type = string
 }

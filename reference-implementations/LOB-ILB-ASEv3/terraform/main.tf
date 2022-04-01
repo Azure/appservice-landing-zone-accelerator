@@ -2,6 +2,9 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_client_config" "current" {
+}
+
 locals {
   // Variables
   resourceSuffix              = "${var.workloadName}-${var.environment}-${var.location}-001"
