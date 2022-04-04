@@ -34,8 +34,9 @@ param accountName string
 @secure()
 param personalAccessToken string
 
+param location string
+
 // Variables
-var location = deployment().location
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
 var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
 var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
