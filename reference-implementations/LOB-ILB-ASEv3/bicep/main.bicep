@@ -34,6 +34,7 @@ param accountName string
 @secure()
 param personalAccessToken string
 
+
 param location string = deployment().location
 
 // Variables
