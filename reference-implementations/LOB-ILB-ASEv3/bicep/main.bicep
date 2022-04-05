@@ -34,7 +34,8 @@ param accountName string
 @secure()
 param personalAccessToken string
 
-param location string
+
+param location string = deployment().location
 
 // Variables
 var resourceSuffix = '${workloadName}-${environment}-${location}-001'
