@@ -36,13 +36,12 @@ Deployment Details:
 
 Cost estimation:
 
-The current default will cost approx. $40-$50 per day depending on the selected region (without any workload). It is deploying an ASE V3 that is zone-redundant and one Isolated V2 SKU Windows App Service Plan scaled to 3 instances (default with zone redundancy). 
+The current default will cost approx. $40-$50 per day depending on the selected region (without any workload). It is deploying an ASE V3 that is zone-redundant and one Isolated V2 SKU Windows App Service Plan scaled to 3 instances (default with zone redundancy). For more accurate prices please check [pricing models for ASE V3](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#pricing). 
 
 ---
 
 ## Other Considerations
-1. Here are the [pricing models for ASE V3](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#pricing). 
-2. Please leverage issues if you have any feedback or request on how we can improve on this repository.
+1. Please leverage issues if you have any feedback or request on how we can improve on this repository.
 
 ---
 ## Contributing
