@@ -60,6 +60,7 @@ jobs:
       - uses: azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          allow-no-subscriptions: true
 
       - name: Run Preflight Validation
         working-directory: ./reference-implementations/LOB-ILB-ASEv3/bicep
