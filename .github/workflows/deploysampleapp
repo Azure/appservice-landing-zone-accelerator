@@ -1,0 +1,28 @@
+name: deploysampleapp
+
+on:
+  push:
+    branches: [ whsalazar/userguide ]
+  pull_request:
+    branches: [ whsalazar/userguide  ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 5.0.x
+        
+    - name: Restore
+      run: dotnet restore
+ 
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+ 
+    - name: Test
+      run: dotnet test --no-restore        
