@@ -19,10 +19,10 @@ jobs:
         dotnet-version: 5.0.x
         
     - name: Restore
-      run: dotnet restore
+      run: dotnet restore ./sampleapp/SampleAppService/SampleAppService.csproj
  
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore ./sampleapp/SampleAppService/SampleAppService.csproj
  
     - name: Test
-      run: dotnet test --no-restore        
+      run: dotnet test --no-restore ./sampleapp/SampleAppService/SampleAppService.csproj       
