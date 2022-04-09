@@ -26,3 +26,18 @@ jobs:
  
     - name: Test
       run: dotnet test --no-restore ./sampleapp/SampleAppService/SampleAppService.csproj       
+      
+    - name: Publish
+      run: dotnet publish ./sampleapp/SampleAppService/SampleAppService.csproj --configuration Release --output sampleappbuild
+      
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.0.0
+      with:
+        # Artifact name
+        name: sampleappbuild
+        # A file, directory or wildcard pattern that describes what to upload
+        path: ./sampleapp/SampleAppService/sampleappbuild/**
+        # The desired behavior if no files are found using the provided path.
+        if-no-files-found: error
+     
+      
