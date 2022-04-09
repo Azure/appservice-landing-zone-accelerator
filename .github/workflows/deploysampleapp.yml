@@ -28,7 +28,7 @@ jobs:
       run: dotnet test --no-restore ./sampleapp/SampleAppService/SampleAppService.csproj       
       
     - name: Publish
-      run: dotnet publish ./sampleapp/SampleAppService/SampleAppService.csproj --configuration Release --output ${GITHUB_WORKSPACE}/artifact
+      run: dotnet publish ./sampleapp/SampleAppService/SampleAppService.csproj --configuration Release --output artifact
 
       
     - name: Upload a Build Artifact
