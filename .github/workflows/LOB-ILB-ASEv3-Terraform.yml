@@ -1,0 +1,67 @@
+name: 'ASEv3 Terraform'
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+    - main
+    paths:
+      - 'reference-implementations/LOB-ILB-ASEv3/**'
+      - '!reference-implementations/LOB-ILB-ASEv3/bicep/**'
+
+  pull_request:
+    branches:
+    - main
+    paths:
+      - 'reference-implementations/LOB-ILB-ASEv3/**'
+      - '!reference-implementations/LOB-ILB-ASEv3/bicep/**'
+
+env:
+  modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
+
+jobs:
+  validate_bicep:
+    name: "Validate Terraform files"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Validate that bicep builds
+        run: az bicep build -f main.bicep
+        working-directory: ${{ env.modulePath }}
+
+  build-and-deploy:
+    name: "Deploy Bicep templates"
+    needs: validate_bicep
+    runs-on: ubuntu-latest
+    steps:
+
+        # Checkout code
+      - name: Checkout the code
+        uses: actions/checkout@main
+
+      - name: Setup Terraform on agent
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.8
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Validate
+        working-directory: ${{ env.modulePath }}
+        run: |
+          terraform init
+          terraform validate
+
+      - name: Write deployment information to log
+        working-directory: ${{ env.modulePath }}
+        run: terraform plan
+
+        # Deploy Bicep file, need to point parameters to the main.parameters.json location
+      - name: deploy
+        working-directory: ${{ env.modulePath }}
+        run: terraform apply -auto-approve -input=false
