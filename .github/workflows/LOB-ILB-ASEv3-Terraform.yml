@@ -35,12 +35,22 @@ jobs:
   #       run: az bicep build -f main.bicep
   #       working-directory: ${{ env.modulePath }}
 
+
   build-and-deploy:
     name: "Deploy Terraform templates"
-
+    needs: 
     runs-on: ubuntu-latest
     steps:
-
+      - name: Prepare environment variables
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        run: | 
+          # Parse Azure secret into Terraform variables
+          $servicePrincipal = ($env:AZURE_CREDENTIALS | ConvertFrom-Json)
+          $env:ARM_CLIENT_ID = $servicePrincipal.clientId
+          $env:ARM_CLIENT_SECRET = $servicePrincipal.clientSecret
+          $env:ARM_SUBSCRIPTION_ID = $servicePrincipal.subscriptionId
+          $env:ARM_TENANT_ID = $servicePrincipal.tenantId
         # Checkout code
       - name: Checkout the code
         uses: actions/checkout@main
