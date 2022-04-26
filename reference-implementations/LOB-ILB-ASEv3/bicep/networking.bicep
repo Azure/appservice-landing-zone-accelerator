@@ -71,7 +71,7 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-// // optionally create CICD Agent subnet
+// // optionally create CICD Agent subnet 
 // resource CICDAgentSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (createCICDAgentSubnet) {
 //   name: CICDAgentSubnetName
 //    parent: vnetHub
