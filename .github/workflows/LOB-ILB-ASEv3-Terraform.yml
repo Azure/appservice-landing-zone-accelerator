@@ -8,6 +8,7 @@ on:
     #- main 
     - jin/41/path-for-workflow-trigger-include-iac
     paths:
+      - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/**'
       - '!reference-implementations/LOB-ILB-ASEv3/bicep/**'
 
@@ -15,6 +16,7 @@ on:
     branches:
     - main
     paths:
+      - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/**'
       - '!reference-implementations/LOB-ILB-ASEv3/bicep/**'
 
@@ -22,20 +24,20 @@ env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
 
 jobs:
-  validate_bicep:
-    name: "Validate Terraform files"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v2
+  # validate_terraform:
+  #   name: "Validate Terraform files"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout the code
+  #       uses: actions/checkout@v2
 
-      - name: Validate that bicep builds
-        run: az bicep build -f main.bicep
-        working-directory: ${{ env.modulePath }}
+  #     - name: Validate that bicep builds
+  #       run: az bicep build -f main.bicep
+  #       working-directory: ${{ env.modulePath }}
 
   build-and-deploy:
-    name: "Deploy Bicep templates"
-    needs: validate_bicep
+    name: "Deploy Terraform templates"
+
     runs-on: ubuntu-latest
     steps:
 

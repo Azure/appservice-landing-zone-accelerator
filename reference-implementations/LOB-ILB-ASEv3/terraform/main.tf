@@ -19,7 +19,7 @@ resource "azurerm_resource_group" "sharedrg" {
   name     = local.sharedResourceGroupName
   location = var.location
 }
- 
+
 resource "azurerm_resource_group" "aserg" {
   name     = local.aseResourceGroupName
   location = var.location
