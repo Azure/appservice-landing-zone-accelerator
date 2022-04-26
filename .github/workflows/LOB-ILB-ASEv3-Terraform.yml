@@ -50,6 +50,11 @@ jobs:
           $env:ARM_CLIENT_SECRET = $servicePrincipal.clientSecret
           $env:ARM_SUBSCRIPTION_ID = $servicePrincipal.subscriptionId
           $env:ARM_TENANT_ID = $servicePrincipal.tenantId
+          
+          # Save environment variable setup for subsequent steps
+          Get-ChildItem -Path Env: -Recurse -Include ARM_*,TF_VAR_* | ForEach-Object {Write-Output "$($_.Name)=$($_.Value)"} >> $env:GITHUB_ENV
+        shell: pwsh
+        
         # Checkout code
       - name: Checkout the code
         uses: actions/checkout@main
