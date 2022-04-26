@@ -38,7 +38,6 @@ jobs:
 
   build-and-deploy:
     name: "Deploy Terraform templates"
-    needs: 
     runs-on: ubuntu-latest
     steps:
       - name: Prepare environment variables
