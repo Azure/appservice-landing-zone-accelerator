@@ -53,13 +53,20 @@ _Identify and address scalability concerns relevant to the architecture in this 
 
 _Identify and address availability concerns relevant to the architecture in this scenario._
 
-- Consider your requirements for zone redundancy in this reference implementation. ASEv3 supports zone redundancy by spreading instances to all three zones in the target region. This can only be set at the time of ASE creation, and may not be available in all regions. See [Availability zone support for App Service Environment](https://docs.microsoft.com/en-us/azure/app-service/environment/overview-zone-redundancy) for more detail. This reference implementation does implement  zone redundancy, but this can be changed by cloning this repo and setting the `zoneRedundant` property to `false`.
+- Consider your requirements for zone redundancy in this reference implementation, as well as the zone redundancy capabilities of any other Azure Services in your solution. ASEv3 supports zone redundancy by spreading instances to all three zones in the target region. This can only be set at the time of ASE creation, and may not be available in all regions. See [Availability zone support for App Service Environment](https://docs.microsoft.com/en-us/azure/app-service/environment/overview-zone-redundancy) for more detail. This reference implementation does implement  zone redundancy, but this can be changed by cloning this repo and setting the `zoneRedundant` property to `false`.
+- When deploying an ASE across availability zones, use Azure Application Gateway to provide load balancing and WAF (Web Application Firewall) capabilities between the zonal instances.
+- If you need to recover from a disaster, consider the appropriate DR strategy, based on your specific RTO and RPO requirements. When evaluating a redeployment of the ASE as a potential strategy, be sure to account for the time taken to create a new ASE and to deploy your App Service solutions to this ASE, as collectively this can take a number of hours to complete.  Also consider the other components that need to be accounted for in the overall DR strategy (e.g. Azure SQL, Azure CosmosDB, etc)
 - For additional considerations concerning availability, see the [availability checklist](https://docs.microsoft.com/en-us/azure/architecture/framework/resiliency/reliability-patterns) in the Azure Architecture Center.
 
 ## Manageability considerations
 
 _Identify and address manageability concerns relevant to the architecture in this scenario._
 
+- Ensure that App Services deployed to the ASE are configured to utilize Application Insights to monitor the App Services and to assist in operational reporting and troubleshooting.
+- Configure alerts using Azure Monitor and Application Insights data to raise awareness of issues pertaining to availability, performance, user experience, and scalability pressures. Review [Monitoring App Service](https://docs.microsoft.com/en-us/azure/app-service/monitor-app-service) and [Monitor apps in Azure App Service](https://docs.microsoft.com/en-us/azure/app-service/web-sites-monitor) for more details and guidance.
+- Consider the number of App Service Environments you will need (e.g. Dev, UAT, Production), and also consider which of these should be upgraded before others, as per the [ASE upgrade preference options](https://docs.microsoft.com/en-us/azure/app-service/environment/using#upgrade-preference).  Dev environments should be configured using the `Early` value, while Production environments should be configured with the `Late` value.
+- Use a different Application Insights instance for each environment, and potentially for each solution within an environment, to ensure no cross-pollination of telemetry data.
+- Use App Service Diagnostics to gain a greater understanding of your app service’s behavior in times of instability and/or performance problems.
 - Consider the [App Service deployment best practices](https://docs.microsoft.com/en-us/azure/app-service/deploy-best-practices) to ensure robust CI/CD processes that will help ease the manageability tasks associated with deployment of changes and new functionality to an App Service running on an ASE.
 
 ## Security considerations
@@ -69,10 +76,17 @@ _Identify and address security concerns relevant to the architecture in this sce
 - Since this reference implementation deploys an ASE into a virtual network (referred to as an internal ASE), all applications deployed to the ASE are inherently network-isolated at the scope of the virtual network.
 - Applications deployed to the same ASE therefore share the same network and can see each other. Principles of [Zero Trust security](https://docs.microsoft.com/en-us/azure/security/fundamentals/zero-trust) should be considered to ensure that each App Service deployed to the ASE enforces its own authentication and authorization requirements.
 - When configuring networking rules for the ASE virtual network, consider that all App Services deployed to the ASE will be affected by the same rules. Further restrictions can be applied to the individual App Services, where necessary.
+- Ensure that secrets and certificates used in the App Services deployed to the ASE are stored in and referenced from the associated Azure Key Vault instance.
+- Use the built-in Azure RBAC (role-based access control) to ensure that the principle of least privilege access is applied to any Operations users that have access to the ASE.
+- Use system-assigned managed identities to ensure that the App Services deployed to the ASE access any AAD-protected backend resources securely.
+- Review and follow the recommendations outlined in the [Azure security baseline for App Service](https://docs.microsoft.com/en-us/security/benchmark/azure/baselines/app-service-security-baseline).
 - For additional considerations concerning security of App Services, see [App Service security recommendations](https://docs.microsoft.com/en-us/azure/app-service/security-recommendations)
 
 ## Cost Considerations
-[Reserved instance](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans)
+
+- While there is no stamp fee for an ASEv3 instance, there is a charge levied when there are no App Service Plans configured within the ASEv3 instance. This charge is levied at the same rate as one instance of a Windows I1v2 instance for the region in which the ASEv3 instance is deployed.
+- When configured to be zone redundant, the charging model is adjusted to account for the underlying infrastructure deployed in this configuration, and you may therefore be liable for additional instances, as per [ASEv3 Pricing](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#pricing)
+- Reserved instance pricing for ASEv3 App Service Plans (aka Isolated v2 App Service Plans) as per [How reservation discounts apply to Isolated v2 instances](https://docs.microsoft.com/en-us/azure/cost-management-billing/reservations/reservation-discount-app-service#how-reservation-discounts-apply-to-isolated-v2-instances)
 
 ## Deploy this scenario
 
