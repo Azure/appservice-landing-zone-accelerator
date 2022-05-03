@@ -2,7 +2,12 @@ name: 'Terraform Dependencies'
 
 on:
   workflow_dispatch:
-
+  push:
+    branches:
+    # - main
+    - jin/41/path-for-workflow-trigger-include-iac
+    paths:
+      - '.github/workflows/terraform-dependencies.yml'
 env:
   location: 'westus2'
   resource_prefix: "backend-appsrvc"
