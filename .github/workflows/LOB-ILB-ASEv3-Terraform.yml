@@ -41,12 +41,13 @@ jobs:
       - name: Prepare environment variables
         env:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION }}
         run: | 
           # Parse Azure secret into Terraform variables
           $servicePrincipal = ($env:AZURE_CREDENTIALS | ConvertFrom-Json)
           $env:ARM_CLIENT_ID = $servicePrincipal.clientId
           $env:ARM_CLIENT_SECRET = $servicePrincipal.clientSecret
-          $env:ARM_SUBSCRIPTION_ID = ${{ secrets.AZURE_SUBSCRIPTION }}
+          $env:ARM_SUBSCRIPTION_ID = $env.AZURE_SUBSCRIPTION
           $env:ARM_TENANT_ID = $servicePrincipal.tenantId
           
           # Save environment variable setup for subsequent steps
