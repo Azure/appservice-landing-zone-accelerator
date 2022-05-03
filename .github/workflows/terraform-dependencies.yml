@@ -39,7 +39,7 @@ jobs:
           st_name=st${{ env.resource_prefix }}${{ env.environment }}${{env.location}}${{ env.suffix }}
           formatted_st_name="${st_name//-/}"
 
-          if [ az storage account check-name --name $formatted_st_name --query nameAvailable ]; then
+          if [ $(az storage account check-name --name $formatted_st_name --query nameAvailable) ]; then
             az storage account create \
               --name $formatted_st_name \
               --resource-group $rg_name \
