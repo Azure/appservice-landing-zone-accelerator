@@ -36,8 +36,9 @@ jobs:
       - name: Create Storage Account
         run: |
           rg_name=${{ env.resource_prefix }}-${{ env.environment }}-${{env.location}}-${{ env.suffix }}
-          st_name=st${{ env.resource_prefix }}${{ env.environment }}${{env.location}}${{ env.suffix }}
-          formatted_st_name="${st_name//-/}"
+          st_name_prefix=st${{ env.resource_prefix }}${{ env.environment }}
+          st_name_suffix=st${{ env.location}}${{ env.suffix }}
+          formatted_st_name="${st_name_prefix//-/:0:14}${st_name_suffix:0:10}"
 
           if [ $(az storage account check-name --name $formatted_st_name --query nameAvailable) ]; then
             az storage account create \
