@@ -47,7 +47,7 @@ jobs:
           $servicePrincipal = ($env:AZURE_CREDENTIALS | ConvertFrom-Json)
           $env:ARM_CLIENT_ID = $servicePrincipal.clientId
           $env:ARM_CLIENT_SECRET = $servicePrincipal.clientSecret
-          $env:ARM_SUBSCRIPTION_ID = $env.AZURE_SUBSCRIPTION
+          $env:ARM_SUBSCRIPTION_ID = $env:AZURE_SUBSCRIPTION
           $env:ARM_TENANT_ID = $servicePrincipal.tenantId
           
           # Save environment variable setup for subsequent steps
