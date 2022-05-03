@@ -75,9 +75,11 @@ jobs:
 
       - name: Write deployment information to log
         working-directory: ${{ env.modulePath }}
-        run: terraform plan -var-file="${{env.GITHUB_WORKSPACE}}/${{ env.modulePath }}/Parameters/uat.tfvars"
+        run: |
+          pwd
+          terraform plan -var-file="Parameters/uat.tfvars"
 
         # Deploy Bicep file, need to point parameters to the main.parameters.json location
       - name: deploy
         working-directory: ${{ env.modulePath }}
-        run: terraform apply -auto-approve -input=false -var-file="${{env.GITHUB_WORKSPACE}}/${{ env.modulePath }}/Parameters/uat.tfvars"
+        run: terraform apply -auto-approve -input=false -var-file="Parameters/uat.tfvars"
