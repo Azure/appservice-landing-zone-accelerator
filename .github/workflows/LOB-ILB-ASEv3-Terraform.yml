@@ -65,22 +65,25 @@ jobs:
           terraform init
           terraform validate
 
-      - name: Terraform Plan
+
+      - name: Terraform Plan Destroy
+        id: plan_destroy
+        if: ${{ github.event.inputs.destroy == 'true' }}
         working-directory: ${{ env.modulePath }}
         continue-on-error: true
         run: |
-          if [[ ${{ github.event.inputs.destroy }} == 'true' ]]; then
-            terraform plan -destroy \
-              -var-file="Parameters/uat.tfvars" \
-              -out-file="./asev3-${{github.run_number}}.tfplan"
-          else
-            terraform plan \
-              -var-file="Parameters/uat.tfvars" \
-              -out-file="./asev3-${{github.run_number}}.tfplan"
-          fi
-          
+          terraform plan -destroy \
+            -var-file="Parameters/uat.tfvars" \
+            -out-file="./asev3-${{github.run_number}}.tfplan"
 
-        # Deploy Bicep file, need to point parameters to the main.parameters.json location
+      - name: Terraform Plan
+        if: failure()
+        working-directory: ${{ env.modulePath }}
+        continue-on-error: true
+          terraform plan \
+            -var-file="Parameters/uat.tfvars" \
+            -out-file="./asev3-${{github.run_number}}.tfplan"
+
       - name: Terraform Apply
         working-directory: ${{ env.modulePath }}
         run: |
