@@ -31,7 +31,7 @@ Deployment Details:
 | Deployment Methodology| GitHub Action YAML|
 |--------------|--------------|
 |[Bicep](/reference-implementations/LOB-ILB-ASEv3/bicep)|[LOB-ILB-ASEv3-Bicep.yml](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
-|[ARM](/reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/ase-arm.json) (In specific branch) |N/A|This doc
+|[ARM](/reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/ase-arm.json) (In specific branch) |N/A|
 | Terraform (Coming soon)||
 
 Cost estimation:
