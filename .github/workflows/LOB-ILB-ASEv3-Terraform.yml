@@ -9,16 +9,14 @@ on:
     - jin/41/path-for-workflow-trigger-include-iac
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
-      - 'reference-implementations/LOB-ILB-ASEv3/**'
-      - '!reference-implementations/LOB-ILB-ASEv3/bicep/**'
+      - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
 
   pull_request:
     branches:
     - main
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
-      - 'reference-implementations/LOB-ILB-ASEv3/**'
-      - '!reference-implementations/LOB-ILB-ASEv3/bicep/**'
+      - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
 
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
@@ -48,13 +46,13 @@ jobs:
           $servicePrincipal = ($env:AZURE_CREDENTIALS | ConvertFrom-Json)
           $env:ARM_CLIENT_ID = $servicePrincipal.clientId
           $env:ARM_CLIENT_SECRET = $servicePrincipal.clientSecret
-          $env:ARM_SUBSCRIPTION_ID = $servicePrincipal.subscriptionId
+          $env:ARM_SUBSCRIPTION_ID = ${{ secrets.AZURE_SUBSCRIPTION }}
           $env:ARM_TENANT_ID = $servicePrincipal.tenantId
           
           # Save environment variable setup for subsequent steps
           Get-ChildItem -Path Env: -Recurse -Include ARM_*,TF_VAR_* | ForEach-Object {Write-Output "$($_.Name)=$($_.Value)"} >> $env:GITHUB_ENV
         shell: pwsh
-        
+
         # Checkout code
       - name: Checkout the code
         uses: actions/checkout@main
@@ -76,9 +74,9 @@ jobs:
 
       - name: Write deployment information to log
         working-directory: ${{ env.modulePath }}
-        run: terraform plan
+        run: terraform plan -var-file="${{ env.modulePath }}/Parameters/uat.tfvars"
 
         # Deploy Bicep file, need to point parameters to the main.parameters.json location
       - name: deploy
         working-directory: ${{ env.modulePath }}
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve -input=false -var-file="${{ env.modulePath }}/Parameters/uat.tfvars"
