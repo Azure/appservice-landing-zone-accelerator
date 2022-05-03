@@ -8,15 +8,15 @@ on:
     # - main
     - jin/41/path-for-workflow-trigger-include-iac
     paths:
-      - 'reference-implementations/LOB-ILB-ASEv3/**'
-      - '!reference-implementations/LOB-ILB-ASEv3/terraform/**'
+      - '.github/workflows/LOB-ILB-ASEv3-Bicep.yml'
+      - 'reference-implementations/LOB-ILB-ASEv3/bicep/**'
 
   pull_request:
     branches:
     - main
     paths:
-      - 'reference-implementations/LOB-ILB-ASEv3/**'
-      - '!reference-implementations/LOB-ILB-ASEv3/terraform/**'
+      - '.github/workflows/LOB-ILB-ASEv3-Bicep.yml'
+      - 'reference-implementations/LOB-ILB-ASEv3/bicep/**'
 
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/bicep'
