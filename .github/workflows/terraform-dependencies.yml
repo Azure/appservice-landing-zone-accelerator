@@ -30,8 +30,7 @@ jobs:
           if [ $(az group exists --name $rg_name) = false ]; then
             az group create \
               --name $rg_name \
-              --location ${{ env.location }} \
-              --subcription ${{ secrets.AZURE_SUBSCRIPTION }}
+              --location ${{ env.location }} 
           fi
       
       - name: Create Storage Account
