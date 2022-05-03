@@ -2,11 +2,15 @@ name: 'ASEv3 Terraform'
 
 on:
   workflow_dispatch:
-
+    inputs:
+      destroy:
+        description: 'Set to true to destroy infrastructure (default: false)'
+        required: false
+        default: false
   push:
     branches:
-    #- main 
-    - jin/41/path-for-workflow-trigger-include-iac
+    # - main
+      - jin/41/path-for-workflow-trigger-include-iac
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
@@ -22,19 +26,7 @@ env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
 
 jobs:
-  # validate_terraform:
-  #   name: "Validate Terraform files"
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout the code
-  #       uses: actions/checkout@v2
-
-  #     - name: Validate that bicep builds
-  #       run: az bicep build -f main.bicep
-  #       working-directory: ${{ env.modulePath }}
-
-
-  build-and-deploy:
+  validate-build-and-deploy:
     name: "Deploy Terraform templates"
     runs-on: ubuntu-latest
     steps:
@@ -73,13 +65,26 @@ jobs:
           terraform init
           terraform validate
 
-      - name: Write deployment information to log
+      - name: Terraform Plan
         working-directory: ${{ env.modulePath }}
+        continue-on-error: true
         run: |
-          pwd
-          terraform plan -var-file="Parameters/uat.tfvars"
+          if [[ ${{ github.event.inputs.destroy }} == 'true' ]]; then
+            terraform plan -destroy \
+              -var-file="Parameters/uat.tfvars" \
+              -out-file="./asev3-${{github.run_number}}.tfplan"
+          else
+            terraform plan \
+              -var-file="Parameters/uat.tfvars" \
+              -out-file="./asev3-${{github.run_number}}.tfplan"
+          fi
+          
 
         # Deploy Bicep file, need to point parameters to the main.parameters.json location
-      - name: deploy
+      - name: Terraform Apply
         working-directory: ${{ env.modulePath }}
-        run: terraform apply -auto-approve -input=false -var-file="Parameters/uat.tfvars"
+        run: |
+          terraform apply \
+            -auto-approve \
+            -input=false \
+            asev3-${{github.run_number}}.tfplan
