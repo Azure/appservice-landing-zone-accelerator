@@ -1,7 +1,7 @@
 ### YamlMime:Architecture
 metadata:
   title: Line of Business Application using App Service Environmet v3
-  titleSuffix: Azure Reference Architectures
+  titleSuffix: Azure Architecture Center
   description: Learn about deploying line of business applications with an internal App Service Environment v3 while considering networking boundaries, devops, management, and more. 
   author: cykreng
   ms.author: cykreng
@@ -16,7 +16,7 @@ azureCategories:
 products:
   - azure-app-service
 name: Deploy Line of Business Applications using App Service Environment v3
-summary: <Write a summary. Can be same as description.>
+summary: Learn about deploying line of business applications with an internal App Service Environment v3 while considering networking boundaries, devops, management, and more. 
 thumbnailUrl: /azure/architecture/browse/thumbs/<browse-png-filename>.png
 content: |
   [!include[](LOB-ILB-ASEv3-content.md)]
