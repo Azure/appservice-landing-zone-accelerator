@@ -1,14 +1,11 @@
-> The H1 title is the same as the title metadata. Don't enter it here, but as the **name** value in the corresponding YAML file.
+# Line of Business Applications using App Service Environment v3
+This article focused on a solution centered around App Service Environment (ASE) v3, the newest version of App Service Environment with foundational improvements from previous versions. The changes with ASE v3 which removes the stamp fee and simplifies networking configurations make ASE a compelling offer for enterprise customers who require additional security and network isolation around their App Services. The rarchitecture will be applicable for an internal LOB application using an internal load balancer. Customer will have the flexibility to leverage existing resources in the Azure Landing Zone (ie. Resources in the Hub VNet) or deploy this solution as a self-contained workload. 
 
-_Brief introduction goes here._ [**Deploy this solution**.](#deploy-the-solution)
+## Architecture
 
 ![alt text.](./media/folder_name/architecture-diagram.png)
 
 _Download a [Visio file](https://arch-center.azureedge.net/architecture.vsdx) that contains this architecture diagram. This file must be uploaded to `https://arch-center.azureedge.net/`_
-
-## Architecture
-
-Include visio diagram
 
 ### Components
 
@@ -29,9 +26,9 @@ The solution uses the following Azure services:
 - **[Azure Bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview)** is a Platform-as-a-Service service provisioned within the developer's virtual network which provides secure RDP/SSH connectivity to the developer's virtual machines over TLS from the Azure portal. With Azure Bastion, virtual machines no longer require a public IP address to connect via RDP/SSH. This reference architecture uses Azure Bastion to access the DevOps Agent / GitHub Runner server or the management jumpbox server. 
 
 
-## Recommendations
+## Considerations
 
-The following recommendations apply for most scenarios. Follow these recommendations unless you have a specific requirement that overrides them.
+These considerations implement the pillars of the Azure Well-Architected Framework, which is a set of guiding tenets that can be used to improve the quality of a workload. For more information, see [Microsoft Azure Well-Architected Framework](/azure/architecture/framework).
 
 - Review the reference implementation resources at [LOB-ILB-ASEv3](../../reference-implementations/LOB-ILB-ASEv3/) to better understand the specifics of this implementation.
 - It is recommended that you clone this repo and modify the reference implementation resources to suit your requirements and your organization's specific landing zone guidelines.
@@ -39,34 +36,35 @@ The following recommendations apply for most scenarios. Follow these recommendat
 - Consider the CI/CD service you will use for deploying the reference implementation. As this reference implementation is an internal ASE, a self-hosted agent is needed to execute the deployment pipelines.  As such the choice is to use either a DevOps Agent or a GitHub Runner. Refer to the [user guide](../README.md) on specific configuration values required for each.
 - Consider the region(s) to which you intend deploying this reference implementation, and consult the [ASEv3 Regions list](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#regions) to ensure the selected region(s) are enabled for deployment.
 
-## Availability considerations
+### Reliability
 
 - Consider your requirements for zone redundancy in this reference implementation, as well as the zone redundancy capabilities of any other Azure Services in your solution. ASEv3 supports zone redundancy by spreading instances to all three zones in the target region. This can only be set at the time of ASE creation, and may not be available in all regions. See [Availability zone support for App Service Environment](https://docs.microsoft.com/en-us/azure/app-service/environment/overview-zone-redundancy) for more detail. This reference implementation does implement  zone redundancy, but this can be changed by cloning this repo and setting the `zoneRedundant` property to `false`.
 
-## Manageability considerations
+### Security
+
+- Employ the appropriate use of access restrictions so that the app service is only reachable from valid locations. For example, if the app service is hosting APIs, and is fronted by APIM, setup an access restriction so that the app service is only accessible from APIM.
+- Since this reference implementation deploys an ASE into a virtual network (referred to as an internal ASE), all applications deployed to the ASE are inherently network-isolated at the scope of the virtual network.
+- Store application secrets (database credentials, API tokens, private keys) in Azure Key Vault and configure your App Service app to access them securely with a Managed Identity. Determine when to use [Azure Key Vault vs Azure App Configuration](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/appconfig-key-vault) with the guidance in mind.
+
+### Cost optimization
+
+- While there is no stamp fee for an ASEv3 instance, there is a charge levied when there are no App Service Plans configured within the ASEv3 instance. This charge is levied at the same rate as one instance of a Windows I1v2 instance for the region in which the ASEv3 instance is deployed.
+- When configured to be zone redundant, the charging model is adjusted to account for the underlying infrastructure deployed in this configuration, and you may therefore be liable for additional instances, as per [ASEv3 Pricing](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#pricing)
+- Reserved instance pricing for ASEv3 App Service Plans (aka Isolated v2 App Service Plans) as per [How reservation discounts apply to Isolated v2 instances](https://docs.microsoft.com/en-us/azure/cost-management-billing/reservations/reservation-discount-app-service#how-reservation-discounts-apply-to-isolated-v2-instances)
+
+### Operational execellence
 
 - Use Application Insights or another Application Performance Management solution to monitor and learn how your application behaves in different environments.
-    - Two ways to enable App Insights currently exist.
+    - Two ways to enable [App Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) currently exist.
 For different environments collect telemetry data into different Application Insights instances.
     - If your application has multiple components separated into different services but you would like to examine their behavior together, then collect their telemetry data into same Application Insights instance but label them with different cloud role names.
-    - Export Application Insights data to an Azure Log Analytics Workspace. A single Workspace for the organization is recommended.
+    - Export Application Insights data to an [Azure Log Analytics](https://docs.microsoft.com/en-us/azure/azure-monitor/logs/log-analytics-overview) Workspace. A single Workspace for the organization is recommended.
     - Include operational dashboards in application and feature design to ensure the solution can be supported in production.
     - Implement health checks for your endpoints and use them for health probes, dependency checks and availability tests.
 - Use a different Application Insights instance for each environment, and potentially for each solution within an environment, to ensure no cross-pollination of telemetry data.
 - Consider using prefixes and suffixes with well-defined conventions to uniquely identify every deployed resource. These naming conventions avoid conflicts when deploying solutions next to each other and improve overall team agility and throughput.
 - Depending on the network configuration, App Services might not be reachable from the public internet and the use of public hosted agents will not work for deployments. Plan to use [self-hosted agents](https://azure.github.io/AppService/2021/01/04/deploying-to-network-secured-sites.html) in that scenario.
 
-## Security considerations
-
-- Employ the appropriate use of access restrictions so that the app service is only reachable from valid locations. For example, if the app service is hosting APIs, and is fronted by APIM, setup an access restriction so that the app service is only accessible from APIM.
-- Since this reference implementation deploys an ASE into a virtual network (referred to as an internal ASE), all applications deployed to the ASE are inherently network-isolated at the scope of the virtual network.
-- Store application secrets (database credentials, API tokens, private keys) in Azure Key Vault and configure your App Service app to access them securely with a Managed Identity. Determine when to use Azure Key Vault vs Azure App Configuration with the guidance in mind.
-
-## Cost Considerations
-
-- While there is no stamp fee for an ASEv3 instance, there is a charge levied when there are no App Service Plans configured within the ASEv3 instance. This charge is levied at the same rate as one instance of a Windows I1v2 instance for the region in which the ASEv3 instance is deployed.
-- When configured to be zone redundant, the charging model is adjusted to account for the underlying infrastructure deployed in this configuration, and you may therefore be liable for additional instances, as per [ASEv3 Pricing](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#pricing)
-- Reserved instance pricing for ASEv3 App Service Plans (aka Isolated v2 App Service Plans) as per [How reservation discounts apply to Isolated v2 instances](https://docs.microsoft.com/en-us/azure/cost-management-billing/reservations/reservation-discount-app-service#how-reservation-discounts-apply-to-isolated-v2-instances)
 
 ## Deploy this scenario
 
@@ -84,3 +82,4 @@ A deployment for the reference architecture that implements these recommendation
 
 * [High availability enterprise deployment using App Services Environment](docs/reference-architectures/enterprise-integration/ase-high-availability-deployment.yml)
 * [Enterprise deployment using App Services Environment](docs/reference-architectures/enterprise-integration/ase-standard-deployment.yml)
+* [Azure App Service landing zone accelerator](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/app-services/landing-zone-accelerator)
