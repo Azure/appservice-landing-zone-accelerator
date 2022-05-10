@@ -46,12 +46,12 @@ The following recommendations apply for most scenarios. Follow these recommendat
 ## Manageability considerations
 
 - Use Application Insights or another Application Performance Management solution to monitor and learn how your application behaves in different environments.
-* Two ways to enable App Insights currently exist.
+    - Two ways to enable App Insights currently exist.
 For different environments collect telemetry data into different Application Insights instances.
-* If your application has multiple components separated into different services but you would like to examine their behavior together, then collect their telemetry data into same Application Insights instance but label them with different cloud role names.
-* Export Application Insights data to an Azure Log Analytics Workspace. A single Workspace for the organization is recommended.
-* Include operational dashboards in application and feature design to ensure the solution can be supported in production.
-* Implement health checks for your endpoints and use them for health probes, dependency checks and availability tests.
+    - If your application has multiple components separated into different services but you would like to examine their behavior together, then collect their telemetry data into same Application Insights instance but label them with different cloud role names.
+    - Export Application Insights data to an Azure Log Analytics Workspace. A single Workspace for the organization is recommended.
+    - Include operational dashboards in application and feature design to ensure the solution can be supported in production.
+    - Implement health checks for your endpoints and use them for health probes, dependency checks and availability tests.
 - Use a different Application Insights instance for each environment, and potentially for each solution within an environment, to ensure no cross-pollination of telemetry data.
 - Consider using prefixes and suffixes with well-defined conventions to uniquely identify every deployed resource. These naming conventions avoid conflicts when deploying solutions next to each other and improve overall team agility and throughput.
 - Depending on the network configuration, App Services might not be reachable from the public internet and the use of public hosted agents will not work for deployments. Plan to use [self-hosted agents](https://azure.github.io/AppService/2021/01/04/deploying-to-network-secured-sites.html) in that scenario.
