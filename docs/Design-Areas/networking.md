@@ -4,7 +4,7 @@
 
 ### Multi-Tenanted:
 - App Services in the multi-tenanted service share a single inbound and multiple outbound IP addresses with other App Services in the same deployment unit.  These can change for a [variety of reasons](https://docs.microsoft.com/en-us/azure/app-service/overview-inbound-outbound-ips#how-ip-addresses-work-in-app-service). If consistent outbound IP addresses are needed for multi-tenant App Service, a [NAT gateway](https://docs.microsoft.com/en-us/azure/app-service/networking/nat-gateway-integration#:~:text=%20Set%20up%20NAT%20gateway%20through%20the%20portal%3A,Basics%20information%20and%20pick%20the%20region...%20More%20) can be configured, or[ VNet  Integration](https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet) can be used.
-- If a dedicated IP address is required by which to address your App Service, you can make use of [App-assigned addresses](https://docs.microsoft.com/en-us/azure/app-service/networking/app-gateway-with-service-endpoints), or you could front your App Service with an [Application Gateway](https://docs.microsoft.com/en-us/azure/app-service/networking/app-gateway-with-service-endpoints) (which is assigned a static IP address).
+- If a dedicated IP address is required by which to address your App Service, you can make use of [App-assigned addresses](https://docs.microsoft.com/en-us/azure/app-service/networking-features#app-assigned-address), or you could front your App Service with an [Application Gateway](https://docs.microsoft.com/en-us/azure/app-service/networking/app-gateway-with-service-endpoints) (which is assigned a static IP address).
 - When there is a need to connect from an App Service to on-prem, private, or IP-restricted services, consider that:
     - When running in the multi-tenanted environment, the App Service call can originate from a wide range of IP addresses, and [VNet Integration](https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet) may be needed.
     - Services like [API Management (APIM)](https://docs.microsoft.com/en-us/azure/api-management/api-management-key-concepts) could be used to proxy calls between networking boundaries and can provide a static IP if needed.
@@ -31,7 +31,7 @@
 - Avoid [SNAT port exhaustion](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-intermittent-outbound-connection-errors) by utilizing connection pools.  The creation of new connections repetitively to the same host and port can cause slow response times, intermittent 5xx errors, timeouts, or external endpoint connection issues.
 - Review and follow the recommendations outlined in the [Network Security section](https://docs.microsoft.com/en-us/security/benchmark/azure/baselines/app-service-security-baseline?toc=/azure/app-service/toc.json#network-security) of the Azure security baseline for App Service.
 ### Multi-Tenanted:
-•	If you need a dedicated outbound address when connecting to an multi-tenanted App Service, use a [NAT Gateway](https://docs.microsoft.com/en-us/azure/app-service/networking/nat-gateway-integration). 
-•	Since subnet size can't be changed after assignment, use a subnet that's large enough to accommodate whatever scale your app might reach. To avoid any issues with subnet capacity, you should use a /26 with 64 addresses for Vnet integration.
+- If you need a dedicated outbound address when connecting to an multi-tenanted App Service, use a [NAT Gateway](https://docs.microsoft.com/en-us/azure/app-service/networking/nat-gateway-integration). 
+- Since subnet size can't be changed after assignment, use a subnet that's large enough to accommodate whatever scale your app might reach. To avoid any issues with subnet capacity, you should use a /26 with 64 addresses for Vnet integration.
 ### App Service Enviornment:
-•	Your subnet should be sized with a /24 CIDR range, providing 256 addresses. 
+- Your subnet should be sized with a /24 CIDR range, providing 256 addresses. 
