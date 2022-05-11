@@ -66,11 +66,10 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        if: ${{ github.event.inputs.destroy == 'false' }}
         working-directory: ${{ env.modulePath }}
         continue-on-error: true
         run: |
-          if [[ ${{ github.event.inputs.destroy }} == 'true' ]]; then
+          if [[ ${{ inputs.destroy }} == 'true' ]]; then
             terraform plan \
               -var-file="Parameters/uat.tfvars" \
               -out-file="${{ ${{ env.modulePath }}/asev3-${{github.run_number}}.tfplan/asev3-${{github.run_number}}.tfplan"
