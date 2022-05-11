@@ -26,8 +26,7 @@ env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
 
 jobs:
-  validate-build-and-deploy:
-    name: "Deploy Terraform templates"
+  initialize:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare environment variables
@@ -59,6 +58,9 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+  validate_and_plan:
+    runs-on: ubuntu-latest
+    steps:
       - name: Terraform Validate
         working-directory: ${{ env.modulePath }}
         run: |
@@ -85,9 +87,19 @@ jobs:
             -var-file="Parameters/uat.tfvars" \
             -out-file="./asev3-${{github.run_number}}.tfplan"
 
+      - name: Upload TF Plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: "asev3-${{github.run_number}}.tfplan"
+          path: "./tfplan/asev3-${{github.run_number}}.tfplan"
+          if-no-files-found: error
+          retention-days: 1
+
+  apply:
+    runs-on: ubuntu-latest
+    steps:
       - name: Terraform Apply
-        needs: [ tfplandestroy, tfplan ]
-        if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+        needs: validate
         working-directory: ${{ env.modulePath }}
         run: |
           terraform apply \
