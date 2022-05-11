@@ -45,6 +45,7 @@ jobs:
           Get-ChildItem -Path Env: -Recurse -Include ARM_*,TF_VAR_* | ForEach-Object {Write-Output "$($_.Name)=$($_.Value)"} >> $env:GITHUB_ENV
         shell: pwsh
 
+
         # Checkout code
       - name: Checkout the code
         uses: actions/checkout@main
@@ -83,6 +84,7 @@ jobs:
         if: ${{ github.event.inputs.destroy == 'false' }}
         working-directory: ${{ env.modulePath }}
         continue-on-error: true
+        run: |
           terraform plan \
             -var-file="Parameters/uat.tfvars" \
             -out-file="./asev3-${{github.run_number}}.tfplan"
