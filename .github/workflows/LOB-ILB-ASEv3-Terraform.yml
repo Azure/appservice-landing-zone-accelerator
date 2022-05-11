@@ -25,6 +25,7 @@ on:
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
   terraform_version: 1.1.8
+  tfplan_name: "asev3-${{github.run_number}}.tfplan"
 
 jobs:
   initialize_validate_plan:
@@ -66,24 +67,30 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
+        if: ${{ github.event.inputs.destroy == 'false' }}
         working-directory: ${{ env.modulePath }}
         continue-on-error: true
         run: |
-          if [[ "${{ inputs.destroy }}" == 'true' ]]; then
-            terraform plan \
-              -var-file="Parameters/uat.tfvars" \
-              -out-file="${{ ${{ env.modulePath }}/asev3-${{github.run_number}}.tfplan/asev3-${{github.run_number}}.tfplan"
-          else
-            terraform plan -destroy \
-              -var-file="Parameters/uat.tfvars" \
-              -out-file="./asev3-${{github.run_number}}.tfplan"
-          fi
+          terraform plan \
+            -var-file="Parameters/uat.tfvars" \
+            -out-file="./${{ env.tfplan_name }}"
+      
+      - name: Terraform Plan Destroy
+        if: ${{ github.event.inputs.destroy == 'true' }}
+        working-directory: ${{ env.modulePath }}
+        continue-on-error: true
+        run: |
+          terraform plan -destroy \
+            -var-file="Parameters/uat.tfvars" \
+            -out-file="./${{ env.tfplan_name }}"
+
 
       - name: Upload TF Plan
         uses: actions/upload-artifact@v3
+        working-directory: ${{ env.modulePath }}
         with:
-          name: "asev3-${{github.run_number}}.tfplan"
-          path: "./tfplan/asev3-${{github.run_number}}.tfplan"
+          name: "${{ env.tfplan_name }}"
+          path: "./tfplan/${{ env.tfplan_name }}"
           if-no-files-found: error
           retention-days: 1
 
@@ -117,8 +124,8 @@ jobs:
       - name: Download TF Plan
         uses: actions/download-artifact@v2
         with:
-          name: "asev3-${{github.run_number}}.tfplan"
-          path: "./tfplan/asev3-${{github.run_number}}.tfplan"
+          name: "${{ env.tfplan_name }}"
+          path: "./tfplan/${{ env.tfplan_name }}"
 
       - name: Terraform Apply
         working-directory: ${{ env.modulePath }}
@@ -126,4 +133,4 @@ jobs:
           terraform apply \
             -auto-approve \
             -input=false \
-            asev3-${{github.run_number}}.tfplan
+            ${{ env.tfplan_name }}
