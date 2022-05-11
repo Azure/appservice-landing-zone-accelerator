@@ -24,9 +24,10 @@ on:
 
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
+  terraform_version: 1.1.8
 
 jobs:
-  initialize:
+  initialize_validate_plan:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare environment variables
@@ -45,49 +46,39 @@ jobs:
           Get-ChildItem -Path Env: -Recurse -Include ARM_*,TF_VAR_* | ForEach-Object {Write-Output "$($_.Name)=$($_.Value)"} >> $env:GITHUB_ENV
         shell: pwsh
 
-        # Checkout code
       - name: Checkout the code
         uses: actions/checkout@main
 
-      - name: Setup Terraform on agent
-        uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.1.8
+          terraform_version: ${{ env.terraform_version }}
 
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # - uses: azure/login@v1
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  validate_and_plan:
-    runs-on: ubuntu-latest
-    needs: initialize
-    steps:
+      - name: Terraform Init
+        working-directory: ${{ env.modulePath }}
+        run: terraform init
+
       - name: Terraform Validate
         working-directory: ${{ env.modulePath }}
-        run: |
-          terraform init
-          terraform validate
-
-
-      - name: Terraform Plan Destroy
-        id: tfplandestroy
-        if: ${{ github.event.inputs.destroy == 'true' }}
-        working-directory: ${{ env.modulePath }}
-        continue-on-error: true
-        run: |
-          terraform plan -destroy \
-            -var-file="Parameters/uat.tfvars" \
-            -out-file="./asev3-${{github.run_number}}.tfplan"
+        run: terraform validate
 
       - name: Terraform Plan
-        id: tfplan
         if: ${{ github.event.inputs.destroy == 'false' }}
         working-directory: ${{ env.modulePath }}
         continue-on-error: true
         run: |
-          terraform plan \
-            -var-file="Parameters/uat.tfvars" \
-            -out-file="./asev3-${{github.run_number}}.tfplan"
+          if [[ ${{ github.event.inputs.destroy }} == 'true' ]]; then
+            terraform plan \
+              -var-file="Parameters/uat.tfvars" \
+              -out-file="${{ ${{ env.modulePath }}/asev3-${{github.run_number}}.tfplan/asev3-${{github.run_number}}.tfplan"
+          else
+            terraform plan -destroy \
+              -var-file="Parameters/uat.tfvars" \
+              -out-file="./asev3-${{github.run_number}}.tfplan"
+          fi
 
       - name: Upload TF Plan
         uses: actions/upload-artifact@v3
@@ -99,8 +90,37 @@ jobs:
 
   apply:
     runs-on: ubuntu-latest
-    needs: validate_and_plan
+    needs: initialize_validate_plan
     steps:
+      - name: Prepare environment variables
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION }}
+        run: | 
+          # Parse Azure secret into Terraform variables
+          $servicePrincipal = ($env:AZURE_CREDENTIALS | ConvertFrom-Json)
+          $env:ARM_CLIENT_ID = $servicePrincipal.clientId
+          $env:ARM_CLIENT_SECRET = $servicePrincipal.clientSecret
+          $env:ARM_SUBSCRIPTION_ID = $env:AZURE_SUBSCRIPTION
+          $env:ARM_TENANT_ID = $servicePrincipal.tenantId
+          
+          # Save environment variable setup for subsequent steps
+          Get-ChildItem -Path Env: -Recurse -Include ARM_*,TF_VAR_* | ForEach-Object {Write-Output "$($_.Name)=$($_.Value)"} >> $env:GITHUB_ENV
+        shell: pwsh
+
+      - name: Checkout the code
+        uses: actions/checkout@main
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.terraform_version }}
+
+      - name: Download TF Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: "asev3-${{github.run_number}}.tfplan"
+          path: "./tfplan/asev3-${{github.run_number}}.tfplan"
+
       - name: Terraform Apply
         working-directory: ${{ env.modulePath }}
         run: |
