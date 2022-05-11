@@ -84,13 +84,11 @@ jobs:
             -var-file="Parameters/uat.tfvars" \
             -out-file="./${{ env.tfplan_name }}"
 
-
       - name: Upload TF Plan
         uses: actions/upload-artifact@v3
-        working-directory: ${{ env.modulePath }}
         with:
           name: "${{ env.tfplan_name }}"
-          path: "./tfplan/${{ env.tfplan_name }}"
+          path: "${{ env.modulePath }}/tfplan/${{ env.tfplan_name }}"
           if-no-files-found: error
           retention-days: 1
 
@@ -125,7 +123,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "${{ env.tfplan_name }}"
-          path: "./tfplan/${{ env.tfplan_name }}"
+          path: "${{ env.modulePath }}/tfplan/${{ env.tfplan_name }}"
 
       - name: Terraform Apply
         working-directory: ${{ env.modulePath }}
