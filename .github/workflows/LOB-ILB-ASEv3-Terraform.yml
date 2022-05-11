@@ -67,7 +67,7 @@ jobs:
 
 
       - name: Terraform Plan Destroy
-        id: plan_destroy
+        id: tfplandestroy
         if: ${{ github.event.inputs.destroy == 'true' }}
         working-directory: ${{ env.modulePath }}
         continue-on-error: true
@@ -77,7 +77,8 @@ jobs:
             -out-file="./asev3-${{github.run_number}}.tfplan"
 
       - name: Terraform Plan
-        if: failure()
+        id: tfplan
+        if: ${{ github.event.inputs.destroy == 'false' }}
         working-directory: ${{ env.modulePath }}
         continue-on-error: true
           terraform plan \
@@ -85,6 +86,8 @@ jobs:
             -out-file="./asev3-${{github.run_number}}.tfplan"
 
       - name: Terraform Apply
+        needs: [ tfplandestroy, tfplan ]
+        if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
         working-directory: ${{ env.modulePath }}
         run: |
           terraform apply \
