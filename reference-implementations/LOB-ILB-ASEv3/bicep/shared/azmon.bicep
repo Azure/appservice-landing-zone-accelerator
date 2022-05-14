@@ -4,14 +4,13 @@ targetScope='resourceGroup'
 param location string
 
 @description('Standardized suffix text to be added to resource names')
-param resourceSuffix string
+param name string
+
+@description('Standardized suffix text to be added to resource names')
+param logAnalyticsWorkspaceName string
 
 @description('Optional. Tags to be added on the resources created')
 param tags object = {}
-
-// Variables
-var appInsightsName = 'appi-${resourceSuffix}'
-var logAnalyticsWorkspaceName = 'log-${resourceSuffix}'
 
 // Resources
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
@@ -31,7 +30,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
 
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: appInsightsName
+  name: name
   location: location
   kind: 'web'
   properties: {
