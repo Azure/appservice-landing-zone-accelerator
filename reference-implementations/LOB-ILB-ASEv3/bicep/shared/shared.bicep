@@ -45,6 +45,9 @@ param resourceSuffix string
 ])
 param environment string
 
+@description('Optional. Tags to be added on the resources created')
+param tags object = {}
+
 // Variables - ensure key vault name does not end with '-'
 var tempKeyVaultName = take('kv-${resourceSuffix}', 24) // Must be between 3-24 alphanumeric characters 
 var keyVaultName = endsWith(tempKeyVaultName, '-') ? substring(tempKeyVaultName, 0, length(tempKeyVaultName) - 1) : tempKeyVaultName
@@ -56,6 +59,7 @@ module appInsights './azmon.bicep' = {
   params: {
     location: location
     resourceSuffix: resourceSuffix
+    tags: tags
   }
 }
 
@@ -72,6 +76,7 @@ module vm_devopswinvm './createvmwindows.bicep' = if (CICDAgentType!='none') {
     personalAccessToken: personalAccessToken
     CICDAgentType: CICDAgentType
     deployAgent: true
+    tags: tags
   }
 }
  
@@ -85,12 +90,14 @@ module vm_jumpboxwinvm './createvmwindows.bicep' = {
     password: vmPassword
     CICDAgentType: CICDAgentType
     vmName: 'jumpbox-${environment}'
+    tags: tags
   }
 }
 
 resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: keyVaultName
   location: location
+  tags: tags
   properties: {
     tenantId: subscription().tenantId
     sku: {
@@ -120,6 +127,7 @@ resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
       // }
     ]
   }
+
   resource vmPasswordSecret 'secrets@2019-09-01' = {
     name: 'vmPassword'
     properties: {

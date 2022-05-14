@@ -47,6 +47,9 @@ param CICDAgentType string
 @description('The base URI where the CI/CD agent artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated.')
 param artifactsLocation string = 'https://raw.githubusercontent.com/cykreng/Enterprise-Scale-AppService/main/reference-implementations/LOB-ILB-ASEv3/bicep/shared/agentsetup.ps1'
 
+@description('Optional. Tags to be added on the resources created')
+param tags object = {}
+
 // Variables
 var agentName = 'agent-${vmName}'
 
@@ -56,6 +59,7 @@ module nic './vm-nic.bicep' = {
   params: {
     location: location
     name: vmName
+    tags: tags
     subnetId: subnetId
   }
 }
@@ -64,6 +68,7 @@ module nic './vm-nic.bicep' = {
 resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
   name: vmName
   location: location
+  tags: tags
   zones: [
     '1'
   ]

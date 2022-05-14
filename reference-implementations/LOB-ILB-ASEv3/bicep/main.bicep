@@ -34,6 +34,9 @@ param accountName string
 @secure()
 param personalAccessToken string
 
+@description('Optional. The tags to be assigned the created resources.')
+param tags object = {}
+
 param location string = deployment().location
 
 // Variables
@@ -62,16 +65,19 @@ module naming 'modules/naming.module.bicep' = {
 resource networkingResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: networkingResourceGroupName
   location: location
+  tags: tags
 }
 
 resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: aseResourceGroupName
   location: location
+  tags: tags
 }
 
 resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: sharedResourceGroupName
   location: location
+  tags: tags
 }
 
 // Create networking resources
@@ -82,6 +88,7 @@ module networking 'networking.bicep' = {
     location: location
     resourceSuffix: resourceSuffix
     createCICDAgentSubnet: ((CICDAgentType == 'none') ? false : true)
+    tags: tags
   }
 }
 
@@ -108,6 +115,7 @@ module shared './shared/shared.bicep' = {
     resourceSuffix: resourceSuffix
     vmPassword: vmPassword
     vmUsername: vmUsername
+    tags: tags
   }
 }
 
@@ -126,5 +134,6 @@ module ase 'ase.bicep' = {
     aseSubnetName: networking.outputs.aseSubnetName
     resourceSuffix: resourceSuffix
     naming: naming.outputs.names
+    tags: tags
   }
 }

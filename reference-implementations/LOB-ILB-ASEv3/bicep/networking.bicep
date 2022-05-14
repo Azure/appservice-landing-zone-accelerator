@@ -26,6 +26,9 @@ param jumpBoxAddressPrefix string = '10.0.3.0/24'
 @description('CIDR prefix to use for ASE')
 param aseAddressPrefix string = '10.1.1.0/24'
 
+@description('Optional. The tags to be assigned the created resources.')
+param tags object = {}
+
 // Variables
 var bastionHostName = 'snet-basthost-${resourceSuffix}'
 var bastionHostPip = '${bastionHostName}-pip'
@@ -40,6 +43,7 @@ var aseSubnetName = 'snet-ase-${resourceSuffix}'
 resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: hubVNetName
   location: location
+  tags: tags
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -86,6 +90,7 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: spokeVNetName
   location: location
+  tags: tags
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -144,6 +149,7 @@ resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings
 resource bastionHostPippublicIp 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   name: bastionHostPip
   location: location
+  tags: tags
   sku: {
     name: 'Standard'
   }
@@ -154,6 +160,7 @@ resource bastionHostPippublicIp 'Microsoft.Network/publicIPAddresses@2020-06-01'
 resource bastionHost 'Microsoft.Network/bastionHosts@2020-06-01' = {
   name: bastionHostName
   location: location
+  tags: tags
   properties: {
     ipConfigurations: [
       {
