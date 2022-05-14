@@ -104,26 +104,19 @@ module networking 'networking.bicep' = {
   }
 }
 
-// Get networking resource outputs
-var jumpboxSubnetId = networking.outputs.jumpBoxSubnetId
-var CICDAgentSubnetId = networking.outputs.CICDAgentSubnetId
-
 // Create shared resources
 module shared './shared/shared.bicep' = {  
-  dependsOn: [
-    networking
-  ]
   name: 'sharedresources-Deployment'
   scope: resourceGroup(sharedResourceGroup.name)
   params: {
     location: location
     accountName: accountName
-    CICDAgentSubnetId: CICDAgentSubnetId
+    jumpboxSubnetId: networking.outputs.jumpBoxSubnetId    
+    CICDAgentSubnetId: networking.outputs.CICDAgentSubnetId
     CICDAgentType: CICDAgentType
     environment: environment
-    jumpboxSubnetId: jumpboxSubnetId    
     personalAccessToken: personalAccessToken
-    resourceSuffix: resourceSuffix
+    naming: naming.outputs.names
     vmPassword: vmPassword
     vmUsername: vmUsername
     tags: defaultTags
