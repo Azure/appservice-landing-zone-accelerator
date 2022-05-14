@@ -40,6 +40,12 @@ param tags object = {}
 param location string = deployment().location
 
 // Variables
+
+var defaultTags = union({
+  app: workloadName
+  env: environment
+}, tags)
+
 var resourceSuffix = '${workloadName}-${environment}-${location}'
 var numericSuffix = '001'
 var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
@@ -65,19 +71,19 @@ module naming 'modules/naming.module.bicep' = {
 resource networkingResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: networkingResourceGroupName
   location: location
-  tags: tags
+  tags: defaultTags
 }
 
 resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: aseResourceGroupName
   location: location
-  tags: tags
+  tags: defaultTags
 }
 
 resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: sharedResourceGroupName
   location: location
-  tags: tags
+  tags: defaultTags
 }
 
 // Create networking resources
@@ -88,7 +94,7 @@ module networking 'networking.bicep' = {
     location: location
     resourceSuffix: resourceSuffix
     createCICDAgentSubnet: ((CICDAgentType == 'none') ? false : true)
-    tags: tags
+    tags: defaultTags
   }
 }
 
@@ -115,7 +121,7 @@ module shared './shared/shared.bicep' = {
     resourceSuffix: resourceSuffix
     vmPassword: vmPassword
     vmUsername: vmUsername
-    tags: tags
+    tags: defaultTags
   }
 }
 
@@ -134,6 +140,6 @@ module ase 'ase.bicep' = {
     aseSubnetName: networking.outputs.aseSubnetName
     resourceSuffix: resourceSuffix
     naming: naming.outputs.names
-    tags: tags
+    tags: defaultTags
   }
 }

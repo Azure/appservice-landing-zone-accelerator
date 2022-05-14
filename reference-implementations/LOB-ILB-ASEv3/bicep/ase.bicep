@@ -177,3 +177,4 @@ output aseName string =  ase.name
 output aseId string = ase.id
 output appServicePlanName string = appServicePlan.name
 output appServicePlanId string = appServicePlan.id
+output privateDnsZoneId string = privateDnsZone.outputs.id
