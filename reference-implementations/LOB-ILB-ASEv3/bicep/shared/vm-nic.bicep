@@ -11,10 +11,14 @@ param privateIPAddress string =  '10.0.0.4'
 @description('Name of the Network Inteface Card to be created')
 param name string
 
+@description('Optional. Tags to be added on the resources created')
+param tags object = {}
+
 // Resources
 resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   name: name
   location: location
+  tags: tags
   properties: {
     ipConfigurations: [
       {

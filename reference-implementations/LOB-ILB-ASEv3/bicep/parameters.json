@@ -14,15 +14,20 @@
         "personalAccessToken": {
             "value": "ENTERPAT"
         },
-        "workloadName" :{ 
+        "workloadName": {
             "value": "wlname"
         },
-        "environment" :{ 
+        "environment": {
             "value": "dev"
         },
         "CICDAgentType": {
             "value": "azuredevops OR github OR none"
+        },
+        "tags": {
+            "value": {
+                "businessUnit": "Sample BU",
+                "businessProcess": "Demo"
+            }
         }
-
     }
 }
