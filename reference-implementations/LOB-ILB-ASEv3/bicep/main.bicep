@@ -123,7 +123,6 @@ module shared './shared/shared.bicep' = {
     environment: environment
     jumpboxSubnetId: jumpboxSubnetId    
     personalAccessToken: personalAccessToken
-    resourceGroupName: sharedResourceGroup.name
     resourceSuffix: resourceSuffix
     vmPassword: vmPassword
     vmUsername: vmUsername

@@ -30,9 +30,6 @@ param accountName string
 @secure()
 param personalAccessToken string
 
-@description('The name of the shared resource group')
-param resourceGroupName string
-
 @description('Standardized suffix text to be added to resource names')
 param resourceSuffix string
 
@@ -55,7 +52,6 @@ var keyVaultName = endsWith(tempKeyVaultName, '-') ? substring(tempKeyVaultName,
 // Resources
 module appInsights './azmon.bicep' = {
   name: 'azmon'
-  scope: resourceGroup(resourceGroupName)
   params: {
     location: location
     resourceSuffix: resourceSuffix
@@ -65,7 +61,6 @@ module appInsights './azmon.bicep' = {
 
 module vm_devopswinvm './createvmwindows.bicep' = if (CICDAgentType!='none') {
   name: 'devopsvm'
-  scope: resourceGroup(resourceGroupName)
   params: {
     location: location
     subnetId: CICDAgentSubnetId
@@ -82,7 +77,6 @@ module vm_devopswinvm './createvmwindows.bicep' = if (CICDAgentType!='none') {
  
 module vm_jumpboxwinvm './createvmwindows.bicep' = {
   name: 'jumpboxwinvm'
-  scope: resourceGroup(resourceGroupName)
   params: {
     location: location
     subnetId: jumpboxSubnetId
