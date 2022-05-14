@@ -13,6 +13,9 @@ param workloadName string
 ])
 param environment string
 
+@description('Optional. A numeric suffix (e.g. "001") to be appended on the naming generated for the resources. Defaults to empty.')
+param numericSuffix string = ''
+
 @description('Required. The user name to be used as the Administrator for all VMs created by this deployment')
 param vmUsername string
 
@@ -47,22 +50,25 @@ var defaultTags = union({
 }, tags)
 
 var resourceSuffix = '${workloadName}-${environment}-${location}'
-var numericSuffix = '001'
 var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
 var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
 
+var defaultSuffixes = [
+  workloadName
+  environment
+  '**location**'
+]
+var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuffixes, [ 
+  numericSuffix
+])
+
 module naming 'modules/naming.module.bicep' = {
-  scope: resourceGroup(aseResourceGroupName)
+  scope: resourceGroup(aseResourceGroup.name)
   name: 'namingModule-Deployment'
   params: {
     location: location
-    suffix: [
-      workloadName
-      environment
-      '**location**'
-      numericSuffix
-    ]    
+    suffix: namingSuffixes
     uniqueLength: 6
   }
 }
