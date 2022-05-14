@@ -24,14 +24,14 @@ param windowsOSVersion string = '2016-Datacenter'
 param vmName string
 
 @description('Indicator to guide whether the CI/CD agent script should be run or not')
-param deployAgent bool=false
+param deployAgent bool = false
 
 @description('The Azure DevOps or GitHub account name')
-param accountName string=''
+param accountName string = ''
 
 @description('The personal access token to connect to Azure DevOps or Github')
 @secure()
-param personalAccessToken string=''
+param personalAccessToken string = ''
 
 @description('The name Azure DevOps or GitHub pool for this build agent to join. Use \'Default\' if you don\'t have a separate pool.')
 param poolName string = 'Default'
@@ -48,15 +48,15 @@ param CICDAgentType string
 param artifactsLocation string = 'https://raw.githubusercontent.com/cykreng/Enterprise-Scale-AppService/main/reference-implementations/LOB-ILB-ASEv3/bicep/shared/agentsetup.ps1'
 
 // Variables
-var AgentName = 'agent-${vmName}'
+var agentName = 'agent-${vmName}'
 
 // Bring in the nic
 module nic './vm-nic.bicep' = {
-  name: '${vmName}-nic'
+  name: '${vmName}-nic-Deployment'
   params: {
     location: location
+    name: vmName
     subnetId: subnetId
-    vmName: vmName
   }
 }
 
@@ -101,7 +101,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
 }
 
 // deploy CI/CD agent, if required
-resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-01' = if (deployAgent) {
+resource cdciAgentCustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-01' = if (deployAgent) {
   parent: vm
   name: 'CustomScript'
   location: location
@@ -115,7 +115,7 @@ resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-0
       ]
     }
     protectedSettings: {
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./agentsetup.ps1 -url ${accountName} -pat ${personalAccessToken} -agent ${AgentName} -pool ${poolName} -agenttype ${CICDAgentType} '
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./agentsetup.ps1 -url ${accountName} -pat ${personalAccessToken} -agent ${agentName} -pool ${poolName} -agenttype ${CICDAgentType} '
     }
   }
 }
