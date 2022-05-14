@@ -1,8 +1,8 @@
 // Parameters
-@description('Azure location to which the resources are to be deployed')
+@description('Required. Azure location to which the resources are to be deployed')
 param location string
 
-@description('The mode for the internal load balancing configuration to be applied to the ASE load balancer')
+@description('Optional. The mode for the internal load balancing configuration to be applied to the ASE load balancer')
 @allowed([
   'None'
   'Publishing'
@@ -11,14 +11,14 @@ param location string
 ])
 param internalLoadBalancingMode string = 'Web, Publishing'
 
-@description('The name of the subnet to be used for ASE')
-param aseSubnetName string
+@description('Required. The full id string identifying the target vnet for the ASE')
+param vnetId string
 
-@description('The full id string identifying the target subnet for the ASE')
+@description('Required. The full id string identifying the target subnet for the ASE')
 param aseSubnetId string
 
-@description('The full id string identifying the target vnet for the ASE')
-param vnetId string
+@description('The name of the subnet to be used for ASE')
+param aseSubnetName string
 
 @description('The number of workers to be deployed in the worker pool')
 param numberOfWorkers int = 3
@@ -31,17 +31,28 @@ param numberOfWorkers int = 3
 ])
 param workerPool string = '1'
 
-@description('String to append to resources as part of naming standards')
+@description('String to append to resources as part of naming standards.')
 param resourceSuffix string
 
-// Variables
+@description('Required. The naming module for facilitating naming convention.')
+param naming object
+
+@description('Optional. The tags to be assigned the created resources.')
+param tags object = {}
+
+// Variables 
+/// niantoni: Azure Portal Designer for ASEv3 restriction is max 36 characters
 var aseName = take('ase-${resourceSuffix}', 37) // NOTE : ASE name cannot be more than 37 characters
-var appServicePlanName = 'asp-${resourceSuffix}'
 var privateDnsZoneName = '${aseName}.appserviceenvironment.net'
+
+var resourceNames = {
+  appServiceEnvironment: naming.appServiceEnvironment.name
+  appServicePlan: naming.appServicePlan.name
+}
 
 // Resources
 resource ase 'Microsoft.Web/hostingEnvironments@2021-02-01' = {
-  name: aseName
+  name: resourceNames.appServiceEnvironment
   location: location
   kind: 'ASEV3'
   properties: {
@@ -52,10 +63,11 @@ resource ase 'Microsoft.Web/hostingEnvironments@2021-02-01' = {
       subnet: aseSubnetName
     }
   }
+  tags: tags
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
-  name: appServicePlanName
+  name: resourceNames.appServicePlan
   location: location
   properties: {
     hostingEnvironmentProfile: {
@@ -68,70 +80,100 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-01-15' = {
     size: 'I${workerPool}V2'
     capacity: numberOfWorkers 
   }
+  tags: tags
 }
 
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: privateDnsZoneName
-  location: 'global'
-  properties: {}
-  dependsOn: [
-    ase
-  ]
-}
-
-resource privateDnsZoneName_vnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
-  parent: privateDnsZone
-  name: 'vnetLink'
-  location: 'global'
-  properties: {
-    virtualNetwork: {
-      id: vnetId
-    }
+module privateDnsZone 'modules/privateDnsZone.module.bicep' = {
+  name: 'PrivateDnsZoneModule'
+  params: {
+    name: privateDnsZoneName // ase.properties.dnsSuffix
+    vnetIds: [
+      vnetId
+    ]
+    aRecords: [
+      {
+        name: '*'
+        ipAddress: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+        ttl: 3600
+      }
+      {
+        name: '*.scm'
+        ipAddress: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+        ttl: 3600
+      }
+      {
+        name: '@'
+        ipAddress: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+        ttl: 3600
+      }
+    ]
     registrationEnabled: false
+    tags: tags
   }
 }
 
-resource Microsoft_Network_privateDnsZones_A_privateDnsZoneName 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
-  parent: privateDnsZone
-  name: '*'
-  properties: {
-    ttl: 3600
-    aRecords: [
-      {
-        ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
-      }
-    ]
-  }
-}
+// resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+//   name: privateDnsZoneName
+//   location: 'global'
+//   properties: {}
+//   dependsOn: [
+//     ase
+//   ]
+// }
 
-resource privateDnsZoneName_scm 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
-  parent: privateDnsZone
-  name: '*.scm'
-  properties: {
-    ttl: 3600
-    aRecords: [
-      {
-        ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
-      }
-    ]
-  }
-}
+// resource privateDnsZoneName_vnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+//   parent: privateDnsZone
+//   name: 'vnetLink'
+//   location: 'global'
+//   properties: {
+//     virtualNetwork: {
+//       id: vnetId
+//     }
+//     registrationEnabled: false    
+//   }
+// }
 
-resource privateDnsZoneName_Amp 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
-  parent: privateDnsZone
-  name: '@'
-  properties: {
-    ttl: 3600
-    aRecords: [
-      {
-        ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
-      }
-    ]
-  }
-}
+// resource Microsoft_Network_privateDnsZones_A_privateDnsZoneName 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
+//   parent: privateDnsZone
+//   name: '*'
+//   properties: {
+//     ttl: 3600
+//     aRecords: [
+//       {
+//         ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+//       }
+//     ]
+//   }
+// }
+
+// resource privateDnsZoneName_scm 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
+//   parent: privateDnsZone
+//   name: '*.scm'
+//   properties: {
+//     ttl: 3600
+//     aRecords: [
+//       {
+//         ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+//       }
+//     ]
+//   }
+// }
+
+// resource privateDnsZoneName_Amp 'Microsoft.Network/privateDnsZones/A@2020-06-01' = {
+//   parent: privateDnsZone
+//   name: '@'
+//   properties: {
+//     ttl: 3600
+//     aRecords: [
+//       {
+//         ipv4Address: reference('${ase.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0]
+//       }
+//     ]
+//   }
+// }
 
 // Outputs
-output aseName string = aseName
+output aseName string =  ase.name
 output aseId string = ase.id
-output appServicePlanName string = appServicePlanName
+output appServicePlanName string = appServicePlan.name
 output appServicePlanId string = appServicePlan.id

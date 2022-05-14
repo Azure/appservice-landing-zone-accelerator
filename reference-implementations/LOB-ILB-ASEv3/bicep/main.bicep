@@ -1,10 +1,10 @@
 targetScope='subscription'
 
 // Parameters
-@description('A short name for the workload being deployed')
+@description('Required. A short name for the workload being deployed')
 param workloadName string
 
-@description('The environment for which the deployment is being executed')
+@description('Required. The environment for which the deployment is being executed')
 @allowed([
   'dev'
   'uat'
@@ -13,10 +13,10 @@ param workloadName string
 ])
 param environment string
 
-@description('The user name to be used as the Administrator for all VMs created by this deployment')
+@description('Required. The user name to be used as the Administrator for all VMs created by this deployment')
 param vmUsername string
 
-@description('The password for the Administrator user for all VMs created by this deployment')
+@description('Required. The password for the Administrator user for all VMs created by this deployment')
 param vmPassword string
 
 @description('The CI/CD platform to be used, and for which an agent will be configured for the ASE deployment. Specify \'none\' if no agent needed')
@@ -27,21 +27,36 @@ param vmPassword string
 ])
 param CICDAgentType string
 
-@description('The Azure DevOps or GitHub account name to be used when configuring the CI/CD agent, in the format https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none')
+@description('Required. The Azure DevOps or GitHub account name to be used when configuring the CI/CD agent, in the format https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none')
 param accountName string
 
-@description('The Azure DevOps or GitHub personal access token (PAT) used to setup the CI/CD agent')
+@description('Required. The Azure DevOps or GitHub personal access token (PAT) used to setup the CI/CD agent')
 @secure()
 param personalAccessToken string
-
 
 param location string = deployment().location
 
 // Variables
-var resourceSuffix = '${workloadName}-${environment}-${location}-001'
+var resourceSuffix = '${workloadName}-${environment}-${location}'
+var numericSuffix = '001'
 var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
 var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
+
+module naming 'modules/naming.module.bicep' = {
+  scope: resourceGroup(aseResourceGroupName)
+  name: 'namingModule-Deployment'
+  params: {
+    location: location
+    suffix: [
+      workloadName
+      environment
+      '**location**'
+      numericSuffix
+    ]    
+    uniqueLength: 6
+  }
+}
 
 // Create resource groups
 resource networkingResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -61,7 +76,7 @@ resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 // Create networking resources
 module networking 'networking.bicep' = {
-  name: 'networkingresources'
+  name: 'network-Deployment'
   scope: resourceGroup(networkingResourceGroup.name)
   params: {
     location: location
@@ -79,15 +94,15 @@ module shared './shared/shared.bicep' = {
   dependsOn: [
     networking
   ]
-  name: 'sharedresources'
+  name: 'sharedresources-Deployment'
   scope: resourceGroup(sharedResourceGroup.name)
   params: {
+    location: location
     accountName: accountName
     CICDAgentSubnetId: CICDAgentSubnetId
     CICDAgentType: CICDAgentType
     environment: environment
-    jumpboxSubnetId: jumpboxSubnetId
-    location: location
+    jumpboxSubnetId: jumpboxSubnetId    
     personalAccessToken: personalAccessToken
     resourceGroupName: sharedResourceGroup.name
     resourceSuffix: resourceSuffix
@@ -103,12 +118,13 @@ module ase 'ase.bicep' = {
     shared
   ]
   scope: resourceGroup(aseResourceGroup.name)
-  name: 'aseresources'
+  name: 'ase-Deployment'
   params: {
+    location: location
     vnetId: networking.outputs.spokeVNetId
     aseSubnetId: networking.outputs.aseSubnetId
     aseSubnetName: networking.outputs.aseSubnetName
-    location: location
     resourceSuffix: resourceSuffix
+    naming: naming.outputs.names
   }
 }
