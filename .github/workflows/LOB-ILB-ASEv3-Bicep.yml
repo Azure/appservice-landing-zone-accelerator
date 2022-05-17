@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "Deploying to ${{ fromJson(env.config).AZURE_LOCATION }} with name prefix ${{ fromJson(env.config).RESOURCE_NAME_PREFIX }}"
         # Log into Azure
-      - uses: azure/login@v1
+      - uses: azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
