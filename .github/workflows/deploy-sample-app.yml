@@ -1,0 +1,57 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- none
+
+pool:
+  name: Default
+  demands: agent.name -equals azuredevops-dev
+
+variables:
+  buildConfiguration: 'Release'
+  resourceGroupName: 'rg-ase-ase-ahms-dev-westeurope-001'
+  dotnetVersion: '6.0.x'
+  ServiceEndPointName: 'ASEServiceEndPoint'
+  artifactName: 'SampleApp'
+  WebAppName: 'ahmstest'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    version: $(dotnetVersion)
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+  workingDirectory: $(Build.SourcesDirectory)\sampleapp
+
+
+
+# Publish it as .NET 6 self-contained application for linux runtime
+- task: DotNetCoreCLI@2
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration)  --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+    
+
+# Package the file and uploads them as an artifact of the build
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: $(artifactName)
+
+#Publish it to the Azure App Service
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: $(ServiceEndPointName)
+    appType: 'webApp'
+    WebAppName: $(WebAppName)
+    deployToSlotOrASE: true
+    ResourceGroupName: $(resourceGroupName)
+    SlotName: 'production'
+    packageForLinux: '$(Build.ArtifactStagingDirectory)/SampleAppService.zip'
