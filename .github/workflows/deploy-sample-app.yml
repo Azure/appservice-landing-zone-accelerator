@@ -12,11 +12,11 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  resourceGroupName: 'rg-ase-ase-ahms-dev-westeurope-001'
+  resourceGroupName: 'rg-ase-ase-demo-whs-dev-westus2-001'
   dotnetVersion: '6.0.x'
   ServiceEndPointName: 'ASEServiceEndPoint'
   artifactName: 'SampleApp'
-  WebAppName: 'ahmstest'
+  WebAppName: 'whsasetest'
 
 steps:
 - task: UseDotNet@2
@@ -26,7 +26,6 @@ steps:
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
   workingDirectory: $(Build.SourcesDirectory)\sampleapp
-
 
 
 # Publish it as .NET 6 self-contained application for linux runtime

@@ -40,7 +40,7 @@
    - `PAT` (your personal access token for Azure Devops/GitHub in plain text)
    - `VM_PW` (password for the VMs that will be created in plain text)
    - (Optional) `ACTIONS_STEP_DEBUG` (set this to true if you want [additional information](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging) running the GitHub workflows)
-4. Navigate to [config.yml](../reference-implementations/LOB-ILB-ASEv3/bicep/config.yml) and modify any of the following vlaues as required:
+4. Navigate to [config.yml](../reference-implementations/LOB-ILB-ASEv3/bicep/config.yml) and modify any of the following values as required:
     
     Below are the default values in config.yml
     
@@ -73,5 +73,40 @@
    ![Shared](/docs/Images/Shared.png)
    Outputs from Networking Module:
    ![Networking](/docs/Images/Networking.png)
+7. Sample Application Deployment to ASE using GitHub Actions (OPTIONAL)
+
+    1. Check that self-hosted runner was successfully added to your organization/repository
+        - Navigate to main page of repository
+        - Under repository name, click Settings
+        - In the left sidebar, click Actions, then click Runners
+        - Check to ensure self-hosted runner is running. When the runner application is connected to GitHub and ready to receive jobs, you will see the following message on the github-dev VM's terminal.
+            ```
+            √ Connected to GitHub
+            2019-10-24 05:45:56Z: Listening for Jobs
+            ```
+
+    2. Modify application deployment workflow:
+
+        - Navigate to [deploy-sample-app.yml](../.github/workflows/deploy-sample-app.yml) and modify any of the following values as required:
+    
+        - Below are the default values in deploy-sample-app.yml
+    
+            ```yaml
+            buildConfiguration: 'Release'
+            resourceGroupName: 'rg-ase-ase-demo-whs-dev-westus2-001'
+            dotnetVersion: '6.0.x'
+            ServiceEndPointName: 'ASEServiceEndPoint'
+            artifactName: 'SampleApp'
+            WebAppName: 'whsasetest'
+            ```
+   3. Run Workflow
+        - Push the configuration changes to your feature branch, then create a pull request to main. This should trigger the build. Current builds can be found at **Actions** with the deploy-sample-app workflow 
+        - Alternatively, you can also trigger a build by going to **Actions** selecting the specific workflow (ie. AzureBicepDeploy), and then selecting **Run workflow**.
+        
+   4. Open Sample Application
+        - In an App Service Environment with an internal virtual IP (VIP), the domain suffix used for app creation is .<asename>.appserviceenvironment.net. If your App Service Environment is named my-ase, and you host an app called contoso, you reach it at these URLs:
+            - contoso.my-ase.appserviceenvironment.net
+            - contoso.scm.my-ase.appserviceenvironment.net
+
 
 
