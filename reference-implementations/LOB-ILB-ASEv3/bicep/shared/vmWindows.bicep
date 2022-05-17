@@ -1,9 +1,21 @@
 // Parameters
-@description('Azure location to which the resources are to be deployed')
+@description('Required. Azure location to which the resources are to be deployed')
 param location string
+
+@description('Required. Name of the VM to be created')
+param name string
 
 @description('The full id string identifying the target subnet for the VM')
 param subnetId string
+
+@allowed([
+  'any'
+  '1'
+  '2'
+  '3'
+])
+@description('Optional. Availabity zone for the VM to be created in -defaults to "any".')
+param availabilityZone string = 'any'
 
 @description('Disk type of the IS disk')
 param osDiskType string = 'Standard_LRS'
@@ -19,9 +31,6 @@ param password string
 
 @description('Windows OS Version indicator')
 param windowsOSVersion string = '2016-Datacenter'
-
-@description('Name of the VM to be created')
-param vmName string
 
 @description('Indicator to guide whether the CI/CD agent script should be run or not')
 param deployAgent bool = false
@@ -51,14 +60,13 @@ param artifactsLocation string = 'https://raw.githubusercontent.com/cykreng/Ente
 param tags object = {}
 
 // Variables
-var agentName = 'agent-${vmName}'
+var agentName = 'agent-${name}'
 
-// Bring in the nic
-module nic './vm-nic.bicep' = {
-  name: '${vmName}-nic-Deployment'
+module nic './networkInterfaceCard.bicep' = {
+  name: '${name}-nic-Deployment'
   params: {
     location: location
-    name: vmName
+    name: name
     tags: tags
     subnetId: subnetId
   }
@@ -66,11 +74,11 @@ module nic './vm-nic.bicep' = {
 
 // Create the vm
 resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
-  name: vmName
+  name: name
   location: location
   tags: tags
-  zones: [
-    '1'
+  zones: availabilityZone == 'any' ? json('null') : [ 
+    availabilityZone 
   ]
   properties: {
     hardwareProfile: {
@@ -91,7 +99,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
       }
     }
     osProfile: {
-      computerName: vmName
+      computerName: name
       adminUsername: username
       adminPassword: password
     }

@@ -1,8 +1,8 @@
 // Parameters
-@description('Azure location to which the resources are to be deployed')
+@description('Required. Azure location to which the resources are to be deployed')
 param location string
 
-@description('Id of the subnet within which the VM must be created')
+@description('Required. Id of the subnet within which the VM must be created')
 param subnetId string
 
 @description('The private IP address to associated with this VM')

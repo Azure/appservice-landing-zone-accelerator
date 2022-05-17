@@ -3,10 +3,10 @@ targetScope='resourceGroup'
 @description('Azure location to which the resources are to be deployed')
 param location string
 
-@description('Standardized suffix text to be added to resource names')
+@description('Required. Application Insights instance resource name.')
 param name string
 
-@description('Standardized suffix text to be added to resource names')
+@description('Required. Log Analytics workspace instance resource name.')
 param logAnalyticsWorkspaceName string
 
 @description('Optional. Tags to be added on the resources created')
@@ -27,7 +27,6 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
   })
   tags: tags
 }
-
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: name

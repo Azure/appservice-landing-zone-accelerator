@@ -47,31 +47,31 @@ param tags object = {}
 
 var resourceNames = {
   keyVault: naming.keyVault.nameUnique
-  appInsights: naming.appInsights.name
+  applicationInsights: naming.applicationInsights.name
   logAnalyticsWorkspace: naming.logAnalyticsWorkspace.name
   vmJumpbox: naming.windowsVirtualMachine.name
   vmDevOps: '${CICDAgentType}-${environment}'
 }
 
 // Resources
-module appInsights './azmon.bicep' = {
-  name: 'azmon-Deployment'
+module appInsights './appInsights.bicep' = {
+  name: 'appInsights-Deployment'
   params: {
     location: location
-    name: resourceNames.appInsights
+    name: resourceNames.applicationInsights
     logAnalyticsWorkspaceName: resourceNames.logAnalyticsWorkspace
     tags: tags
   }
 }
 
-module vmDevops './createvmwindows.bicep' = if (CICDAgentType != 'none') {
+module vmDevops './vmWindows.bicep' = if (CICDAgentType != 'none') {
   name: 'devopsvm-Deployment'
   params: {
     location: location
+    name: resourceNames.vmDevOps
     subnetId: CICDAgentSubnetId
     username: vmUsername
-    password: vmPassword
-    vmName: resourceNames.vmDevOps
+    password: vmPassword    
     accountName: accountName
     personalAccessToken: personalAccessToken
     CICDAgentType: CICDAgentType
@@ -80,11 +80,11 @@ module vmDevops './createvmwindows.bicep' = if (CICDAgentType != 'none') {
   }
 }
 
-module vmJumpbox './createvmwindows.bicep' = {
+module vmJumpbox './vmWindows.bicep' = {
   name: 'vmJumpbox-Deployment'
   params: {
     location: location
-    vmName: resourceNames.vmJumpbox
+    name: resourceNames.vmJumpbox
     subnetId: jumpboxSubnetId
     username: vmUsername
     password: vmPassword
