@@ -1,6 +1,9 @@
-targetScope='subscription'
+targetScope = 'subscription'
 
 // Parameters
+@description('Azure location to which the resources are to be deployed')
+param location string = deployment().location
+
 @description('Required. A short name for the workload being deployed')
 param workloadName string
 
@@ -40,13 +43,11 @@ param personalAccessToken string
 @description('Optional. The tags to be assigned the created resources.')
 param tags object = {}
 
-param location string = deployment().location
-
 // Variables
 
 var defaultTags = union({
-  app: workloadName
-  env: environment
+  application: workloadName
+  environment: environment
 }, tags)
 
 var resourceSuffix = '${workloadName}-${environment}-${location}'
@@ -59,7 +60,7 @@ var defaultSuffixes = [
   environment
   '**location**'
 ]
-var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuffixes, [ 
+var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuffixes, [
   numericSuffix
 ])
 
@@ -98,20 +99,20 @@ module networking 'networking.bicep' = {
   scope: resourceGroup(networkingResourceGroup.name)
   params: {
     location: location
-    resourceSuffix: resourceSuffix
     createCICDAgentSubnet: ((CICDAgentType == 'none') ? false : true)
+    naming: naming.outputs.names
     tags: defaultTags
   }
 }
 
 // Create shared resources
-module shared './shared/shared.bicep' = {  
+module shared './shared/shared.bicep' = {
   name: 'sharedresources-Deployment'
   scope: resourceGroup(sharedResourceGroup.name)
   params: {
     location: location
     accountName: accountName
-    jumpboxSubnetId: networking.outputs.jumpBoxSubnetId    
+    jumpboxSubnetId: networking.outputs.jumpBoxSubnetId
     CICDAgentSubnetId: networking.outputs.CICDAgentSubnetId
     CICDAgentType: CICDAgentType
     environment: environment
@@ -135,9 +136,11 @@ module ase 'ase.bicep' = {
     location: location
     vnetId: networking.outputs.spokeVNetId
     aseSubnetId: networking.outputs.aseSubnetId
-    aseSubnetName: networking.outputs.aseSubnetName
-    resourceSuffix: resourceSuffix
     naming: naming.outputs.names
     tags: defaultTags
   }
 }
+
+output networkResourceGroupName string = networkingResourceGroup.name
+output sharedResourceGroupName string = sharedResourceGroup.name
+output aseResourceGroupName string = aseResourceGroup.name

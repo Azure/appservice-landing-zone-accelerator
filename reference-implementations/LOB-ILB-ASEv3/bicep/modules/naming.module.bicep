@@ -8,7 +8,7 @@
  * Microsoft naming convention best practices
  * https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
  * ----------------------------------------------------------------------------
- * Generated/built on: 2022-05-13T18:58:54.820Z
+ * Generated/built on: 2022-05-17T10:34:35.322Z
  */
 
  @description('Optional. It is not recommended that you use prefix by azure you should be using a suffix for your resources.')
@@ -182,9 +182,9 @@
      slug: 'avail'
    }
    bastionHost: {
-     name: substring(replace(nameTemplate, placeholder, 'snap'), 0, min(length(replace(nameTemplate, placeholder, 'snap')), 80))
-     nameUnique: substring(replace(nameUniqueTemplate, placeholder, 'snap'), 0, min(length(replace(nameUniqueTemplate, placeholder, 'snap')), 80))
-     slug: 'snap'
+     name: substring(replace(nameTemplate, placeholder, 'bas'), 0, min(length(replace(nameTemplate, placeholder, 'bas')), 80))
+     nameUnique: substring(replace(nameUniqueTemplate, placeholder, 'bas'), 0, min(length(replace(nameUniqueTemplate, placeholder, 'bas')), 80))
+     slug: 'bas'
    }
    batchAccount: {
      name: substring(replace(nameSafeTemplate, placeholder, 'ba'), 0, min(length(replace(nameSafeTemplate, placeholder, 'ba')), 24))
