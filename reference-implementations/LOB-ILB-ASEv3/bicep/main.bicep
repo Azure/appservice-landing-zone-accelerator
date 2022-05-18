@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 // Parameters
-@description('Azure location to which the resources are to be deployed')
+@description('Optional. Azure location to which the resources are to be deployed -defaults to the location of the current deployment')
 param location string = deployment().location
 
 @description('Required. A short name for the workload being deployed')
@@ -25,7 +25,7 @@ param vmUsername string
 @description('Required. The password for the Administrator user for all VMs created by this deployment')
 param vmPassword string
 
-@description('The CI/CD platform to be used, and for which an agent will be configured for the ASE deployment. Specify \'none\' if no agent needed')
+@description('Required. The CI/CD platform to be used, and for which an agent will be configured for the ASE deployment. Specify \'none\' if no agent needed')
 @allowed([
   'github'
   'azuredevops'
