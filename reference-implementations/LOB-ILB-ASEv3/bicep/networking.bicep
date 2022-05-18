@@ -1,11 +1,11 @@
 // Parameters
-@description('Azure location to which the resources are to be deployed')
+@description('Optional. Azure location to which the resources are to be deployed')
 param location string
 
 @description('Required. The naming module for facilitating resource naming convention.')
 param naming object
 
-@description('Indicator as to whether the CI/CD agent subnet should be created or not')
+@description('Optional. Indicator as to whether the CI/CD agent subnet should be created or not, defaults to true.')
 param createCICDAgentSubnet bool = true
 
 @description('CIDR prefix to use for Hub VNet')
@@ -17,11 +17,11 @@ param spokeVNetAddressPrefix string = '10.1.0.0/16'
 @description('CIDR prefix to use for Bastion subnet')
 param bastionAddressPrefix string = '10.0.1.0/24'
 
-@description('CIDR prefix to use CI/CD Agent subnet')
-param CICDAgentAddressPrefix string = '10.0.2.0/24'
-
 @description('CIDR prefix to use for Jumpbox subnet')
-param jumpBoxAddressPrefix string = '10.0.3.0/24'
+param jumpBoxAddressPrefix string = '10.0.2.0/24'
+
+@description('CIDR prefix to use CI/CD Agent subnet')
+param CICDAgentAddressPrefix string = '10.0.3.0/24'
 
 @description('CIDR prefix to use for ASE')
 param aseAddressPrefix string = '10.1.1.0/24'
@@ -44,6 +44,31 @@ var resourceNames = {
   jumpboxSubnet: replace(snetNameWithPlaceholder, placeholder, 'jbox')
 }
 
+var defaultSubnets = [
+  {
+    name: resourceNames.bastionSubnet
+    properties: {
+      addressPrefix: bastionAddressPrefix
+    }
+  }
+  {
+    name: resourceNames.jumpboxSubnet
+    properties: {
+      addressPrefix: jumpBoxAddressPrefix
+    }
+  }
+]
+
+// Append optional CICD Agent subnet, if required
+var subnets = createCICDAgentSubnet ? concat(defaultSubnets, [
+  {
+    name: resourceNames.cicdAgentSubnet
+    properties: {
+      addressPrefix: CICDAgentAddressPrefix
+    }
+  }
+]) : defaultSubnets
+
 // Resources - VNet - SubNets
 resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: resourceNames.vnetHub
@@ -57,40 +82,9 @@ resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
     }
     enableVmProtection: false
     enableDdosProtection: false
-    subnets: [
-      {
-        name: resourceNames.bastionSubnet
-        properties: {
-          addressPrefix: bastionAddressPrefix
-        }
-      }
-      {
-        name: resourceNames.jumpboxSubnet
-        properties: {
-          addressPrefix: jumpBoxAddressPrefix
-        }
-      }
-      {
-        name: resourceNames.cicdAgentSubnet
-        properties: {
-          addressPrefix: CICDAgentAddressPrefix
-        }
-      }
-    ]
+    subnets: subnets
   }
 }
-
-// // optionally create CICD Agent subnet
-// resource CICDAgentSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (createCICDAgentSubnet) {
-//   name: CICDAgentSubnetName
-//    parent: vnetHub
-//    properties: {
-//      addressPrefix: CICDAgentNameAddressPrefix
-//    }
-//    dependsOn:[
-//     vnetHub
-//    ]
-// }
 
 resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: resourceNames.vnetSpoke
