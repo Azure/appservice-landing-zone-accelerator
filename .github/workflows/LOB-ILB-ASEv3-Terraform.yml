@@ -73,7 +73,7 @@ jobs:
         run: |
           terraform plan \
             -var-file="Parameters/uat.tfvars" \
-            -out-file="./${{ env.tfplan_name }}"
+            -out-file="${{ env.modulePath }}/tfplan/${{ env.tfplan_name }}"
       
       - name: Terraform Plan Destroy
         if: ${{ github.event.inputs.destroy == 'true' }}
@@ -82,7 +82,7 @@ jobs:
         run: |
           terraform plan -destroy \
             -var-file="Parameters/uat.tfvars" \
-            -out-file="./${{ env.tfplan_name }}"
+            -out-file="${{ env.modulePath }}/tfplan/${{ env.tfplan_name }}"
 
       - name: Upload TF Plan
         uses: actions/upload-artifact@v3
