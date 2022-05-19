@@ -19,20 +19,18 @@ resource "azurerm_app_service_environment_v3" "ase" {
   depends_on                   = [azurerm_bastion_host.bastionHost]
 }
 
-resource "azurerm_app_service_plan" "appServicePlan" {
+resource "azurerm_service_plan" "appServicePlan" {
   name                       = local.appServicePlanName
   location                   = azurerm_resource_group.aserg.location
   resource_group_name        = azurerm_resource_group.aserg.name
   app_service_environment_id = azurerm_app_service_environment_v3.ase.id
-  is_xenon                   = false
-  per_site_scaling           = false
+  per_site_scaling_enabled   = false
   reserved                   = false
-  zone_redundant             = true
-  sku {
-    tier     = "IsolatedV2"
-    size     = "I${local.workerPool}v2"
-    capacity = local.numberOfWorkers
-  }
+  zone_balancing_enabled     = true
+
+  sku_name     = "I${local.workerPool}v2"
+  worker_count = local.numberOfWorkers
+
   depends_on = [azurerm_bastion_host.bastionHost]
 }
 
