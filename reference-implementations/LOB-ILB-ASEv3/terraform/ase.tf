@@ -84,8 +84,8 @@ output "aseId" {
   value = azurerm_app_service_environment_v3.ase.id
 }
 output "appServicePlanName" {
-  value = azurerm_app_service_plan.appServicePlan.name
+  value = azurerm_service_plan.appServicePlan.name
 }
 output "appServicePlanId" {
-  value = azurerm_app_service_plan.appServicePlan.id
+  value = azurerm_service_plan.appServicePlan.id
 }
