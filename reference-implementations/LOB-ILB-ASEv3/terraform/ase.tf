@@ -25,9 +25,9 @@ resource "azurerm_service_plan" "appServicePlan" {
   resource_group_name        = azurerm_resource_group.aserg.name
   app_service_environment_id = azurerm_app_service_environment_v3.ase.id
   per_site_scaling_enabled   = false
-  reserved                   = false
   zone_balancing_enabled     = true
 
+  os_type = "Windows"
   sku_name     = "I${local.workerPool}v2"
   worker_count = local.numberOfWorkers
 
