@@ -1,23 +1,17 @@
 name: 'ASEv3 Terraform'
 
 on:
-  # workflow_dispatch:
-  #   inputs:
-  #     destroy:
-  #       description: 'Set to true to destroy infrastructure (default: false)'
-  #       required: false
-  #       default: false
+  workflow_dispatch:
   push:
     branches:
-    # - main
-      - jin/41/path-for-workflow-trigger-include-iac
+      - main
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
 
   pull_request:
     branches:
-    - main
+      - main
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
@@ -25,10 +19,9 @@ on:
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
   terraform_version: 1.1.8
-  tfplan_name: "asev3-${{github.run_number}}.tfplan"
 
 jobs:
-  initialize_validate_plan:
+  validate-plan-and-apply:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare environment variables
@@ -53,10 +46,6 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.terraform_version }}
-
-      # - uses: azure/login@v1
-      #   with:
-      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Terraform Init
         working-directory: ${{ env.modulePath }}

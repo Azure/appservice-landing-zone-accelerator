@@ -5,8 +5,7 @@ on:
 
   push:
     branches:
-    # - main
-    - jin/41/path-for-workflow-trigger-include-iac
+    - main
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Bicep.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/bicep/**'
