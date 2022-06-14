@@ -29,3 +29,6 @@ After the linter step if there is no syntax errors etc, we run another validatio
 - Login to Azure env with our credentials that we keep in GitHub
 - We run Preflight validation, this validation is more complex than linter, it actually communicate with the ARM Engine and do more comphrinsive validation.
 - Lastly we deploy the Bicep file to a subscription which requires to deploy more than one Resource Group. 
+
+## Other Considerations
+Please leverage issues if you have any feedback or request on how we can improve on this repository.
