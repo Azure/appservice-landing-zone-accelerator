@@ -91,3 +91,6 @@ There are several ways to **Validate** an ARM Template;
 **Success**: Since before ARM Template, Bicep template finished successfully (otherwise ARM Template generation step would not start) so we are sure that ARM Template will work, so no need to add any validation on that. This doesn't guarantee a successful deployment as there may be other factors such as region availability, user permission, policy conflict that could lead to a failed deployment even if the ARM template is completely valid. 
 
 As a result, since the ARM Template is generated from the Bicep template, additional steps to **validate the ARM Template** are negligible.
+
+## Other Considerations
+Please leverage issues if you have any feedback or request on how we can improve on this repository.
