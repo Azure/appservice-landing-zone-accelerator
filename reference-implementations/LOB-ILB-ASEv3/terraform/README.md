@@ -13,7 +13,6 @@
     * [Configure Terraform Remote State](#configure-terraform-remote-state)
     * [Provide Parameters Required for Deployment](#provide-parameters-required-for-deployment)
     * [Deploy](#deploy)
-* [:straight_ruler: Project Structure](#-straight-ruler--project-structure)
 * [Further Reading](#further-reading)
   * [Design Guidelines](#design-guidelines)
 * [Contributing](#contributing)
@@ -140,9 +139,6 @@ As you configured the backend remote state with your live Azure infrastructure r
     terraform apply
     ```
 
-## :straight_ruler: Project Structure
-
-This repository is divided into two major components: `Modules` and `Solutions`
 
 ## Further Reading
 
