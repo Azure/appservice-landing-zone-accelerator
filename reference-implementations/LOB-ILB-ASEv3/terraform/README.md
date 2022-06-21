@@ -89,7 +89,7 @@ For additional reading around remote state:
 * [MS Doc: Store Terraform state in Azure Storage](https://docs.microsoft.com/en-us/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli)
 * [TF Doc: AzureRM Provider Configuration Documentation](https://www.terraform.io/language/settings/backends/azurerm)
 
-### Deploy the App Service
+### Deploy the App Service Landing Zone
 
 #### Configure Terraform Remote State
 
