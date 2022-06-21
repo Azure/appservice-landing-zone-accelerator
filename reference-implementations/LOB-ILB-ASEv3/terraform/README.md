@@ -2,6 +2,23 @@
 
 ## Table of Contents
 
+* [Architecture](#architecture)
+  * [Overview](#overview)
+* [Pre-requisites](#pre-requisites)
+* [:rocket: Getting started](#-rocket--getting-started)
+  * [Setting up your environment](#setting-up-your-environment)
+    * [Configure Terraform](#configure-terraform)
+    * [Configure Remote Storage Account](#configure-remote-storage-account)
+  * [Deploy the App Service](#deploy-the-app-service)
+    * [Configure Terraform Remote State](#configure-terraform-remote-state)
+    * [Provide Parameters Required for Deployment](#provide-parameters-required-for-deployment)
+    * [Deploy](#deploy)
+* [:straight_ruler: Project Structure](#-straight-ruler--project-structure)
+* [Further Reading](#further-reading)
+  * [Design Guidelines](#design-guidelines)
+* [Contributing](#contributing)
+* [Code of conduct](#code-of-conduct)
+
 ## Architecture
 
 ### Overview
