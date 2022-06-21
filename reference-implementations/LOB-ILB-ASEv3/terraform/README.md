@@ -12,7 +12,7 @@ The architectural approach can be used as design guidance for greenfield impleme
 
 The provided infrastructure-as-code template can be modified to fit your naming conventions, use existing resources (DevOps agent, key vault, and so on), and use different modes of App Service Environment v3.
 
-![AppServiceLandingZoneArchitecture.png](../../../../../docs/Images/AppServiceLandingZoneArchitecture.png)
+![AppServiceLandingZoneArchitecture.png](../../../docs\Images\AppServiceLandingZoneArchitecture.png)
 
 ## Pre-requisites
 
