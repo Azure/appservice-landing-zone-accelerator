@@ -8,7 +8,7 @@
 
 ## Steps
 1. Clone this repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) to your organization/repository
-   ![Clone Repo](/docs/Images/CloneRepo.png)
+   ![Clone Repo](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/ASE.png)
 2. Setup authentication between Azure and GitHub. Currently there are [two options](https://docs.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Cwindows) to configure this - through OpenID Connect(coming soon) or with a service principal. Only one of the two actions is required.  
    - Use a service principal secret
         1. Open [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview) in the Azure Portal or [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) locally
@@ -29,9 +29,9 @@
             }
             ```
         4. Navigate to where you cloned the GitHub repository and go to **Settings** and select **Secrets**.
-            ![Secrets](/docs/Images/Secrets.png)
+            ![Secrets](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/Secrets.png)
         5. Select **New repository secrets**.
-            ![New Secrets](/docs/Images/NewSecrets.png)
+            ![New Secrets](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/NewSecrets.png)
         6. Create a new secret called `AZURE_CREDENTIALS` with the JSON information in step 3 (in JSON format).
    - Use Azure login action with OpenID Connect (coming soon)
 3. Create the following secrets with corresponding infromation:
@@ -40,7 +40,7 @@
    - `PAT` (your personal access token for Azure Devops/GitHub in plain text)
    - `VM_PW` (password for the VMs that will be created in plain text)
    - (Optional) `ACTIONS_STEP_DEBUG` (set this to true if you want [additional information](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging) running the GitHub workflows)
-4. Navigate to [config.yml](../reference-implementations/LOB-ILB-ASEv3/bicep/config.yml) and modify any of the following vlaues as required:
+4. Navigate to [config.yml](/reference-implementations/LOB-ILB-ASEv3/bicep/config.yml) and modify any of the following vlaues as required:
     
     Below are the default values in config.yml
     
@@ -62,16 +62,14 @@
    - `ACCOUNT_NAME` (the value will be replaced with repository secret)
    - `CICD_AGENT_TYPE` (github, azuredevops, or none) 
 5. Push the configuration changes to your feature branch, then create a pull request to main. This should trigger the build. Current builds can be found at **Actions** with the selected workflow (AzureBicepDeploy in this case)
-   ![AzureBicepDeploy](/docs/Images/AzureBicepDeploy.png)
+   ![AzureBicepDeploy](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/AzureBicepDeploy.png)
    Alternatively, you can also trigger a build by going to **Actions** selecting the specific workflow (ie. AzureBicepDeploy), and then selecting **Run workflow**.
-   ![WorkflowDispatch](/docs/Images/WorkFlowDispatch.png)
+   ![WorkflowDispatch](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/WorkFlowDispatch.png)
 6. A deployment for an App Service Landing Zone Accelerator reference implementation should look something similar to the following:
-   ![Resource Groups](/docs/Images/ResourceGroups.png)
+   ![Resource Groups](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/ResourceGroups.png)
    Outputs from ASE Module:
-   ![ASE](/docs/Images/ASE.png)
+   ![ASE](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/ASE.png)
    Outputs from Shared Module:
-   ![Shared](/docs/Images/Shared.png)
+   ![Shared](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/Shared.png)
    Outputs from Networking Module:
-   ![Networking](/docs/Images/Networking.png)
-
-
+   ![Networking](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/Networking.png)
