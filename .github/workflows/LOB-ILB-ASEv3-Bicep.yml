@@ -1,19 +1,14 @@
 name: 'AzureBicepDeploy'
 
 on:
-  workflow_dispatch:
-
-  push:
-    branches:
-    - main
-    paths:
-      - 'reference-implementations/LOB-ILB-ASEv3/bicep/**'
+  workflow_dispatch: 
 
   pull_request:
     branches:
     - main
     paths:
       - 'reference-implementations/LOB-ILB-ASEv3/bicep/**'
+      - '!reference-implementations/LOB-ILB-ASEv3/bicep/*.md'
 
 jobs:
   validate_bicep:
