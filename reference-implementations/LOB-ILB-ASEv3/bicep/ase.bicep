@@ -31,7 +31,7 @@ param workerPool string = '1'
 @description('Required. The naming module for facilitating naming convention.')
 param naming object
 
-@description('Optional. The tags to be assigned the created resources.')
+@description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
 // Variables 

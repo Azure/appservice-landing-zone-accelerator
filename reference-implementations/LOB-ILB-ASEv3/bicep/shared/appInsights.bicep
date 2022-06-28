@@ -9,7 +9,7 @@ param name string
 @description('Required. Log Analytics workspace instance resource name.')
 param logAnalyticsWorkspaceName string
 
-@description('Optional. Tags to be added on the resources created')
+@description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
 // Resources

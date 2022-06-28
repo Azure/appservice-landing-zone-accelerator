@@ -40,7 +40,7 @@ param accountName string
 @secure()
 param personalAccessToken string
 
-@description('Optional. The tags to be assigned the created resources.')
+@description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
 // Variables
