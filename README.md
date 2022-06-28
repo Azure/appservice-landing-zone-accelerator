@@ -28,11 +28,11 @@ Deployed Resources:
 ![image](https://user-images.githubusercontent.com/37597107/133897451-9a6d0a07-873c-4f87-81de-29b15d576e4b.png)
 
 Deployment Details:
-| Deployment Methodology | File |
+| Deployment Methodology | GitHub Actions
 |--------------|--------------|
-|[Bicep](/reference-implementations/LOB-ILB-ASEv3/bicep/bicep-guide.md)|[GitHub Action YAML](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
-|[ARM](/reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/ARM-guide.md)|[Template file](/reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/ase.json) |
-| Terraform (Coming soon)||
+|[Bicep](/reference-implementations/LOB-ILB-ASEv3/bicep/README.md)|[LOB-ILB-ASEv3-Bicep.yml](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
+|[ARM](/reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/README.md)| Not provided* |
+|[Terraform](/reference-implementations/LOB-ILB-ASEv3/terraform/README.md)|Coming Soon|
 
 Cost estimation:
 
