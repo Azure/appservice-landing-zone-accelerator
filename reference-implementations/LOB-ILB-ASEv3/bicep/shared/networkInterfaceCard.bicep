@@ -1,20 +1,24 @@
 // Parameters
-@description('Azure location to which the resources are to be deployed')
+@description('Required. Azure location to which the resources are to be deployed')
 param location string
 
-@description('Id of the subnet within which the VM must be created')
+@description('Required. Id of the subnet within which the VM must be created')
 param subnetId string
 
 @description('The private IP address to associated with this VM')
 param privateIPAddress string =  '10.0.0.4'
 
-@description('Name of the VM to be created')
-param vmName string
+@description('Name of the Network Inteface Card to be created')
+param name string
+
+@description('Optional. The tags to be assigned to the created resources.')
+param tags object = {}
 
 // Resources
 resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
-  name: vmName
+  name: name
   location: location
+  tags: tags
   properties: {
     ipConfigurations: [
       {

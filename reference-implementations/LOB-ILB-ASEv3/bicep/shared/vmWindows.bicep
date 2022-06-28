@@ -1,9 +1,21 @@
 // Parameters
-@description('Azure location to which the resources are to be deployed')
+@description('Required. Azure location to which the resources are to be deployed')
 param location string
+
+@description('Required. Name of the VM to be created')
+param name string
 
 @description('The full id string identifying the target subnet for the VM')
 param subnetId string
+
+@allowed([
+  'any'
+  '1'
+  '2'
+  '3'
+])
+@description('Optional. Availabity zone for the VM to be created in -defaults to "any".')
+param availabilityZone string = 'any'
 
 @description('Disk type of the IS disk')
 param osDiskType string = 'Standard_LRS'
@@ -20,18 +32,15 @@ param password string
 @description('Windows OS Version indicator')
 param windowsOSVersion string = '2016-Datacenter'
 
-@description('Name of the VM to be created')
-param vmName string
-
 @description('Indicator to guide whether the CI/CD agent script should be run or not')
-param deployAgent bool=false
+param deployAgent bool = false
 
 @description('The Azure DevOps or GitHub account name')
-param accountName string=''
+param accountName string = ''
 
 @description('The personal access token to connect to Azure DevOps or Github')
 @secure()
-param personalAccessToken string=''
+param personalAccessToken string = ''
 
 @description('The name Azure DevOps or GitHub pool for this build agent to join. Use \'Default\' if you don\'t have a separate pool.')
 param poolName string = 'Default'
@@ -45,27 +54,31 @@ param poolName string = 'Default'
 param CICDAgentType string
 
 @description('The base URI where the CI/CD agent artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated.')
-param artifactsLocation string = 'https://raw.githubusercontent.com/cykreng/Enterprise-Scale-AppService/main/reference-implementations/LOB-ILB-ASEv3/bicep/shared/agentsetup.ps1'
+param artifactsLocation string = 'https://github.com/Azure/appservice-landing-zone-accelerator/raw/main/reference-implementations/LOB-ILB-ASEv3/bicep/shared/agentsetup.ps1'
+
+@description('Optional. The tags to be assigned to the created resources.')
+param tags object = {}
 
 // Variables
-var AgentName = 'agent-${vmName}'
+var agentName = 'agent-${name}'
 
-// Bring in the nic
-module nic './vm-nic.bicep' = {
-  name: '${vmName}-nic'
+module nic './networkInterfaceCard.bicep' = {
+  name: '${name}-nic-Deployment'
   params: {
     location: location
+    name: name
+    tags: tags
     subnetId: subnetId
-    vmName: vmName
   }
 }
 
 // Create the vm
 resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
-  name: vmName
+  name: name
   location: location
-  zones: [
-    '1'
+  tags: tags
+  zones: availabilityZone == 'any' ? json('null') : [ 
+    availabilityZone 
   ]
   properties: {
     hardwareProfile: {
@@ -86,7 +99,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
       }
     }
     osProfile: {
-      computerName: vmName
+      computerName: name
       adminUsername: username
       adminPassword: password
     }
@@ -101,7 +114,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
 }
 
 // deploy CI/CD agent, if required
-resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-01' = if (deployAgent) {
+resource cdciAgentCustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-01' = if (deployAgent) {
   parent: vm
   name: 'CustomScript'
   location: location
@@ -115,7 +128,7 @@ resource vm_CustomScript 'Microsoft.Compute/virtualMachines/extensions@2021-04-0
       ]
     }
     protectedSettings: {
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./agentsetup.ps1 -url ${accountName} -pat ${personalAccessToken} -agent ${AgentName} -pool ${poolName} -agenttype ${CICDAgentType} '
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -Command ./agentsetup.ps1 -url ${accountName} -pat ${personalAccessToken} -agent ${agentName} -pool ${poolName} -agenttype ${CICDAgentType} '
     }
   }
 }
