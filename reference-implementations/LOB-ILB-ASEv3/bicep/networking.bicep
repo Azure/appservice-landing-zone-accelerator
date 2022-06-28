@@ -26,7 +26,7 @@ param CICDAgentAddressPrefix string = '10.0.3.0/24'
 @description('CIDR prefix to use for ASE')
 param aseAddressPrefix string = '10.1.1.0/24'
 
-@description('Optional. The tags to be assigned the created resources.')
+@description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
 // Variables

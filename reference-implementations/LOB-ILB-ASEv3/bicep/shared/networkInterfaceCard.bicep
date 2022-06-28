@@ -11,7 +11,7 @@ param privateIPAddress string =  '10.0.0.4'
 @description('Name of the Network Inteface Card to be created')
 param name string
 
-@description('Optional. Tags to be added on the resources created')
+@description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
 // Resources
