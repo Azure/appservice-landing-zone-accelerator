@@ -2,8 +2,6 @@
 
 ## Table of Contents
 
-* [Architecture](#architecture)
-  * [Overview](#overview)
 * [Pre-requisites](#pre-requisites)
 * [:rocket: Getting started](#-rocket--getting-started)
   * [Setting up your environment](#setting-up-your-environment)
@@ -13,22 +11,6 @@
     * [Configure Terraform Remote State](#configure-terraform-remote-state)
     * [Provide Parameters Required for Deployment](#provide-parameters-required-for-deployment)
     * [Deploy](#deploy)
-* [Further Reading](#further-reading)
-  * [Design Guidelines](#design-guidelines)
-* [Contributing](#contributing)
-* [Code of conduct](#code-of-conduct)
-
-## Architecture
-
-### Overview
-
-The Azure App Service landing zone accelerator is an open-source collection of architectural guidance and reference implementation to accelerate deployment of Azure App Service at scale. It can provide a specific architectural approach and reference implementation via infrastructure as code templates to prepare your landing zones. The landing zones adhere to the architecture and best practices of the Cloud Adoption Framework.
-
-The architectural approach can be used as design guidance for greenfield implementation and as an assessment for brownfield customers already using App Service. The reference implementation can be adapted to produce an architecture that fits your way and puts your organization on a path to sustainable scale.
-
-The provided infrastructure-as-code template can be modified to fit your naming conventions, use existing resources (DevOps agent, key vault, and so on), and use different modes of App Service Environment v3.
-
-![AppServiceLandingZoneArchitecture.png](../../../docs\Images\AppServiceLandingZoneArchitecture.png)
 
 ## Pre-requisites
 
@@ -138,33 +120,3 @@ As you configured the backend remote state with your live Azure infrastructure r
     ```bash
     terraform apply
     ```
-
-
-## Further Reading
-
-### Design Guidelines
-
-These articles provide guidelines for creating your landing zone:
-
-* [Identity and access management](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/app-services/identity-and-access-management)
-* [Network topology and connectivity](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/app-services/network-topology-and-connectivity)
-* [Security](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/app-services/security)
-* [Management](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/app-services/management)
-* [Governance](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/app-services/governance)
-* [Platform automation and DevOps](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/app-services/platform-automation-and-devops)
-
-## Contributing
-
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit <https://cla.opensource.microsoft.com>.
-
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-## Code of conduct
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
