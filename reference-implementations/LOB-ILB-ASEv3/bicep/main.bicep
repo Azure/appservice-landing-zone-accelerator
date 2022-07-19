@@ -1,10 +1,13 @@
-targetScope='subscription'
+targetScope = 'subscription'
 
 // Parameters
-@description('A short name for the workload being deployed')
+@description('Optional. Azure location to which the resources are to be deployed -defaults to the location of the current deployment')
+param location string = deployment().location
+
+@description('Required. A short name for the workload being deployed')
 param workloadName string
 
-@description('The environment for which the deployment is being executed')
+@description('Required. The environment for which the deployment is being executed')
 @allowed([
   'dev'
   'uat'
@@ -13,13 +16,16 @@ param workloadName string
 ])
 param environment string
 
-@description('The user name to be used as the Administrator for all VMs created by this deployment')
+@description('Optional. A numeric suffix (e.g. "001") to be appended on the naming generated for the resources. Defaults to empty.')
+param numericSuffix string = ''
+
+@description('Required. The user name to be used as the Administrator for all VMs created by this deployment')
 param vmUsername string
 
-@description('The password for the Administrator user for all VMs created by this deployment')
+@description('Required. The password for the Administrator user for all VMs created by this deployment')
 param vmPassword string
 
-@description('The CI/CD platform to be used, and for which an agent will be configured for the ASE deployment. Specify \'none\' if no agent needed')
+@description('Required. The CI/CD platform to be used, and for which an agent will be configured for the ASE deployment. Specify \'none\' if no agent needed')
 @allowed([
   'github'
   'azuredevops'
@@ -27,72 +33,94 @@ param vmPassword string
 ])
 param CICDAgentType string
 
-@description('The Azure DevOps or GitHub account name to be used when configuring the CI/CD agent, in the format https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none')
+@description('Required. The Azure DevOps or GitHub account name to be used when configuring the CI/CD agent, in the format https://dev.azure.com/ORGNAME OR github.com/ORGUSERNAME OR none')
 param accountName string
 
-@description('The Azure DevOps or GitHub personal access token (PAT) used to setup the CI/CD agent')
+@description('Required. The Azure DevOps or GitHub personal access token (PAT) used to setup the CI/CD agent')
 @secure()
 param personalAccessToken string
 
-
-param location string = deployment().location
+@description('Optional. The tags to be assigned to the created resources.')
+param tags object = {}
 
 // Variables
-var resourceSuffix = '${workloadName}-${environment}-${location}-001'
+
+var defaultTags = union({
+  application: workloadName
+  environment: environment
+}, tags)
+
+var resourceSuffix = '${workloadName}-${environment}-${location}'
 var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
 var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
+
+var defaultSuffixes = [
+  workloadName
+  environment
+  '**location**'
+]
+var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuffixes, [
+  numericSuffix
+])
+
+module naming 'modules/naming.module.bicep' = {
+  scope: resourceGroup(aseResourceGroup.name)
+  name: 'namingModule-Deployment'
+  params: {
+    location: location
+    suffix: namingSuffixes
+    uniqueLength: 6
+  }
+}
 
 // Create resource groups
 resource networkingResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: networkingResourceGroupName
   location: location
+  tags: defaultTags
 }
 
 resource aseResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: aseResourceGroupName
   location: location
+  tags: defaultTags
 }
 
 resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: sharedResourceGroupName
   location: location
+  tags: defaultTags
 }
 
 // Create networking resources
 module networking 'networking.bicep' = {
-  name: 'networkingresources'
+  name: 'network-Deployment'
   scope: resourceGroup(networkingResourceGroup.name)
   params: {
     location: location
-    resourceSuffix: resourceSuffix
     createCICDAgentSubnet: ((CICDAgentType == 'none') ? false : true)
+    naming: naming.outputs.names
+    tags: defaultTags
   }
 }
 
-// Get networking resource outputs
-var jumpboxSubnetId = networking.outputs.jumpBoxSubnetId
-var CICDAgentSubnetId = networking.outputs.CICDAgentSubnetId
-
 // Create shared resources
-module shared './shared/shared.bicep' = {  
-  dependsOn: [
-    networking
-  ]
-  name: 'sharedresources'
+module shared './shared/shared.bicep' = {
+  name: 'sharedresources-Deployment'
   scope: resourceGroup(sharedResourceGroup.name)
   params: {
+    location: location
     accountName: accountName
-    CICDAgentSubnetId: CICDAgentSubnetId
+    jumpboxSubnetId: networking.outputs.jumpBoxSubnetId
+    CICDAgentSubnetId: networking.outputs.CICDAgentSubnetId
     CICDAgentType: CICDAgentType
     environment: environment
-    jumpboxSubnetId: jumpboxSubnetId
-    location: location
     personalAccessToken: personalAccessToken
-    resourceGroupName: sharedResourceGroup.name
-    resourceSuffix: resourceSuffix
+    naming: naming.outputs.names
     vmPassword: vmPassword
     vmUsername: vmUsername
+    tags: defaultTags
   }
 }
 
@@ -103,12 +131,16 @@ module ase 'ase.bicep' = {
     shared
   ]
   scope: resourceGroup(aseResourceGroup.name)
-  name: 'aseresources'
+  name: 'ase-Deployment'
   params: {
+    location: location
     vnetId: networking.outputs.spokeVNetId
     aseSubnetId: networking.outputs.aseSubnetId
-    aseSubnetName: networking.outputs.aseSubnetName
-    location: location
-    resourceSuffix: resourceSuffix
+    naming: naming.outputs.names
+    tags: defaultTags
   }
 }
+
+output networkResourceGroupName string = networkingResourceGroup.name
+output sharedResourceGroupName string = sharedResourceGroup.name
+output aseResourceGroupName string = aseResourceGroup.name
