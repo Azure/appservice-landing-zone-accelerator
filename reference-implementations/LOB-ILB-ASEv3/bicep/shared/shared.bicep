@@ -1,4 +1,4 @@
-targetScope='resourceGroup'
+targetScope = 'resourceGroup'
 // Parameters
 @description('Azure location to which the resources are to be deployed')
 param location string
@@ -30,11 +30,8 @@ param accountName string
 @secure()
 param personalAccessToken string
 
-@description('The name of the shared resource group')
-param resourceGroupName string
-
-@description('Standardized suffix text to be added to resource names')
-param resourceSuffix string
+@description('Required. The naming module for facilitating naming convention.')
+param naming object
 
 @description('The environment for which the deployment is being executed')
 @allowed([
@@ -45,58 +42,67 @@ param resourceSuffix string
 ])
 param environment string
 
-// Variables - ensure key vault name does not end with '-'
-var tempKeyVaultName = take('kv-${resourceSuffix}', 24) // Must be between 3-24 alphanumeric characters 
-var keyVaultName = endsWith(tempKeyVaultName, '-') ? substring(tempKeyVaultName, 0, length(tempKeyVaultName) - 1) : tempKeyVaultName
+@description('Optional. The tags to be assigned to the created resources.')
+param tags object = {}
+
+var resourceNames = {
+  keyVault: naming.keyVault.nameUnique
+  applicationInsights: naming.applicationInsights.name
+  logAnalyticsWorkspace: naming.logAnalyticsWorkspace.name
+  vmJumpbox: naming.windowsVirtualMachine.name
+  vmDevOps: '${CICDAgentType}-${environment}'
+}
 
 // Resources
-module appInsights './azmon.bicep' = {
-  name: 'azmon'
-  scope: resourceGroup(resourceGroupName)
+module appInsights './appInsights.bicep' = {
+  name: 'appInsights-Deployment'
   params: {
     location: location
-    resourceSuffix: resourceSuffix
+    name: resourceNames.applicationInsights
+    logAnalyticsWorkspaceName: resourceNames.logAnalyticsWorkspace
+    tags: tags
   }
 }
 
-module vm_devopswinvm './createvmwindows.bicep' = if (CICDAgentType!='none') {
-  name: 'devopsvm'
-  scope: resourceGroup(resourceGroupName)
+module vmDevops './vmWindows.bicep' = if (CICDAgentType != 'none') {
+  name: 'devopsvm-Deployment'
   params: {
     location: location
+    name: resourceNames.vmDevOps
     subnetId: CICDAgentSubnetId
     username: vmUsername
-    password: vmPassword
-    vmName: '${CICDAgentType}-${environment}'
+    password: vmPassword    
     accountName: accountName
     personalAccessToken: personalAccessToken
     CICDAgentType: CICDAgentType
     deployAgent: true
+    tags: tags
   }
 }
- 
-module vm_jumpboxwinvm './createvmwindows.bicep' = {
-  name: 'jumpboxwinvm'
-  scope: resourceGroup(resourceGroupName)
+
+module vmJumpbox './vmWindows.bicep' = {
+  name: 'vmJumpbox-Deployment'
   params: {
     location: location
+    name: resourceNames.vmJumpbox
     subnetId: jumpboxSubnetId
     username: vmUsername
     password: vmPassword
     CICDAgentType: CICDAgentType
-    vmName: 'jumpbox-${environment}'
+    tags: tags
   }
 }
 
-resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
-  name: keyVaultName
+resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = {
+  name: resourceNames.keyVault
   location: location
+  tags: tags
   properties: {
     tenantId: subscription().tenantId
     sku: {
       family: 'A'
       name: 'standard'
-    }    
+    }
     enabledForTemplateDeployment: true // ARM is permitted to retrieve secrets from the key vault. 
     accessPolicies: [
       // {
@@ -120,6 +126,7 @@ resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
       // }
     ]
   }
+
   resource vmPasswordSecret 'secrets@2019-09-01' = {
     name: 'vmPassword'
     properties: {
@@ -133,5 +140,6 @@ resource key_vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
 
 // Outputs
 output appInsightsConnectionString string = appInsights.outputs.appInsightsConnectionString
-output CICDAgentVmName string = vm_devopswinvm.name
-output jumpBoxvmName string = vm_jumpboxwinvm.name
+output CICDAgentVmName string = vmDevops.name
+output jumpBoxvmName string = vmJumpbox.name
+output keyVaultName string = keyVault.name

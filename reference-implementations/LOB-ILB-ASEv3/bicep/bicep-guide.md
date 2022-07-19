@@ -1,1 +1,0 @@
-Usage: az deployment sub create -f main.bicep -l {location}
