@@ -1,0 +1,70 @@
+name: 'ASEv3 Terraform'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
+      - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
+      - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
+
+env:
+  modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
+  terraform_version: 1.1.8
+
+jobs:
+  validate-plan-and-apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare environment variables
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION }}
+        run: | 
+          # Parse Azure secret into Terraform variables
+          $servicePrincipal = ($env:AZURE_CREDENTIALS | ConvertFrom-Json)
+          $env:ARM_CLIENT_ID = $servicePrincipal.clientId
+          $env:ARM_CLIENT_SECRET = $servicePrincipal.clientSecret
+          $env:ARM_SUBSCRIPTION_ID = $env:AZURE_SUBSCRIPTION
+          $env:ARM_TENANT_ID = $servicePrincipal.tenantId
+          
+          # Save environment variable setup for subsequent steps
+          Get-ChildItem -Path Env: -Recurse -Include ARM_*,TF_VAR_* | ForEach-Object {Write-Output "$($_.Name)=$($_.Value)"} >> $env:GITHUB_ENV
+        shell: pwsh
+
+      - name: Checkout the code
+        uses: actions/checkout@main
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.terraform_version }}
+
+      - name: Terraform Init
+        working-directory: ${{ env.modulePath }}
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: ${{ env.modulePath }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ${{ env.modulePath }}
+        continue-on-error: true
+        run: |
+          terraform plan \
+            -var-file="Parameters/uat.tfvars"
+      
+      - name: Terraform Apply
+        working-directory: ${{ env.modulePath }}
+        run: |
+          terraform apply \
+            -auto-approve \
+            -var-file="Parameters/uat.tfvars"
