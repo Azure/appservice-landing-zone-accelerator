@@ -10,6 +10,7 @@ locals {
   jumpBoxSubnetName   = "snet-jbox-${local.resourceSuffix}"
   aseSubnetName       = "snet-ase-${local.resourceSuffix}"
 
+  hubSubnets = {for subnet in azurerm_virtual_network.vnetHub.subnet : subnet.name => subnet.id}
 }
 
 // Resources - VNet - SubNets
@@ -112,40 +113,3 @@ resource "azurerm_bastion_host" "bastionHost" {
   depends_on = [azurerm_virtual_network.vnetHub, azurerm_virtual_network.vnetSpoke]
 }
 
-// Output section
-output "hubVNetName" {
-  value = azurerm_virtual_network.vnetHub.name
-}
-output "spokeVNetName" {
-  value = azurerm_virtual_network.vnetSpoke.name
-}
-output "hubVNetId" {
-  value = azurerm_virtual_network.vnetHub.id
-}
-output "spokeVNetId" {
-  value = azurerm_virtual_network.vnetSpoke.id
-}
-output "bastionSubnetName" {
-  value = local.bastionSubnetName
-}
-output "CICDAgentSubnetName" {
-  value = local.CICDAgentSubnetName
-}
-output "jumpBoxSubnetName" {
-  value = local.jumpBoxSubnetName
-}
-output "aseSubnetName" {
-  value = local.aseSubnetName
-}
-output "bastionSubnetId" {
-  value = "${azurerm_virtual_network.vnetHub.id}/subnets/${local.bastionSubnetName}"
-}
-output "CICDAgentSubnetId" {
-  value = "${azurerm_virtual_network.vnetHub.id}/subnets/${local.CICDAgentSubnetName}"
-}
-output "jumpBoxSubnetId" {
-  value = "${azurerm_virtual_network.vnetHub.id}/subnets/${local.jumpBoxSubnetName}"
-}
-output "aseSubnetId" {
-  value = "${azurerm_virtual_network.vnetSpoke.id}/subnets/${local.aseSubnetName}"
-}
