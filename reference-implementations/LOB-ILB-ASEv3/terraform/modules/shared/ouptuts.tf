@@ -7,15 +7,15 @@ output "app_id" {
   value = azurerm_application_insights.appinsights.app_id
 }
 
-output "jumpbox_vm_id" {
-  value = module.jumpboxvm.id
-}
-output "devops_vm_id" {
-  value = module.devopsvm.id
-}
-output "jumpbox_vm_private_ip" {
-  value = module.jumpboxvm.private_ip_address
-}
-output "devops_vm_private_ip" {
-  value = module.devopsvm.private_ip_address
+output "vms" {
+  value = {
+    devopsvm = {
+      id = module.devopsvm.id
+      private_ip_address = module.devopsvm.private_ip_address
+    }
+    jumpboxvm = {
+      id = module.jumpboxvm.id
+      private_ip_address = module.jumpboxvm.private_ip_address
+    }
+  }
 }
