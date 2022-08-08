@@ -76,16 +76,3 @@ resource "azurerm_private_dns_a_record" "privateDnsZoneName_Amp" {
   depends_on          = [azurerm_private_dns_zone.privateDnsZone]
 }
 
-// Output section
-output "aseName" {
-  value = azurerm_app_service_environment_v3.ase.name
-}
-output "aseId" {
-  value = azurerm_app_service_environment_v3.ase.id
-}
-output "appServicePlanName" {
-  value = azurerm_service_plan.appServicePlan.name
-}
-output "appServicePlanId" {
-  value = azurerm_service_plan.appServicePlan.id
-}

@@ -15,10 +15,3 @@ module "shared-vms" {
     tenantId            = data.azurerm_client_config.current.tenant_id
     depends_on          = [ azurerm_resource_group.sharedrg, azurerm_resource_group.networkrg ]
 }
-
-output "test-vnet" {
-  value = azurerm_virtual_network.vnetHub.subnet
-}
-output "module-shared-vms" {
-  value = module.shared-vms.vms
-}
