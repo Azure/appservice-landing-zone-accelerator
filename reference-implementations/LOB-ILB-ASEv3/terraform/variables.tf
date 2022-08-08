@@ -73,4 +73,5 @@ variable "vmadminUserName" {
 variable "vmadminPassword" {
   description = "admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault"
   type = string
+  default = null
 }
