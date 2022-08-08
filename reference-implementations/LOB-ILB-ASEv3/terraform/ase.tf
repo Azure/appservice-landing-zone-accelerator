@@ -27,7 +27,7 @@ resource "azurerm_service_plan" "appServicePlan" {
   per_site_scaling_enabled   = false
   zone_balancing_enabled     = true
 
-  os_type = "Windows"
+  os_type      = "Windows"
   sku_name     = "I${local.workerPool}v2"
   worker_count = local.numberOfWorkers
 
@@ -76,16 +76,3 @@ resource "azurerm_private_dns_a_record" "privateDnsZoneName_Amp" {
   depends_on          = [azurerm_private_dns_zone.privateDnsZone]
 }
 
-// Output section
-output "aseName" {
-  value = azurerm_app_service_environment_v3.ase.name
-}
-output "aseId" {
-  value = azurerm_app_service_environment_v3.ase.id
-}
-output "appServicePlanName" {
-  value = azurerm_service_plan.appServicePlan.name
-}
-output "appServicePlanId" {
-  value = azurerm_service_plan.appServicePlan.id
-}
