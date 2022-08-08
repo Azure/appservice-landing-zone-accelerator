@@ -3,6 +3,7 @@ repos:
   rev: v1.74.1 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
   hooks:
     - id: terraform_fmt
+    - id: terraform_validate
     - id: terraform_docs
       args:
       - --hook-config=--path-to-file=README.md        # Valid UNIX path. I.e. ../TFDOC.md or docs/README.md etc.

@@ -63,3 +63,14 @@ variable "workerPool" {
   type        = number
   default     = 1
 }
+
+variable "vmadminUserName" {
+  description = "admin username for the virtual machine (devops agent, jumpbox)"
+  type = string
+  default = "vmadmin"
+}
+
+variable "vmadminPassword" {
+  description = "admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault"
+  type = string
+}

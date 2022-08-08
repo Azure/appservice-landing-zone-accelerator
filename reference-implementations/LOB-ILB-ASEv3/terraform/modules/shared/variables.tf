@@ -17,6 +17,7 @@ variable "adminUsername" {
 
 variable "adminPassword" {
     type = string
+    default = null
 }
 
 variable "devOpsVMSubnetId" {
