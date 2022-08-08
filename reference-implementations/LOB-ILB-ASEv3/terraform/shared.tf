@@ -18,5 +18,5 @@ output "test-vnet" {
   value = azurerm_virtual_network.vnetHub.subnet
 }
 output "testAzureBastionSubnet" {
-  value = azurerm_virtual_network.vnetHub.subnet[index(azurerm_virtual_network.vnetHub.subnet.*.name, "AzureBastionSubnet")]
+  value = local.hubSubnets
 }

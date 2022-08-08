@@ -10,6 +10,7 @@ locals {
   jumpBoxSubnetName   = "snet-jbox-${local.resourceSuffix}"
   aseSubnetName       = "snet-ase-${local.resourceSuffix}"
 
+  hubSubnets = [for subnet in azurerm_virtual_network.vnetHub.subnet : subnet.name => subnet.id]
 }
 
 // Resources - VNet - SubNets
