@@ -27,7 +27,7 @@ resource "azurerm_service_plan" "appServicePlan" {
   per_site_scaling_enabled   = false
   zone_balancing_enabled     = true
 
-  os_type = "Windows"
+  os_type      = "Windows"
   sku_name     = "I${local.workerPool}v2"
   worker_count = local.numberOfWorkers
 

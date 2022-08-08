@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - hotfix/tf/docs-and-shared-resources
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
