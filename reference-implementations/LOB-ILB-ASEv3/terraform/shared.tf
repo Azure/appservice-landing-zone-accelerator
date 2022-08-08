@@ -17,3 +17,6 @@
 output "test-vnet" {
   value = azurerm_virtual_network.vnetHub.subnet
 }
+output "testAzureBastionSubnet" {
+  value = azurerm_virtual_network.vnetHub.subnet.AzureBastionSubnet
+}
