@@ -20,5 +20,5 @@ output "test-vnet" {
   value = azurerm_virtual_network.vnetHub.subnet
 }
 output "module-shared-vms" {
-  value = module.shared-vms.*
+  value = module.shared-vms.vms
 }
