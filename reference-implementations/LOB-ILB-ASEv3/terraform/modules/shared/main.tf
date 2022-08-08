@@ -39,20 +39,6 @@ resource "azurerm_key_vault" "keyvault" {
   }
 }
 
-resource "azurerm_key_vault_secret" "devopsvm_password" {
-  count = var.adminPassword == null ? 1 : 0
-  name         = module.devopsvm.name
-  value        = random_password.password.0.result
-  key_vault_id = azurerm_key_vault.keyvault.id
-}
-
-resource "azurerm_key_vault_secret" "jumpboxvm_password" {
-  count = var.adminPassword == null ? 1 : 0
-  name         = module.jumpboxvm.name
-  value        = random_password.password.1.result
-  key_vault_id = azurerm_key_vault.keyvault.id
-}
-
 #log analytics workspace
 resource "azurerm_log_analytics_workspace" "loganalytics" {
   name                = local.loganalyticsname
@@ -100,4 +86,19 @@ module "jumpboxvm" {
     adminPassword       = var.adminPassword == null ? random_password.password.1.result : var.adminPassword
     cidr                  = var.jumpboxVMSubnetId
     installDevOpsAgent    = false
+}
+
+# If no VM password is provided, store the generated passwords into the Key Vault as secrets
+resource "azurerm_key_vault_secret" "devopsvm_password" {
+  count = var.adminPassword == null ? 1 : 0
+  name         = module.devopsvm.name
+  value        = random_password.password.0.result
+  key_vault_id = azurerm_key_vault.keyvault.id
+}
+
+resource "azurerm_key_vault_secret" "jumpboxvm_password" {
+  count = var.adminPassword == null ? 1 : 0
+  name         = module.jumpboxvm.name
+  value        = random_password.password.1.result
+  key_vault_id = azurerm_key_vault.keyvault.id
 }
