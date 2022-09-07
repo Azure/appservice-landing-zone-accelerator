@@ -8,6 +8,7 @@ on:
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
+      - '!reference-implementations/LOB-ILB-ASEv3/terraform/**.md'
 
   pull_request:
     branches:
@@ -15,6 +16,7 @@ on:
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
+      - '!reference-implementations/LOB-ILB-ASEv3/terraform/**.md'
 
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
