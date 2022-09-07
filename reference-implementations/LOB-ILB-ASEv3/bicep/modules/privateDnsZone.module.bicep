@@ -13,6 +13,18 @@ param aRecords array
 @description('Optional. Whether the automatic registration of resources in the Private DNS Zone is enabled -defaults to false')
 param registrationEnabled bool = false
 
+@description('Optional. Whether we want the records to be created automatically')
+param isAcreDnsZone bool = true
+
+@description('Required. Prefix used for the name of deployment')
+param prefix string
+
+
+var deploymentNames = {
+  dnsZoneLinkDeploymentName: '${prefix}DnsZonePrvDnsZoneLinks-Deployment'
+  dnsZoneARecordDeploymentName: '${prefix}DnsZoneARecord-Deployment'
+  dnsZoneGroupDeploymentName:  '${prefix}DnsZoneGroup-Deployment'
+}
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: name
   location: 'Global'
@@ -20,7 +32,7 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 }
 
 module privateDnsZoneLinks 'privateDnsZoneLink.module.bicep' = if (!empty(vnetIds)) {
-  name: 'AseDnsZonePrvDnsZoneLinks-Deployment'  
+  name: deploymentNames.dnsZoneLinkDeploymentName  
   params: {
     privateDnsZoneName: privateDnsZone.name
     vnetIds: vnetIds
@@ -29,11 +41,19 @@ module privateDnsZoneLinks 'privateDnsZoneLink.module.bicep' = if (!empty(vnetId
   }
 }
 
-module privateDnsZoneRecords 'privateDnsZoneRecords.module.bicep' = if (!empty(aRecords)) {
-  name: 'AseDnsZoneARecord-Deployment'  
+module privateDnsZoneRecords 'privateDnsZoneRecords.module.bicep' = if (!empty(aRecords) && !isAcreDnsZone) {
+  name: deploymentNames.dnsZoneARecordDeploymentName 
   params: {
     privateDnsZoneName: privateDnsZone.name
     aRecords: aRecords
+  }
+}
+
+module privateDnsZoneGroup 'privateDnsZoneGroup.module.bicep' = if(isAcreDnsZone) {
+  name: deploymentNames.dnsZoneGroupDeploymentName
+  params: {
+     privateDnsZoneName: privateDnsZone.name
+     privateDnsZoneResourceId: privateDnsZone.id
   }
 }
 

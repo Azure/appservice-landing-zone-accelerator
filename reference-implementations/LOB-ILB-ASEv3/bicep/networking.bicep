@@ -29,6 +29,12 @@ param aseAddressPrefix string = '10.1.1.0/24'
 @description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
+@description('Optional. Indicator as to wheter the ACRE Private Endpoint subnet should be created or not, defailts to true.')
+param createAcrePrivateEndpointSubnet bool = true
+
+@description('CIDR prefix to use for ACRE')
+param acreAddressPrefix string = '10.1.2.0/24'
+
 // Variables
 var placeholder = '***'
 var vnetNameWithPlaceholder = replace(naming.virtualNetwork.name, '${naming.virtualNetwork.slug}-', '${naming.virtualNetwork.slug}-${placeholder}-')
@@ -42,6 +48,7 @@ var resourceNames = {
   aseSubnet: replace(snetNameWithPlaceholder, placeholder, 'ase')
   cicdAgentSubnet: replace(snetNameWithPlaceholder, placeholder, 'cicd')
   jumpboxSubnet: replace(snetNameWithPlaceholder, placeholder, 'jbox')
+  acrePrivateEndpointSubnet: replace(snetNameWithPlaceholder, placeholder, 'redis')
 }
 
 var defaultSubnets = [
@@ -59,6 +66,23 @@ var defaultSubnets = [
   }
 ]
 
+var aseSubnet = [
+  {
+    name: resourceNames.aseSubnet
+    properties: {
+      delegations: [
+        {
+          name: 'hostingEnvironment'
+          properties: {
+            serviceName: 'Microsoft.Web/hostingEnvironments'
+          }
+        }
+      ]
+      addressPrefix: aseAddressPrefix
+    }
+  } 
+]
+
 // Append optional CICD Agent subnet, if required
 var subnets = createCICDAgentSubnet ? concat(defaultSubnets, [
   {
@@ -68,6 +92,17 @@ var subnets = createCICDAgentSubnet ? concat(defaultSubnets, [
     }
   }
 ]) : defaultSubnets
+
+//Append optional Redis Private Endpoint subnet, if required
+var spokeSubnets = createAcrePrivateEndpointSubnet ? concat(aseSubnet, [
+  {
+    name: resourceNames.acrePrivateEndpointSubnet
+    properties: {
+     addressPrefix: acreAddressPrefix       
+    }        
+  }
+]) : aseSubnet
+
 
 // Resources - VNet - SubNets
 resource vnetHub 'Microsoft.Network/virtualNetworks@2021-02-01' = {
@@ -98,22 +133,7 @@ resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
     }
     enableVmProtection: false
     enableDdosProtection: false
-    subnets: [
-      {
-        name: resourceNames.aseSubnet
-        properties: {
-          delegations: [
-            {
-              name: 'hostingEnvironment'
-              properties: {
-                serviceName: 'Microsoft.Web/hostingEnvironments'
-              }
-            }
-          ]
-          addressPrefix: aseAddressPrefix
-        }
-      }
-    ]
+    subnets: spokeSubnets
   }
 }
 
@@ -193,3 +213,6 @@ output jumpBoxSubnetName string = resourceNames.jumpboxSubnet
 output jumpBoxSubnetId string = '${vnetHub.id}/subnets/${resourceNames.jumpboxSubnet}'
 output aseSubnetName string = resourceNames.aseSubnet
 output aseSubnetId string = '${vnetSpoke.id}/subnets/${resourceNames.aseSubnet}'
+
+output acrePrivateEndpointSubnetName string = createAcrePrivateEndpointSubnet ? resourceNames.acrePrivateEndpointSubnet : ''
+output acrePrivateEndpointSubnetId string = createAcrePrivateEndpointSubnet ? '${vnetSpoke.id}/subnets/${resourceNames.acrePrivateEndpointSubnet}' : ''
