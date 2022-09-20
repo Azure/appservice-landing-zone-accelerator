@@ -29,11 +29,11 @@ param aseAddressPrefix string = '10.1.1.0/24'
 @description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
-@description('Optional. Indicator as to wheter the ACRE Private Endpoint subnet should be created or not, defailts to true.')
-param createAcrePrivateEndpointSubnet bool = true
+@description('Optional. Indicator as to wheter the Redis Private Endpoint subnet should be created or not, defailts to true.')
+param createRedisPrivateEndpointSubnet bool = true
 
-@description('CIDR prefix to use for ACRE')
-param acreAddressPrefix string = '10.1.2.0/24'
+@description('CIDR prefix to use for Redis')
+param redisAddressPrefix string = '10.1.2.0/24'
 
 // Variables
 var placeholder = '***'
@@ -48,7 +48,7 @@ var resourceNames = {
   aseSubnet: replace(snetNameWithPlaceholder, placeholder, 'ase')
   cicdAgentSubnet: replace(snetNameWithPlaceholder, placeholder, 'cicd')
   jumpboxSubnet: replace(snetNameWithPlaceholder, placeholder, 'jbox')
-  acrePrivateEndpointSubnet: replace(snetNameWithPlaceholder, placeholder, 'redis')
+  redisPrivateEndpointSubnet: replace(snetNameWithPlaceholder, placeholder, 'redis')
 }
 
 var defaultSubnets = [
@@ -94,11 +94,11 @@ var subnets = createCICDAgentSubnet ? concat(defaultSubnets, [
 ]) : defaultSubnets
 
 //Append optional Redis Private Endpoint subnet, if required
-var spokeSubnets = createAcrePrivateEndpointSubnet ? concat(aseSubnet, [
+var vnetSubnets = createRedisPrivateEndpointSubnet ? concat(aseSubnet, [
   {
-    name: resourceNames.acrePrivateEndpointSubnet
+    name: resourceNames.redisPrivateEndpointSubnet
     properties: {
-     addressPrefix: acreAddressPrefix       
+     addressPrefix: redisAddressPrefix       
     }        
   }
 ]) : aseSubnet
@@ -133,7 +133,7 @@ resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
     }
     enableVmProtection: false
     enableDdosProtection: false
-    subnets: spokeSubnets
+    subnets: vnetSubnets
   }
 }
 
@@ -214,5 +214,5 @@ output jumpBoxSubnetId string = '${vnetHub.id}/subnets/${resourceNames.jumpboxSu
 output aseSubnetName string = resourceNames.aseSubnet
 output aseSubnetId string = '${vnetSpoke.id}/subnets/${resourceNames.aseSubnet}'
 
-output acrePrivateEndpointSubnetName string = createAcrePrivateEndpointSubnet ? resourceNames.acrePrivateEndpointSubnet : ''
-output acrePrivateEndpointSubnetId string = createAcrePrivateEndpointSubnet ? '${vnetSpoke.id}/subnets/${resourceNames.acrePrivateEndpointSubnet}' : ''
+output redisPrivateEndpointSubnetName string = createRedisPrivateEndpointSubnet ? resourceNames.redisPrivateEndpointSubnet : ''
+output redisPrivateEndpointSubnetId string = createRedisPrivateEndpointSubnet ? '${vnetSpoke.id}/subnets/${resourceNames.redisPrivateEndpointSubnet}' : ''

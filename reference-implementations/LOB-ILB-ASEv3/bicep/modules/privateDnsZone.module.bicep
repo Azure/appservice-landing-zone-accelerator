@@ -14,7 +14,7 @@ param aRecords array
 param registrationEnabled bool = false
 
 @description('Optional. Whether we want the records to be created automatically')
-param isAcreDnsZone bool = true
+param isRedisDnsZone bool = true
 
 @description('Required. Prefix used for the name of deployment')
 param prefix string
@@ -41,7 +41,7 @@ module privateDnsZoneLinks 'privateDnsZoneLink.module.bicep' = if (!empty(vnetId
   }
 }
 
-module privateDnsZoneRecords 'privateDnsZoneRecords.module.bicep' = if (!empty(aRecords) && !isAcreDnsZone) {
+module privateDnsZoneRecords 'privateDnsZoneRecords.module.bicep' = if (!empty(aRecords) && !isRedisDnsZone) {
   name: deploymentNames.dnsZoneARecordDeploymentName 
   params: {
     privateDnsZoneName: privateDnsZone.name
@@ -49,7 +49,7 @@ module privateDnsZoneRecords 'privateDnsZoneRecords.module.bicep' = if (!empty(a
   }
 }
 
-module privateDnsZoneGroup 'privateDnsZoneGroup.module.bicep' = if(isAcreDnsZone) {
+module privateDnsZoneGroup 'privateDnsZoneGroup.module.bicep' = if(isRedisDnsZone) {
   name: deploymentNames.dnsZoneGroupDeploymentName
   params: {
      privateDnsZoneName: privateDnsZone.name
