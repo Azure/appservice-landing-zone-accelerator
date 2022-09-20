@@ -160,6 +160,7 @@ module redis 'redis.bicep' = if(createRedisResource) {
     redisPrivateEndpointSubnetId: networking.outputs.redisPrivateEndpointSubnetId
     naming: naming.outputs.names
     tags: defaultTags
+    keyVaultName: shared.outputs.keyVaultName
   }
 }
 
