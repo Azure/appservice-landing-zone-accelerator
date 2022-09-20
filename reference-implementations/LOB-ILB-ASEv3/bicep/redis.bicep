@@ -90,6 +90,9 @@ param tags object = {}
 @description('Required. Enable zone redundancy.')
 param availabilityZoneOption bool = true
 
+@description('Required. Key Vault Name')
+param keyVaultName string
+
 // Variables
 var resourceNames = {
   redisName: naming.redisCache.name
@@ -169,6 +172,21 @@ module privateDnsZone 'modules/privateDnsZone.module.bicep' = {
     aRecords: []
     tags: tags
   }
+}
+
+//Add endpoint to Key Vault
+resource redisHostNameSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: '${keyVaultName}/redisHostName'  // The first part is KV's name
+  properties: {
+    value: redis.properties.hostName
+  }
+}
+
+resource redisPassword 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+ name: '${keyVaultName}/redisPassword'  // The first part is KV's name
+ properties: {
+  value: '${listKeys(redis.id, redis.apiVersion).keys[0].value}'
+ }
 }
 
 //Output
