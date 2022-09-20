@@ -82,7 +82,7 @@ param modulesEnabled array = []
 param vnetId string
 
 @description('Required. The full id string identifying the target subnet for Azure Cache for Redis Enterprise.')
-param acrePrivateEndpointSubnetId string
+param redisPrivateEndpointSubnetId string
 
 @description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
@@ -92,10 +92,10 @@ param availabilityZoneOption bool = true
 
 // Variables
 var resourceNames = {
-  acreName: naming.redisCache.name
-  acreDbName: '${naming.redisCache.name}-db'
-  acrePrivateEndpointName: '${naming.redisCache.name}-pe'
-  acrePrivateEndpointNicName: naming.networkInterface.name
+  redisName: naming.redisCache.name
+  redisDbName: '${naming.redisCache.name}-db'
+  redisPrivateEndpointName: '${naming.redisCache.name}-pe'
+  redisPrivateEndpointNicName: naming.networkInterface.name
 }
 
 var rdbPersistence = persistenceOption == 'RDB' ? true : false
@@ -103,8 +103,8 @@ var aofPersistence = persistenceOption == 'AOF' ? true : false
 var enableZoneRedundancy = availabilityZoneOption == true ? ['1','2','3'] : null
 
 //Resources
-resource acre 'Microsoft.Cache/redisEnterprise@2022-01-01' = {
-  name: resourceNames.acreName
+resource redis 'Microsoft.Cache/redisEnterprise@2022-01-01' = {
+  name: resourceNames.redisName
   location: location
   sku: {
     name: skuName
@@ -118,8 +118,8 @@ resource acre 'Microsoft.Cache/redisEnterprise@2022-01-01' = {
 }
 
 resource redisEnterpriseDb 'Microsoft.Cache/redisEnterprise/databases@2022-01-01' = {
-  name: resourceNames.acreDbName
-  parent: acre
+  name: resourceNames.redisDbName
+  parent: redis
   properties: {
     clientProtocol:'Encrypted'
     port: 10000
@@ -137,18 +137,18 @@ resource redisEnterpriseDb 'Microsoft.Cache/redisEnterprise/databases@2022-01-01
   }
 }
 
-resource acrePrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
-  name: resourceNames.acrePrivateEndpointName
+resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
+  name: resourceNames.redisPrivateEndpointName
   location: location
   properties: {
     subnet: {
-      id: acrePrivateEndpointSubnetId
+      id: redisPrivateEndpointSubnetId
     }
-    customNetworkInterfaceName: resourceNames.acrePrivateEndpointNicName    
+    customNetworkInterfaceName: resourceNames.redisPrivateEndpointNicName    
     privateLinkServiceConnections: [{
-      name: resourceNames.acrePrivateEndpointName
+      name: resourceNames.redisPrivateEndpointName
       properties: {
-        privateLinkServiceId: acre.id
+        privateLinkServiceId: redis.id
         groupIds: ['redisEnterprise']
       }
     }]
@@ -164,7 +164,7 @@ module privateDnsZone 'modules/privateDnsZone.module.bicep' = {
     vnetIds: [
       vnetId
     ]
-    isAcreDnsZone: true
+    isRedisDnsZone: true
     registrationEnabled: false
     aRecords: []
     tags: tags
@@ -172,8 +172,8 @@ module privateDnsZone 'modules/privateDnsZone.module.bicep' = {
 }
 
 //Output
-output acreName string = acre.name
-output acreId string = acre.id
-output acrePrivateEndpointId string = acrePrivateEndpoint.id
-output acrePrivateEndpointNicId string = acrePrivateEndpoint.properties.networkInterfaces[0].id
-output acreHostName string = acre.properties.hostName
+output redisName string = redis.name
+output redisId string = redis.id
+output redisPrivateEndpointId string = redisPrivateEndpoint.id
+output redisPrivateEndpointNicId string = redisPrivateEndpoint.properties.networkInterfaces[0].id
+output redisHostName string = redis.properties.hostName

@@ -98,7 +98,7 @@ module privateDnsZone 'modules/privateDnsZone.module.bicep' = {
       }
     ]
     registrationEnabled: false
-    isAcreDnsZone: false
+    isRedisDnsZone: false
     tags: tags
   }
 }

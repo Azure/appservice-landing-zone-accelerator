@@ -43,8 +43,8 @@ param personalAccessToken string
 @description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
-@description('Optional. Create ACRE resource.')
-param createAcreResource bool = true
+@description('Optional. Create Redis resource.')
+param createRedisResource bool = true
 
 // Variables
 
@@ -57,7 +57,6 @@ var resourceSuffix = '${workloadName}-${environment}-${location}'
 var networkingResourceGroupName = 'rg-networking-${resourceSuffix}'
 var sharedResourceGroupName = 'rg-shared-${resourceSuffix}'
 var aseResourceGroupName = 'rg-ase-${resourceSuffix}'
-var acreResourceGroupName = 'rg-redis-${resourceSuffix}'
 
 var defaultSuffixes = [
   workloadName
@@ -97,12 +96,6 @@ resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: defaultTags
 }
 
-resource acreResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = if(createAcreResource) {
-  name: acreResourceGroupName
-  location: location
-  tags: defaultTags
-}
-
 // Create networking resources
 module networking 'networking.bicep' = {
   name: 'network-Deployment'
@@ -110,7 +103,7 @@ module networking 'networking.bicep' = {
   params: {
     location: location
     createCICDAgentSubnet: ((CICDAgentType == 'none') ? false : true)
-    createAcrePrivateEndpointSubnet: createAcreResource
+    createRedisPrivateEndpointSubnet: createRedisResource
     naming: naming.outputs.names
     tags: defaultTags
   }
@@ -153,18 +146,18 @@ module ase 'ase.bicep' = {
 }
 
 //Create Redis resource
-module redis 'redis.bicep' = if(createAcreResource) {
+module redis 'redis.bicep' = if(createRedisResource) {
   dependsOn: [
     networking
     shared
     ase
   ]
-  scope: resourceGroup(acreResourceGroup.name)
-  name: 'acre-Deployment'
+  scope: resourceGroup(sharedResourceGroup.name)
+  name: 'redis-Deployment'
   params: {
     location: location
     vnetId: networking.outputs.spokeVNetId
-    acrePrivateEndpointSubnetId: networking.outputs.acrePrivateEndpointSubnetId
+    redisPrivateEndpointSubnetId: networking.outputs.redisPrivateEndpointSubnetId
     naming: naming.outputs.names
     tags: defaultTags
   }
@@ -173,4 +166,3 @@ module redis 'redis.bicep' = if(createAcreResource) {
 output networkResourceGroupName string = networkingResourceGroup.name
 output sharedResourceGroupName string = sharedResourceGroup.name
 output aseResourceGroupName string = aseResourceGroup.name
-output acreResourceGroupName string = acreResourceGroup.name
