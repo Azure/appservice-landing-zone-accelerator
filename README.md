@@ -21,11 +21,11 @@ In this repo you will find reference implementations with supporting Infrastruct
 ### [Reference Implementation 1](/reference-implementations/LOB-ILB-ASEv3/bicep): Line of Business application using internal App Service Environment v3
 Architectural Diagram:
 
-![image](https://user-images.githubusercontent.com/37597107/133897423-4de9c66f-d033-4839-81b2-4e9d8a12253d.png)
+![image](./docs/Images/AppServiceLandingZoneArchitecture.png)
 
 Deployed Resources:
 
-![image](https://user-images.githubusercontent.com/37597107/133897451-9a6d0a07-873c-4f87-81de-29b15d576e4b.png)
+![image](./docs/Images/AppServiceDeployedResources.png)
 
 Deployment Details:
 | Deployment Methodology | GitHub Actions
@@ -36,7 +36,7 @@ Deployment Details:
 
 Cost estimation:
 
-The current default will cost approx. $40-$50 per day depending on the selected region (without any workload). It is deploying an ASE V3 that is zone-redundant and one Isolated V2 SKU Windows App Service Plan scaled to 3 instances (default with zone redundancy). For more accurate prices please check [pricing models for ASE V3](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#pricing). 
+The current default will cost approx. $40-$50 per day depending on the selected region (without any workload or Redis Enterprise). If deploying the current defult plus Redis Enterprise it will cost approx. $72-$82 per day. It is deploying an ASE V3 that is zone-redundant and one Isolated V2 SKU Windows App Service Plan scaled to 3 instances (default with zone redundancy). For more accurate prices please check [pricing models for ASE V3](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#pricing) and [pricing for Azure Cache for Redis](https://azure.microsoft.com/en-us/pricing/details/cache/).
 
 ---
 
