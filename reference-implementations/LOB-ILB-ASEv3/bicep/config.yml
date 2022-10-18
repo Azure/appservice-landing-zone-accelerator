@@ -1,5 +1,5 @@
 AZURE_LOCATION: 'eastus2'
-RESOURCE_NAME_PREFIX: 'online-web-app'
+RESOURCE_NAME_PREFIX: 'online-web-app2'
 ENVIRONMENT_TAG: 'dev'
 DEPLOYMENT_NAME: 'ase-demo-deployment'
 VM_USERNAME: 'agent'
