@@ -30,6 +30,9 @@ env:
 jobs:
   validate-plan-and-apply:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.modulePath }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@main
@@ -40,12 +43,10 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
-        working-directory: ${{ env.modulePath }}
 
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.terraform_version }}
-        working-directory: ${{ env.modulePath }}
 
       - name: Terraform Init
         id: init
@@ -54,7 +55,6 @@ jobs:
           export ARM_SUBSCRIPTION_ID=${{ env.ARM_SUBSCRIPTION_ID }}
           export ARM_TENANT_ID=${{ env.ARM_TENANT_ID }}
           terraform init
-        working-directory: ${{ env.modulePath }}
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
@@ -62,7 +62,6 @@ jobs:
           ARM_USE_OIDC: true
 
       - name: Terraform Validate
-        working-directory: ${{ env.modulePath }}
         run: terraform validate
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -71,7 +70,6 @@ jobs:
           ARM_USE_OIDC: true
 
       - name: Terraform Plan
-        working-directory: ${{ env.modulePath }}
         continue-on-error: true
         run: |
           terraform plan \
@@ -83,7 +81,6 @@ jobs:
           ARM_USE_OIDC: true
 
       - name: Terraform Apply
-        working-directory: ${{ env.modulePath }}
         run: |
           terraform apply \
             -auto-approve \
