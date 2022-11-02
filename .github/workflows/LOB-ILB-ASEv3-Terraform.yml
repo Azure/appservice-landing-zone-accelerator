@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - jin/oidc-refactor
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
       - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
@@ -18,6 +19,10 @@ on:
       - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
       - '!reference-implementations/LOB-ILB-ASEv3/terraform/**.md'
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
   terraform_version: 1.1.8
@@ -26,22 +31,6 @@ jobs:
   validate-plan-and-apply:
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare environment variables
-        env:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-          AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION }}
-        run: | 
-          # Parse Azure secret into Terraform variables
-          $servicePrincipal = ($env:AZURE_CREDENTIALS | ConvertFrom-Json)
-          $env:ARM_CLIENT_ID = $servicePrincipal.clientId
-          $env:ARM_CLIENT_SECRET = $servicePrincipal.clientSecret
-          $env:ARM_SUBSCRIPTION_ID = $env:AZURE_SUBSCRIPTION
-          $env:ARM_TENANT_ID = $servicePrincipal.tenantId
-          
-          # Save environment variable setup for subsequent steps
-          Get-ChildItem -Path Env: -Recurse -Include ARM_*,TF_VAR_* | ForEach-Object {Write-Output "$($_.Name)=$($_.Value)"} >> $env:GITHUB_ENV
-        shell: pwsh
-
       - name: Checkout the code
         uses: actions/checkout@main
 
@@ -50,8 +39,13 @@ jobs:
           terraform_version: ${{ env.terraform_version }}
 
       - name: Terraform Init
-        working-directory: ${{ env.modulePath }}
-        run: terraform init
+          id: init
+          run: terraform init
+          env:
+            ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+            ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+            ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+            ARM_USE_OIDC: true
 
       - name: Terraform Validate
         working-directory: ${{ env.modulePath }}

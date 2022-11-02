@@ -3,6 +3,13 @@ name: 'Terraform Dependencies'
 on:
   workflow_dispatch:
 
+  push:
+    branches:
+      - main
+      - jin/oidc-refactor
+    paths:
+      - '.github/workflows/terraform-dependencies.yml'
+
 env:
   location: 'westus2'
   resource_prefix: "backend-appsrvc"
@@ -15,10 +22,13 @@ jobs:
     name: "Create storage account and container for Terraform state"
     runs-on: ubuntu-latest
     steps:
-      # Login Azure
-      - uses: azure/login@v1
+      # Login to Azure via OIDC
+      - name: Log in to Azure using OIDC
+        uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
       
       - name: Create Resource Group
         id: rg

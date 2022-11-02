@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - jin/oidc-refactor
     paths:
       - "reference-implementations/LOB-ILB-ASEv3/bicep/**"
 
@@ -14,6 +15,9 @@ on:
       - main
     paths:
       - "reference-implementations/LOB-ILB-ASEv3/bicep/**"
+
+permissions:
+  id-token: write
 
 jobs:
   validate_bicep:
@@ -55,10 +59,13 @@ jobs:
       - name: Write deployment information to log
         run: |
           echo "Deploying to ${{ fromJson(env.config).AZURE_LOCATION }} with name prefix ${{ fromJson(env.config).RESOURCE_NAME_PREFIX }}"
-        # Log into Azure
+
+      # Log into Azure via OIDC
       - uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_OIDC_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
 
       - name: Run Preflight Validation
         working-directory: ./reference-implementations/LOB-ILB-ASEv3/bicep
