@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - jin/oidc-refactor
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Bicep.yml'
       - "reference-implementations/LOB-ILB-ASEv3/bicep/**"
