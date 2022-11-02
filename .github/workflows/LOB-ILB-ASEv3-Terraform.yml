@@ -44,16 +44,14 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
 
-      - uses: hashicorp/setup-terraform@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.terraform_version }}
 
       - name: Terraform Init
         id: init
         run: |
-          export ARM_CLIENT_ID=${{ env.ARM_CLIENT_ID }}
-          export ARM_SUBSCRIPTION_ID=${{ env.ARM_SUBSCRIPTION_ID }}
-          export ARM_TENANT_ID=${{ env.ARM_TENANT_ID }}
           terraform init
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
