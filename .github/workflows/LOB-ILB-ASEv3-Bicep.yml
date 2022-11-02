@@ -8,12 +8,14 @@ on:
       - main
       - jin/oidc-refactor
     paths:
+      - '.github/workflows/LOB-ILB-ASEv3-Bicep.yml'
       - "reference-implementations/LOB-ILB-ASEv3/bicep/**"
 
   pull_request:
     branches:
       - main
     paths:
+      - '.github/workflows/LOB-ILB-ASEv3-Bicep.yml'
       - "reference-implementations/LOB-ILB-ASEv3/bicep/**"
 
 permissions:
