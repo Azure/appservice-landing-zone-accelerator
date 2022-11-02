@@ -10,6 +10,9 @@ on:
     paths:
       - '.github/workflows/terraform-dependencies.yml'
 
+permissions:
+  id-token: write
+
 env:
   location: 'westus2'
   resource_prefix: "backend-appsrvc"

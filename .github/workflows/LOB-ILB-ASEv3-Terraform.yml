@@ -21,7 +21,6 @@ on:
 
 permissions:
   id-token: write
-  contents: read
 
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
@@ -39,13 +38,13 @@ jobs:
           terraform_version: ${{ env.terraform_version }}
 
       - name: Terraform Init
-          id: init
-          run: terraform init
-          env:
-            ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-            ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
-            ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-            ARM_USE_OIDC: true
+        id: init
+        run: terraform init
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
 
       - name: Terraform Validate
         working-directory: ${{ env.modulePath }}
