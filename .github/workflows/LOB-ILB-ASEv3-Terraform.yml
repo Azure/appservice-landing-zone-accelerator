@@ -40,6 +40,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+        working-directory: ${{ env.modulePath }}
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
