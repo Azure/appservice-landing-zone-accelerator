@@ -35,8 +35,8 @@ resource "azurerm_windows_virtual_machine" "vm" {
     sku       = "2016-Datacenter"
     version   = "latest"
   }
-  provision_vm_agent          = true
-  allow_extension_operations  = true
+  provision_vm_agent         = true
+  allow_extension_operations = true
 }
 
 resource "azurerm_virtual_machine_extension" "installagent" {

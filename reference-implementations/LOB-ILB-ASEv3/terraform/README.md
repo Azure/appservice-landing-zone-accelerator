@@ -131,17 +131,20 @@ As you configured the backend remote state with your live Azure infrastructure r
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 3.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.2 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~>3.7.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.1.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.18.0 |
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_shared-vms"></a> [shared-vms](#module\_shared-vms) | ./modules/shared | n/a |
 
 ## Resources
 
@@ -164,6 +167,7 @@ No modules.
 | [azurerm_virtual_network.vnetSpoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) | resource |
 | [azurerm_virtual_network_peering.peerhubtospoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering) | resource |
 | [azurerm_virtual_network_peering.peerspoketohub](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering) | resource |
+| [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
 
 ## Inputs
 
@@ -178,6 +182,8 @@ No modules.
 | <a name="input_location"></a> [location](#input\_location) | The Azure location where all resources should be created | `string` | `"westus2"` | no |
 | <a name="input_numberOfWorkers"></a> [numberOfWorkers](#input\_numberOfWorkers) | numberOfWorkers for ASE | `number` | `3` | no |
 | <a name="input_spokeVNetNameAddressPrefix"></a> [spokeVNetNameAddressPrefix](#input\_spokeVNetNameAddressPrefix) | CIDR prefix to use for Spoke VNet | `string` | `"10.1.0.0/16"` | no |
+| <a name="input_vmadminPassword"></a> [vmadminPassword](#input\_vmadminPassword) | admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault | `string` | `null` | no |
+| <a name="input_vmadminUserName"></a> [vmadminUserName](#input\_vmadminUserName) | admin username for the virtual machine (devops agent, jumpbox) | `string` | `"vmadmin"` | no |
 | <a name="input_workerPool"></a> [workerPool](#input\_workerPool) | workerPool for ASE | `number` | `1` | no |
 | <a name="input_workloadName"></a> [workloadName](#input\_workloadName) | A short name for the workload being deployed | `string` | `"ase"` | no |
 
@@ -185,20 +191,14 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_CICDAgentSubnetId"></a> [CICDAgentSubnetId](#output\_CICDAgentSubnetId) | n/a |
-| <a name="output_CICDAgentSubnetName"></a> [CICDAgentSubnetName](#output\_CICDAgentSubnetName) | n/a |
-| <a name="output_appServicePlanId"></a> [appServicePlanId](#output\_appServicePlanId) | n/a |
-| <a name="output_appServicePlanName"></a> [appServicePlanName](#output\_appServicePlanName) | n/a |
-| <a name="output_aseId"></a> [aseId](#output\_aseId) | n/a |
-| <a name="output_aseName"></a> [aseName](#output\_aseName) | Output section |
-| <a name="output_aseSubnetId"></a> [aseSubnetId](#output\_aseSubnetId) | n/a |
-| <a name="output_aseSubnetName"></a> [aseSubnetName](#output\_aseSubnetName) | n/a |
-| <a name="output_bastionSubnetId"></a> [bastionSubnetId](#output\_bastionSubnetId) | n/a |
-| <a name="output_bastionSubnetName"></a> [bastionSubnetName](#output\_bastionSubnetName) | n/a |
-| <a name="output_hubVNetId"></a> [hubVNetId](#output\_hubVNetId) | n/a |
-| <a name="output_hubVNetName"></a> [hubVNetName](#output\_hubVNetName) | Output section |
-| <a name="output_jumpBoxSubnetId"></a> [jumpBoxSubnetId](#output\_jumpBoxSubnetId) | n/a |
-| <a name="output_jumpBoxSubnetName"></a> [jumpBoxSubnetName](#output\_jumpBoxSubnetName) | n/a |
-| <a name="output_spokeVNetId"></a> [spokeVNetId](#output\_spokeVNetId) | n/a |
-| <a name="output_spokeVNetName"></a> [spokeVNetName](#output\_spokeVNetName) | n/a |
+| <a name="output_appServicePlanId"></a> [appServicePlanId](#output\_appServicePlanId) | ID of the App Service Plan. |
+| <a name="output_appServicePlanName"></a> [appServicePlanName](#output\_appServicePlanName) | Name of the App Service Plan. |
+| <a name="output_aseId"></a> [aseId](#output\_aseId) | ID of the App Service Environment. |
+| <a name="output_aseName"></a> [aseName](#output\_aseName) | Name of the App Service Environment. |
+| <a name="output_hubSubnets"></a> [hubSubnets](#output\_hubSubnets) | Hub virtual network subnet name-to-id mapping. |
+| <a name="output_hubVNetId"></a> [hubVNetId](#output\_hubVNetId) | ID of the provisioned Hub virtual network. |
+| <a name="output_hubVNetName"></a> [hubVNetName](#output\_hubVNetName) | Name of the provisioned Hub virtual network. |
+| <a name="output_shared-vms"></a> [shared-vms](#output\_shared-vms) | Private IP Addresses and IDs of the provisioned shared virtual machines (DevOps and Jumpbox VMs). |
+| <a name="output_spokeVNetId"></a> [spokeVNetId](#output\_spokeVNetId) | ID of the provisioned Spoke virtual network. |
+| <a name="output_spokeVNetName"></a> [spokeVNetName](#output\_spokeVNetName) | Name of the provisioned Spoke virtual network. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

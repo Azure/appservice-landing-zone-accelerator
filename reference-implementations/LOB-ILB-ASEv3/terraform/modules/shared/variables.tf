@@ -1,37 +1,37 @@
 variable "resourceSuffix" {
-    type = string
-    description = "resourceSuffix"
+  type        = string
+  description = "resourceSuffix"
 }
 
 variable "resourceGroupName" {
-    type = string
+  type = string
 }
 
 variable "location" {
-    type = string
+  type = string
 }
 
 variable "adminUsername" {
-    type = string
+  type = string
 }
 
 variable "adminPassword" {
-    type = string
-    default = null
+  type    = string
+  default = null
 }
 
 variable "devOpsVMSubnetId" {
-    type = string
+  type = string
 }
 
 variable "jumpboxVMSubnetId" {
-    type = string
+  type = string
 }
 
 variable "bastionSubnetId" {
   type = string
 }
 
-variable "tenantId"{
-    type = string
+variable "tenantId" {
+  type = string
 }
