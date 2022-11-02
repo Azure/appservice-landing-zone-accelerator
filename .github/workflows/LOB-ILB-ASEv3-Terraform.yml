@@ -34,16 +34,16 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@main
 
-      - uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.terraform_version }}
-
       # Log into Azure via OIDC
       - uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.terraform_version }}
 
       - name: Terraform Init
         id: init
@@ -75,7 +75,7 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
-          
+
       - name: Terraform Apply
         working-directory: ${{ env.modulePath }}
         run: |
