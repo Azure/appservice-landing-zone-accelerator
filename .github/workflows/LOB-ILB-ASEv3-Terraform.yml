@@ -47,7 +47,11 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: |
+          export ARM_CLIENT_ID=${{ env.ARM_CLIENT_ID }}
+          export ARM_SUBSCRIPTION_ID=${{ env.ARM_SUBSCRIPTION_ID }}
+          export ARM_TENANT_ID=${{ env.ARM_TENANT_ID }}
+          terraform init
         working-directory: ${{ env.modulePath }}
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
