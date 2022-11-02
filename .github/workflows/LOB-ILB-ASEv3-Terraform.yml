@@ -21,7 +21,8 @@ on:
 
 permissions:
   id-token: write
-
+  contents: read
+  
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
   terraform_version: 1.1.8
@@ -57,6 +58,11 @@ jobs:
       - name: Terraform Validate
         working-directory: ${{ env.modulePath }}
         run: terraform validate
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
 
       - name: Terraform Plan
         working-directory: ${{ env.modulePath }}
@@ -64,10 +70,20 @@ jobs:
         run: |
           terraform plan \
             -var-file="Parameters/uat.tfvars"
-      
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+          
       - name: Terraform Apply
         working-directory: ${{ env.modulePath }}
         run: |
           terraform apply \
             -auto-approve \
             -var-file="Parameters/uat.tfvars"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
