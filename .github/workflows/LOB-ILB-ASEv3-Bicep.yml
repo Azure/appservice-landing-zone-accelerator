@@ -107,7 +107,7 @@ jobs:
           path: /reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/ase-arm.json
           retention-days: 2
 
-      # Committing and pushing exported ARM template to the same repo.
+      # Committing and pushing exported ARM template to the same repo
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
         with:
