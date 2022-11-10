@@ -1,35 +1,38 @@
 name: deploysampleapp
-
-on:
-  push:
-    branches: [ whsalazar/userguide ]
-  pull_request:
-    branches: [ whsalazar/userguide  ]
-
+on: workflow_dispatch
+env: 
+  AZURE_WEBAPP_NAME: samplewebapp # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: 'artifacts' #set this to the path to your web app project, defaults to the repository root
+  DOTNET_VERSION: '6.0.x' #set this to the dot net version to use
+  KEYVAULTNAME: ADD-YOUR-KEYVAULT-NAME
+  DEPLOY_WITH_REDIS: true
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
+    # Checkout the repot
     - uses: actions/checkout@v3
-    - name: Setup .NET
+    # Setup .NET CORE SDK
+    - name: Setup .NET Core
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 6.0.x
-        
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    # Restore dependencies
     - name: Restore
       run: dotnet restore ./sampleapp/SampleAppService/SampleAppService.csproj
  
+    # Build the web app
     - name: Build
       run: dotnet build --configuration Release --no-restore ./sampleapp/SampleAppService/SampleAppService.csproj
  
+    # Run unit tests
     - name: Test
       run: dotnet test --no-restore ./sampleapp/SampleAppService/SampleAppService.csproj       
-      
+    
+    # Publish the web app
     - name: Publish
-      run: dotnet publish ./sampleapp/SampleAppService/SampleAppService.csproj --configuration Release --output artifacts
-
+      run: dotnet publish ./sampleapp/SampleAppService/SampleAppService.csproj --configuration Release --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
       
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.0.0
@@ -40,5 +43,47 @@ jobs:
         path: ./artifacts/**
         # The desired behavior if no files are found using the provided path.
         if-no-files-found: error
-     
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: ADD-YOUR-GITHUB-ENVIRONMENT-NAME
+      url: ${{ steps.deploywebapp.outpus.webapp-url }}
+    steps:
+    - name: Download the artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: sampleappbuild
+        path: ./artifacts/**
+    
+    - name: Login via Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
       
+    - name: Get Redis Secrets
+      if: (${{ env.DEPLOY_WITH_REDIS }} == true)
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: "${{ env.KEYVAULTNAME }}"
+        secrets: 'redisHostName, redisPassword'
+      id: getsecretaction
+    - name: App Settings variable substitution
+      if: (${{ env.DEPLOY_WITH_REDIS }} == true)
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: 'appsettings.json'
+      env:
+        AddRedis: ${{ env.DEPLOY_WITH_REDIS }}
+        RedisHost: "${{ steps.getsecretaction.outputs.redisHostName }}",
+        RedisPort: "10000",
+        RedisPassword: "${{ steps.getsecretaction.outputs.redisPassword }}",
+        IsACRE: true
+    - name: Deploy web app
+      id: deploywebapp
+      uses: azure/webapps-deployv@2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        package: sampleappbuild
+    - name: az cli logout
+      run: az logout
