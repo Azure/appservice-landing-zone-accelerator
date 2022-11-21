@@ -58,10 +58,12 @@ module "spoke-network" {
 }
 
 module "app-service" {
-  source                = "./modules/spoke/app-service"
-  resource_group        = azurerm_resource_group.main.name
-  application_name      = var.application_name
-  environment           = local.environment
-  location              = var.location
-  integration-subnet-id = module.spoke-network.app_svc_integration_subnet_id
+  source                           = "./modules/spoke/app-service"
+  resource_group                   = azurerm_resource_group.main.name
+  application_name                 = var.application_name
+  environment                      = local.environment
+  location                         = var.location
+  app-svc-integration-subnet-id    = module.spoke-network.app_svc_integration_subnet_id
+  front_door_integration_subnet_id = module.spoke-network.front_door_integration_subnet_id
+  private-dns-zone-id              = module.spoke-network.azurewebsites_private_dns_zone_id
 }
