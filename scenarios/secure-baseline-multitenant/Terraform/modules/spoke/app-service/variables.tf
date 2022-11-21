@@ -22,7 +22,17 @@ variable "location" {
   default     = "westeurope"
 }
 
-variable "integration-subnet-id" {
+variable "app-svc-integration-subnet-id" {
   type        = string
   description = "The subnet id where the app service will be integrated"
+}
+
+variable "front_door_integration_subnet_id" {
+  type        = string
+  description = "The subnet id where the front door will be integrated"
+}
+
+variable "private-dns-zone-id" {
+  type        = string
+  description = "The private dns zone id where the app service will be integrated"
 }

@@ -88,3 +88,15 @@ resource "azurerm_subnet" "private-link-subnet" {
   resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.spoke-vnet.name
 }
+
+resource "azurerm_private_dns_zone" "azurewebsites-dnsprivatezone" {
+  name                = "privatelink.azurewebsites.net"
+  resource_group_name = var.resource_group
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "azurewebsites-dnszonelink" {
+  name                  = "privatelink.azurewebsites.net"
+  resource_group_name   = var.resource_group
+  private_dns_zone_name = azurerm_private_dns_zone.azurewebsites-dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+}
