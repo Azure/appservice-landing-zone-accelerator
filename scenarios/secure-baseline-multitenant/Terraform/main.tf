@@ -67,3 +67,13 @@ module "app-service" {
   front_door_integration_subnet_id = module.spoke-network.front_door_integration_subnet_id
   private-dns-zone-id              = module.spoke-network.azurewebsites_private_dns_zone_id
 }
+
+module "front-door" {
+  source           = "./modules/spoke/front-door"
+  resource_group   = azurerm_resource_group.main.name
+  application_name = var.application_name
+  environment      = local.environment
+  location         = var.location
+  web_app_id       = module.app-service.web_app_id
+  web_app_hostname = module.app-service.web_app_hostname
+}
