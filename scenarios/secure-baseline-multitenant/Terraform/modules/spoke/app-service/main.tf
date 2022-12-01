@@ -9,6 +9,7 @@ locals {
   app-svc-plan-name = "plan-${var.application_name}-${var.environment}"
   web-app-name      = "web-${var.application_name}-${var.environment}"
 }
+
 resource "azurerm_service_plan" "secure-baseline-app-service-plan" {
   name                = local.app-svc-plan-name
   resource_group_name = data.azurerm_resource_group.spoke-rg.name
@@ -18,19 +19,33 @@ resource "azurerm_service_plan" "secure-baseline-app-service-plan" {
 }
 
 resource "azurerm_windows_web_app" "secure-baseline-web-app" {
-  name                = local.web-app-name
-  resource_group_name = data.azurerm_resource_group.spoke-rg.name
-  location            = data.azurerm_resource_group.spoke-rg.location
-  service_plan_id     = azurerm_service_plan.secure-baseline-app-service-plan.id
+  name                      = local.web-app-name
+  resource_group_name       = data.azurerm_resource_group.spoke-rg.name
+  location                  = data.azurerm_resource_group.spoke-rg.location
+  service_plan_id           = azurerm_service_plan.secure-baseline-app-service-plan.id
+  virtual_network_subnet_id = var.app-svc-integration-subnet-id
+
+  identity {
+    type = "SystemAssigned"
+  }
 
   site_config {
     vnet_route_all_enabled = true
   }
 }
 
-resource "azurerm_app_service_virtual_network_swift_connection" "app-svc-network-integration" {
+resource "azurerm_windows_web_app_slot" "secure-baseline-web-app-slot" {
+  name           = "${local.web-app-name}-slot"
   app_service_id = azurerm_windows_web_app.secure-baseline-web-app.id
-  subnet_id      = var.app-svc-integration-subnet-id
+
+  site_config {}
+}
+
+resource "azurerm_app_service_source_control_slot" "sample-app" {
+  slot_id                = azurerm_windows_web_app_slot.secure-baseline-web-app-slot.id
+  repo_url               = "https://github.com/Azure/appservice-landing-zone-accelerator"
+  branch                 = "main"
+  use_manual_integration = true
 }
 
 resource "azurerm_private_endpoint" "app-svc-private-endpoint" {
