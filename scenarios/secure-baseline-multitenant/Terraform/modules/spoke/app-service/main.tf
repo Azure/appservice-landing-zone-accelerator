@@ -14,8 +14,8 @@ resource "azurerm_service_plan" "secure-baseline-app-service-plan" {
   name                = local.app-svc-plan-name
   resource_group_name = data.azurerm_resource_group.spoke-rg.name
   location            = data.azurerm_resource_group.spoke-rg.location
-  sku_name            = "P1v2"
-  os_type             = "Windows"
+  sku_name            = var.sku_name
+  os_type             = var.os_type
 }
 
 resource "azurerm_windows_web_app" "secure-baseline-web-app" {
@@ -23,7 +23,7 @@ resource "azurerm_windows_web_app" "secure-baseline-web-app" {
   resource_group_name       = data.azurerm_resource_group.spoke-rg.name
   location                  = data.azurerm_resource_group.spoke-rg.location
   service_plan_id           = azurerm_service_plan.secure-baseline-app-service-plan.id
-  virtual_network_subnet_id = var.app-svc-integration-subnet-id
+  virtual_network_subnet_id = var.app_svc_integration_subnet_id
 
   identity {
     type = "SystemAssigned"
@@ -56,7 +56,7 @@ resource "azurerm_private_endpoint" "app-svc-private-endpoint" {
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [var.private-dns-zone-id]
+    private_dns_zone_ids = [var.private_dns_zone_id]
   }
 
   private_service_connection {

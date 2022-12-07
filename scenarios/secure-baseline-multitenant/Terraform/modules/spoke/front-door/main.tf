@@ -4,6 +4,10 @@ terraform {
       source  = "aztfmod/azurecaf"
       version = ">=1.2.22"
     }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">=3.34.0"
+    }
   }
 }
 
@@ -15,6 +19,7 @@ resource "azurecaf_name" "frontdoor" {
 
 data "azurerm_resource_group" "spoke-rg" {
   name = var.resource_group
+
 }
 
 locals {
@@ -30,12 +35,12 @@ resource "azurerm_cdn_frontdoor_profile" "frontdoor" {
   sku_name            = var.azure_frontdoor_sku
 }
 
-resource "azurerm_cdn_frontdoor_endpoint" "my_endpoint" {
+resource "azurerm_cdn_frontdoor_endpoint" "web_app" {
   name                     = local.front_door_endpoint_name
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
 }
 
-resource "azurerm_cdn_frontdoor_origin_group" "my_origin_group" {
+resource "azurerm_cdn_frontdoor_origin_group" "web_app" {
   name                     = local.front_door_origin_group_name
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
   session_affinity_enabled = false
@@ -54,15 +59,15 @@ resource "azurerm_cdn_frontdoor_origin_group" "my_origin_group" {
   }
 }
 
-resource "azurerm_cdn_frontdoor_origin" "app_service_private_link_origin" {
+resource "azurerm_cdn_frontdoor_origin" "web_app" {
   name                          = local.front_door_origin_name
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.my_origin_group.id
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.web_app.id
 
   enabled                        = true
   host_name                      = var.web_app_hostname
   http_port                      = 80
   https_port                     = 443
-  origin_host_header             = var.web_app_hostname 
+  origin_host_header             = var.web_app_hostname
   priority                       = 1
   weight                         = 1000
   certificate_name_check_enabled = true
@@ -75,15 +80,48 @@ resource "azurerm_cdn_frontdoor_origin" "app_service_private_link_origin" {
   }
 }
 
-resource "azurerm_cdn_frontdoor_route" "my_route" {
+resource "azurerm_cdn_frontdoor_route" "web_app" {
   name                          = local.front_door_route_name
-  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.my_endpoint.id
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.my_origin_group.id
-  cdn_frontdoor_origin_ids      = [azurerm_cdn_frontdoor_origin.app_service_private_link_origin.id]
+  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.web_app.id
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.web_app.id
+  cdn_frontdoor_origin_ids      = [azurerm_cdn_frontdoor_origin.web_app.id]
 
   supported_protocols    = ["Http", "Https"]
   patterns_to_match      = ["/*"]
   forwarding_protocol    = "HttpsOnly"
   link_to_default_domain = true
   https_redirect_enabled = true
+}
+
+resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
+  name                = "WafMicrosoftDefaultRuleSet21"
+  resource_group_name = var.resource_group
+  sku_name            = azurerm_cdn_frontdoor_profile.frontdoor.sku_name
+  mode                = "Prevention"
+  enabled             = true
+
+  managed_rule {
+    type    = "Microsoft_DefaultRuleSet"
+    version = "2.1"
+    action  = "Block"
+  }
+}
+
+resource "azurerm_cdn_frontdoor_security_policy" "web-app-waf" {
+  name                     = "WAF-Security-Policy"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
+
+  security_policies {
+    firewall {
+      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.waf.id
+
+      association {
+        patterns_to_match = ["/*"]
+        domain {
+          
+          cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.web_app.id
+        }
+      }
+    }
+  }
 }
