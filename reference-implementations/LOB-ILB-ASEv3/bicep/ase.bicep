@@ -76,6 +76,7 @@ module privateDnsZone 'modules/privateDnsZone.module.bicep' = {
   name: 'PrivateDnsZoneModule'
   params: {
     name: '${ase.name}.appserviceenvironment.net'
+    prefix: 'ase'
     vnetIds: [
       vnetId
     ]
@@ -97,6 +98,7 @@ module privateDnsZone 'modules/privateDnsZone.module.bicep' = {
       }
     ]
     registrationEnabled: false
+    isRedisDnsZone: false
     tags: tags
   }
 }
