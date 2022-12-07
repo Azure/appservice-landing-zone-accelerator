@@ -17,3 +17,11 @@ output "private_link_subnet_id" {
 output "azurewebsites_private_dns_zone_id" {
     value = azurerm_private_dns_zone.azurewebsites-dnsprivatezone.id
 }
+
+output "sqldb_private_dns_zone_id" {
+    value = azurerm_private_dns_zone.sqldb-dnsprivatezone.id
+}
+
+output "sqldb_private_dns_zone_name" {
+    value = azurerm_private_dns_zone.sqldb-dnsprivatezone.name
+}

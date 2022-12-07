@@ -94,9 +94,21 @@ resource "azurerm_private_dns_zone" "azurewebsites-dnsprivatezone" {
   resource_group_name = var.resource_group
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "azurewebsites-dnszonelink" {
+resource "azurerm_private_dns_zone_virtual_network_link" "azurewebsites-spoke-dnszonelink" {
   name                  = "privatelink.azurewebsites.net"
   resource_group_name   = var.resource_group
   private_dns_zone_name = azurerm_private_dns_zone.azurewebsites-dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+}
+
+resource "azurerm_private_dns_zone" "sqldb-dnsprivatezone" {
+  name                = "privatelink.database.windows.net"
+  resource_group_name = var.resource_group
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "sqldb-spoke-dnszonelink" {
+  name                  = "privatelink.database.windows.net"
+  resource_group_name   = var.resource_group
+  private_dns_zone_name = azurerm_private_dns_zone.sqldb-dnsprivatezone.name
   virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
 }
