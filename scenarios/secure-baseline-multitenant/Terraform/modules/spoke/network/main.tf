@@ -112,3 +112,39 @@ resource "azurerm_private_dns_zone_virtual_network_link" "sqldb-spoke-dnszonelin
   private_dns_zone_name = azurerm_private_dns_zone.sqldb-dnsprivatezone.name
   virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
 }
+
+resource "azurerm_private_dns_zone" "appconfig-dnsprivatezone" {
+  name                = "privatelink.azconfig.io"
+  resource_group_name = var.resource_group
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "appconfig-spoke-dnszonelink" {
+  name                  = "privatelink.azconfig.io"
+  resource_group_name   = var.resource_group
+  private_dns_zone_name = azurerm_private_dns_zone.appconfig-dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+}
+
+resource "azurerm_private_dns_zone" "keyvault-dnsprivatezone" {
+  name                = "privatelink.vaultcore.azure.net"
+  resource_group_name = var.resource_group
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "keyvault-spoke-dnszonelink" {
+  name                  = "privatelink.vaultcore.azure.net"
+  resource_group_name   = var.resource_group
+  private_dns_zone_name = azurerm_private_dns_zone.keyvault-dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+}
+
+resource "azurerm_private_dns_zone" "redis-dnsprivatezone" {
+  name                = "privatelink.redis.cache.windows.net"
+  resource_group_name = var.resource_group
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "redis-spoke-dnszonelink" {
+  name                  = "privatelink.redis.cache.windows.net"
+  resource_group_name   = var.resource_group
+  private_dns_zone_name = azurerm_private_dns_zone.redis-dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+}
