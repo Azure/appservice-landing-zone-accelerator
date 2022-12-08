@@ -44,6 +44,12 @@ terraform apply --auto-approve
 
 4. Approve the App Service private endpoint connection from Front Door in the Azure Portal. This is a manual step that is required to complete the private endpoint connection.
 
+5. Retrieve the Azure Front Door frontend endpoint URL and test the App Service:
+
+```bash
+az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>```  
+```
+
 ## Deploying App Service into Existing Infrastructure
 
 The steps above assume that you will be creating the Hub and Spoke (Landing Zone) Network and supporting components using the code provided, where each step refers to state file information from the previous steps.
