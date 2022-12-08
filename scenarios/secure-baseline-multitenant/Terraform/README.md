@@ -24,19 +24,25 @@ This section is organized using folders that match the steps outlined below. Mak
 
 1. Preqs - Clone this repo, install Azure CLI, install Terraform
 
-2. [Creation of Azure Storage Account for State Management](./02-state-storage.md)
+[Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
-3. [Create or Import Azure Active Directory Groups for App Service Cluster Admins and App Service Cluster Users](./03-aad.md)
+2. Create terraform.tfvars file. An Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code.
 
-4. [Creation of Hub Network & its respective Components](./04-network-hub.md)
- 
-5. [Creation of Spoke Network & its respective Components](./05-network-lz.md)
+```bash
+tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+sql_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+sql_admin_group_name      = "Azure AD SQL Admins"
+```
 
-6. [Creation of Supporting Components for App Service](./06-App Service-supporting.md)
+3. Deploy the App Service Landing Zone
 
-7. [Creation of App Service Plan](./07-App Service.md)
+```bash
+terraform init --upgrade
+terraform plan
+terraform apply --auto-approve
+```
 
-8. [Deploy a Basic Workload](./08-workload.md)
+4. Approve the App Service private endpoint connection from Front Door in the Azure Portal. This is a manual step that is required to complete the private endpoint connection.
 
 ## Deploying App Service into Existing Infrastructure
 
