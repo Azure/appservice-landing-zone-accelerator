@@ -20,13 +20,15 @@ In this example, state is stored in an Azure Storage account that was created ou
 
 This section is organized using folders that match the steps outlined below. Make any necessary adjustments to the variables and settings within that folder to match the needs of your deployment.
 
-### To be defined later:
+### Prerequisites
 
-1. Preqs - Clone this repo, install Azure CLI, install Terraform
+Clone this repo, install Azure CLI, install Terraform.
 
 [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
-2. Create terraform.tfvars file. An Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code.
+### Create terraform.tfvars file
+
+An Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the terraform.tfvars file that needs to be created in this folder:
 
 ```bash
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -34,7 +36,7 @@ sql_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 sql_admin_group_name      = "Azure AD SQL Admins"
 ```
 
-3. Deploy the App Service Landing Zone
+### Deploy the App Service Landing Zone Terraform code
 
 ```bash
 terraform init --upgrade
@@ -42,15 +44,17 @@ terraform plan
 terraform apply --auto-approve
 ```
 
-4. Approve the App Service private endpoint connection from Front Door in the Azure Portal. This is a manual step that is required to complete the private endpoint connection.
+### Approve the App Service private endpoint connection from Front Door in the Azure Portal
 
-5. Retrieve the Azure Front Door frontend endpoint URL and test the App Service:
+This is a manual step that is required to complete the private endpoint connection.
+
+### Retrieve the Azure Front Door frontend endpoint URL and test the App Service
 
 ```bash
 az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>```  
 ```
 
-## Deploying App Service into Existing Infrastructure
+## TBD: Deploying App Service into Existing Infrastructure
 
 The steps above assume that you will be creating the Hub and Spoke (Landing Zone) Network and supporting components using the code provided, where each step refers to state file information from the previous steps.
 
