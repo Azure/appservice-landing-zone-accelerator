@@ -13,3 +13,39 @@ output "devops_subnet_id" {
 output "private_link_subnet_id" {
     value = azurerm_subnet.private-link-subnet.id
 }
+
+output "azurewebsites_private_dns_zone_id" {
+    value = azurerm_private_dns_zone.azurewebsites-dnsprivatezone.id
+}
+
+output "sqldb_private_dns_zone_id" {
+    value = azurerm_private_dns_zone.sqldb-dnsprivatezone.id
+}
+
+output "sqldb_private_dns_zone_name" {
+    value = azurerm_private_dns_zone.sqldb-dnsprivatezone.name
+}
+
+output "appconfig_private_dns_zone_id" {
+    value = azurerm_private_dns_zone.appconfig-dnsprivatezone.id
+}
+
+output "appconfig_private_dns_zone_name" {
+    value = azurerm_private_dns_zone.appconfig-dnsprivatezone.name
+}
+
+output "keyvault_private_dns_zone_id" {
+    value = azurerm_private_dns_zone.keyvault-dnsprivatezone.id
+}
+
+output "keyvault_private_dns_zone_name" {
+    value = azurerm_private_dns_zone.keyvault-dnsprivatezone.name
+}
+
+output "redis_private_dns_zone_id" {
+    value = azurerm_private_dns_zone.redis-dnsprivatezone.id
+}
+
+output "redis_private_dns_zone_name" {
+    value = azurerm_private_dns_zone.redis-dnsprivatezone.name
+}
