@@ -1,7 +1,7 @@
 variable "application_name" {
   type        = string
   description = "The name of your application"
-  default     = "secure-baseline"
+  default     = "secure-baseline-h20221208"
 }
 
 variable "resource_group" {
