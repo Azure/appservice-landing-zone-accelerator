@@ -1,4 +1,4 @@
-# Multitenant App Service Secure Baseline Terraform Implementation
+# Multitenant App Service Secure Baseline Bicep Implementation
 
 ## Steps of Implementation for App Service Construction Set
 
@@ -12,37 +12,44 @@ While the code here is located in one folder in a single repo, the steps are des
 
 The code here is purposely written to avoid loops, complex variables and logic. In most cases, it is resource blocks, small modules and limited variables, with the goal of making it easier to determine what is being deployed and how they are connected. Resources are broken into separate files for future modularization or adjustments as needed by your organization.
 
-## Required Parameters
-
-In this example, please take in mind the below required parameters:
-* Location
-* App Service Name
-...
-
 ## Getting Started
 
 This section is organized using folders that match the steps outlined below. Make any necessary adjustments to the variables and settings within that folder to match the needs of your deployment.
 
-### To be defined later:
+### Prerequisites
 
-1. Preqs - Clone this repo, install Azure CLI, install Terraform
+Clone this repo, install Azure CLI, install Bicep.
 
-2. [Creation of Azure Storage Account for State Management](./02-state-storage.md)
+[Install Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 
-3. [Create or Import Azure Active Directory Groups for App Service Cluster Admins and App Service Cluster Users](./03-aad.md)
+### Create parameters.json file
 
-4. [Creation of Hub Network & its respective Components](./04-network-hub.md)
- 
-5. [Creation of Spoke Network & its respective Components](./05-network-lz.md)
+An Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the terraform.tfvars file that needs to be created in this folder:
 
-6. [Creation of Supporting Components for App Service](./06-App Service-supporting.md)
+```bash
+tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+sql_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+sql_admin_group_name      = "Azure AD SQL Admins"
+```
 
-7. [Creation of App Service Plan](./07-App Service.md)
+### Deploy the App Service Landing Zone Bicep code
 
-8. [Deploy a Basic Workload](./08-workload.md)
+```bash
+TBD!
 
-## Deploying App Service into Existing Infrastructure
+```
+### Approve the App Service private endpoint connection from Front Door in the Azure Portal
+
+This is a manual step that is required to complete the private endpoint connection.
+
+### Retrieve the Azure Front Door frontend endpoint URL and test the App Service
+
+```bash
+az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>```  
+```
+
+## TBD: Deploying App Service into Existing Infrastructure
 
 The steps above assume that you will be creating the Hub and Spoke (Landing Zone) Network and supporting components using the code provided, where each step refers to state file information from the previous steps.
 
-To deploy App Service into an existing network, use the [App Service for Existing Cluster](./07-App Service-cluster-existing-infra) folder.  Update the "existing-infra.bicep" file to reference the names and resource IDs of the pre-existing infrastructure.
+To deploy App Service into an existing network, use the [App Service for Existing Cluster](./07-App Service-cluster-existing-infra) folder.  Update the "existing-infra.variables.tf" file to reference the names and resource IDs of the pre-existing infrastructure.
