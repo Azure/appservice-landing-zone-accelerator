@@ -7,15 +7,10 @@ terraform {
   }
 }
 
-resource "random_integer" "sql-unique-id" {
-  min = 1000
-  max = 9999
-}
-
 resource "azurecaf_name" "sql-server" {
   name          = var.application_name
   resource_type = "azurerm_mssql_server"
-  suffixes      = [var.environment, random_integer.sql-unique-id.id] #NOTE: globally unique
+  suffixes      = [var.environment, var.unique_id] #NOTE: globally unique
 }
 
 # Create the SQL Server 

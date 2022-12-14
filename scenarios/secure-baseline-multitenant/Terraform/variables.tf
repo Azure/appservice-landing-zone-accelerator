@@ -12,8 +12,8 @@ variable "resource_group" {
 
 variable "environment" {
   type        = string
-  description = "The environment (dev, test, prod...)"
-  default     = "staging"
+  description = "The environment (dev, qa, staging, prod)"
+  default     = "dev"
 }
 
 variable "location" {
