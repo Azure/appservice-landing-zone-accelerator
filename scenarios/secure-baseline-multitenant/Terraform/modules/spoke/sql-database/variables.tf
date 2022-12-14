@@ -3,6 +3,11 @@ variable "application_name" {
   description = "The name of your application"
 }
 
+variable "unique_id" {
+  type        = string
+  description = "A unique identifier"
+}
+
 variable "resource_group" {
   type        = string
   description = "The name of the resource group where all resources in this example should be created."

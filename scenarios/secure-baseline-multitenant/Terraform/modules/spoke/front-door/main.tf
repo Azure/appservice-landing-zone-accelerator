@@ -17,11 +17,6 @@ resource "azurecaf_name" "frontdoor" {
   suffixes      = [var.environment]
 }
 
-data "azurerm_resource_group" "spoke-rg" {
-  name = var.resource_group
-
-}
-
 locals {
   front_door_endpoint_name     = "afd-ep-${var.application_name}-${var.environment}"
   front_door_origin_group_name = "afd-og-${var.application_name}-${var.environment}"
@@ -60,9 +55,8 @@ resource "azurerm_cdn_frontdoor_origin_group" "web_app" {
 }
 
 resource "azurerm_cdn_frontdoor_origin" "web_app" {
-  name                          = local.front_door_origin_name
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.web_app.id
-
+  name                           = local.front_door_origin_name
+  cdn_frontdoor_origin_group_id  = azurerm_cdn_frontdoor_origin_group.web_app.id
   enabled                        = true
   host_name                      = var.web_app_hostname
   http_port                      = 80
@@ -75,7 +69,7 @@ resource "azurerm_cdn_frontdoor_origin" "web_app" {
   private_link {
     request_message        = "Request access for CDN Frontdoor Private Link Origin to Web App"
     target_type            = "sites"
-    location               = data.azurerm_resource_group.spoke-rg.location
+    location               = var.location
     private_link_target_id = var.web_app_id
   }
 }
@@ -118,7 +112,7 @@ resource "azurerm_cdn_frontdoor_security_policy" "web-app-waf" {
       association {
         patterns_to_match = ["/*"]
         domain {
-          
+
           cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.web_app.id
         }
       }

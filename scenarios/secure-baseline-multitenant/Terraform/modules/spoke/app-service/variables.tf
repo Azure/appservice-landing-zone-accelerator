@@ -1,7 +1,11 @@
 variable "application_name" {
   type        = string
   description = "The name of your application"
-  default     = "app-svc-lz-4254"
+}
+
+variable "unique_id" {
+  type        = string
+  description = "A unique identifier"
 }
 
 variable "resource_group" {
