@@ -42,6 +42,8 @@ module "spoke" {
   tenant_id                 = var.tenant_id
   sql_admin_group_object_id = var.sql_admin_group_object_id
   sql_admin_group_name      = var.sql_admin_group_name
+  vm_admin_username         = var.vm_admin_username
+  vm_admin_password         = var.vm_admin_password
   vnet_cidr                 = local.spoke_vnet_cidr
   appsvc_int_subnet_cidr    = local.appsvc_int_subnet_cidr
   front_door_subnet_cidr    = local.front_door_subnet_cidr
@@ -49,14 +51,24 @@ module "spoke" {
   private_link_subnet_cidr  = local.private_link_subnet_cidr
 }
 
-resource "azurerm_virtual_network_peering" "hub_peering" {
+resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   name                         = "hub-to-spoke-${var.application_name}"
   resource_group_name          = module.hub.rg_name
   virtual_network_name         = module.hub.vnet_name
-  remote_virtual_network_id    = module.spoke.spoke_vnet_id
+  remote_virtual_network_id    = module.spoke.vnet_id
   allow_virtual_network_access = true
   allow_forwarded_traffic      = false
   allow_gateway_transit        = false
   use_remote_gateways          = false
-  # depends_on                   = [azurerm_virtual_network.vnetHub, azurerm_virtual_network.vnetSpoke]
+}
+
+resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+  name                         = "spoke-to-hub-${var.application_name}"
+  resource_group_name          = module.spoke.rg_name
+  virtual_network_name         = module.spoke.vnet_name
+  remote_virtual_network_id    = module.hub.vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
 }
