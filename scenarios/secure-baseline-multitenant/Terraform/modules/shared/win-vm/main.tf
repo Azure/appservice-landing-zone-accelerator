@@ -54,6 +54,8 @@ resource "azurerm_virtual_machine_extension" "installagent" {
   #  }
   #PROTECTED_SETTINGS
 
+  # https://raw.githubusercontent.com/Azure/ARO-Landing-Zone-Accelerator/main/deployment/CLI/03%20vm/start_script.ps1
+
   #"commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File agentsetup.ps1 -Command \"./agentsetup.ps1; exit 0;\"",
   protected_settings = <<PROTECTED_SETTINGS
     {

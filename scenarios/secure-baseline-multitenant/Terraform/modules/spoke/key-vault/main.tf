@@ -34,4 +34,4 @@ resource "azurerm_private_endpoint" "kv-private-endpoint" {
   location            = var.location
   resource_group_name = var.resource_group
   subnet_id           = var.private-link-subnet-id
-
+}
