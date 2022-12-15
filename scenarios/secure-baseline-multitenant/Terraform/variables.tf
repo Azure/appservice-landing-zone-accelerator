@@ -78,3 +78,13 @@ variable "private_link_subnet_cidr" {
   description = "The CIDR block for the subnet."
   default     = null
 }
+
+variable "vm_admin_username" {
+  type = string
+  description = "The username for the VM admin account."
+}
+
+variable "vm_admin_password" {
+  type = string
+  description = "The password for the VM admin account."
+}

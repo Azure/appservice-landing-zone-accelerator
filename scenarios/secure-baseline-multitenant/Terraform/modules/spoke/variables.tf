@@ -60,3 +60,13 @@ variable "private_link_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
 }
+
+variable "vm_admin_username" {
+  type = string
+  description = "The username for the VM admin account."
+}
+
+variable "vm_admin_password" {
+  type = string
+  description = "The password for the VM admin account."
+}

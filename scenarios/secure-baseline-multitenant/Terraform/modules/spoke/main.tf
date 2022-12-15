@@ -70,6 +70,16 @@ module "app-service" {
   private_dns_zone_id              = module.spoke-network.azurewebsites_private_dns_zone_id
 }
 
+module "devops-vm" {
+  source         = "./devops-vm"
+  resource_group = azurerm_resource_group.spoke.name
+  vm_name        = "devops-vm"
+  admin_username = var.vm_admin_username
+  admin_password = var.vm_admin_password
+  location       = var.location
+  vm_subnet_id   = module.spoke-network.devops_subnet_id
+}
+
 module "front-door" {
   source           = "./front-door"
   resource_group   = azurerm_resource_group.spoke.name

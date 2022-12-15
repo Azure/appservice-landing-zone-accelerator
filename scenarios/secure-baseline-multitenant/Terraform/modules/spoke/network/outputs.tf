@@ -2,6 +2,10 @@ output "vnet_id" {
     value = azurerm_virtual_network.spoke-vnet.id
 }
 
+output "vnet_name" {
+    value = azurerm_virtual_network.spoke-vnet.name
+}
+
 output "app_svc_integration_subnet_id" {
     value = azurerm_subnet.app-svc-integration-subnet.id
 }

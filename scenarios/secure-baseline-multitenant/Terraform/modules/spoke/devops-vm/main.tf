@@ -1,27 +1,27 @@
 
 #create the network interface
-resource "azurerm_network_interface" "nic" {
-  name                = "${var.vmname}-nic"
+resource "azurerm_network_interface" "vm-nic" {
+  name                = "${var.vm_name}-nic"
   location            = var.location
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.resource_group
 
   ip_configuration {
-    name                          = "internal"
-    subnet_id                     = var.cidr
+    name                          = "${var.vm_name}-vm-ipconfig"
+    subnet_id                     = var.vm_subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
 #create the vm
 resource "azurerm_windows_virtual_machine" "vm" {
-  name                = var.vmname
-  resource_group_name = var.resourceGroupName
+  name                = var.vm_name
+  resource_group_name = var.resource_group
   location            = var.location
-  size                = "Standard_F2"
-  admin_username      = var.adminUserName
-  admin_password      = var.adminPassword
+  size                = var.vm_size
+  admin_username      = var.admin_username
+  admin_password      = var.admin_password
   network_interface_ids = [
-    azurerm_network_interface.nic.id,
+    azurerm_network_interface.vm-nic.id,
   ]
 
   os_disk {
