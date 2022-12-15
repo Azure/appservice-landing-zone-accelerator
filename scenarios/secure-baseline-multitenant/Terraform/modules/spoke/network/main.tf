@@ -18,7 +18,7 @@ data "azurerm_resource_group" "spoke-rg" {
 }
 
 resource "azurerm_virtual_network" "spoke-vnet" {
-  address_space       = ["10.240.0.0/20"]
+  address_space       = var.vnet_cidr
   location            = var.location
   name                = azurecaf_name.spoke_vnet.result
   resource_group_name = var.resource_group
@@ -35,7 +35,7 @@ resource "azurecaf_name" "app-svc-integration-subnet" {
 
 # https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
 resource "azurerm_subnet" "app-svc-integration-subnet" {
-  address_prefixes     = ["10.240.0.0/26"]
+  address_prefixes     = var.appsvc_int_subnet_cidr
   name                 = azurecaf_name.app-svc-integration-subnet.result
   resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.spoke-vnet.name
@@ -57,7 +57,7 @@ resource "azurecaf_name" "front-door-integration-subnet" {
 
 # https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
 resource "azurerm_subnet" "front-door-integration-subnet" {
-  address_prefixes     = ["10.240.0.64/26"]
+  address_prefixes     = var.front_door_subnet_cidr
   name                 = azurecaf_name.front-door-integration-subnet.result
   resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.spoke-vnet.name
@@ -70,7 +70,7 @@ resource "azurecaf_name" "devops-subnet" {
 }
 
 resource "azurerm_subnet" "devops-subnet" {
-  address_prefixes     = ["10.240.10.128/25"]
+  address_prefixes     = var.devops_subnet_cidr
   name                 = azurecaf_name.devops-subnet.result
   resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.spoke-vnet.name
@@ -83,7 +83,7 @@ resource "azurecaf_name" "private-link-subnet" {
 }
 
 resource "azurerm_subnet" "private-link-subnet" {
-  address_prefixes     = ["10.240.11.0/24"]
+  address_prefixes     = var.private_link_subnet_cidr
   name                 = azurecaf_name.private-link-subnet.result
   resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.spoke-vnet.name

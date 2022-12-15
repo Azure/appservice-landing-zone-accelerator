@@ -1,7 +1,12 @@
 variable "application_name" {
   type        = string
   description = "The name of your application"
-  default     = "secure-baseline"
+}
+
+variable "resource_group" {
+  type        = string
+  description = "The name of the resource group where all resources in this example should be created."
+  default     = "app-svc-secure-baseline-rg"
 }
 
 variable "environment" {
@@ -31,50 +36,27 @@ variable "sql_admin_group_name" {
   description = "The name of the Azure AD group that should be granted SQL Admin permissions to the SQL Server"
 }
 
-variable "hub_vnet_cidr" {
-  type        = list(string)
-  description = "The CIDR block for the hub virtual network." 
-  default = null
-}
-
-variable "firewall_subnet_cidr" {
-  type        = string
-  description = "The CIDR block for the firewall subnet." 
-  default = null
-}
-
-variable "bastion_subnet_cidr" {
-  type        = string
-  description = "The CIDR block for the bastion subnet." 
-  default = null
-}
-
-variable "spoke_vnet_cidr" {
+variable "vnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the virtual network."
-  default     = null
 }
 
 variable "appsvc_int_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
-  default     = null
 }
 
 variable "front_door_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
-  default     = null
 }
 
 variable "devops_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
-  default     = null
 }
 
 variable "private_link_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
-  default     = null
 }
