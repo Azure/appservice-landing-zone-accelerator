@@ -15,7 +15,7 @@ This reference architecture shows how to run a web-app workload on Azure App Ser
 * App Services use [Virtual Network (VNet) Integration](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration#regional-virtual-network-integration) to connect to backend Azure services over a private VNet.
 * [Azure Cache for Redis](https://azure.microsoft.com/services/cache/) provides a high-performance distributed cache for output, session, and general-purpose caching.
 * [Azure SQL DB](https://azure.microsoft.com/en-us/products/azure-sql/database/) provides a fully managed relational database service for back-end application services.
-[Private Endpoints](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview) allow connections to Azure services from private VNets, and allow the public endpoints on these services to be disabled.
+* [Private Endpoints](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview) allow connections to Azure services from private VNets, and allow the public endpoints on these services to be disabled.
 * [Azure private DNS](https://learn.microsoft.com/en-us/azure/dns/private-dns-overview) automatically configures and updates the DNS records required by private endpoint services.
 * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/) securely stores secrets and certificates to be accessed by Azure services.
 * [Azure Monitor](https://azure.microsoft.com/services/monitor/) and [Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) collect service logs and application performance metrics for observability.
