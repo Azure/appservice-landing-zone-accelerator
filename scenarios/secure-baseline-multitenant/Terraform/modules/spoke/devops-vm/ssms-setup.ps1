@@ -4,7 +4,7 @@ function Install-SQLServerManagementStudio {
     Write-Host "Downloading SQL Server Management Studio..."
 
     # Creating InstallDir
-    $Downloaddir = "C:\InstallDir"
+    $Downloaddir = "C:\sql-server-mgmt-studio"
     if ((Test-Path -Path $Downloaddir) -ne $true) {
         mkdir $Downloaddir
     }
