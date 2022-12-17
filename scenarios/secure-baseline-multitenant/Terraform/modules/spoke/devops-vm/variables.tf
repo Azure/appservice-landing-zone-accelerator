@@ -29,7 +29,12 @@ variable "vm_size" {
   default = "Standard_F2"
 }
 
-variable "installDevOpsAgent" {
+variable "install_extensions" {
+  type    = bool
+  default = false
+}
+
+variable "enable_jit_access" {
   type    = bool
   default = false
 }

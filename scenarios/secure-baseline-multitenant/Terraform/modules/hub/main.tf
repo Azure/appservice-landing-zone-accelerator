@@ -10,6 +10,7 @@ terraform {
 resource "azurecaf_name" "resource_group" {
   name          = "hub"
   resource_type = "azurerm_resource_group"
+  suffixes      = [var.location]
 }
 
 resource "azurerm_resource_group" "hub" {
@@ -24,6 +25,7 @@ resource "azurerm_resource_group" "hub" {
 resource "azurecaf_name" "hub_vnet" {
   name          = "hub"
   resource_type = "azurerm_virtual_network"
+  suffixes      = [var.location]
 }
 
 resource "azurerm_virtual_network" "hub_vnet" {
@@ -46,6 +48,7 @@ resource "azurerm_virtual_network" "hub_vnet" {
 resource "azurecaf_name" "bastion-pip" {
   name          = "bastion"
   resource_type = "azurerm_public_ip"
+  suffixes      = [var.location]
 }
 
 resource "azurerm_public_ip" "bastion-pip" {
@@ -57,14 +60,17 @@ resource "azurerm_public_ip" "bastion-pip" {
 }
 
 resource "azurecaf_name" "bastion-host" {
-  name          = "bastion"
+  name          = "hub"
   resource_type = "azurerm_bastion_host"
+  suffixes      = [var.location]
 }
 
 resource "azurerm_bastion_host" "bastion" {
   name                = azurecaf_name.bastion-host.result
   location            = azurerm_resource_group.hub.location
   resource_group_name = azurerm_resource_group.hub.name
+  sku                 = "Standard"
+  tunneling_enabled   = true
 
   ip_configuration {
     name                 = "bastionHostIpConfiguration"
@@ -75,12 +81,14 @@ resource "azurerm_bastion_host" "bastion" {
 }
 
 resource "azurecaf_name" "firewall-pip" {
+  count         = var.deploy_firewall ? 1 : 0
   name          = "firewall"
   resource_type = "azurerm_public_ip"
 }
 
 resource "azurerm_public_ip" "firewall-pip" {
-  name                = azurecaf_name.firewall-pip.result
+  count               = var.deploy_firewall ? 1 : 0
+  name                = azurecaf_name.firewall-pip[0].result
   resource_group_name = azurerm_resource_group.hub.name
   location            = azurerm_resource_group.hub.location
   allocation_method   = "Static"
@@ -88,12 +96,14 @@ resource "azurerm_public_ip" "firewall-pip" {
 }
 
 resource "azurecaf_name" "firewall" {
+  count         = var.deploy_firewall ? 1 : 0
   name          = "firewall"
   resource_type = "azurerm_firewall"
 }
 
-resource "azurerm_firewall" "firewall-basic" {
-  name                = azurecaf_name.firewall.result
+resource "azurerm_firewall" "firewall-standard" {
+  count               = var.deploy_firewall ? 1 : 0
+  name                = azurecaf_name.firewall[0].result
   location            = azurerm_resource_group.hub.location
   resource_group_name = azurerm_resource_group.hub.name
   sku_name            = "AZFW_VNet"
@@ -102,6 +112,6 @@ resource "azurerm_firewall" "firewall-basic" {
   ip_configuration {
     name                 = "firewallIpConfiguration"
     subnet_id            = "${azurerm_virtual_network.hub_vnet.id}/subnets/AzureFirewallSubnet"
-    public_ip_address_id = azurerm_public_ip.firewall-pip.id
+    public_ip_address_id = azurerm_public_ip.firewall-pip[0].id
   }
 }

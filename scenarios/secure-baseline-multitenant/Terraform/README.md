@@ -44,9 +44,24 @@ terraform plan
 terraform apply --auto-approve
 ```
 
+Take note of the output values from the Terraform deployment. These will be used in the next steps.
+
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
 
 This is a manual step that is required to complete the private endpoint connection.
+
+### Connect to the DevOps VM
+
+From a PowerShell terminal, connect to the DevOps VM using your AAD credentials. The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
+
+```bash
+az upgrade
+az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
+```
+
+From SQL Management Studio, connect to the SQL Server using the SQL Admins group. The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
+
+```bash
 
 ### Retrieve the Azure Front Door frontend endpoint URL and test the App Service
 
