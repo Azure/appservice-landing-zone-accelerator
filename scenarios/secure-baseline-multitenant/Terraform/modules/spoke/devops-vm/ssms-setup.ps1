@@ -2,14 +2,21 @@
 
 function Install-SQLServerManagementStudio {
     Write-Host "Downloading SQL Server Management Studio..."
-    $Path = $env:TEMP
+
+    # Creating InstallDir
+    $Downloaddir = "C:\InstallDir"
+    if ((Test-Path -Path $Downloaddir) -ne $true) {
+        mkdir $Downloaddir
+    }
+    Set-Location $Downloaddir
+    Start-Transcript ($Downloaddir+".\InstallPSScript.log")
+
     $Installer = "SSMS-Setup-ENU.exe"
     $URL = "https://aka.ms/ssmsfullsetup"
-    Invoke-WebRequest $URL -OutFile $Path\$Installer
+    Invoke-WebRequest $URL -OutFile $Downloaddir\$Installer
 
     Write-Host "Installing SQL Server Management Studio..."
-    Start-Process -FilePath $Path\$Installer -Args "/install /quiet" -Verb RunAs -Wait
-    Remove-Item $Path\$Installer
+    Start-Process -FilePath $Downloaddir\$Installer -Args "/install /quiet" -Verb RunAs -Wait
 }
 
 Install-SQLServerManagementStudio
