@@ -7,6 +7,11 @@ terraform {
   }
 }
 
+# locals {
+#   sql_server_fqdn       = "${azurerm_private_dns_a_record.sql-private-dns.name}.database.windows.net"
+#   sql_db_connstring     = "Server=tcp:${local.sql_server_fqdn},1433;Initial Catalog=${azurerm_mssql_database.sample-db.name};Persist Security Info=False;User ID=${var.sql_admin_group_name};Password=${var.sql_admin_group_object_id};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+# }
+
 resource "azurecaf_name" "sql-server" {
   name          = var.application_name
   resource_type = "azurerm_mssql_server"

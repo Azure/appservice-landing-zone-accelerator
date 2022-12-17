@@ -71,13 +71,14 @@ module "app-service" {
 }
 
 module "devops-vm" {
-  source         = "./devops-vm"
-  resource_group = azurerm_resource_group.spoke.name
-  vm_name        = "devops-vm"
-  admin_username = var.vm_admin_username
-  admin_password = var.vm_admin_password
-  location       = var.location
-  vm_subnet_id   = module.spoke-network.devops_subnet_id
+  source             = "./devops-vm"
+  resource_group     = azurerm_resource_group.spoke.name
+  vm_name            = "devops-vm"
+  admin_username     = var.vm_admin_username
+  admin_password     = var.vm_admin_password
+  location           = var.location
+  vm_subnet_id       = module.spoke-network.devops_subnet_id
+  install_extensions = true
 }
 
 module "front-door" {

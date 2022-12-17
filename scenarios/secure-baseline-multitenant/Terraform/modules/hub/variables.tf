@@ -18,3 +18,8 @@ variable "bastion_subnet_cidr" {
   type        = string
   description = "The CIDR block for the bastion subnet."
 }
+
+variable "deploy_firewall" {
+  type    = bool
+  default = false
+}
