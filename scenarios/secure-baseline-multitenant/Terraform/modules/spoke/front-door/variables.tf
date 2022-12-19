@@ -35,3 +35,9 @@ variable "web_app_hostname" {
   type = string
   description = "The web app hostname"  
 }
+
+variable "enable_waf" {
+  type        = bool
+  description = "Enable WAF in Azure Front Door"
+  default     = true 
+}

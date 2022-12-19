@@ -21,12 +21,12 @@ variable "tenant_id" {
   description = "The Azure AD tenant ID for the identities"
 }
 
-variable "sql_admin_group_object_id" {
+variable "aad_admin_group_object_id" {
   type        = string
   description = "The object ID of the Azure AD group that should be granted SQL Admin permissions to the SQL Server"
 }
 
-variable "sql_admin_group_name" {
+variable "aad_admin_group_name" {
   type        = string
   description = "The name of the Azure AD group that should be granted SQL Admin permissions to the SQL Server"
 }
@@ -87,4 +87,16 @@ variable "vm_admin_username" {
 variable "vm_admin_password" {
   type = string
   description = "The password for the VM admin account."
+}
+
+variable "deploy_firewall" {
+  type        = bool
+  description = "Deploy firewall"
+  default     = true
+}
+
+variable "enable_waf" {
+  type        = bool
+  description = "Enable WAF in Azure Front Door"
+  default     = true 
 }

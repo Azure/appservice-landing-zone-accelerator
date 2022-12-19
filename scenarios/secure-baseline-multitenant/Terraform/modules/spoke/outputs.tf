@@ -17,3 +17,11 @@ output "sql_db_connection_string" {
 output "devops_vm_id" {
   value = module.devops-vm.id
 }
+
+output "web_app_name" {
+  value = module.app-service.web_app_name
+}
+
+output "web_app_slot_name" {
+  value = module.app-service.web_app_slot_name
+}

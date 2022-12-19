@@ -8,7 +8,7 @@ function Install-SQLServerManagementStudio {
     if ((Test-Path -Path $Downloaddir) -ne $true) {
         mkdir $Downloaddir
     }
-    Set-Location $Downloaddir
+    # Set-Location $Downloaddir
     Start-Transcript ($Downloaddir+".\InstallPSScript.log")
 
     $Installer = "SSMS-Setup-ENU.exe"
@@ -20,3 +20,4 @@ function Install-SQLServerManagementStudio {
 }
 
 Install-SQLServerManagementStudio
+

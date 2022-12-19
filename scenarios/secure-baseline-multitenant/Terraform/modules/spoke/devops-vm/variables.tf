@@ -12,6 +12,11 @@ variable "location" {
   type = string
 }
 
+variable "aad_admin_group_object_id" {
+  type = string
+  description = "value of the object id of the Azure AD group that will be assigned as the admin of the VM"
+}
+
 variable "admin_username" {
   type = string
 }
@@ -26,7 +31,7 @@ variable "vm_subnet_id" {
 
 variable "vm_size" {
   type    = string
-  default = "Standard_F2"
+  default = "Standard_B2ms"
 }
 
 variable "install_extensions" {
