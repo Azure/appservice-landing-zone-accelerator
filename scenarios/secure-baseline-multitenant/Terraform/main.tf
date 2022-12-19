@@ -32,7 +32,7 @@ module "hub" {
   vnet_cidr            = local.hub_vnet_cidr
   firewall_subnet_cidr = local.firewall_subnet_cidr
   bastion_subnet_cidr  = local.bastion_subnet_cidr
-  deploy_firewall      = false
+  deploy_firewall      = var.deploy_firewall
 }
 
 module "spoke" {
@@ -41,8 +41,8 @@ module "spoke" {
   environment               = var.environment
   location                  = var.location
   tenant_id                 = var.tenant_id
-  sql_admin_group_object_id = var.sql_admin_group_object_id
-  sql_admin_group_name      = var.sql_admin_group_name
+  aad_admin_group_object_id = var.aad_admin_group_object_id
+  aad_admin_group_name      = var.aad_admin_group_name
   vm_admin_username         = var.vm_admin_username
   vm_admin_password         = var.vm_admin_password
   vnet_cidr                 = local.spoke_vnet_cidr
@@ -50,6 +50,7 @@ module "spoke" {
   front_door_subnet_cidr    = local.front_door_subnet_cidr
   devops_subnet_cidr        = local.devops_subnet_cidr
   private_link_subnet_cidr  = local.private_link_subnet_cidr
+  enable_waf                = var.enable_waf
 }
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {

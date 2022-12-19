@@ -71,14 +71,15 @@ module "app-service" {
 }
 
 module "devops-vm" {
-  source             = "./devops-vm"
-  resource_group     = azurerm_resource_group.spoke.name
-  vm_name            = "devops-vm"
-  admin_username     = var.vm_admin_username
-  admin_password     = var.vm_admin_password
-  location           = var.location
-  vm_subnet_id       = module.spoke-network.devops_subnet_id
-  install_extensions = true
+  source                    = "./devops-vm"
+  resource_group            = azurerm_resource_group.spoke.name
+  vm_name                   = "devops-vm"
+  vm_subnet_id              = module.spoke-network.devops_subnet_id
+  admin_username            = var.vm_admin_username
+  admin_password            = var.vm_admin_password
+  location                  = var.location
+  aad_admin_group_object_id = var.aad_admin_group_object_id
+  install_extensions        = true
 }
 
 module "front-door" {
@@ -89,6 +90,7 @@ module "front-door" {
   location         = var.location
   web_app_id       = module.app-service.web_app_id
   web_app_hostname = module.app-service.web_app_hostname
+  enable_waf       = var.enable_waf
 }
 
 module "sql-database" {
@@ -99,8 +101,8 @@ module "sql-database" {
   location                    = var.location
   unique_id                   = random_integer.unique-id.result
   tenant_id                   = var.tenant_id
-  sql_admin_group_object_id   = var.sql_admin_group_object_id
-  sql_admin_group_name        = var.sql_admin_group_name
+  aad_admin_group_object_id   = var.aad_admin_group_object_id
+  aad_admin_group_name        = var.aad_admin_group_name
   sql_db_name                 = "sample-db"
   private-link-subnet-id      = module.spoke-network.private_link_subnet_id
   sqldb_private_dns_zone_name = module.spoke-network.sqldb_private_dns_zone_name

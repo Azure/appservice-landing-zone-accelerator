@@ -30,11 +30,11 @@ variable "tenant_id" {
   description = "The tenant id where the resources will be created"
 }
 
-variable "sql_admin_group_object_id" {
+variable "aad_admin_group_object_id" {
   type    = string
 }
 
-variable "sql_admin_group_name" {
+variable "aad_admin_group_name" {
   type    = string
 }
 

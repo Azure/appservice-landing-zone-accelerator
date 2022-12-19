@@ -88,6 +88,7 @@ resource "azurerm_cdn_frontdoor_route" "web_app" {
 }
 
 resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
+  count               = var.enable_waf ? 1 : 0
   name                = "WafMicrosoftDefaultRuleSet21"
   resource_group_name = var.resource_group
   sku_name            = azurerm_cdn_frontdoor_profile.frontdoor.sku_name
@@ -102,12 +103,13 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
 }
 
 resource "azurerm_cdn_frontdoor_security_policy" "web-app-waf" {
+  count                    = var.enable_waf ? 1 : 0
   name                     = "WAF-Security-Policy"
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
 
   security_policies {
     firewall {
-      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.waf.id
+      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.waf[0].id
 
       association {
         patterns_to_match = ["/*"]
