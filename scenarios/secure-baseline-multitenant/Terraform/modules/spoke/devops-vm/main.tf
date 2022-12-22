@@ -1,7 +1,10 @@
+locals {
+  vm_name = "${var.vm_name}-${var.unique_id}"
+}
 
 #create the network interface
 resource "azurerm_network_interface" "vm-nic" {
-  name                = "${var.vm_name}-nic"
+  name                = "${local.vm_name}-nic"
   location            = var.location
   resource_group_name = var.resource_group
 
@@ -14,7 +17,7 @@ resource "azurerm_network_interface" "vm-nic" {
 
 #create the vm
 resource "azurerm_windows_virtual_machine" "vm" {
-  name                = var.vm_name
+  name                = local.vm_name
   resource_group_name = var.resource_group
   location            = var.location
   size                = var.vm_size
@@ -45,7 +48,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
 }
 
 data "azuread_user" "vm-admin" {
-  user_principal_name = "daniem@microsoft.com"
+  user_principal_name = var.aad_admin_username
 }
 
 resource "azurerm_role_assignment" "vm-admins" {
@@ -85,11 +88,11 @@ resource "azurerm_virtual_machine_extension" "aad" {
   auto_upgrade_minor_version = true
   virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
 
-  # settings = <<SETTINGS
-  #   {
-  #     "mdmId": "${azurerm_windows_virtual_machine.vm.identity.0.principal_id}"
-  #   }
-  # SETTINGS
+  settings = !var.enroll_with_mdm ? null : <<SETTINGS
+    {
+      "mdmId": "0000000a-0000-0000-c000-000000000000"
+    }
+  SETTINGS
 }
 
 # resource "azurerm_virtual_machine_extension" "installagent" {
@@ -141,7 +144,7 @@ resource "azurerm_virtual_machine_extension" "install-sql" {
   #"commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File agentsetup.ps1 -Command \"./agentsetup.ps1; exit 0;\"",
   protected_settings = <<PROTECTED_SETTINGS
     {
-        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File ssms-setup.ps1 ",
+        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File ssms-setup.ps1 -Argu ",
         "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario/scenarios/secure-baseline-multitenant/Terraform/modules/spoke/devops-vm/ssms-setup.ps1"]
     }
   PROTECTED_SETTINGS

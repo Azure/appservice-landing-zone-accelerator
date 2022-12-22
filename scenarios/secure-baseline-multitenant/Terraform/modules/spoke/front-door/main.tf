@@ -113,8 +113,12 @@ resource "azurerm_cdn_frontdoor_security_policy" "web-app-waf" {
 
       association {
         patterns_to_match = ["/*"]
+        
         domain {
+          cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.web_app.id
+        }
 
+        domain {
           cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.web_app.id
         }
       }

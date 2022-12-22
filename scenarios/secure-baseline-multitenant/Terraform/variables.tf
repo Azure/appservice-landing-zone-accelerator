@@ -89,6 +89,11 @@ variable "vm_admin_password" {
   description = "The password for the VM admin account."
 }
 
+variable "vm_aad_admin_username" {
+  type = string
+  description = "The Azure AD username for the VM admin account."
+}
+
 variable "deploy_firewall" {
   type        = bool
   description = "Deploy firewall"

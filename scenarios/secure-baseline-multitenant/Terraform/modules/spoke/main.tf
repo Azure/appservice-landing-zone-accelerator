@@ -71,15 +71,17 @@ module "app-service" {
 }
 
 module "devops-vm" {
-  source                    = "./devops-vm"
-  resource_group            = azurerm_resource_group.spoke.name
-  vm_name                   = "devops-vm"
-  vm_subnet_id              = module.spoke-network.devops_subnet_id
-  admin_username            = var.vm_admin_username
-  admin_password            = var.vm_admin_password
-  location                  = var.location
-  aad_admin_group_object_id = var.aad_admin_group_object_id
-  install_extensions        = true
+  source             = "./devops-vm"
+  resource_group     = azurerm_resource_group.spoke.name
+  vm_name            = "devops-vm"
+  vm_subnet_id       = module.spoke-network.devops_subnet_id
+  unique_id          = random_integer.unique-id.result
+  admin_username     = var.vm_admin_username
+  admin_password     = var.vm_admin_password
+  aad_admin_username = var.vm_aad_admin_username
+  enroll_with_mdm    = true
+  location           = var.location
+  install_extensions = true
 }
 
 module "front-door" {
@@ -109,18 +111,19 @@ module "sql-database" {
 }
 
 module "app-configuration" {
-  source                 = "./app-configuration"
-  resource_group         = azurerm_resource_group.spoke.name
-  application_name       = var.application_name
-  environment            = var.environment
-  location               = var.location
-  unique_id              = random_integer.unique-id.result
-  tenant_id              = var.tenant_id
-  web_app_identity       = module.app-service.web_app_identity_principal_id
-  private_link_subnet_id = module.spoke-network.private_link_subnet_id
-  private_dns_zone_name  = module.spoke-network.appconfig_private_dns_zone_name
-  sql_server_name        = module.sql-database.sql_server_name
-  sql_db_name            = module.sql-database.sql_db_name
+  source                    = "./app-configuration"
+  resource_group            = azurerm_resource_group.spoke.name
+  application_name          = var.application_name
+  environment               = var.environment
+  location                  = var.location
+  unique_id                 = random_integer.unique-id.result
+  tenant_id                 = var.tenant_id
+  web_app_principal_id      = module.app-service.web_app_principal_id
+  web_app_slot_principal_id = module.app-service.web_app_slot_principal_id
+  private_link_subnet_id    = module.spoke-network.private_link_subnet_id
+  private_dns_zone_name     = module.spoke-network.appconfig_private_dns_zone_name
+  sql_server_name           = module.sql-database.sql_server_name
+  sql_db_name               = module.sql-database.sql_db_name
   # sql_db_id                   = module.sql-database.sql_db_id
   # sql_db_name                 = module.sql-database.sql_db_name
   # sql_db_server               = module.sql-database.sql_db_server

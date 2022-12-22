@@ -28,7 +28,7 @@ resource "azurerm_windows_web_app" "secure-baseline-web-app" {
 }
 
 resource "azurerm_windows_web_app_slot" "secure-baseline-web-app-slot" {
-  name                      = "${local.web-app-name}-slot"
+  name                      = "deployment-slot"
   app_service_id            = azurerm_windows_web_app.secure-baseline-web-app.id
   virtual_network_subnet_id = var.app_svc_integration_subnet_id
 

@@ -8,6 +8,7 @@ output "devops_vm_rdp" {
 
 output "grant_app_permissions_sql" {
   value = <<EOT
+  
 CREATE USER [${module.spoke.web_app_name}] FROM EXTERNAL PROVIDER;
 ALTER ROLE db_datareader ADD MEMBER [${module.spoke.web_app_name}];
 ALTER ROLE db_datawriter ADD MEMBER [${module.spoke.web_app_name}];
@@ -19,5 +20,5 @@ ALTER ROLE db_datareader ADD MEMBER [${module.spoke.web_app_name}/slots/${module
 ALTER ROLE db_datawriter ADD MEMBER [${module.spoke.web_app_name}/slots/${module.spoke.web_app_slot_name}];
 ALTER ROLE db_ddladmin ADD MEMBER [${module.spoke.web_app_name}/slots/${module.spoke.web_app_slot_name}];
 GO
-  EOT
+EOT
 }
