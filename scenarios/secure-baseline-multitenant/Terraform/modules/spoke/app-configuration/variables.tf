@@ -31,9 +31,14 @@ variable "tenant_id" {
   description = "The tenant id where the resources will be created"
 }
 
-variable "web_app_identity" {
+variable "web_app_principal_id" {
     type        = string
     description = "The identity principal id of the web app"
+}
+
+variable "web_app_slot_principal_id" {
+    type        = string
+    description = "The identity principal id of the web app slot"
 }
 
 variable "private_dns_zone_name" {

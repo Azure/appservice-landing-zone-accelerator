@@ -61,7 +61,7 @@ az network bastion rdp --name bast-bastion --resource-group rg-hub --target-reso
 
 From SQL Management Studio, connect to the SQL Server using the SQL Admins group. The user needs to have the format `AzureAD\<user@domain.com>`.
 
-The Azure AD enrollment can take a few minutes to complete.
+The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
 If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"), enroll the Jumpbox to Azure AD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
 

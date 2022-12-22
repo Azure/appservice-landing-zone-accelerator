@@ -45,6 +45,7 @@ module "spoke" {
   aad_admin_group_name      = var.aad_admin_group_name
   vm_admin_username         = var.vm_admin_username
   vm_admin_password         = var.vm_admin_password
+  vm_aad_admin_username     = var.vm_aad_admin_username
   vnet_cidr                 = local.spoke_vnet_cidr
   appsvc_int_subnet_cidr    = local.appsvc_int_subnet_cidr
   front_door_subnet_cidr    = local.front_door_subnet_cidr

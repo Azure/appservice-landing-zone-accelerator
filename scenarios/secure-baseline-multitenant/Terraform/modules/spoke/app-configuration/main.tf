@@ -23,26 +23,26 @@ resource "azurerm_app_configuration" "app-config" {
   purge_protection_enabled   = false
   soft_delete_retention_days = 7
 
-#   identity {
-#     type = "UserAssigned"
-#     identity_ids = [
-#       azurerm_user_assigned_identity.example.id,
-#     ]
-#   }
+  #   identity {
+  #     type = "UserAssigned"
+  #     identity_ids = [
+  #       azurerm_user_assigned_identity.example.id,
+  #     ]
+  #   }
 
-#   encryption {
-#     key_vault_key_identifier = azurerm_key_vault_key.example.id
-#     identity_client_id       = azurerm_user_assigned_identity.example.client_id
-#   }
+  #   encryption {
+  #     key_vault_key_identifier = azurerm_key_vault_key.example.id
+  #     identity_client_id       = azurerm_user_assigned_identity.example.client_id
+  #   }
 
   tags = {
     environment = "development"
   }
 
-#   depends_on = [
-#     azurerm_key_vault_access_policy.client,
-#     azurerm_key_vault_access_policy.server,
-#   ]
+  #   depends_on = [
+  #     azurerm_key_vault_access_policy.client,
+  #     azurerm_key_vault_access_policy.server,
+  #   ]
 }
 
 # "Server=tcp:<server-name>.database.windows.net;Authentication=Active Directory Default; Database=<database-name>;"
@@ -72,6 +72,18 @@ resource "azurerm_private_endpoint" "appcg-private-endpoint" {
     private_connection_resource_id = azurerm_app_configuration.app-config.id
     subresource_names              = ["configurationStores"]
   }
+}
+
+resource "azurerm_role_assignment" "web-app-data-reader" {
+  scope                = azurerm_app_configuration.app-config.id
+  role_definition_name = "App Configuration Data Reader"
+  principal_id         = var.web_app_principal_id
+}
+
+resource "azurerm_role_assignment" "web-app-slot-data-reader" {
+  scope                = azurerm_app_configuration.app-config.id
+  role_definition_name = "App Configuration Data Reader"
+  principal_id         = var.web_app_slot_principal_id
 }
 
 # Create a private DNS A Record for the SQL Server

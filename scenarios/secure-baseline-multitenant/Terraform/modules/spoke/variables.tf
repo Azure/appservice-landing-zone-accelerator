@@ -71,6 +71,11 @@ variable "vm_admin_password" {
   description = "The password for the VM admin account."
 }
 
+variable "vm_aad_admin_username" {
+  type = string
+  description = "The Azure AD username for the VM admin account."
+}
+
 variable "enable_waf" {
   type        = bool
   description = "Enable WAF in Azure Front Door"
