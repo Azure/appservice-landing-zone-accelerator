@@ -13,18 +13,11 @@ resource "azurecaf_name" "spoke_vnet" {
   suffixes      = [var.environment]
 }
 
-data "azurerm_resource_group" "spoke-rg" {
-  name = var.resource_group
-}
-
 resource "azurerm_virtual_network" "spoke-vnet" {
   address_space       = var.vnet_cidr
   location            = var.location
   name                = azurecaf_name.spoke_vnet.result
   resource_group_name = var.resource_group
-  depends_on = [
-    data.azurerm_resource_group.spoke-rg,
-  ]
 }
 
 resource "azurecaf_name" "app-svc-integration-subnet" {

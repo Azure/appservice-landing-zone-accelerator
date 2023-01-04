@@ -59,3 +59,13 @@ variable "private_dns_zone_id" {
   type        = string
   description = "The private dns zone id where the app service will be integrated"
 }
+
+variable "instrumentation_key" {
+  type        = string
+  description = "The instrumentation key for the app service"
+}
+
+variable "app_insights_connection_string" {
+  type        = string
+  description = "The connection string for applications insights"
+}

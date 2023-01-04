@@ -3,8 +3,8 @@
 function Install-SQLServerManagementStudio {
     Write-Host "Downloading SQL Server Management Studio..."
 
-    # Creating InstallDir
-    $Downloaddir = "C:\sql-server-mgmt-studio"
+    # Download to D:\ which is the temp drive (SSD) for Windows VMs in Azure
+    $Downloaddir = "D:\sql-server-mgmt-studio"
     if ((Test-Path -Path $Downloaddir) -ne $true) {
         mkdir $Downloaddir
     }
