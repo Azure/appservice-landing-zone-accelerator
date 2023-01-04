@@ -50,6 +50,14 @@ Take note of the output values from the Terraform deployment. These will be used
 
 This is a manual step that is required to complete the private endpoint connection.
 
+```bash
+# Update the resource group name to match the one used in the deployment of the webapp
+rg_name="rg-secure-baseline-dev"
+webapp_id=$(az webapp list -g $rg_name --query "[].id" -o tsv)
+fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].{id:id}" -o tsv)
+az network private-endpoint-connection approve --id $fd_conn_id --description "Approved"
+```
+
 ### Connect to the DevOps VM
 
 From a PowerShell terminal, connect to the DevOps VM using your AAD credentials. The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.

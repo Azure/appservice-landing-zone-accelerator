@@ -1,7 +1,6 @@
 variable "application_name" {
   type        = string
   description = "The name of your application"
-  default     = "app-svc-lz-4254"
 }
 
 variable "resource_group" {

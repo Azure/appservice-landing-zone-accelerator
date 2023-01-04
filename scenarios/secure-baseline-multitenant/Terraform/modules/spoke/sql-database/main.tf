@@ -21,7 +21,8 @@ resource "azurerm_mssql_server" "sql-server" {
   location                      = var.location
   version                       = "12.0"
   connection_policy             = "Default"
-  public_network_access_enabled = false # this is changed after the SQL Server is configured with the managed identity: az sql server update --enable-public-network false 
+  public_network_access_enabled = false
+  minimum_tls_version           = "1.2"
 
   tags = {
     environment = "App Service Secure Baseline"
@@ -42,9 +43,15 @@ resource "azurerm_mssql_database" "sample-db" {
   sku_name  = "S0"
 }
 
+resource "azurecaf_name" "sql-server-private-endpoint" {
+  name          = azurerm_mssql_server.sql-server.name
+  resource_type = "azurerm_private_endpoint"
+  suffixes      = [var.environment] #NOTE: globally unique
+}
+
 # Create a private endpoint for the SQL Server
 resource "azurerm_private_endpoint" "sql-private-endpoint" {
-  name                = "sql-private-endpoint"
+  name                = azurecaf_name.sql-server-private-endpoint.result
   location            = var.location
   resource_group_name = var.resource_group
   subnet_id           = var.private-link-subnet-id
@@ -60,7 +67,7 @@ resource "azurerm_private_endpoint" "sql-private-endpoint" {
 # Create a private DNS A Record for the SQL Server
 resource "azurerm_private_dns_a_record" "sql-private-dns" {
   name                = lower(azurerm_mssql_server.sql-server.name)
-  zone_name           = var.sqldb_private_dns_zone_name
+  zone_name           = var.private_dns_zone_name
   resource_group_name = var.resource_group
   ttl                 = 300
   records             = [azurerm_private_endpoint.sql-private-endpoint.private_service_connection[0].private_ip_address]

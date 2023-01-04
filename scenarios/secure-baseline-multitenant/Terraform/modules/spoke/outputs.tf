@@ -25,3 +25,11 @@ output "web_app_name" {
 output "web_app_slot_name" {
   value = module.app-service.web_app_slot_name
 }
+
+output "key_vault_uri" {
+    value = module.key-vault.vault_uri
+}
+
+output "web_app_uri" {
+  value = module.front-door.web_app_endpoint_uri
+}

@@ -47,7 +47,7 @@ variable "private-link-subnet-id" {
   description = "The subnet id where the SQL database will be integrated"
 }
 
-variable "sqldb_private_dns_zone_name" {
+variable "private_dns_zone_name" {
   type        = string
   description = "The private dns zone name for SQL database"
 }
