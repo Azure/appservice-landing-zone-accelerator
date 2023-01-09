@@ -79,5 +79,14 @@ variable "vm_aad_admin_username" {
 variable "enable_waf" {
   type        = bool
   description = "Enable WAF in Azure Front Door"
-  default     = true 
+}
+
+variable "enable_egress_lockdown" {
+  type        = bool
+  description = "Deploy UDRs to force traffic to the Azure Firewall"
+}
+
+variable "firewall_private_ip" {
+  type        = string
+  description = "The private IP address of the Azure Firewall"
 }

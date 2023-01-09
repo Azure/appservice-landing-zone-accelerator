@@ -44,3 +44,9 @@ variable "private_link_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
 }
+
+variable "firewall_private_ip" {
+  type        = string
+  description = "The private IP address of the Azure Firewall"
+  default     = null
+}

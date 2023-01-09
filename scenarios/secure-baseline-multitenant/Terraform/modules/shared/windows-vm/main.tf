@@ -78,22 +78,10 @@ resource "azurerm_virtual_machine_extension" "install-sql" {
   type                 = "CustomScriptExtension"
   type_handler_version = "1.10"
 
-
-  #protected_settings = <<PROTECTED_SETTINGS
-  #  {
-  #    "commandToExecute": "powershell.exe -Command \"./agentsetup.ps1; exit 0;\""
-  #  }
-  #PROTECTED_SETTINGS
-
-  # https://raw.githubusercontent.com/Azure/ARO-Landing-Zone-Accelerator/main/deployment/CLI/03%20vm/start_script.ps1
-  # https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario/scenarios/secure-baseline-multitenant/Terraform/modules/spoke/devops-vm/ssms-setup.ps1
-  # https://raw.githubusercontent.com/cykreng/Enterprise-Scale-AppService/main/reference-implementations/LOB-ILB-ASEv3/bicep/shared/agentsetup.ps1
-
-  #"commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File agentsetup.ps1 -Command \"./agentsetup.ps1; exit 0;\"",
   protected_settings = <<PROTECTED_SETTINGS
     {
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File ssms-setup.ps1",
-        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario/scenarios/secure-baseline-multitenant/Terraform/modules/spoke/devops-vm/ssms-setup.ps1"]
+        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario/scenarios/secure-baseline-multitenant/Terraform/modules/shared/windows-vm/ssms-setup.ps1"]
     }
   PROTECTED_SETTINGS
 }

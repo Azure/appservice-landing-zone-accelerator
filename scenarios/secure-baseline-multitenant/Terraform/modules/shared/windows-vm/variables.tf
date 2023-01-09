@@ -18,10 +18,12 @@ variable "location" {
 
 variable "admin_username" {
   type = string
+  default = null
 }
 
 variable "admin_password" {
   type = string
+  default = null
 }
 
 variable "aad_admin_username" {

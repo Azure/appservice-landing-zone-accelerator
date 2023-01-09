@@ -19,6 +19,21 @@ provider "azurerm" {
   }
 }
 
+resource "random_password" "vm_admin_username" {
+  length  = 10
+  special = false
+}
+
+resource "random_password" "vm_admin_password" {
+  length  = 16
+  special = true
+}
+
+locals {
+  vm_admin_username = var.vm_admin_username == null ? random_password.vm_admin_username.result : var.vm_admin_username
+  vm_admin_password = var.vm_admin_password == null ? random_password.vm_admin_password.result : var.vm_admin_password
+}
+
 resource "azurecaf_name" "resource_group" {
   name          = var.application_name
   resource_type = "azurerm_resource_group"
@@ -36,6 +51,22 @@ resource "azurerm_resource_group" "spoke" {
   }
 }
 
+resource "azurecaf_name" "law" {
+  name          = var.application_name
+  resource_type = "azurerm_log_analytics_workspace"
+  suffixes      = [var.environment]
+}
+
+resource "azurerm_log_analytics_workspace" "law" {
+  name                = azurecaf_name.law.result
+  location            = var.location
+  resource_group_name = var.resource_group
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+  # internet_ingestion_enabled = false
+}
+
+
 resource "random_integer" "unique-id" {
   min = 1000
   max = 9999
@@ -47,6 +78,7 @@ module "spoke-network" {
   application_name         = var.application_name
   environment              = var.environment
   location                 = var.location
+  firewall_private_ip      = var.firewall_private_ip
   vnet_cidr                = var.vnet_cidr
   appsvc_int_subnet_cidr   = var.appsvc_int_subnet_cidr
   front_door_subnet_cidr   = var.front_door_subnet_cidr
@@ -71,13 +103,13 @@ module "app-service" {
 }
 
 module "devops-vm" {
-  source             = "./devops-vm"
+  source             = "../shared/windows-vm"
   resource_group     = azurerm_resource_group.spoke.name
   vm_name            = "devops-vm"
   vm_subnet_id       = module.spoke-network.devops_subnet_id
   unique_id          = random_integer.unique-id.result
-  admin_username     = var.vm_admin_username
-  admin_password     = var.vm_admin_password
+  admin_username     = local.vm_admin_username
+  admin_password     = local.vm_admin_password
   aad_admin_username = var.vm_aad_admin_username
   enroll_with_mdm    = true
   location           = var.location
@@ -90,6 +122,7 @@ module "front-door" {
   application_name = var.application_name
   environment      = var.environment
   location         = var.location
+  unique_id        = random_integer.unique-id.result
   web_app_id       = module.app-service.web_app_id
   web_app_hostname = module.app-service.web_app_hostname
   enable_waf       = var.enable_waf
@@ -153,3 +186,18 @@ module "app-insights" {
   location         = var.location
   web_app_name     = module.app-service.web_app_name
 }
+
+# module "redis-cache" {
+#   source                    = "./redis-cache"
+#   resource_group            = azurerm_resource_group.spoke.name
+#   application_name          = var.application_name
+#   environment               = var.environment
+#   location                  = var.location
+#   unique_id                 = random_integer.unique-id.result
+#   tenant_id                 = var.tenant_id
+#   sku_name                  = "Standard"
+#   private_link_subnet_id    = module.spoke-network.private_link_subnet_id
+#   private_dns_zone_name     = module.spoke-network.redis_private_dns_zone_name
+#   web_app_principal_id      = module.app-service.web_app_principal_id
+#   web_app_slot_principal_id = module.app-service.web_app_slot_principal_id
+# }

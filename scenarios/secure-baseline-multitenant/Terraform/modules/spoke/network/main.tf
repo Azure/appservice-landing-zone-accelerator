@@ -141,3 +141,34 @@ resource "azurerm_private_dns_zone_virtual_network_link" "redis-spoke-dnszonelin
   private_dns_zone_name = azurerm_private_dns_zone.redis-dnsprivatezone.name
   virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
 }
+
+resource "azurecaf_name" "route-table" {
+  name          = var.application_name
+  resource_type = "azurerm_route_table"
+  suffixes      = [var.environment]
+}
+
+resource "azurerm_route_table" "route-table" {
+  name                          = azurecaf_name.route-table.result
+  location                      = var.location
+  resource_group_name           = var.resource_group
+  disable_bgp_route_propagation = false
+
+  tags = {
+    environment = var.environment
+  }
+}
+
+resource "azurerm_route" "default-route" {
+  name                   = "defaultRoute"
+  resource_group_name    = var.resource_group
+  route_table_name       = azurerm_route_table.route-table.name
+  address_prefix         = "0.0.0.0/0"
+  next_hop_type          = "VirtualAppliance"
+  next_hop_in_ip_address = var.firewall_private_ip
+}
+
+resource "azurerm_subnet_route_table_association" "route_table_association" {
+  subnet_id      = azurerm_subnet.app-svc-integration-subnet.id
+  route_table_id = azurerm_route_table.route-table.id
+}
