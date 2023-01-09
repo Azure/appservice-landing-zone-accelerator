@@ -48,10 +48,11 @@ module "firewall" {
   count  = var.deploy_firewall ? 1 : 0
   source = "./firewall"
 
-  resource_group             = azurerm_resource_group.hub.name
-  location                   = azurerm_resource_group.hub.location
-  hub_vnet_id                = azurerm_virtual_network.hub_vnet.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+  resource_group                  = azurerm_resource_group.hub.name
+  location                        = azurerm_resource_group.hub.location
+  hub_vnet_id                     = azurerm_virtual_network.hub_vnet.id
+  log_analytics_workspace_id      = azurerm_log_analytics_workspace.law.id
+  firewall_rules_source_addresses = var.firewall_rules_source_addresses
 }
 
 resource "azurecaf_name" "hub_vnet" {

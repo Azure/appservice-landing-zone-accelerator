@@ -18,3 +18,8 @@ variable "log_analytics_workspace_id" {
   type        = string
   description = "The log analytics workspace id"
 }
+
+variable "firewall_rules_source_addresses" {
+  type        = list(string)
+  description = "The source addresses for the firewall rules."
+}

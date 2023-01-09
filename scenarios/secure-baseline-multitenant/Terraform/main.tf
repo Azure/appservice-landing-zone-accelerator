@@ -34,6 +34,11 @@ module "hub" {
   firewall_subnet_cidr = local.firewall_subnet_cidr
   bastion_subnet_cidr  = local.bastion_subnet_cidr
   deploy_firewall      = local.deploy_firewall
+
+  firewall_rules_source_addresses = [
+    local.hub_vnet_cidr[0],
+    local.spoke_vnet_cidr[0]
+  ]
 }
 
 module "spoke" {

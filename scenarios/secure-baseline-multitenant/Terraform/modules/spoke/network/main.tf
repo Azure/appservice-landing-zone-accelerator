@@ -173,7 +173,7 @@ resource "azurerm_subnet_route_table_association" "appsvc_udr_association" {
   route_table_id = azurerm_route_table.route_table.id
 }
 
-# resource "azurerm_subnet_route_table_association" "devops_udr_association" {
-#   subnet_id      = azurerm_subnet.devops_subnet.id
-#   route_table_id = azurerm_route_table.route_table.id
-# }
+resource "azurerm_subnet_route_table_association" "devops_udr_association" {
+  subnet_id      = azurerm_subnet.devops_subnet.id
+  route_table_id = azurerm_route_table.route_table.id
+}

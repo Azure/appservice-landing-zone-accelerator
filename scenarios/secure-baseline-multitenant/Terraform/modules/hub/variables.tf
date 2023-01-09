@@ -23,3 +23,9 @@ variable "deploy_firewall" {
   type    = bool
   default = false
 }
+
+variable "firewall_rules_source_addresses" {
+  type        = list(string)
+  description = "The source addresses for the firewall rules."
+  default     = []
+}
