@@ -67,7 +67,7 @@ resource "azurerm_log_analytics_workspace" "law" {
 }
 
 resource "random_integer" "unique_id" {
-  min = 1000
+  min = 1
   max = 9999
 }
 
