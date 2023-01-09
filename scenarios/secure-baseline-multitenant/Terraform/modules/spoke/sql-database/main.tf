@@ -8,15 +8,15 @@ terraform {
 }
 
 
-resource "azurecaf_name" "sql-server" {
+resource "azurecaf_name" "sql_server" {
   name          = var.application_name
   resource_type = "azurerm_mssql_server"
   suffixes      = [var.environment, var.unique_id] #NOTE: globally unique
 }
 
 # Create the SQL Server 
-resource "azurerm_mssql_server" "sql-server" {
-  name                          = azurecaf_name.sql-server.result
+resource "azurerm_mssql_server" "sql_server" {
+  name                          = azurecaf_name.sql_server.result
   resource_group_name           = var.resource_group
   location                      = var.location
   version                       = "12.0"
@@ -37,21 +37,21 @@ resource "azurerm_mssql_server" "sql-server" {
 }
 
 # Create a the SQL database 
-resource "azurerm_mssql_database" "sample-db" {
+resource "azurerm_mssql_database" "sample_db" {
   name      = var.sql_db_name
-  server_id = azurerm_mssql_server.sql-server.id
+  server_id = azurerm_mssql_server.sql_server.id
   sku_name  = "S0"
 }
 
-resource "azurecaf_name" "sql-server-private-endpoint" {
-  name          = azurerm_mssql_server.sql-server.name
+resource "azurecaf_name" "sql_server_pe" {
+  name          = azurerm_mssql_server.sql_server.name
   resource_type = "azurerm_private_endpoint"
   suffixes      = [var.environment] #NOTE: globally unique
 }
 
 # Create a private endpoint for the SQL Server
-resource "azurerm_private_endpoint" "sql-private-endpoint" {
-  name                = azurecaf_name.sql-server-private-endpoint.result
+resource "azurerm_private_endpoint" "sql_server_pe" {
+  name                = azurecaf_name.sql_server_pe.result
   location            = var.location
   resource_group_name = var.resource_group
   subnet_id           = var.private-link-subnet-id
@@ -59,16 +59,16 @@ resource "azurerm_private_endpoint" "sql-private-endpoint" {
   private_service_connection {
     name                           = "sql-private-endpoint"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_mssql_server.sql-server.id
+    private_connection_resource_id = azurerm_mssql_server.sql_server.id
     subresource_names              = ["sqlServer"]
   }
 }
 
 # Create a private DNS A Record for the SQL Server
-resource "azurerm_private_dns_a_record" "sql-private-dns" {
-  name                = lower(azurerm_mssql_server.sql-server.name)
+resource "azurerm_private_dns_a_record" "sql_private_dns" {
+  name                = lower(azurerm_mssql_server.sql_server.name)
   zone_name           = var.private_dns_zone_name
   resource_group_name = var.resource_group
   ttl                 = 300
-  records             = [azurerm_private_endpoint.sql-private-endpoint.private_service_connection[0].private_ip_address]
+  records             = [azurerm_private_endpoint.sql_server_pe.private_service_connection[0].private_ip_address]
 }

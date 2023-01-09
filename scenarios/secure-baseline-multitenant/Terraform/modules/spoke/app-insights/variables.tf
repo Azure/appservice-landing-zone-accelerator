@@ -24,3 +24,8 @@ variable "web_app_name" {
   type        = string
   description = "The name of the web app"
 }
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "The log analytics workspace id"
+}

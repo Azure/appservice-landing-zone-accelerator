@@ -2,7 +2,7 @@ locals {
   vm_name = "${var.vm_name}-${var.unique_id}"
 }
 
-resource "azurerm_network_interface" "vm-nic" {
+resource "azurerm_network_interface" "vm_nic" {
   name                = "${local.vm_name}-nic"
   location            = var.location
   resource_group_name = var.resource_group
@@ -22,7 +22,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   admin_username      = var.admin_username
   admin_password      = var.admin_password
   network_interface_ids = [
-    azurerm_network_interface.vm-nic.id,
+    azurerm_network_interface.vm_nic.id,
   ]
 
   os_disk {
@@ -45,14 +45,14 @@ resource "azurerm_windows_virtual_machine" "vm" {
   allow_extension_operations = true
 }
 
-data "azuread_user" "vm-admin" {
+data "azuread_user" "vm_admin" {
   user_principal_name = var.aad_admin_username
 }
 
-resource "azurerm_role_assignment" "vm-admins" {
+resource "azurerm_role_assignment" "vm_admin_role_assignment" {
   scope                = azurerm_windows_virtual_machine.vm.id
   role_definition_name = "Virtual Machine Administrator Login"
-  principal_id         = data.azuread_user.vm-admin.object_id
+  principal_id         = data.azuread_user.vm_admin.object_id
 }
 
 resource "azurerm_virtual_machine_extension" "aad" {
@@ -70,7 +70,7 @@ resource "azurerm_virtual_machine_extension" "aad" {
   SETTINGS
 }
 
-resource "azurerm_virtual_machine_extension" "install-sql" {
+resource "azurerm_virtual_machine_extension" "install_sql" {
   count                = var.install_extensions ? 1 : 0
   name                 = "install-ssms"
   virtual_machine_id   = azurerm_windows_virtual_machine.vm.id

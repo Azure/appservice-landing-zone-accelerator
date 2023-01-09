@@ -3,12 +3,6 @@ variable "application_name" {
   description = "The name of your application"
 }
 
-variable "resource_group" {
-  type        = string
-  description = "The name of the resource group where all resources in this example should be created."
-  default     = "app-svc-secure-baseline-rg"
-}
-
 variable "environment" {
   type        = string
   description = "The environment (dev, qa, staging, prod)"

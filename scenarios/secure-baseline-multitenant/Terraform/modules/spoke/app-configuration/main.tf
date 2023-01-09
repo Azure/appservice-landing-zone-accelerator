@@ -7,14 +7,14 @@ terraform {
   }
 }
 
-resource "azurecaf_name" "app-config" {
+resource "azurecaf_name" "app_config" {
   name          = var.application_name
   resource_type = "azurerm_app_configuration"
   suffixes      = [var.environment, var.unique_id] #NOTE: globally unique
 }
 
-resource "azurerm_app_configuration" "app-config" {
-  name                       = azurecaf_name.app-config.result
+resource "azurerm_app_configuration" "app_config" {
+  name                       = azurecaf_name.app_config.result
   resource_group_name        = var.resource_group
   location                   = var.location
   sku                        = "standard"
@@ -52,16 +52,23 @@ locals {
 }
 
 # resource "azurerm_app_configuration_key" "sql-connectionstring" {
-#   configuration_store_id = azurerm_app_configuration.app-config.id
+#   configuration_store_id = azurerm_app_configuration.app_config.id
 #   key                    = "sql-connectionstring"
 #   label                  = var.environment
 #   content_type           = "connectionstring"
 #   value                  = "Server=tcp:${var.sql_server_name}.database.windows.net;Authentication=Active Directory Default; Database=${var.sql_db_name};"
 # }
 
+
+resource "azurecaf_name" "appcg_private_endpoint" {
+  name          = azurerm_app_configuration.app_config.name
+  resource_type = "azurerm_private_endpoint"
+  suffixes      = [var.environment] #NOTE: globally unique
+}
+
 # Create a private endpoint for the SQL Server
-resource "azurerm_private_endpoint" "appcg-private-endpoint" {
-  name                = "appcg-private-endpoint"
+resource "azurerm_private_endpoint" "appcg_private_endpoint" {
+  name                = azurecaf_name.appcg_private_endpoint.result
   location            = var.location
   resource_group_name = var.resource_group
   subnet_id           = var.private_link_subnet_id
@@ -69,28 +76,28 @@ resource "azurerm_private_endpoint" "appcg-private-endpoint" {
   private_service_connection {
     name                           = "app-config-private-endpoint"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_app_configuration.app-config.id
+    private_connection_resource_id = azurerm_app_configuration.app_config.id
     subresource_names              = ["configurationStores"]
   }
 }
 
 resource "azurerm_role_assignment" "web-app-data-reader" {
-  scope                = azurerm_app_configuration.app-config.id
+  scope                = azurerm_app_configuration.app_config.id
   role_definition_name = "App Configuration Data Reader"
   principal_id         = var.web_app_principal_id
 }
 
 resource "azurerm_role_assignment" "web-app-slot-data-reader" {
-  scope                = azurerm_app_configuration.app-config.id
+  scope                = azurerm_app_configuration.app_config.id
   role_definition_name = "App Configuration Data Reader"
   principal_id         = var.web_app_slot_principal_id
 }
 
 # Create a private DNS A Record for the SQL Server
 resource "azurerm_private_dns_a_record" "appcg-private-dns" {
-  name                = lower(azurerm_app_configuration.app-config.name)
+  name                = lower(azurerm_app_configuration.app_config.name)
   zone_name           = var.private_dns_zone_name
   resource_group_name = var.resource_group
   ttl                 = 300
-  records             = [azurerm_private_endpoint.appcg-private-endpoint.private_service_connection[0].private_ip_address]
+  records             = [azurerm_private_endpoint.appcg_private_endpoint.private_service_connection[0].private_ip_address]
 }
