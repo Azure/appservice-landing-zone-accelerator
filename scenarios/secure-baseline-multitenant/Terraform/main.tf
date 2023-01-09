@@ -24,6 +24,7 @@ locals {
   front_door_subnet_cidr   = var.front_door_subnet_cidr == null ? ["10.240.0.64/26"] : var.front_door_subnet_cidr
   devops_subnet_cidr       = var.devops_subnet_cidr == null ? ["10.240.10.128/26"] : var.devops_subnet_cidr
   private_link_subnet_cidr = var.private_link_subnet_cidr == null ? ["10.240.11.0/24"] : var.private_link_subnet_cidr
+  deploy_firewall          = var.enable_egress_lockdown == null ? false : var.enable_egress_lockdown
 }
 
 module "hub" {
@@ -32,7 +33,7 @@ module "hub" {
   vnet_cidr            = local.hub_vnet_cidr
   firewall_subnet_cidr = local.firewall_subnet_cidr
   bastion_subnet_cidr  = local.bastion_subnet_cidr
-  deploy_firewall      = var.deploy_firewall
+  deploy_firewall      = local.deploy_firewall
 }
 
 module "spoke" {
@@ -47,11 +48,13 @@ module "spoke" {
   vm_admin_password         = var.vm_admin_password
   vm_aad_admin_username     = var.vm_aad_admin_username
   vnet_cidr                 = local.spoke_vnet_cidr
+  firewall_private_ip       = module.hub.firewall_private_ip
   appsvc_int_subnet_cidr    = local.appsvc_int_subnet_cidr
   front_door_subnet_cidr    = local.front_door_subnet_cidr
   devops_subnet_cidr        = local.devops_subnet_cidr
   private_link_subnet_cidr  = local.private_link_subnet_cidr
   enable_waf                = var.enable_waf
+  enable_egress_lockdown    = var.enable_egress_lockdown
 }
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
@@ -75,3 +78,4 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   allow_gateway_transit        = false
   use_remote_gateways          = false
 }
+

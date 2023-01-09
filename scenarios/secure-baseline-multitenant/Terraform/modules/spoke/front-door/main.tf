@@ -18,7 +18,7 @@ resource "azurecaf_name" "frontdoor" {
 }
 
 locals {
-  front_door_endpoint_name     = "afd-ep-${var.application_name}-${var.environment}"
+  front_door_endpoint_name     = "afd-ep-${var.application_name}-${var.environment}-${var.unique_id}"
   front_door_origin_group_name = "afd-og-${var.application_name}-${var.environment}"
   front_door_origin_name       = "afd-app-svc-${var.application_name}-${var.environment}"
   front_door_route_name        = "afd-route-${var.application_name}-${var.environment}"

@@ -10,7 +10,12 @@ output "vnet_id" {
   value = azurerm_virtual_network.hub_vnet.id
 }
 
+output "firewall_private_ip" {
+  # the 0 index for the module is needed as the module is a count
+  value = var.deploy_firewall ? module.firewall.0.private_ip_address : null
+}
+
 output "bastion-name" {
-  value = azurerm_bastion_host.bastion.name
+  value = module.bastion.name
 }
 

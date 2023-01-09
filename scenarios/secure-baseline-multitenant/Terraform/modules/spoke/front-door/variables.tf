@@ -20,6 +20,11 @@ variable "location" {
   default     = "westeurope"
 }
 
+variable "unique_id" {
+  type        = string
+  description = "A unique identifier"
+}
+
 variable "azure_frontdoor_sku" {
   type = string
   default = "Premium_AzureFrontDoor"
