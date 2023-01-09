@@ -15,7 +15,7 @@ output "firewall_private_ip" {
   value = var.deploy_firewall ? module.firewall.0.private_ip_address : null
 }
 
-output "bastion-name" {
+output "bastion_name" {
   value = module.bastion.name
 }
 

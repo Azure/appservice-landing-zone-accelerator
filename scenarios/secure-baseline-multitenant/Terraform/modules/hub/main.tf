@@ -22,6 +22,20 @@ resource "azurerm_resource_group" "hub" {
   }
 }
 
+resource "azurecaf_name" "law" {
+  name          = "hub"
+  resource_type = "azurerm_log_analytics_workspace"
+  suffixes      = [var.location]
+}
+
+resource "azurerm_log_analytics_workspace" "law" {
+  name                = azurecaf_name.law.result
+  location            = var.location
+  resource_group_name = azurerm_resource_group.hub.name
+  sku                 = "PerGB2018"
+  # internet_ingestion_enabled = false
+}
+
 module "bastion" {
   source = "./bastion"
 
@@ -34,9 +48,10 @@ module "firewall" {
   count  = var.deploy_firewall ? 1 : 0
   source = "./firewall"
 
-  resource_group = azurerm_resource_group.hub.name
-  location       = azurerm_resource_group.hub.location
-  hub_vnet_id    = azurerm_virtual_network.hub_vnet.id
+  resource_group             = azurerm_resource_group.hub.name
+  location                   = azurerm_resource_group.hub.location
+  hub_vnet_id                = azurerm_virtual_network.hub_vnet.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
 }
 
 resource "azurecaf_name" "hub_vnet" {

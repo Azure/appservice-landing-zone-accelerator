@@ -13,3 +13,8 @@ variable "hub_vnet_id" {
   type        = string
   description = "The ID of the hub virtual network."
 }
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "The log analytics workspace id"
+}

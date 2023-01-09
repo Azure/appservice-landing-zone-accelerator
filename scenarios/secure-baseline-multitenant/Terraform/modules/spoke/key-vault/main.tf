@@ -7,14 +7,14 @@ terraform {
   }
 }
 
-resource "azurecaf_name" "key-vault" {
+resource "azurecaf_name" "key_vault" {
   name          = "appsvc"
   resource_type = "azurerm_key_vault"
   suffixes      = [var.environment, var.unique_id]
 }
 
-resource "azurerm_key_vault" "key-vault" {
-  name                          = azurecaf_name.key-vault.result
+resource "azurerm_key_vault" "key_vault" {
+  name                          = azurecaf_name.key_vault.result
   resource_group_name           = var.resource_group
   location                      = var.location
   enabled_for_disk_encryption   = true
@@ -52,31 +52,31 @@ resource "azurerm_key_vault" "key-vault" {
   }
 }
 
-resource "azurecaf_name" "key-vault-private-endpoint" {
-  name          = azurerm_key_vault.key-vault.name
+resource "azurecaf_name" "key_vault_pe" {
+  name          = azurerm_key_vault.key_vault.name
   resource_type = "azurerm_private_endpoint"
   suffixes      = [var.environment]
 }
 
 # Create a private endpoint for the SQL Server
-resource "azurerm_private_endpoint" "key-vault-private-endpoint" {
-  name                = azurecaf_name.key-vault-private-endpoint.result
+resource "azurerm_private_endpoint" "key_vault_pe" {
+  name                = azurecaf_name.key_vault_pe.result
   location            = var.location
   resource_group_name = var.resource_group
   subnet_id           = var.private_link_subnet_id
 
   private_service_connection {
-    name                           = azurecaf_name.key-vault-private-endpoint.result
+    name                           = azurecaf_name.key_vault_pe.result
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_key_vault.key-vault.id
+    private_connection_resource_id = azurerm_key_vault.key_vault.id
     subresource_names              = ["vault"]
   }
 }
 
-resource "azurerm_private_dns_a_record" "kay-vault-private-dns" {
-  name                = lower(azurerm_key_vault.key-vault.name)
+resource "azurerm_private_dns_a_record" "key_vault-private_dns" {
+  name                = lower(azurerm_key_vault.key_vault.name)
   zone_name           = var.private_dns_zone_name
   resource_group_name = var.resource_group
   ttl                 = 300
-  records             = [azurerm_private_endpoint.key-vault-private-endpoint.private_service_connection[0].private_ip_address]
+  records             = [azurerm_private_endpoint.key_vault_pe.private_service_connection[0].private_ip_address]
 }

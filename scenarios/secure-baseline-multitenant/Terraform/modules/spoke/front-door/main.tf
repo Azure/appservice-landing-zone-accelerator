@@ -18,7 +18,7 @@ resource "azurecaf_name" "frontdoor" {
 }
 
 locals {
-  front_door_endpoint_name     = "afd-ep-${var.application_name}-${var.environment}-${var.unique_id}"
+  front_door_endpoint_name     = "afd-ep-${var.application_name}-${var.environment}"
   front_door_origin_group_name = "afd-og-${var.application_name}-${var.environment}"
   front_door_origin_name       = "afd-app-svc-${var.application_name}-${var.environment}"
   front_door_route_name        = "afd-route-${var.application_name}-${var.environment}"
@@ -89,7 +89,7 @@ resource "azurerm_cdn_frontdoor_route" "web_app" {
 
 resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
   count               = var.enable_waf ? 1 : 0
-  name                = "WafMicrosoftDefaultRuleSet21"
+  name                = "wafpolicymicrosoftdefaultruleset21"
   resource_group_name = var.resource_group
   sku_name            = azurerm_cdn_frontdoor_profile.frontdoor.sku_name
   mode                = "Prevention"
@@ -102,7 +102,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
   }
 }
 
-resource "azurerm_cdn_frontdoor_security_policy" "web-app-waf" {
+resource "azurerm_cdn_frontdoor_security_policy" "web_app_waf" {
   count                    = var.enable_waf ? 1 : 0
   name                     = "WAF-Security-Policy"
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
@@ -114,10 +114,6 @@ resource "azurerm_cdn_frontdoor_security_policy" "web-app-waf" {
       association {
         patterns_to_match = ["/*"]
         
-        domain {
-          cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.web_app.id
-        }
-
         domain {
           cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.web_app.id
         }

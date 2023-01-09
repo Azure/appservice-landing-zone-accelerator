@@ -7,16 +7,16 @@ terraform {
   }
 }
 
-resource "azurecaf_name" "app-insights" {
+resource "azurecaf_name" "app_insights" {
   name          = var.application_name
   resource_type = "azurerm_application_insights"
   suffixes      = [var.environment]
 }
 
-resource "azurerm_application_insights" "web-app" {
-  name                = azurecaf_name.app-insights.result
+resource "azurerm_application_insights" "web_app" {
+  name                = azurecaf_name.app_insights.result
   location            = var.location
   resource_group_name = var.resource_group
-  workspace_id        = azurerm_log_analytics_workspace.law.id
+  workspace_id        = var.log_analytics_workspace_id
   application_type    = "web"
 }

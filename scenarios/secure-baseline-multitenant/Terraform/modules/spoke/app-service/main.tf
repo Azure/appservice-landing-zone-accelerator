@@ -1,9 +1,18 @@
+terraform {
+  required_providers {
+    azurecaf = {
+      source  = "aztfmod/azurecaf"
+      version = ">=1.2.22"
+    }
+  }
+}
+
 locals {
   app-svc-plan-name = "asp-${var.application_name}-${var.environment}"
   web-app-name      = "app-${var.application_name}-${var.environment}-${var.unique_id}"
 }
 
-resource "azurerm_service_plan" "secure-baseline-app-service-plan" {
+resource "azurerm_service_plan" "appsvc_plan" {
   name                = local.app-svc-plan-name
   resource_group_name = var.resource_group
   location            = var.location
@@ -11,12 +20,12 @@ resource "azurerm_service_plan" "secure-baseline-app-service-plan" {
   os_type             = var.os_type
 }
 
-resource "azurerm_windows_web_app" "secure-baseline-web-app" {
+resource "azurerm_windows_web_app" "web_app" {
   name                      = local.web-app-name
   resource_group_name       = var.resource_group
   location                  = var.location
   https_only                = true
-  service_plan_id           = azurerm_service_plan.secure-baseline-app-service-plan.id
+  service_plan_id           = azurerm_service_plan.appsvc_plan.id
   virtual_network_subnet_id = var.app_svc_integration_subnet_id
 
   identity {
@@ -59,7 +68,7 @@ resource "azurerm_windows_web_app" "secure-baseline-web-app" {
 
 resource "azurerm_windows_web_app_slot" "staging" {
   name                      = "staging"
-  app_service_id            = azurerm_windows_web_app.secure-baseline-web-app.id
+  app_service_id            = azurerm_windows_web_app.web_app.id
   virtual_network_subnet_id = var.app_svc_integration_subnet_id
   https_only                = true
 
@@ -101,8 +110,14 @@ resource "azurerm_windows_web_app_slot" "staging" {
 #   use_manual_integration = true
 # }
 
-resource "azurerm_private_endpoint" "app-svc-private-endpoint" {
-  name                = "app-svc-private-endpoint"
+resource "azurecaf_name" "appsvc_pe" {
+  name          = local.web-app-name
+  resource_type = "azurerm_private_endpoint"
+  suffixes      = [var.environment] 
+}
+
+resource "azurerm_private_endpoint" "appsvc_pe" {
+  name                = azurecaf_name.appsvc_pe.result
   resource_group_name = var.resource_group
   location            = var.location
   subnet_id           = var.front_door_integration_subnet_id
@@ -113,8 +128,8 @@ resource "azurerm_private_endpoint" "app-svc-private-endpoint" {
   }
 
   private_service_connection {
-    name                           = "app-svc-private-endpoint-connection"
-    private_connection_resource_id = azurerm_windows_web_app.secure-baseline-web-app.id
+    name                           = "appsvc-private-endpoint-connection"
+    private_connection_resource_id = azurerm_windows_web_app.web_app.id
     subresource_names              = ["sites"]
     is_manual_connection           = false
   }
