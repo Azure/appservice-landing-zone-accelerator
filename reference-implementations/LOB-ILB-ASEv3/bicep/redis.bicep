@@ -121,7 +121,8 @@ resource redis 'Microsoft.Cache/redisEnterprise@2022-01-01' = {
 }
 
 resource redisEnterpriseDb 'Microsoft.Cache/redisEnterprise/databases@2022-01-01' = {
-  name: resourceNames.redisDbName
+  // For OSS Tiers you can use resourceNames.redisDbName
+  name: 'default'
   parent: redis
   properties: {
     clientProtocol:'Encrypted'

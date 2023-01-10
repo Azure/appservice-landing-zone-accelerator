@@ -1,10 +1,14 @@
 # User Guide for Reference Implementation Deployment
 
 ## Pre-requisite
+
+
 1. Active Azure subscription
+    - A credit card associated with your subscription is required if deploying Azure Cache for Redis Enterprise
 2. Active GitHub repository
 3. (Optional) Azure DevOps or GitHub account name
 
+- See [here](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=redis-cache&regions=all) for a list of avaibility regions for Azure Cache for Redis.
 
 ## Steps
 1. Clone this repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) to your organization/repository
@@ -40,6 +44,10 @@
    - `PAT` (your personal access token for Azure Devops/GitHub in plain text)
    - `VM_PW` (password for the VMs that will be created in plain text)
    - (Optional) `ACTIONS_STEP_DEBUG` (set this to true if you want [additional information](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging) running the GitHub workflows)
+
+   - 
+
+
 4. Navigate to [config.yml](/reference-implementations/LOB-ILB-ASEv3/bicep/config.yml) and modify any of the following vlaues as required:
     
     Below are the default values in config.yml
@@ -52,6 +60,7 @@
     VM_USERNAME: 'agent'
     ACCOUNT_NAME: 'replace me in repo secrets'
     CICD_AGENT_TYPE: 'azuredevops'
+    CREATE_REDIS_RESOURCE: true
     ```
 
    - `AZURE_LOCATION` (supported regions for the current subscription can be found with [az account list-locations](https://docs.microsoft.com/en-us/cli/azure/account?view=azure-cli-latest#az_account_list_locations))
@@ -60,7 +69,8 @@
    - `DEPLOYMENT_NAME` (used for logging for deployment hisotry)
    - `VM_USERNAME` (user name for VMs created)
    - `ACCOUNT_NAME` (the value will be replaced with repository secret)
-   - `CICD_AGENT_TYPE` (github, azuredevops, or none) 
+   - `CICD_AGENT_TYPE` (github, azuredevops, or none)
+   - `CREATE_REDIS_RESOURCE` (lets you select if you want to deploy Azure Cache for Redis)
 5. Push the configuration changes to your feature branch, then create a pull request to main. This should trigger the build. Current builds can be found at **Actions** with the selected workflow (AzureBicepDeploy in this case)
    ![AzureBicepDeploy](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/AzureBicepDeploy.png)
    Alternatively, you can also trigger a build by going to **Actions** selecting the specific workflow (ie. AzureBicepDeploy), and then selecting **Run workflow**.

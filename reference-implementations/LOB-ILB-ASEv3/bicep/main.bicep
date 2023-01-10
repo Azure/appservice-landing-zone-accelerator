@@ -46,6 +46,9 @@ param tags object = {}
 @description('Optional. Create Redis resource.')
 param createRedisResource bool = true
 
+@description('Optional. Redis Tier.')
+param redisTier string = 'Enterprise_E10'
+
 // Variables
 
 var defaultTags = union({
@@ -161,6 +164,7 @@ module redis 'redis.bicep' = if(createRedisResource) {
     naming: naming.outputs.names
     tags: defaultTags
     keyVaultName: shared.outputs.keyVaultName
+    skuName: redisTier
   }
 }
 
