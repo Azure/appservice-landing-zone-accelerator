@@ -82,5 +82,5 @@ variable "enable_egress_lockdown" {
 
 variable "firewall_private_ip" {
   type        = string
-  description = "The private IP address of the Azure Firewall"
+  description = "The private IP address of the Azure Firewall (needed to setup UDRs)"
 }

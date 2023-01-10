@@ -67,15 +67,15 @@ resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_settings" {
   }
 }
 
-resource "azurerm_firewall_application_rule_collection" "minimal" {
-  name                = "Minimal-Required-FQDNs"
+resource "azurerm_firewall_application_rule_collection" "core" {
+  name                = "Core-Dependencies-FQDNs"
   azure_firewall_name = azurerm_firewall.firewall.name
   resource_group_name = var.resource_group
   priority            = 200
   action              = "Allow"
 
   rule {
-    name = "allow-core"
+    name = "allow-core-apis"
 
     source_addresses = var.firewall_rules_source_addresses
 
@@ -91,6 +91,46 @@ resource "azurerm_firewall_application_rule_collection" "minimal" {
     protocol {
       port = "443"
       type = "Https"
+    }
+  }
+
+  rule {
+    name = "allow-developer-services"
+
+    # Access to developer services is needed from the App Service integration subnet *if* Deployment Center is used. 
+    # Otherwise, this rule can be applied to the DevOps subnet:
+    # https://learn.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment
+    source_addresses = var.firewall_rules_source_addresses
+
+    target_fqdns = [
+      "github.com",
+      "*.github.com",
+      "*.nuget.org",
+      "*.blob.core.windows.net",
+      "raw.githubusercontent.com",
+      "dev.azure.com"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
+
+  rule {
+    name = "allow-certificate-dependencies"
+
+    source_addresses = var.firewall_rules_source_addresses
+
+    target_fqdns = [
+      "ctldl.windowsupdate.com",
+      "*.digicert.com",
+      "*.symantec.com"
+    ]
+
+    protocol {
+      port = "80"
+      type = "Http"
     }
   }
 }
@@ -148,6 +188,7 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
       "autologon.microsoftazuread-sso.com",
       "manage-beta.microsoft.com",
       "manage.microsoft.com",
+      "aadcdn.msauth.net",
       "*.manage-beta.microsoft.com",
       "*.manage.microsoft.com",
     ]
@@ -164,42 +205,29 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
     source_addresses = var.devops_subnet_cidr
 
     target_fqdns = [
+      "aka.ms",
       "go.microsoft.com",
       "download.microsoft.com",
       "wdcp.microsoft.com",
       "wdcpalt.microsoft.com",
-      "*.data.microsoft.com",
-      "aka.ms",
-      "github.com",
-      "raw.githubusercontent.com",
       "msedge.api.cdp.microsoft.com",
+      "*.data.microsoft.com",
       "*.blob.storage.azure.net",
       "*.blob.core.windows.net",
       "*.dl.delivery.mp.microsoft.com",
       "*.prod.do.dsp.mp.microsoft.com",
       "*.update.microsoft.com",
       "*.windowsupdate.com",
-      "*.apps.qualys.com"
+      "*.apps.qualys.com",
+      "*.bootstrapcdn.com",
+      "*.jsdelivr.net",
+      "*.jquery.com",
+      "*.msecnd.net"
     ]
 
     protocol {
       port = "443"
       type = "Https"
-    }
-  }
-
-  rule {
-    name = "allow-vm-dependencies-over-http"
-
-    source_addresses = var.devops_subnet_cidr
-
-    target_fqdns = [
-      "ctldl.windowsupdate.com"
-    ]
-
-    protocol {
-      port = "80"
-      type = "Http"
     }
   }
 }

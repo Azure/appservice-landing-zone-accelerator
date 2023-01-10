@@ -31,5 +31,5 @@ output "key_vault_uri" {
 }
 
 output "web_app_uri" {
-  value = module.front_door.web_app_endpoint_uri
+  value = module.front_door.frontdoor_endpoint_uris
 }

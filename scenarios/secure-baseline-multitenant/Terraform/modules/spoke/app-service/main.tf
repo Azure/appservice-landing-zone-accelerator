@@ -26,7 +26,7 @@ resource "azurerm_windows_web_app" "web_app" {
   location                  = var.location
   https_only                = true
   service_plan_id           = azurerm_service_plan.appsvc_plan.id
-  virtual_network_subnet_id = var.app_svc_integration_subnet_id
+  virtual_network_subnet_id = var.appsvc_subnet_id
 
   identity {
     type = "SystemAssigned"
@@ -53,7 +53,7 @@ resource "azurerm_windows_web_app" "web_app" {
     "APPINSIGHTS_INSTRUMENTATIONKEY"                  = "${var.instrumentation_key}"
     "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
     "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING"           = "${var.app_insights_connection_string}"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"           = "${var.ai_connection_string}"
     "ApplicationInsightsAgent_EXTENSION_VERSION"      = "~2"
     "DiagnosticServices_EXTENSION_VERSION"            = "~3"
     "InstrumentationEngine_EXTENSION_VERSION"         = "~1"
@@ -69,7 +69,7 @@ resource "azurerm_windows_web_app" "web_app" {
 resource "azurerm_windows_web_app_slot" "staging" {
   name                      = "staging"
   app_service_id            = azurerm_windows_web_app.web_app.id
-  virtual_network_subnet_id = var.app_svc_integration_subnet_id
+  virtual_network_subnet_id = var.appsvc_subnet_id
   https_only                = true
 
   identity {
@@ -90,7 +90,7 @@ resource "azurerm_windows_web_app_slot" "staging" {
     "APPINSIGHTS_INSTRUMENTATIONKEY"                  = "${var.instrumentation_key}"
     "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
     "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING"           = "${var.app_insights_connection_string}"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"           = "${var.ai_connection_string}"
     "ApplicationInsightsAgent_EXTENSION_VERSION"      = "~2"
     "DiagnosticServices_EXTENSION_VERSION"            = "~3"
     "InstrumentationEngine_EXTENSION_VERSION"         = "~1"
@@ -120,17 +120,46 @@ resource "azurerm_private_endpoint" "appsvc_pe" {
   name                = azurecaf_name.appsvc_pe.result
   resource_group_name = var.resource_group
   location            = var.location
-  subnet_id           = var.front_door_integration_subnet_id
+  subnet_id           = var.frontend_subnet_id
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [var.private_dns_zone_id]
+    private_dns_zone_ids = [var.private_dns_zone.id]
   }
 
   private_service_connection {
-    name                           = "appsvc-private-endpoint-connection"
+    name                           = "webapp-private-connection"
     private_connection_resource_id = azurerm_windows_web_app.web_app.id
     subresource_names              = ["sites"]
     is_manual_connection           = false
   }
+}
+
+resource "azurecaf_name" "appsvc_slot_pe" {
+  name          = "${local.web-app-name}-staging"
+  resource_type = "azurerm_private_endpoint"
+  suffixes      = [var.environment] 
+}
+
+resource "azurerm_private_endpoint" "appsvc_slot_pe" {
+  name                = azurecaf_name.appsvc_slot_pe.result
+  resource_group_name = var.resource_group
+  location            = var.location
+  subnet_id           = var.frontend_subnet_id
+
+  private_service_connection {
+    name                           = "webapp-slot-private-connection"
+    private_connection_resource_id = azurerm_windows_web_app.web_app.id  # Note: needs to be the resource id of the app, not the id of the slot
+    subresource_names              = ["sites-staging"]
+    is_manual_connection           = false
+  }
+}
+
+resource "azurerm_private_dns_a_record" "appsvc_slot_dns" {
+  name                = lower("${azurerm_windows_web_app.web_app.name}-${azurerm_windows_web_app_slot.staging.name}")
+  zone_name           = var.private_dns_zone.name
+  
+  resource_group_name = var.resource_group
+  ttl                 = 300
+  records             = [azurerm_private_endpoint.appsvc_slot_pe.private_service_connection[0].private_ip_address]
 }
