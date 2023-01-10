@@ -55,20 +55,20 @@ resource "azurerm_role_assignment" "vm_admin_role_assignment" {
   principal_id         = data.azuread_user.vm_admin.object_id
 }
 
-resource "azurerm_virtual_machine_extension" "aad" {
-  name                       = "aad-login-for-windows"
-  publisher                  = "Microsoft.Azure.ActiveDirectory"
-  type                       = "AADLoginForWindows"
-  type_handler_version       = "1.0"
-  auto_upgrade_minor_version = true
-  virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
+# resource "azurerm_virtual_machine_extension" "aad" {
+#   name                       = "aad-login-for-windows"
+#   publisher                  = "Microsoft.Azure.ActiveDirectory"
+#   type                       = "AADLoginForWindows"
+#   type_handler_version       = "1.0"
+#   auto_upgrade_minor_version = true
+#   virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
 
-  settings = !var.enroll_with_mdm ? null : <<SETTINGS
-    {
-      "mdmId": "0000000a-0000-0000-c000-000000000000"
-    }
-  SETTINGS
-}
+#   settings = !var.enroll_with_mdm ? null : <<SETTINGS
+#     {
+#       "mdmId": "0000000a-0000-0000-c000-000000000000"
+#     }
+#   SETTINGS
+# }
 
 resource "azurerm_virtual_machine_extension" "install_sql" {
   count                = var.install_extensions ? 1 : 0

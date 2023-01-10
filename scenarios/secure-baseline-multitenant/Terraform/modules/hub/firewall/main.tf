@@ -96,7 +96,7 @@ resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_settings" {
   # }
 }
 
-resource "azurerm_firewall_application_rule_collection" "allow-rule-200" {
+resource "azurerm_firewall_application_rule_collection" "minimal" {
   name                = "Minimal-Required-FQDNs"
   azure_firewall_name = azurerm_firewall.firewall.name
   resource_group_name = var.resource_group
@@ -104,7 +104,7 @@ resource "azurerm_firewall_application_rule_collection" "allow-rule-200" {
   action              = "Allow"
 
   rule {
-    name = "allow-rule-200"
+    name = "allow-core"
 
     source_addresses = var.firewall_rules_source_addresses
 
@@ -113,6 +113,7 @@ resource "azurerm_firewall_application_rule_collection" "allow-rule-200" {
       "management.core.windows.net",
       "login.microsoftonline.com",
       "login.windows.net",
+      "login.live.com",
       "graph.windows.net"
     ]
 
@@ -123,7 +124,7 @@ resource "azurerm_firewall_application_rule_collection" "allow-rule-200" {
   }
 }
 
-resource "azurerm_firewall_application_rule_collection" "allow-rule-201" {
+resource "azurerm_firewall_application_rule_collection" "azure_monitor" {
   name                = "Azure-Monitor-FQDNs"
   azure_firewall_name = azurerm_firewall.firewall.name
   resource_group_name = var.resource_group
@@ -131,7 +132,7 @@ resource "azurerm_firewall_application_rule_collection" "allow-rule-201" {
   action              = "Allow"
 
   rule {
-    name = "allow-rule-201"
+    name = "allow-azure-monitor"
 
     source_addresses = var.firewall_rules_source_addresses
 
@@ -145,6 +146,9 @@ resource "azurerm_firewall_application_rule_collection" "allow-rule-201" {
       "rt.services.visualstudio.com",
       "*.livediagnostics.monitor.azure.com",
       "*.monitoring.azure.com",
+      "agent.azureserviceprofiler.net",
+      "*.agent.azureserviceprofiler.net",
+      "*.monitor.azure.com"
     ]
 
     protocol {
@@ -154,29 +158,107 @@ resource "azurerm_firewall_application_rule_collection" "allow-rule-201" {
   }
 }
 
-resource "azurerm_firewall_application_rule_collection" "allow-rule-202" {
-  name                = "Packages-and-Tools-FQDNs"
+resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
+  name                = "Devops-VM-Dependencies-FQDNs"
   azure_firewall_name = azurerm_firewall.firewall.name
   resource_group_name = var.resource_group
   priority            = 202
   action              = "Allow"
 
   rule {
-    name = "allow-rule-202"
+    name = "allow-azure-ad-join"
 
-    source_addresses = var.firewall_rules_source_addresses
+    source_addresses = var.devops_subnet_cidr
 
     target_fqdns = [
-      "go.microsoft.com",
-      "download.microsoft.com",
-      "aka.ms",
-      "github.com",
-      "raw.githubusercontent.com",
+      "enterpriseregistration.windows.net",
+      "login.microsoftonline.com",
+      "device.login.microsoftonline.com",
+      "autologon.microsoftazuread-sso.com"
     ]
 
     protocol {
       port = "443"
       type = "Https"
     }
+  }
+
+  rule {
+    name = "allow-vm-dependencies-and-tools"
+
+    source_addresses = var.devops_subnet_cidr
+
+    target_fqdns = [
+      "go.microsoft.com",
+      "download.microsoft.com",
+      "wdcp.microsoft.com",
+      "wdcpalt.microsoft.com",
+      "*.data.microsoft.com",
+      "aka.ms",
+      "github.com",
+      "raw.githubusercontent.com",
+      "msedge.api.cdp.microsoft.com",
+      "*.blob.storage.azure.net",
+      "*.blob.core.windows.net",
+      "*.dl.delivery.mp.microsoft.com",
+      "*.apps.qualys.com"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
+}
+
+resource "azurerm_firewall_network_rule_collection" "windows_vm_devops" {
+  name                = "Windows-VM-Connectivity-Requirements"
+  azure_firewall_name = azurerm_firewall.firewall.name
+  resource_group_name = var.resource_group
+  priority            = 202
+  action              = "Allow"
+
+  rule {
+    name = "allow-kms-activation"
+    # Docs: https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/custom-routes-enable-kms-activation
+
+    source_addresses = var.devops_subnet_cidr
+
+    destination_ports = [
+      "*"
+    ]
+
+    destination_addresses = [
+      "20.118.99.224",
+      "40.83.235.53",
+      "23.102.135.246",
+      "51.4.143.248",
+      "23.97.0.13",
+      "52.126.105.2"
+    ]
+
+    protocols = [
+      "TCP",
+      "UDP",
+    ]
+  }
+
+  rule {
+    name = "allow-ntp"
+
+    source_addresses = var.devops_subnet_cidr
+
+    destination_ports = [
+      "123"
+    ]
+
+    destination_addresses = [
+      "*"
+    ]
+
+    protocols = [
+      "TCP",
+      "UDP",
+    ]
   }
 }
