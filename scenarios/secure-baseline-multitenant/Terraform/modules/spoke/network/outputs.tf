@@ -6,11 +6,11 @@ output "vnet_name" {
     value = azurerm_virtual_network.spoke_vnet.name
 }
 
-output "app_svc_integration_subnet_id" {
+output "appsvc_subnet_id" {
     value = azurerm_subnet.appsvc_integration_subnet.id
 }
 
-output "front_door_integration_subnet_id" {
+output "frontend_subnet_id" {
     value = azurerm_subnet.afd_integration_subnet.id
 }
 
@@ -24,6 +24,10 @@ output "private_link_subnet_id" {
 
 output "azurewebsites_private_dns_zone_id" {
     value = azurerm_private_dns_zone.azurewebsites_dnsprivatezone.id
+}
+
+output "azurewebsites_private_dns_zone_name" {
+    value = azurerm_private_dns_zone.azurewebsites_dnsprivatezone.name
 }
 
 output "sqldb_private_dns_zone_id" {

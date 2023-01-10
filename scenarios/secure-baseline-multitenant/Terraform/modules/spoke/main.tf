@@ -86,23 +86,29 @@ module "spoke_network" {
 }
 
 module "app_service" {
-  source                           = "./app-service"
-  resource_group                   = azurerm_resource_group.spoke.name
-  application_name                 = var.application_name
-  environment                      = var.environment
-  location                         = var.location
-  unique_id                        = random_integer.unique_id.result
-  sku_name                         = "S1"
-  os_type                          = "Windows"
-  instrumentation_key              = module.app_insights.instrumentation_key
-  app_insights_connection_string   = module.app_insights.connection_string
-  app_svc_integration_subnet_id    = module.spoke_network.app_svc_integration_subnet_id
-  front_door_integration_subnet_id = module.spoke_network.front_door_integration_subnet_id
-  private_dns_zone_id              = module.spoke_network.azurewebsites_private_dns_zone_id
+  source = "./app-service"
+
+  resource_group       = azurerm_resource_group.spoke.name
+  application_name     = var.application_name
+  environment          = var.environment
+  location             = var.location
+  unique_id            = random_integer.unique_id.result
+  sku_name             = "S1"
+  os_type              = "Windows"
+  instrumentation_key  = module.app_insights.instrumentation_key
+  ai_connection_string = module.app_insights.connection_string
+  appsvc_subnet_id     = module.spoke_network.appsvc_subnet_id
+  frontend_subnet_id   = module.spoke_network.frontend_subnet_id
+
+  private_dns_zone = {
+    name = module.spoke_network.azurewebsites_private_dns_zone_name
+    id   = module.spoke_network.azurewebsites_private_dns_zone_id
+  }
 }
 
 module "devops_vm" {
-  source             = "../shared/windows-vm"
+  source = "../shared/windows-vm"
+
   resource_group     = azurerm_resource_group.spoke.name
   vm_name            = "devops-vm"
   vm_subnet_id       = module.spoke_network.devops_subnet_id
@@ -116,19 +122,35 @@ module "devops_vm" {
 }
 
 module "front_door" {
-  source           = "./front-door"
+  source = "./front-door"
+
   resource_group   = azurerm_resource_group.spoke.name
   application_name = var.application_name
   environment      = var.environment
   location         = var.location
-  unique_id        = random_integer.unique_id.result
-  web_app_id       = module.app_service.web_app_id
-  web_app_hostname = module.app_service.web_app_hostname
   enable_waf       = var.enable_waf
+
+  endpoint_settings = [
+    {
+      endpoint_name            = "${var.application_name}-${var.environment}"
+      web_app_id               = module.app_service.web_app_id
+      web_app_hostname         = module.app_service.web_app_hostname
+      private_link_target_type = "sites"
+    },
+
+    # Connecting a front door origin to an app service slot through private link is currently not working
+    # {
+    #   endpoint_name            = "${var.application_name}-${var.environment}-staging"
+    #   web_app_id               = module.app_service.web_app_id # Note: needs to be the resource id of the app, not the id of the slot
+    #   web_app_hostname         = module.app_service.web_app_slot_hostname
+    #   private_link_target_type = "sites-staging"
+    # }
+  ]
 }
 
 module "sql_database" {
-  source                    = "./sql-database"
+  source = "./sql-database"
+
   resource_group            = azurerm_resource_group.spoke.name
   application_name          = var.application_name
   environment               = var.environment
@@ -143,7 +165,8 @@ module "sql_database" {
 }
 
 module "app_configuration" {
-  source                    = "./app-configuration"
+  source = "./app-configuration"
+
   resource_group            = azurerm_resource_group.spoke.name
   application_name          = var.application_name
   environment               = var.environment
@@ -156,14 +179,11 @@ module "app_configuration" {
   private_dns_zone_name     = module.spoke_network.appconfig_private_dns_zone_name
   sql_server_name           = module.sql_database.sql_server_name
   sql_db_name               = module.sql_database.sql_db_name
-  # sql_db_id                   = module.sql_database.sql_db_id
-  # sql_db_name                 = module.sql_database.sql_db_name
-  # sql_db_server               = module.sql_database.sql_db_server
-  # sql_db_tenant_id            = module.sql_database.sql_db_tenant_id
 }
 
 module "key_vault" {
-  source                    = "./key-vault"
+  source = "./key-vault"
+
   resource_group            = azurerm_resource_group.spoke.name
   application_name          = var.application_name
   environment               = var.environment
@@ -178,7 +198,8 @@ module "key_vault" {
 }
 
 module "app_insights" {
-  source                     = "./app-insights"
+  source = "./app-insights"
+
   resource_group             = azurerm_resource_group.spoke.name
   application_name           = var.application_name
   environment                = var.environment

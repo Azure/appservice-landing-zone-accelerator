@@ -1,3 +1,3 @@
-output "web_app_endpoint_uri" {
-    value = "https://${azurerm_cdn_frontdoor_endpoint.web_app.host_name}/"
+output "frontdoor_endpoint_uris" {
+    value = values(local.endpoint_uris)
 }
