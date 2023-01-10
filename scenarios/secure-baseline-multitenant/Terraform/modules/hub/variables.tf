@@ -29,3 +29,9 @@ variable "firewall_rules_source_addresses" {
   description = "The source addresses for the firewall rules."
   default     = []
 }
+
+variable "devops_subnet_cidr" {
+  type        = list(string)
+  description = "The CIDR block for the DevOps subnet, which requires additional rules in the firewall."
+  default     = []
+}
