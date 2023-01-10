@@ -15,12 +15,15 @@ resource "azurerm_network_interface" "vm_nic" {
 }
 
 resource "azurerm_windows_virtual_machine" "vm" {
-  name                = local.vm_name
-  resource_group_name = var.resource_group
-  location            = var.location
-  size                = var.vm_size
-  admin_username      = var.admin_username
-  admin_password      = var.admin_password
+  name                       = local.vm_name
+  resource_group_name        = var.resource_group
+  location                   = var.location
+  size                       = var.vm_size
+  admin_username             = var.admin_username
+  admin_password             = var.admin_password
+  provision_vm_agent         = true
+  allow_extension_operations = true
+
   network_interface_ids = [
     azurerm_network_interface.vm_nic.id,
   ]
@@ -35,14 +38,11 @@ resource "azurerm_windows_virtual_machine" "vm" {
   }
 
   source_image_reference {
-    publisher = "MicrosoftWindowsDesktop"
-    offer     = "windows-11"
-    sku       = "win11-22h2-pro"
-    version   = "latest"
+    publisher = var.vm_image_publisher
+    offer     = var.vm_image_offer
+    sku       = var.vm_image_sku
+    version   = var.vm_image_version
   }
-
-  provision_vm_agent         = true
-  allow_extension_operations = true
 }
 
 data "azuread_user" "vm_admin" {
@@ -55,23 +55,26 @@ resource "azurerm_role_assignment" "vm_admin_role_assignment" {
   principal_id         = data.azuread_user.vm_admin.object_id
 }
 
-# resource "azurerm_virtual_machine_extension" "aad" {
-#   name                       = "aad-login-for-windows"
-#   publisher                  = "Microsoft.Azure.ActiveDirectory"
-#   type                       = "AADLoginForWindows"
-#   type_handler_version       = "1.0"
-#   auto_upgrade_minor_version = true
-#   virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
+resource "azurerm_virtual_machine_extension" "aad" {
+  count = var.enable_azure_ad_join ? 1 : 0
 
-#   settings = !var.enroll_with_mdm ? null : <<SETTINGS
-#     {
-#       "mdmId": "0000000a-0000-0000-c000-000000000000"
-#     }
-#   SETTINGS
-# }
+  name                       = "aad-login-for-windows"
+  publisher                  = "Microsoft.Azure.ActiveDirectory"
+  type                       = "AADLoginForWindows"
+  type_handler_version       = "1.0"
+  auto_upgrade_minor_version = true
+  virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
+
+  settings = !var.enroll_with_mdm ? null : <<SETTINGS
+    {
+      "mdmId": "${var.mdm_id}"
+    }
+  SETTINGS
+}
 
 resource "azurerm_virtual_machine_extension" "install_sql" {
-  count                = var.install_extensions ? 1 : 0
+  count = var.install_extensions ? 1 : 0
+
   name                 = "install-ssms"
   virtual_machine_id   = azurerm_windows_virtual_machine.vm.id
   publisher            = "Microsoft.Compute"

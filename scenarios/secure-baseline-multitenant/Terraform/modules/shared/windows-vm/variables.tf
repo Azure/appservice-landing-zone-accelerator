@@ -40,24 +40,45 @@ variable "vm_size" {
   default = "Standard_B2ms"
 }
 
+variable "vm_image_publisher" {
+  type    = string
+  default = "MicrosoftWindowsDesktop"
+}
+
+variable "vm_image_offer" {
+  type    = string
+  default = "windows-11"
+}
+
+variable "vm_image_sku" {
+  type    = string
+  default = "win11-22h2-pro"
+}
+
+variable "vm_image_version" {
+  type    = string
+  default = "latest"
+}
+
 variable "install_extensions" {
   type    = bool
   default = false
 }
 
-variable "enable_jit_access" {
+variable "enable_azure_ad_join" {
   type    = bool
-  default = false
+  default = true
+  description = "True to enable Azure AD join of the VM."
 }
 
 variable "enroll_with_mdm" {
   type        = bool
   default     = true
-  description = "True to enroll the device with an approved MDM provider like Intune"
+  description = "True to enroll the device with an approved MDM provider like Intune."
 }
 
 variable "mdm_id" {
   type        = string
   default     = "0000000a-0000-0000-c000-000000000000"
-  description = "The default is the MDM Id for Intune, but you can use your own MDM id if you want to use another MDM service."
+  description = "The default value is the MDM Id for Intune, but you can use your own MDM id if you want to use a different MDM service."
 }

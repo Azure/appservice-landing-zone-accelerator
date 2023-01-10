@@ -41,9 +41,10 @@ resource "azurerm_firewall" "firewall" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_settings" {
-  name                       = "tf-firewall-diagnostic-settings"
-  target_resource_id         = azurerm_firewall.firewall.id
-  log_analytics_workspace_id = var.log_analytics_workspace_id
+  name                           = "tf-firewall-diagnostic-settings"
+  target_resource_id             = azurerm_firewall.firewall.id
+  log_analytics_workspace_id     = var.log_analytics_workspace_id
+  log_analytics_destination_type = "AzureDiagnostics"
 
   log {
     category_group = "allLogs"
@@ -55,45 +56,15 @@ resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_settings" {
     }
   }
 
-  # log {
-  #   category = "AZFWApplicationRule"
-  #   enabled  = true
+  metric {
+    category = "AllMetrics"
+    enabled  = false
 
-  #   retention_policy {
-  #     enabled = false
-  #     days    = 0
-  #   }
-  # }
-
-  # log {
-  #   category = "AZFWApplicationRuleAggregation"
-  #   enabled  = true
-
-  #   retention_policy {
-  #     enabled = false
-  #     days    = 0
-  #   }
-  # }
-
-  # log {
-  #   category = "AZFWNetworkRule"
-  #   enabled  = true
-
-  #   retention_policy {
-  #     enabled = false
-  #     days    = 0
-  #   }
-  # }
-
-  # log {
-  #   category = "AZFWNetworkRuleAggregation"
-  #   enabled  = true
-
-  #   retention_policy {
-  #     enabled = false
-  #     days    = 0
-  #   }
-  # }
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
 }
 
 resource "azurerm_firewall_application_rule_collection" "minimal" {
@@ -174,7 +145,11 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
       "enterpriseregistration.windows.net",
       "login.microsoftonline.com",
       "device.login.microsoftonline.com",
-      "autologon.microsoftazuread-sso.com"
+      "autologon.microsoftazuread-sso.com",
+      "manage-beta.microsoft.com",
+      "manage.microsoft.com",
+      "*.manage-beta.microsoft.com",
+      "*.manage.microsoft.com",
     ]
 
     protocol {
@@ -201,12 +176,30 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
       "*.blob.storage.azure.net",
       "*.blob.core.windows.net",
       "*.dl.delivery.mp.microsoft.com",
+      "*.prod.do.dsp.mp.microsoft.com",
+      "*.update.microsoft.com",
+      "*.windowsupdate.com",
       "*.apps.qualys.com"
     ]
 
     protocol {
       port = "443"
       type = "Https"
+    }
+  }
+
+  rule {
+    name = "allow-vm-dependencies-over-http"
+
+    source_addresses = var.devops_subnet_cidr
+
+    target_fqdns = [
+      "ctldl.windowsupdate.com"
+    ]
+
+    protocol {
+      port = "80"
+      type = "Http"
     }
   }
 }
