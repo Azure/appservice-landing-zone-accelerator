@@ -21,7 +21,7 @@ In this repo you will find reference implementations with supporting Infrastruct
 ### [Reference Implementation 1](/reference-implementations/LOB-ILB-ASEv3/bicep): Line of Business application using internal App Service Environment v3
 Architectural Diagram:
 
-![image](https://user-images.githubusercontent.com/37597107/133897423-4de9c66f-d033-4839-81b2-4e9d8a12253d.png)
+![image](/docs/Images/LandingZoneArchitecture.png)
 
 Deployed Resources:
 
