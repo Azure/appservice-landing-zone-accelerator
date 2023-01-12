@@ -56,17 +56,17 @@ variable "private_link_subnet_cidr" {
 }
 
 variable "vm_admin_username" {
-  type = string
+  type        = string
   description = "The username for the VM admin account."
 }
 
 variable "vm_admin_password" {
-  type = string
+  type        = string
   description = "The password for the VM admin account."
 }
 
 variable "vm_aad_admin_username" {
-  type = string
+  type        = string
   description = "The Azure AD username for the VM admin account."
 }
 
@@ -86,6 +86,11 @@ variable "firewall_private_ip" {
 }
 
 variable "firewall_rules" {
-  type        = map
+  type        = map(any)
   description = "The list of firewall rules deployed in the Azure Firewall. This is a dependency for deploying the VM."
+}
+
+variable "webapp_slot_name" {
+  type        = string
+  description = "The name of the app service slot"
 }

@@ -107,3 +107,9 @@ variable "enable_egress_lockdown" {
   description = "Deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall"
   default     = true
 }
+
+variable "webapp_slot_name" {
+  type        = string
+  description = "The name of the app service slot"
+  default     = "slot"
+}

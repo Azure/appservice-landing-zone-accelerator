@@ -119,7 +119,8 @@ resource "azurerm_firewall_application_rule_collection" "core" {
       "*.nuget.org",
       "*.blob.core.windows.net",
       "raw.githubusercontent.com",
-      "dev.azure.com"
+      "dev.azure.com",
+      "portal.azure.com",
     ]
 
     protocol {
@@ -227,10 +228,16 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
       "aka.ms",
       "go.microsoft.com",
       "download.microsoft.com",
+      "edge.microsoft.com",
+      "fs.microsoft.com",
       "wdcp.microsoft.com",
       "wdcpalt.microsoft.com",
       "msedge.api.cdp.microsoft.com",
       "winatp-gw-cane.microsoft.com",
+      "*.google.com",
+      "*.live.com",
+      "*.bing.com",
+      "*.msappproxy.net",
       "*.delivery.mp.microsoft.com",
       "*.data.microsoft.com",
       "*.blob.storage.azure.net",

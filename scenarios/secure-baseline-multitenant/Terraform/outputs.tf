@@ -32,5 +32,5 @@ EOT
 }
 
 output "cmd_swap_slots" {
-  value = "az webapp deployment slot swap -n ${module.spoke.web_app_name} -g ${module.spoke.rg_name} --slot staging --target-slot production"
+  value = "az webapp deployment slot swap -n ${module.spoke.web_app_name} -g ${module.spoke.rg_name} --slot ${var.webapp_slot_name} --target-slot production"
 }
