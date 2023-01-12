@@ -82,3 +82,8 @@ variable "mdm_id" {
   default     = "0000000a-0000-0000-c000-000000000000"
   description = "The default value is the MDM Id for Intune, but you can use your own MDM id if you want to use a different MDM service."
 }
+
+variable "firewall_rules" {
+  type        = map
+  description = "The list of firewall rules deployed in the Azure Firewall. This is a dependency for deploying the VM extensions."
+}

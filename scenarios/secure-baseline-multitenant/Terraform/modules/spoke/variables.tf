@@ -84,3 +84,8 @@ variable "firewall_private_ip" {
   type        = string
   description = "The private IP address of the Azure Firewall (needed to setup UDRs)"
 }
+
+variable "firewall_rules" {
+  type        = map
+  description = "The list of firewall rules deployed in the Azure Firewall. This is a dependency for deploying the VM."
+}
