@@ -1,27 +1,29 @@
-name: 'ASEv3 Terraform'
+name: 'Multi-tenant ASEv3 Secure Baseline: Terraform Deploy'
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
-      - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
-      - '!reference-implementations/LOB-ILB-ASEv3/terraform/**.md'
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - main
+#       - jin/oidc-refactor
+#     paths:
+#       - '.github/workflows/terraform.multitenant.secure-baseline-ase.yml'
+#       - 'scenarios/secure-baseline-ase/terraform/**'
+#       - '!scenarios/secure-baseline-ase/**.md'
 
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
-      - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
-      - '!reference-implementations/LOB-ILB-ASEv3/terraform/**.md'
+#   pull_request:
+#     branches:
+#       - main
+#       - feature/*
+#     paths:
+#       - '.github/workflows/terraform.multitenant.secure-baseline-ase.yml'
+#       - 'scenarios/secure-baseline-ase/terraform/**'
+#       - '!scenarios/secure-baseline-ase/**.md'
 
 permissions:
   id-token: write
   contents: read
-  
+
 env:
   modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
   terraform_version: 1.3.4 # must be greater than or equal to 1.2 for OIDC
