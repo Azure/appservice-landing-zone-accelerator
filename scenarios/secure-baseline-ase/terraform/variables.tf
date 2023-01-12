@@ -1,7 +1,7 @@
 variable "workloadName" {
   description = "A short name for the workload being deployed"
   type        = string
-  default     = "secure-baseline-single" # ase single tenant
+  default     = "sec-baseline-sgl" # ase single tenant
 }
 
 variable "environment" {
