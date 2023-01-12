@@ -62,9 +62,9 @@ az network private-endpoint-connection approve --id $fd_conn_id --description "A
 
 From a PowerShell terminal, connect to the DevOps VM using your AAD credentials. The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
 
-```bash
+```powershell
 az upgrade
-az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
+az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
 From SQL Management Studio, connect to the SQL Server using the SQL Admins group. The user needs to have the format `AzureAD\<user@domain.com>`.
@@ -89,10 +89,20 @@ ALTER ROLE db_ddladmin ADD MEMBER [web-app-name/slots/slot-name];
 GO
 ```
 
+From a PowerShell terminal in your DevOps VM, you'll need to add a Key Vault secret for Redis Cache connetion string. 
+First, install `az cli` and execute `az keyvalut secret set`. The exact command will be provided in the output of the Terraform deployment (terraform output -raw cmd_redis_connection_kvsecret).
+
+```powershell
+$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+
+az login
+az keyvault secret set --vault-name <key-valut-name> --name <kv-secret-name> --value <redis-cache-connection-string>
+```
+
 ### Retrieve the Azure Front Door frontend endpoint URL and test the App Service
 
 ```bash
-az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>```  
+az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>  
 ```
 
 ## TBD: Deploying App Service into Existing Infrastructure

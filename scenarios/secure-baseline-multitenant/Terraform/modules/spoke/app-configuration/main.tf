@@ -63,7 +63,6 @@ locals {
 resource "azurecaf_name" "appcg_private_endpoint" {
   name          = azurerm_app_configuration.app_config.name
   resource_type = "azurerm_private_endpoint"
-  suffixes      = [var.environment] #NOTE: globally unique
 }
 
 # Create a private endpoint for the SQL Server

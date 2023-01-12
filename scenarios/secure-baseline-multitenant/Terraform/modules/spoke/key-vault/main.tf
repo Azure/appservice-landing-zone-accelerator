@@ -7,6 +7,12 @@ terraform {
   }
 }
 
+data "azurerm_client_config" "current" { }
+
+data "azuread_user" "author" {
+  object_id = data.azurerm_client_config.current.object_id
+}
+
 resource "azurecaf_name" "key_vault" {
   name          = "appsvc"
   resource_type = "azurerm_key_vault"
@@ -50,12 +56,20 @@ resource "azurerm_key_vault" "key_vault" {
       "Get", "List"
     ]
   }
+
+  #Assign access to $User to manage secrets
+  access_policy {
+    tenant_id = var.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+    secret_permissions = [
+      "Get", "List", "Set"
+    ]
+  }
 }
 
 resource "azurecaf_name" "key_vault_pe" {
   name          = azurerm_key_vault.key_vault.name
   resource_type = "azurerm_private_endpoint"
-  suffixes      = [var.environment]
 }
 
 # Create a private endpoint for the SQL Server

@@ -67,6 +67,17 @@ resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_settings" {
   }
 }
 
+locals {
+  # Some resources need to be deployed *after* the firewall rules are deployed, or will otherwise fail.
+  # For this, we output this value to a local variable, and use it as a dependency for those resources. 
+  firewall_rules = {
+    core                  = azurerm_firewall_application_rule_collection.core.id
+    azure_monitor         = azurerm_firewall_application_rule_collection.azure_monitor.id
+    windows_vm_devops     = azurerm_firewall_application_rule_collection.windows_vm_devops.id
+    windows_vm_devops_net = azurerm_firewall_network_rule_collection.windows_vm_devops.id
+  }
+}
+
 resource "azurerm_firewall_application_rule_collection" "core" {
   name                = "Core-Dependencies-FQDNs"
   azure_firewall_name = azurerm_firewall.firewall.name
@@ -108,7 +119,8 @@ resource "azurerm_firewall_application_rule_collection" "core" {
       "*.nuget.org",
       "*.blob.core.windows.net",
       "raw.githubusercontent.com",
-      "dev.azure.com"
+      "dev.azure.com",
+      "portal.azure.com",
     ]
 
     protocol {
@@ -124,8 +136,13 @@ resource "azurerm_firewall_application_rule_collection" "core" {
 
     target_fqdns = [
       "ctldl.windowsupdate.com",
+      "ocsp.msocsp.com",
+      "oneocsp.microsoft.com",
+      "crl.microsoft.com",
+      "www.microsoft.com",
       "*.digicert.com",
-      "*.symantec.com"
+      "*.symantec.com",
+      "*.d-trust.net",
     ]
 
     protocol {
@@ -181,14 +198,17 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
 
     source_addresses = var.devops_subnet_cidr
 
+    # https://learn.microsoft.com/en-us/azure/active-directory/devices/howto-vm-sign-in-azure-ad-windows
     target_fqdns = [
       "enterpriseregistration.windows.net",
+      "pas.windows.net",
       "login.microsoftonline.com",
       "device.login.microsoftonline.com",
       "autologon.microsoftazuread-sso.com",
       "manage-beta.microsoft.com",
       "manage.microsoft.com",
       "aadcdn.msauth.net",
+      "*.sts.microsoft.com",
       "*.manage-beta.microsoft.com",
       "*.manage.microsoft.com",
     ]
@@ -208,9 +228,17 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
       "aka.ms",
       "go.microsoft.com",
       "download.microsoft.com",
+      "edge.microsoft.com",
+      "fs.microsoft.com",
       "wdcp.microsoft.com",
       "wdcpalt.microsoft.com",
       "msedge.api.cdp.microsoft.com",
+      "winatp-gw-cane.microsoft.com",
+      "*.google.com",
+      "*.live.com",
+      "*.bing.com",
+      "*.msappproxy.net",
+      "*.delivery.mp.microsoft.com",
       "*.data.microsoft.com",
       "*.blob.storage.azure.net",
       "*.blob.core.windows.net",

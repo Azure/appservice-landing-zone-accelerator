@@ -13,6 +13,8 @@ terraform {
 
 provider "azurerm" {
   features {}
+  disable_terraform_partner_id = false
+  partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
 }
 
 locals {
@@ -28,7 +30,8 @@ locals {
 }
 
 module "hub" {
-  source               = "./modules/hub"
+  source = "./modules/hub"
+
   location             = var.location
   vnet_cidr            = local.hub_vnet_cidr
   firewall_subnet_cidr = local.firewall_subnet_cidr
@@ -43,7 +46,8 @@ module "hub" {
 }
 
 module "spoke" {
-  source                    = "./modules/spoke"
+  source = "./modules/spoke"
+
   application_name          = var.application_name
   environment               = var.environment
   location                  = var.location
@@ -53,8 +57,10 @@ module "spoke" {
   vm_admin_username         = var.vm_admin_username
   vm_admin_password         = var.vm_admin_password
   vm_aad_admin_username     = var.vm_aad_admin_username
+  webapp_slot_name          = var.webapp_slot_name
   vnet_cidr                 = local.spoke_vnet_cidr
   firewall_private_ip       = module.hub.firewall_private_ip
+  firewall_rules            = module.hub.firewall_rules
   appsvc_int_subnet_cidr    = local.appsvc_int_subnet_cidr
   front_door_subnet_cidr    = local.front_door_subnet_cidr
   devops_subnet_cidr        = local.devops_subnet_cidr

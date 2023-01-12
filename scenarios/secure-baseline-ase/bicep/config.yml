@@ -5,3 +5,4 @@ DEPLOYMENT_NAME: 'ase-demo-deployment'
 VM_USERNAME: 'agent'
 ACCOUNT_NAME: 'replace me in repo secrets'
 CICD_AGENT_TYPE: 'azuredevops'
+CREATE_REDIS_RESOURCE: true

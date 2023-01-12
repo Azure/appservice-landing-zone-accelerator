@@ -70,6 +70,14 @@ resource "azurerm_virtual_machine_extension" "aad" {
       "mdmId": "${var.mdm_id}"
     }
   SETTINGS
+
+  timeouts {
+    create = "60m"
+  }
+
+  depends_on = [
+    var.firewall_rules
+  ]
 }
 
 resource "azurerm_virtual_machine_extension" "install_sql" {
@@ -87,4 +95,12 @@ resource "azurerm_virtual_machine_extension" "install_sql" {
         "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario/scenarios/secure-baseline-multitenant/Terraform/modules/shared/windows-vm/ssms-setup.ps1"]
     }
   PROTECTED_SETTINGS
+
+  timeouts {
+    create = "60m"
+  }
+
+  depends_on = [
+    var.firewall_rules
+  ]
 }
