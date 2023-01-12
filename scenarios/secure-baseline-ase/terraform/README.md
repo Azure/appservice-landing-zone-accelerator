@@ -185,7 +185,7 @@ As you configured the backend remote state with your live Azure infrastructure r
 | <a name="input_vmadminPassword"></a> [vmadminPassword](#input\_vmadminPassword) | admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault | `string` | `null` | no |
 | <a name="input_vmadminUserName"></a> [vmadminUserName](#input\_vmadminUserName) | admin username for the virtual machine (devops agent, jumpbox) | `string` | `"vmadmin"` | no |
 | <a name="input_workerPool"></a> [workerPool](#input\_workerPool) | workerPool for ASE | `number` | `1` | no |
-| <a name="input_workloadName"></a> [workloadName](#input\_workloadName) | A short name for the workload being deployed | `string` | `"ase"` | no |
+| <a name="input_workloadName"></a> [workloadName](#input\_workloadName) | A short name for the workload being deployed | `string` | `"secure-baseline-single"` | no |
 
 ## Outputs
 
