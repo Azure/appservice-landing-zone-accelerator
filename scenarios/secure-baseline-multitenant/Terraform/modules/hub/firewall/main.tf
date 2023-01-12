@@ -135,8 +135,13 @@ resource "azurerm_firewall_application_rule_collection" "core" {
 
     target_fqdns = [
       "ctldl.windowsupdate.com",
+      "ocsp.msocsp.com",
+      "oneocsp.microsoft.com",
+      "crl.microsoft.com",
+      "www.microsoft.com",
       "*.digicert.com",
-      "*.symantec.com"
+      "*.symantec.com",
+      "*.d-trust.net",
     ]
 
     protocol {
@@ -192,8 +197,10 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
 
     source_addresses = var.devops_subnet_cidr
 
+    # https://learn.microsoft.com/en-us/azure/active-directory/devices/howto-vm-sign-in-azure-ad-windows
     target_fqdns = [
       "enterpriseregistration.windows.net",
+      "pas.windows.net",
       "login.microsoftonline.com",
       "device.login.microsoftonline.com",
       "autologon.microsoftazuread-sso.com",
@@ -223,6 +230,8 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
       "wdcp.microsoft.com",
       "wdcpalt.microsoft.com",
       "msedge.api.cdp.microsoft.com",
+      "winatp-gw-cane.microsoft.com",
+      "*.delivery.mp.microsoft.com",
       "*.data.microsoft.com",
       "*.blob.storage.azure.net",
       "*.blob.core.windows.net",

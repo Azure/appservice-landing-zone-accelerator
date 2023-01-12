@@ -28,7 +28,8 @@ locals {
 }
 
 module "hub" {
-  source               = "./modules/hub"
+  source = "./modules/hub"
+
   location             = var.location
   vnet_cidr            = local.hub_vnet_cidr
   firewall_subnet_cidr = local.firewall_subnet_cidr
@@ -43,7 +44,8 @@ module "hub" {
 }
 
 module "spoke" {
-  source                    = "./modules/spoke"
+  source = "./modules/spoke"
+
   application_name          = var.application_name
   environment               = var.environment
   location                  = var.location
@@ -55,6 +57,7 @@ module "spoke" {
   vm_aad_admin_username     = var.vm_aad_admin_username
   vnet_cidr                 = local.spoke_vnet_cidr
   firewall_private_ip       = module.hub.firewall_private_ip
+  firewall_rules            = module.hub.firewall_rules
   appsvc_int_subnet_cidr    = local.appsvc_int_subnet_cidr
   front_door_subnet_cidr    = local.front_door_subnet_cidr
   devops_subnet_cidr        = local.devops_subnet_cidr
