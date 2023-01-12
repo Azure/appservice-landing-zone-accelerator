@@ -119,6 +119,7 @@ module "devops_vm" {
   enroll_with_mdm    = true
   location           = var.location
   install_extensions = true
+  firewall_rules     = var.firewall_rules
 }
 
 module "front_door" {
