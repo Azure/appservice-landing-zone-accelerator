@@ -38,7 +38,7 @@ module "endpoint" {
   frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
   location             = var.location
 
-  endpoint_name            = var.endpoint_settings[count.index].endpoint_name
+  endpoint_name            = "${var.endpoint_settings[count.index].endpoint_name}-${var.unique_id}"
   web_app_hostname         = var.endpoint_settings[count.index].web_app_hostname
   web_app_id               = var.endpoint_settings[count.index].web_app_id
   private_link_target_type = var.endpoint_settings[count.index].private_link_target_type

@@ -41,3 +41,8 @@ variable "endpoint_settings" {
 
   description = "The name of the front door endpoint."
 }
+
+variable "unique_id" {
+  type        = string
+  description = "The unique id"
+}

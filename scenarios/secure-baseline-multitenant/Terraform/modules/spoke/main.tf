@@ -146,6 +146,8 @@ module "front_door" {
     #   private_link_target_type = "sites-staging"
     # }
   ]
+    unique_id          = random_integer.unique_id.result
+
 }
 
 module "sql_database" {
@@ -208,17 +210,17 @@ module "app_insights" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
 }
 
-# module "redis_cache" {
-#   source                    = "./redis-cache"
-#   resource_group            = azurerm_resource_group.spoke.name
-#   application_name          = var.application_name
-#   environment               = var.environment
-#   location                  = var.location
-#   unique_id                 = random_integer.unique_id.result
-#   tenant_id                 = var.tenant_id
-#   sku_name                  = "Standard"
-#   private_link_subnet_id    = module.spoke_network.private_link_subnet_id
-#   private_dns_zone_name     = module.spoke_network.redis_private_dns_zone_name
-#   web_app_principal_id      = module.app_service.web_app_principal_id
-#   web_app_slot_principal_id = module.app_service.web_app_slot_principal_id
-# }
+module "redis_cache" {
+  source                    = "./redis-cache"
+  resource_group            = azurerm_resource_group.spoke.name
+  application_name          = var.application_name
+  environment               = var.environment
+  location                  = var.location
+  unique_id                 = random_integer.unique_id.result
+  tenant_id                 = var.tenant_id
+  sku_name                  = "Standard"
+  private_link_subnet_id    = module.spoke_network.private_link_subnet_id
+  private_dns_zone_name     = module.spoke_network.redis_private_dns_zone_name
+  web_app_principal_id      = module.app_service.web_app_principal_id
+  web_app_slot_principal_id = module.app_service.web_app_slot_principal_id
+}

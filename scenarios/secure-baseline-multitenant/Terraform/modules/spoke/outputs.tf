@@ -33,3 +33,15 @@ output "key_vault_uri" {
 output "web_app_uri" {
   value = module.front_door.frontdoor_endpoint_uris
 }
+
+output "redis_connection_secret_name" {
+    value = module.redis_cache.redis_kv_secret_name
+}
+
+output "redis_connection_string" {
+    value = module.redis_cache.redis_connection_string
+}
+
+output "key_vault_name" {
+    value = module.key_vault.vault_name
+}
