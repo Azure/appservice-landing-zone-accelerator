@@ -43,6 +43,9 @@ param personalAccessToken string
 @description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}
 
+@description('Optional. Create Redis resource.')
+param createRedisResource bool = true
+
 // Variables
 
 var defaultTags = union({
@@ -100,6 +103,7 @@ module networking 'networking.bicep' = {
   params: {
     location: location
     createCICDAgentSubnet: ((CICDAgentType == 'none') ? false : true)
+    createRedisPrivateEndpointSubnet: createRedisResource
     naming: naming.outputs.names
     tags: defaultTags
   }
@@ -138,6 +142,25 @@ module ase 'ase.bicep' = {
     aseSubnetId: networking.outputs.aseSubnetId
     naming: naming.outputs.names
     tags: defaultTags
+  }
+}
+
+//Create Redis resource
+module redis 'redis.bicep' = if(createRedisResource) {
+  dependsOn: [
+    networking
+    shared
+    ase
+  ]
+  scope: resourceGroup(sharedResourceGroup.name)
+  name: 'redis-Deployment'
+  params: {
+    location: location
+    vnetId: networking.outputs.spokeVNetId
+    redisPrivateEndpointSubnetId: networking.outputs.redisPrivateEndpointSubnetId
+    naming: naming.outputs.names
+    tags: defaultTags
+    keyVaultName: shared.outputs.keyVaultName
   }
 }
 
