@@ -1,5 +1,5 @@
 output "redis_kv_secret_name" {
-    value = "redis_connection_string"
+    value = "redis-connection-string"
 }
 
 output "redis_connection_string" {
