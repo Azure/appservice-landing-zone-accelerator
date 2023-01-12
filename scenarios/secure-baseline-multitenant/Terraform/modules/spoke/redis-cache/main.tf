@@ -7,10 +7,6 @@ terraform {
   }
 }
 
-data "azurerm_resource_group" "resource_group" {
-  name = var.resource_group
-}
-
 resource "azurecaf_name" "redis-cache" {
   name          = var.application_name
   resource_type = "azurerm_redis_cache"
@@ -49,7 +45,7 @@ resource "azurerm_private_endpoint" "redis-cache-private-endpoint" {
   resource_group_name = var.resource_group
   subnet_id           = var.private_link_subnet_id
   depends_on          = [azurerm_redis_cache.redis-cache]
-  
+
   private_service_connection {
     name                           = "redis-cache-private-endpoint"
     is_manual_connection           = false
