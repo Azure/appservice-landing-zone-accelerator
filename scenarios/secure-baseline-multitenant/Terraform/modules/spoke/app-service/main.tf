@@ -12,7 +12,7 @@ locals {
   web-app-name      = "app-${var.application_name}-${var.environment}-${var.unique_id}"
 }
 
-resource "azurerm_service_plan" "appsvc_plan" {
+resource "azurerm_service_plan" "this" {
   name                = local.app-svc-plan-name
   resource_group_name = var.resource_group
   location            = var.location
@@ -20,12 +20,12 @@ resource "azurerm_service_plan" "appsvc_plan" {
   os_type             = var.os_type
 }
 
-resource "azurerm_windows_web_app" "web_app" {
+resource "azurerm_windows_web_app" "this" {
   name                      = local.web-app-name
   resource_group_name       = var.resource_group
   location                  = var.location
   https_only                = true
-  service_plan_id           = azurerm_service_plan.appsvc_plan.id
+  service_plan_id           = azurerm_service_plan.this.id
   virtual_network_subnet_id = var.appsvc_subnet_id
 
   identity {
@@ -66,9 +66,9 @@ resource "azurerm_windows_web_app" "web_app" {
   }
 }
 
-resource "azurerm_windows_web_app_slot" "staging" {
-  name                      = "staging"
-  app_service_id            = azurerm_windows_web_app.web_app.id
+resource "azurerm_windows_web_app_slot" "slot" {
+  name                      = var.webapp_slot_name
+  app_service_id            = azurerm_windows_web_app.this.id
   virtual_network_subnet_id = var.appsvc_subnet_id
   https_only                = true
 
@@ -103,21 +103,13 @@ resource "azurerm_windows_web_app_slot" "staging" {
   }
 }
 
-# resource "azurerm_app_service_source_control_slot" "staging" {
-#   slot_id                = azurerm_windows_web_app_slot.staging.id
-#   repo_url               = "https://github.com/jelledruyts/InspectorGadget"
-#   branch                 = "main"
-#   use_manual_integration = true
-# }
-
-resource "azurecaf_name" "appsvc_pe" {
+resource "azurecaf_name" "webapp" {
   name          = local.web-app-name
   resource_type = "azurerm_private_endpoint"
-  suffixes      = [var.environment] 
 }
 
-resource "azurerm_private_endpoint" "appsvc_pe" {
-  name                = azurecaf_name.appsvc_pe.result
+resource "azurerm_private_endpoint" "webapp" {
+  name                = azurecaf_name.webapp.result
   resource_group_name = var.resource_group
   location            = var.location
   subnet_id           = var.frontend_subnet_id
@@ -129,37 +121,36 @@ resource "azurerm_private_endpoint" "appsvc_pe" {
 
   private_service_connection {
     name                           = "webapp-private-connection"
-    private_connection_resource_id = azurerm_windows_web_app.web_app.id
+    private_connection_resource_id = azurerm_windows_web_app.this.id
     subresource_names              = ["sites"]
     is_manual_connection           = false
   }
 }
 
-resource "azurecaf_name" "appsvc_slot_pe" {
-  name          = "${local.web-app-name}-staging"
+resource "azurecaf_name" "slot" {
+  name          = "${local.web-app-name}-slot"
   resource_type = "azurerm_private_endpoint"
-  suffixes      = [var.environment] 
 }
 
-resource "azurerm_private_endpoint" "appsvc_slot_pe" {
-  name                = azurecaf_name.appsvc_slot_pe.result
+resource "azurerm_private_endpoint" "slot" {
+  name                = azurecaf_name.slot.result
   resource_group_name = var.resource_group
   location            = var.location
   subnet_id           = var.frontend_subnet_id
 
   private_service_connection {
     name                           = "webapp-slot-private-connection"
-    private_connection_resource_id = azurerm_windows_web_app.web_app.id  # Note: needs to be the resource id of the app, not the id of the slot
-    subresource_names              = ["sites-staging"]
+    private_connection_resource_id = azurerm_windows_web_app.this.id  # Note: needs to be the resource id of the app, not the id of the slot
+    subresource_names              = ["sites-${var.webapp_slot_name}"]
     is_manual_connection           = false
   }
 }
 
-resource "azurerm_private_dns_a_record" "appsvc_slot_dns" {
-  name                = lower("${azurerm_windows_web_app.web_app.name}-${azurerm_windows_web_app_slot.staging.name}")
+resource "azurerm_private_dns_a_record" "slot" {
+  name                = lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}")
   zone_name           = var.private_dns_zone.name
   
   resource_group_name = var.resource_group
   ttl                 = 300
-  records             = [azurerm_private_endpoint.appsvc_slot_pe.private_service_connection[0].private_ip_address]
+  records             = [azurerm_private_endpoint.slot.private_service_connection[0].private_ip_address]
 }

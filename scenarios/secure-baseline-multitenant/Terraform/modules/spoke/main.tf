@@ -99,6 +99,7 @@ module "app_service" {
   ai_connection_string = module.app_insights.connection_string
   appsvc_subnet_id     = module.spoke_network.appsvc_subnet_id
   frontend_subnet_id   = module.spoke_network.frontend_subnet_id
+  webapp_slot_name     = var.webapp_slot_name
 
   private_dns_zone = {
     name = module.spoke_network.azurewebsites_private_dns_zone_name
@@ -111,13 +112,13 @@ module "devops_vm" {
 
   resource_group     = azurerm_resource_group.spoke.name
   vm_name            = "devops-vm"
+  location           = var.location
   vm_subnet_id       = module.spoke_network.devops_subnet_id
   unique_id          = random_integer.unique_id.result
   admin_username     = local.vm_admin_username
   admin_password     = local.vm_admin_password
   aad_admin_username = var.vm_aad_admin_username
   enroll_with_mdm    = true
-  location           = var.location
   install_extensions = true
   firewall_rules     = var.firewall_rules
 }
@@ -141,13 +142,13 @@ module "front_door" {
 
     # Connecting a front door origin to an app service slot through private link is currently not working
     # {
-    #   endpoint_name            = "${var.application_name}-${var.environment}-staging"
+    #   endpoint_name            = "${var.application_name}-${var.environment}-${var.webapp_slot_name}"
     #   web_app_id               = module.app_service.web_app_id # Note: needs to be the resource id of the app, not the id of the slot
     #   web_app_hostname         = module.app_service.web_app_slot_hostname
-    #   private_link_target_type = "sites-staging"
+    #   private_link_target_type = "sites-${var.webapp_slot_name}"
     # }
   ]
-    unique_id          = random_integer.unique_id.result
+  unique_id = random_integer.unique_id.result
 
 }
 
@@ -212,7 +213,8 @@ module "app_insights" {
 }
 
 module "redis_cache" {
-  source                    = "./redis-cache"
+  source = "./redis-cache"
+
   resource_group            = azurerm_resource_group.spoke.name
   application_name          = var.application_name
   environment               = var.environment

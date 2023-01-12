@@ -70,7 +70,6 @@ resource "azurerm_key_vault" "key_vault" {
 resource "azurecaf_name" "key_vault_pe" {
   name          = azurerm_key_vault.key_vault.name
   resource_type = "azurerm_private_endpoint"
-  suffixes      = [var.environment]
 }
 
 # Create a private endpoint for the SQL Server
