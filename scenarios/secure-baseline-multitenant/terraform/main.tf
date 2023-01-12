@@ -8,88 +8,86 @@ terraform {
       source  = "aztfmod/azurecaf"
       version = ">=1.2.22"
     }
-    azapi = {
-      source = "azure/azapi"
-    }
-    azuread = {
-      source = "hashicorp/azuread"
-    }
   }
-}
-
-provider "azapi" {
 }
 
 provider "azurerm" {
   features {}
-}
-
-provider "azuread" {
+  disable_terraform_partner_id = false
+  partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
 }
 
 locals {
-  // If an environment is set up (dev, test, prod...), it is used in the application name
-  environment = var.environment == "" ? "dev" : var.environment
+  hub_vnet_cidr            = var.hub_vnet_cidr == null ? ["10.242.0.0/20"] : var.hub_vnet_cidr
+  firewall_subnet_cidr     = var.firewall_subnet_cidr == null ? "10.242.0.0/26" : var.firewall_subnet_cidr
+  bastion_subnet_cidr      = var.bastion_subnet_cidr == null ? "10.242.0.64/26" : var.bastion_subnet_cidr
+  spoke_vnet_cidr          = var.spoke_vnet_cidr == null ? ["10.240.0.0/20"] : var.spoke_vnet_cidr
+  appsvc_int_subnet_cidr   = var.appsvc_int_subnet_cidr == null ? ["10.240.0.0/26"] : var.appsvc_int_subnet_cidr
+  front_door_subnet_cidr   = var.front_door_subnet_cidr == null ? ["10.240.0.64/26"] : var.front_door_subnet_cidr
+  devops_subnet_cidr       = var.devops_subnet_cidr == null ? ["10.240.10.128/26"] : var.devops_subnet_cidr
+  private_link_subnet_cidr = var.private_link_subnet_cidr == null ? ["10.240.11.0/24"] : var.private_link_subnet_cidr
+  deploy_firewall          = var.enable_egress_lockdown == null ? false : var.enable_egress_lockdown
 }
 
-resource "azurecaf_name" "resource_group" {
-  name          = var.application_name
-  resource_type = "azurerm_resource_group"
-  suffixes      = [local.environment]
+module "hub" {
+  source = "./modules/hub"
+
+  location             = var.location
+  vnet_cidr            = local.hub_vnet_cidr
+  firewall_subnet_cidr = local.firewall_subnet_cidr
+  bastion_subnet_cidr  = local.bastion_subnet_cidr
+  deploy_firewall      = local.deploy_firewall
+  devops_subnet_cidr   = local.devops_subnet_cidr
+
+  firewall_rules_source_addresses = [
+    local.hub_vnet_cidr[0],
+    local.spoke_vnet_cidr[0]
+  ]
 }
 
-resource "azurerm_resource_group" "main" {
-  name     = azurecaf_name.resource_group.result
-  location = var.location
+module "spoke" {
+  source = "./modules/spoke"
 
-  tags = {
-    "terraform"        = "true"
-    "environment"      = local.environment
-    "application-name" = var.application_name
-  }
+  application_name          = var.application_name
+  environment               = var.environment
+  location                  = var.location
+  tenant_id                 = var.tenant_id
+  aad_admin_group_object_id = var.aad_admin_group_object_id
+  aad_admin_group_name      = var.aad_admin_group_name
+  vm_admin_username         = var.vm_admin_username
+  vm_admin_password         = var.vm_admin_password
+  vm_aad_admin_username     = var.vm_aad_admin_username
+  webapp_slot_name          = var.webapp_slot_name
+  vnet_cidr                 = local.spoke_vnet_cidr
+  firewall_private_ip       = module.hub.firewall_private_ip
+  firewall_rules            = module.hub.firewall_rules
+  appsvc_int_subnet_cidr    = local.appsvc_int_subnet_cidr
+  front_door_subnet_cidr    = local.front_door_subnet_cidr
+  devops_subnet_cidr        = local.devops_subnet_cidr
+  private_link_subnet_cidr  = local.private_link_subnet_cidr
+  enable_waf                = var.enable_waf
+  enable_egress_lockdown    = var.enable_egress_lockdown
 }
 
-module "spoke-network" {
-  source           = "./modules/spoke/network"
-  resource_group   = azurerm_resource_group.main.name
-  application_name = var.application_name
-  environment      = local.environment
-  location         = var.location
+resource "azurerm_virtual_network_peering" "hub_to_spoke" {
+  name                         = "hub-to-spoke-${var.application_name}"
+  resource_group_name          = module.hub.rg_name
+  virtual_network_name         = module.hub.vnet_name
+  remote_virtual_network_id    = module.spoke.vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
 }
 
-module "app-service" {
-  source                           = "./modules/spoke/app-service"
-  resource_group                   = azurerm_resource_group.main.name
-  application_name                 = var.application_name
-  environment                      = local.environment
-  location                         = var.location
-  sku_name                         = "S1"
-  os_type                          = "Windows"
-  app_svc_integration_subnet_id    = module.spoke-network.app_svc_integration_subnet_id
-  front_door_integration_subnet_id = module.spoke-network.front_door_integration_subnet_id
-  private_dns_zone_id              = module.spoke-network.azurewebsites_private_dns_zone_id
+resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+  name                         = "spoke-to-hub-${var.application_name}"
+  resource_group_name          = module.spoke.rg_name
+  virtual_network_name         = module.spoke.vnet_name
+  remote_virtual_network_id    = module.hub.vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
 }
 
-module "front-door" {
-  source           = "./modules/spoke/front-door"
-  resource_group   = azurerm_resource_group.main.name
-  application_name = var.application_name
-  environment      = local.environment
-  location         = var.location
-  web_app_id       = module.app-service.web_app_id
-  web_app_hostname = module.app-service.web_app_hostname
-}
-
-module "sql-database" {
-  source                      = "./modules/spoke/sql-database"
-  resource_group              = azurerm_resource_group.main.name
-  application_name            = var.application_name
-  environment                 = local.environment
-  location                    = var.location
-  tenant_id                   = var.tenant_id
-  sql_admin_group_object_id   = var.sql_admin_group_object_id
-  sql_admin_group_name        = var.sql_admin_group_name
-  sql_db_name                 = "sample-db"
-  private-link-subnet-id      = module.spoke-network.private_link_subnet_id
-  sqldb_private_dns_zone_name = module.spoke-network.sqldb_private_dns_zone_name
-}

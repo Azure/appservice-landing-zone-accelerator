@@ -6,7 +6,7 @@ A deployment of App Service-hosted workloads typically experiences a separation 
 
 ## Accounting for Separation of Duties
 
-While the code here is located in one folder in a single repo, the steps are designed to mimic how an organization may break up the deployment of various Azure components across teams, into different code repos or have them run by different pipelines with specific credentials. 
+While the code here is located in one folder in a single repo, the steps are designed to mimic how an organization may break up the deployment of various Azure components across teams, into different code repos or have them run by different pipelines with specific credentials.
 
 ## Keeping It As Simple As Possible
 
@@ -32,8 +32,8 @@ An Azure AD group is required for the SQL Admins. The group must be created befo
 
 ```bash
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-sql_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-sql_admin_group_name      = "Azure AD SQL Admins"
+aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+aad_admin_group_name      = "Azure AD SQL Admins"
 ```
 
 ### Deploy the App Service Landing Zone Terraform code
@@ -44,14 +44,65 @@ terraform plan
 terraform apply --auto-approve
 ```
 
+Take note of the output values from the Terraform deployment. These will be used in the next steps.
+
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
 
 This is a manual step that is required to complete the private endpoint connection.
 
+```bash
+# Update the resource group name to match the one used in the deployment of the webapp
+rg_name="rg-secure-baseline-dev"
+webapp_id=$(az webapp list -g $rg_name --query "[].id" -o tsv)
+fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].{id:id}" -o tsv)
+az network private-endpoint-connection approve --id $fd_conn_id --description "Approved"
+```
+
+### Connect to the DevOps VM
+
+From a PowerShell terminal, connect to the DevOps VM using your AAD credentials. The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
+
+```powershell
+az upgrade
+az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
+```
+
+From SQL Management Studio, connect to the SQL Server using the SQL Admins group. The user needs to have the format `AzureAD\<user@domain.com>`.
+
+The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
+
+If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"), enroll the Jumpbox to Azure AD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+
+Once completed, you should be able to connect to the SQL Server using the Azure AD account. On the sample database (sample-db), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
+
+```sql
+CREATE USER [web-app-name] FROM EXTERNAL PROVIDER;
+ALTER ROLE db_datareader ADD MEMBER [web-app-name];
+ALTER ROLE db_datawriter ADD MEMBER [web-app-name];
+ALTER ROLE db_ddladmin ADD MEMBER [web-app-name];
+GO
+
+CREATE USER [web-app-name/slots/slot-name] FROM EXTERNAL PROVIDER;
+ALTER ROLE db_datareader ADD MEMBER [web-app-name/slots/slot-name];
+ALTER ROLE db_datawriter ADD MEMBER [web-app-name/slots/slot-name];
+ALTER ROLE db_ddladmin ADD MEMBER [web-app-name/slots/slot-name];
+GO
+```
+
+From a PowerShell terminal in your DevOps VM, you'll need to add a Key Vault secret for Redis Cache connetion string. 
+First, install `az cli` and execute `az keyvalut secret set`. The exact command will be provided in the output of the Terraform deployment (terraform output -raw cmd_redis_connection_kvsecret).
+
+```powershell
+$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+
+az login
+az keyvault secret set --vault-name <key-valut-name> --name <kv-secret-name> --value <redis-cache-connection-string>
+```
+
 ### Retrieve the Azure Front Door frontend endpoint URL and test the App Service
 
 ```bash
-az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>```  
+az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>  
 ```
 
 ## TBD: Deploying App Service into Existing Infrastructure

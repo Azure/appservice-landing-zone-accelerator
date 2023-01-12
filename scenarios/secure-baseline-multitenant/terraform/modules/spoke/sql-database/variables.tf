@@ -3,6 +3,11 @@ variable "application_name" {
   description = "The name of your application"
 }
 
+variable "unique_id" {
+  type        = string
+  description = "A unique identifier"
+}
+
 variable "resource_group" {
   type        = string
   description = "The name of the resource group where all resources in this example should be created."
@@ -25,11 +30,11 @@ variable "tenant_id" {
   description = "The tenant id where the resources will be created"
 }
 
-variable "sql_admin_group_object_id" {
+variable "aad_admin_group_object_id" {
   type    = string
 }
 
-variable "sql_admin_group_name" {
+variable "aad_admin_group_name" {
   type    = string
 }
 
@@ -42,7 +47,7 @@ variable "private-link-subnet-id" {
   description = "The subnet id where the SQL database will be integrated"
 }
 
-variable "sqldb_private_dns_zone_name" {
+variable "private_dns_zone_name" {
   type        = string
   description = "The private dns zone name for SQL database"
 }

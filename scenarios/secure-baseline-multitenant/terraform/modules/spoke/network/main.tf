@@ -13,32 +13,25 @@ resource "azurecaf_name" "spoke_vnet" {
   suffixes      = [var.environment]
 }
 
-data "azurerm_resource_group" "spoke-rg" {
-  name = var.resource_group
-}
-
-resource "azurerm_virtual_network" "spoke-vnet" {
-  address_space       = ["10.240.0.0/20"]
+resource "azurerm_virtual_network" "spoke_vnet" {
+  address_space       = var.vnet_cidr
   location            = var.location
   name                = azurecaf_name.spoke_vnet.result
   resource_group_name = var.resource_group
-  depends_on = [
-    data.azurerm_resource_group.spoke-rg,
-  ]
 }
 
-resource "azurecaf_name" "app-svc-integration-subnet" {
-  name          = "app-svc-integration"
+resource "azurecaf_name" "appsvc_integration_subnet" {
+  name          = "appsvc-integration"
   resource_type = "azurerm_subnet"
   # suffixes      = [var.environment]
 }
 
 # https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
-resource "azurerm_subnet" "app-svc-integration-subnet" {
-  address_prefixes     = ["10.240.0.0/26"]
-  name                 = azurecaf_name.app-svc-integration-subnet.result
+resource "azurerm_subnet" "appsvc_integration_subnet" {
+  address_prefixes     = var.appsvc_int_subnet_cidr
+  name                 = azurecaf_name.appsvc_integration_subnet.result
   resource_group_name  = var.resource_group
-  virtual_network_name = azurerm_virtual_network.spoke-vnet.name
+  virtual_network_name = azurerm_virtual_network.spoke_vnet.name
 
   delegation {
     name = "app-svc-delegation"
@@ -49,102 +42,138 @@ resource "azurerm_subnet" "app-svc-integration-subnet" {
   }
 }
 
-resource "azurecaf_name" "front-door-integration-subnet" {
-  name          = "front-door-integration"
+resource "azurecaf_name" "afd_integration_subnet" {
+  name          = "afd-integration"
   resource_type = "azurerm_subnet"
   # suffixes      = [var.environment]
 }
 
 # https://learn.microsoft.com/en-us/azure/app-service/networking/private-endpoint
-resource "azurerm_subnet" "front-door-integration-subnet" {
-  address_prefixes     = ["10.240.0.64/26"]
-  name                 = azurecaf_name.front-door-integration-subnet.result
+resource "azurerm_subnet" "afd_integration_subnet" {
+  address_prefixes     = var.front_door_subnet_cidr
+  name                 = azurecaf_name.afd_integration_subnet.result
   resource_group_name  = var.resource_group
-  virtual_network_name = azurerm_virtual_network.spoke-vnet.name
+  virtual_network_name = azurerm_virtual_network.spoke_vnet.name
 }
 
-resource "azurecaf_name" "devops-subnet" {
+resource "azurecaf_name" "devops_subnet" {
   name          = "devops"
   resource_type = "azurerm_subnet"
   # suffixes      = [var.environment]
 }
 
-resource "azurerm_subnet" "devops-subnet" {
-  address_prefixes     = ["10.240.10.128/25"]
-  name                 = azurecaf_name.devops-subnet.result
+resource "azurerm_subnet" "devops_subnet" {
+  address_prefixes     = var.devops_subnet_cidr
+  name                 = azurecaf_name.devops_subnet.result
   resource_group_name  = var.resource_group
-  virtual_network_name = azurerm_virtual_network.spoke-vnet.name
+  virtual_network_name = azurerm_virtual_network.spoke_vnet.name
 }
 
-resource "azurecaf_name" "private-link-subnet" {
+resource "azurecaf_name" "private_link_subnet" {
   name          = "private-link"
   resource_type = "azurerm_subnet"
   # suffixes      = [var.environment]
 }
 
-resource "azurerm_subnet" "private-link-subnet" {
-  address_prefixes     = ["10.240.11.0/24"]
-  name                 = azurecaf_name.private-link-subnet.result
+resource "azurerm_subnet" "private_link_subnet" {
+  address_prefixes     = var.private_link_subnet_cidr
+  name                 = azurecaf_name.private_link_subnet.result
   resource_group_name  = var.resource_group
-  virtual_network_name = azurerm_virtual_network.spoke-vnet.name
+  virtual_network_name = azurerm_virtual_network.spoke_vnet.name
 }
 
-resource "azurerm_private_dns_zone" "azurewebsites-dnsprivatezone" {
+resource "azurerm_private_dns_zone" "azurewebsites_dnsprivatezone" {
   name                = "privatelink.azurewebsites.net"
   resource_group_name = var.resource_group
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "azurewebsites-spoke-dnszonelink" {
+resource "azurerm_private_dns_zone_virtual_network_link" "azurewebsites_spoke_dnszonelink" {
   name                  = "privatelink.azurewebsites.net"
   resource_group_name   = var.resource_group
-  private_dns_zone_name = azurerm_private_dns_zone.azurewebsites-dnsprivatezone.name
-  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+  private_dns_zone_name = azurerm_private_dns_zone.azurewebsites_dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke_vnet.id
 }
 
-resource "azurerm_private_dns_zone" "sqldb-dnsprivatezone" {
+resource "azurerm_private_dns_zone" "sqldb_dnsprivatezone" {
   name                = "privatelink.database.windows.net"
   resource_group_name = var.resource_group
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "sqldb-spoke-dnszonelink" {
+resource "azurerm_private_dns_zone_virtual_network_link" "sqldb_spoke_dnszonelink" {
   name                  = "privatelink.database.windows.net"
   resource_group_name   = var.resource_group
-  private_dns_zone_name = azurerm_private_dns_zone.sqldb-dnsprivatezone.name
-  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+  private_dns_zone_name = azurerm_private_dns_zone.sqldb_dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke_vnet.id
 }
 
-resource "azurerm_private_dns_zone" "appconfig-dnsprivatezone" {
+resource "azurerm_private_dns_zone" "appconfig_dnsprivatezone" {
   name                = "privatelink.azconfig.io"
   resource_group_name = var.resource_group
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "appconfig-spoke-dnszonelink" {
+resource "azurerm_private_dns_zone_virtual_network_link" "appconfig_spoke_dnszonelink" {
   name                  = "privatelink.azconfig.io"
   resource_group_name   = var.resource_group
-  private_dns_zone_name = azurerm_private_dns_zone.appconfig-dnsprivatezone.name
-  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+  private_dns_zone_name = azurerm_private_dns_zone.appconfig_dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke_vnet.id
 }
 
-resource "azurerm_private_dns_zone" "keyvault-dnsprivatezone" {
+resource "azurerm_private_dns_zone" "keyvault_dnsprivatezone" {
   name                = "privatelink.vaultcore.azure.net"
   resource_group_name = var.resource_group
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "keyvault-spoke-dnszonelink" {
+resource "azurerm_private_dns_zone_virtual_network_link" "keyvault_spoke_dnszonelink" {
   name                  = "privatelink.vaultcore.azure.net"
   resource_group_name   = var.resource_group
-  private_dns_zone_name = azurerm_private_dns_zone.keyvault-dnsprivatezone.name
-  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+  private_dns_zone_name = azurerm_private_dns_zone.keyvault_dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke_vnet.id
 }
 
-resource "azurerm_private_dns_zone" "redis-dnsprivatezone" {
+resource "azurerm_private_dns_zone" "redis_dnsprivatezone" {
   name                = "privatelink.redis.cache.windows.net"
   resource_group_name = var.resource_group
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "redis-spoke-dnszonelink" {
+resource "azurerm_private_dns_zone_virtual_network_link" "redis_spoke_dnszonelink" {
   name                  = "privatelink.redis.cache.windows.net"
   resource_group_name   = var.resource_group
-  private_dns_zone_name = azurerm_private_dns_zone.redis-dnsprivatezone.name
-  virtual_network_id    = azurerm_virtual_network.spoke-vnet.id
+  private_dns_zone_name = azurerm_private_dns_zone.redis_dnsprivatezone.name
+  virtual_network_id    = azurerm_virtual_network.spoke_vnet.id
+}
+
+resource "azurecaf_name" "route_table" {
+  name          = var.application_name
+  resource_type = "azurerm_route_table"
+  suffixes      = [var.environment]
+}
+
+resource "azurerm_route_table" "route_table" {
+  name                          = azurecaf_name.route_table.result
+  location                      = var.location
+  resource_group_name           = var.resource_group
+  disable_bgp_route_propagation = false
+
+  tags = {
+    environment = var.environment
+  }
+}
+
+resource "azurerm_route" "default_route" {
+  name                   = "defaultRoute"
+  resource_group_name    = var.resource_group
+  route_table_name       = azurerm_route_table.route_table.name
+  address_prefix         = "0.0.0.0/0"
+  next_hop_type          = "VirtualAppliance"
+  next_hop_in_ip_address = var.firewall_private_ip
+}
+
+resource "azurerm_subnet_route_table_association" "appsvc_udr_association" {
+  subnet_id      = azurerm_subnet.appsvc_integration_subnet.id
+  route_table_id = azurerm_route_table.route_table.id
+}
+
+resource "azurerm_subnet_route_table_association" "devops_udr_association" {
+  subnet_id      = azurerm_subnet.devops_subnet.id
+  route_table_id = azurerm_route_table.route_table.id
 }

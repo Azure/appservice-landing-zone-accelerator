@@ -73,3 +73,9 @@ variable "ai_connection_string" {
   type        = string
   description = "The connection string for applications insights"
 }
+
+variable "webapp_slot_name" {
+  type        = string
+  description = "The name of the app service slot"
+}
+

@@ -1,7 +1,6 @@
 variable "application_name" {
   type        = string
   description = "The name of your application"
-  default     = "app-svc-lz-4254"
 }
 
 variable "resource_group" {
@@ -21,14 +20,24 @@ variable "location" {
   default     = "westeurope"
 }
 
-variable "app_svc_integration_subnet_id" {
+variable "tenant_id" {
   type        = string
-  description = "The subnet id where the app service will be integrated"
+  description = "The tenant id"
 }
 
-variable "app_svc_managed_id" {
+variable "unique_id" {
   type        = string
-  description = "The system assigned managed identity that will be assigned with KV policy"
+  description = "The unique id"
+}
+
+variable "private_link_subnet_id" {
+  type        = string
+  description = "The subnet id"
+}
+
+variable "private_dns_zone_name" {
+  type        = string
+  description = "The private dns zone name"
 }
 
 variable "sku_name" {
@@ -39,4 +48,14 @@ variable "sku_name" {
     condition = contains(["standard", "premium"], var.sku_name)
     error_message = "Please, choose among one of the following SKUs for production workloads: standard, premium"
   }
+}
+
+variable "web_app_principal_id" {
+  type        = string
+  description = "The principal id of the web app"
+}
+
+variable "web_app_slot_principal_id" {
+  type        = string
+  description = "The principal id of the web app slot"
 }

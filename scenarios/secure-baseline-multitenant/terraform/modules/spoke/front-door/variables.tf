@@ -1,7 +1,6 @@
 variable "application_name" {
   type        = string
   description = "The name of your application"
-  default     = "app-svc-lz-4254"
 }
 
 variable "resource_group" {
@@ -22,16 +21,28 @@ variable "location" {
 }
 
 variable "azure_frontdoor_sku" {
-  type = string
+  type    = string
   default = "Premium_AzureFrontDoor"
 }
 
-variable "web_app_id" {
-  type = string
-  description = "The web app id"  
+variable "enable_waf" {
+  type        = bool
+  description = "Enable WAF in Azure Front Door"
+  default     = true
 }
 
-variable "web_app_hostname" {
-  type = string
-  description = "The web app hostname"  
+variable "endpoint_settings" {
+  type = list(object({
+    endpoint_name            = string
+    web_app_id               = string
+    web_app_hostname         = string
+    private_link_target_type = string
+  }))
+
+  description = "The name of the front door endpoint."
+}
+
+variable "unique_id" {
+  type        = string
+  description = "The unique id"
 }

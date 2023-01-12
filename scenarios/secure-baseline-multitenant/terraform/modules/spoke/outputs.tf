@@ -35,11 +35,11 @@ output "web_app_uri" {
 }
 
 output "redis_connection_secret_name" {
-    value = var.deployment_options.deploy_redis ? module.redis_cache[0].redis_kv_secret_name : null
+    value = module.redis_cache.redis_kv_secret_name
 }
 
 output "redis_connection_string" {
-    value = var.deployment_options.deploy_redis ? module.redis_cache[0].redis_connection_string : null
+    value = module.redis_cache.redis_connection_string
 }
 
 output "key_vault_name" {

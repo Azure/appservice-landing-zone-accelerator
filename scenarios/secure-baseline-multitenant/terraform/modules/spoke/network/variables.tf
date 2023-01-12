@@ -1,8 +1,6 @@
-
 variable "application_name" {
   type        = string
   description = "The name of your application"
-  default     = "app-svc-lz-4254"
 }
 
 variable "resource_group" {
@@ -20,4 +18,35 @@ variable "location" {
   type        = string
   description = "The Azure region where all resources in this example should be created"
   default     = "westeurope"
+}
+
+variable "vnet_cidr" {
+  type        = list(string)
+  description = "The CIDR block for the virtual network."
+}
+
+variable "appsvc_int_subnet_cidr" {
+  type        = list(string)
+  description = "The CIDR block for the subnet."
+}
+
+variable "front_door_subnet_cidr" {
+  type        = list(string)
+  description = "The CIDR block for the subnet."
+}
+
+variable "devops_subnet_cidr" {
+  type        = list(string)
+  description = "The CIDR block for the subnet."
+}
+
+variable "private_link_subnet_cidr" {
+  type        = list(string)
+  description = "The CIDR block for the subnet."
+}
+
+variable "firewall_private_ip" {
+  type        = string
+  description = "The private IP address of the Azure Firewall"
+  default     = null
 }

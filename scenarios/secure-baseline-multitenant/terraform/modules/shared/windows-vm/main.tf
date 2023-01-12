@@ -1,20 +1,5 @@
-terraform {
-  required_providers {
-    azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
-    }
-  }
-}
-
-resource "azurecaf_name" "vm" {
-  name          = var.vm_name
-  resource_type = "azurerm_windows_virtual_machine"
-  suffixes      = [var.unique_id]
-}
-
 locals {
-  vm_name = azurecaf_name.vm.result
+  vm_name = "${var.vm_name}-${var.unique_id}"
 }
 
 resource "azurerm_network_interface" "vm_nic" {

@@ -46,7 +46,6 @@ resource "azurerm_mssql_database" "sample_db" {
 resource "azurecaf_name" "sql_server_pe" {
   name          = azurerm_mssql_server.sql_server.name
   resource_type = "azurerm_private_endpoint"
-  suffixes      = [var.environment] #NOTE: globally unique
 }
 
 # Create a private endpoint for the SQL Server

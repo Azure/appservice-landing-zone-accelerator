@@ -17,84 +17,37 @@ resource "azurecaf_name" "frontdoor" {
   suffixes      = [var.environment]
 }
 
-data "azurerm_resource_group" "spoke-rg" {
-  name = var.resource_group
-
-}
-
-locals {
-  front_door_endpoint_name     = "afd-ep-${var.application_name}-${var.environment}"
-  front_door_origin_group_name = "afd-og-${var.application_name}-${var.environment}"
-  front_door_origin_name       = "afd-app-svc-${var.application_name}-${var.environment}"
-  front_door_route_name        = "afd-route-${var.application_name}-${var.environment}"
-}
-
 resource "azurerm_cdn_frontdoor_profile" "frontdoor" {
   name                = azurecaf_name.frontdoor.result
   resource_group_name = var.resource_group
   sku_name            = var.azure_frontdoor_sku
 }
 
-resource "azurerm_cdn_frontdoor_endpoint" "web_app" {
-  name                     = local.front_door_endpoint_name
-  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
-}
-
-resource "azurerm_cdn_frontdoor_origin_group" "web_app" {
-  name                     = local.front_door_origin_group_name
-  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
-  session_affinity_enabled = false
-
-  load_balancing {
-    additional_latency_in_milliseconds = 0
-    sample_size                        = 16
-    successful_samples_required        = 3
-  }
-
-  health_probe {
-    path                = "/"
-    request_type        = "HEAD"
-    protocol            = "Https"
-    interval_in_seconds = 100
+locals {
+  endpoint_uris = {
+    for endpoint in module.endpoint :
+    endpoint.cdn_frontdoor_endpoint_uri => endpoint.cdn_frontdoor_endpoint_uri
   }
 }
 
-resource "azurerm_cdn_frontdoor_origin" "web_app" {
-  name                          = local.front_door_origin_name
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.web_app.id
+module "endpoint" {
+  count = length(var.endpoint_settings)
 
-  enabled                        = true
-  host_name                      = var.web_app_hostname
-  http_port                      = 80
-  https_port                     = 443
-  origin_host_header             = var.web_app_hostname
-  priority                       = 1
-  weight                         = 1000
-  certificate_name_check_enabled = true
+  source = "./endpoint"
 
-  private_link {
-    request_message        = "Request access for CDN Frontdoor Private Link Origin to Web App"
-    target_type            = "sites"
-    location               = data.azurerm_resource_group.spoke-rg.location
-    private_link_target_id = var.web_app_id
-  }
-}
+  frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
+  location             = var.location
 
-resource "azurerm_cdn_frontdoor_route" "web_app" {
-  name                          = local.front_door_route_name
-  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.web_app.id
-  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.web_app.id
-  cdn_frontdoor_origin_ids      = [azurerm_cdn_frontdoor_origin.web_app.id]
-
-  supported_protocols    = ["Http", "Https"]
-  patterns_to_match      = ["/*"]
-  forwarding_protocol    = "HttpsOnly"
-  link_to_default_domain = true
-  https_redirect_enabled = true
+  endpoint_name            = "${var.endpoint_settings[count.index].endpoint_name}-${var.unique_id}"
+  web_app_hostname         = var.endpoint_settings[count.index].web_app_hostname
+  web_app_id               = var.endpoint_settings[count.index].web_app_id
+  private_link_target_type = var.endpoint_settings[count.index].private_link_target_type
 }
 
 resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
-  name                = "WafMicrosoftDefaultRuleSet21"
+  count = var.enable_waf ? 1 : 0
+
+  name                = "wafpolicymicrosoftdefaultruleset21"
   resource_group_name = var.resource_group
   sku_name            = azurerm_cdn_frontdoor_profile.frontdoor.sku_name
   mode                = "Prevention"
@@ -107,19 +60,29 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "waf" {
   }
 }
 
-resource "azurerm_cdn_frontdoor_security_policy" "web-app-waf" {
+resource "azurerm_cdn_frontdoor_security_policy" "web_app_waf" {
+  count = var.enable_waf ? 1 : 0
+
   name                     = "WAF-Security-Policy"
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.frontdoor.id
 
   security_policies {
     firewall {
-      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.waf.id
+      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.waf[0].id
 
       association {
         patterns_to_match = ["/*"]
-        domain {
-          
-          cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.web_app.id
+
+        # domain {
+        #   cdn_frontdoor_domain_id = module.endpoint.cdn_frontdoor_endpoint_id
+        # }
+
+        dynamic "domain" {
+          for_each = module.endpoint
+
+          content {
+            cdn_frontdoor_domain_id = module.endpoint[domain.key].cdn_frontdoor_endpoint_id
+          }
         }
       }
     }

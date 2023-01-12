@@ -28,8 +28,8 @@ An Azure AD group is required for the SQL Admins. The group must be created befo
 
 ```bash
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-sql_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-sql_admin_group_name      = "Azure AD SQL Admins"
+aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+aad_admin_group_name      = "Azure AD SQL Admins"
 ```
 
 ### Deploy the App Service Landing Zone Bicep code

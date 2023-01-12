@@ -57,6 +57,7 @@ module "spoke" {
   vm_admin_username         = var.vm_admin_username
   vm_admin_password         = var.vm_admin_password
   vm_aad_admin_username     = var.vm_aad_admin_username
+  webapp_slot_name          = var.webapp_slot_name
   vnet_cidr                 = local.spoke_vnet_cidr
   firewall_private_ip       = module.hub.firewall_private_ip
   firewall_rules            = module.hub.firewall_rules

@@ -83,7 +83,6 @@ module "spoke_network" {
   front_door_subnet_cidr   = var.front_door_subnet_cidr
   devops_subnet_cidr       = var.devops_subnet_cidr
   private_link_subnet_cidr = var.private_link_subnet_cidr
-  deployment_options       = var.deployment_options
 }
 
 module "app_service" {
@@ -91,7 +90,6 @@ module "app_service" {
 
   resource_group       = azurerm_resource_group.spoke.name
   application_name     = var.application_name
-  webapp_slot_name     = var.webapp_slot_name
   environment          = var.environment
   location             = var.location
   unique_id            = random_integer.unique_id.result
@@ -101,6 +99,7 @@ module "app_service" {
   ai_connection_string = module.app_insights.connection_string
   appsvc_subnet_id     = module.spoke_network.appsvc_subnet_id
   frontend_subnet_id   = module.spoke_network.frontend_subnet_id
+  webapp_slot_name     = var.webapp_slot_name
 
   private_dns_zone = {
     name = module.spoke_network.azurewebsites_private_dns_zone_name
@@ -112,13 +111,14 @@ module "devops_vm" {
   source = "../shared/windows-vm"
 
   resource_group     = azurerm_resource_group.spoke.name
-  vm_name            = "devops"
+  vm_name            = "devops-vm"
   location           = var.location
   vm_subnet_id       = module.spoke_network.devops_subnet_id
   unique_id          = random_integer.unique_id.result
   admin_username     = local.vm_admin_username
   admin_password     = local.vm_admin_password
   aad_admin_username = var.vm_aad_admin_username
+  
   enroll_with_mdm    = true
   install_extensions = true
   firewall_rules     = var.firewall_rules
@@ -131,7 +131,7 @@ module "front_door" {
   application_name = var.application_name
   environment      = var.environment
   location         = var.location
-  enable_waf       = var.deployment_options.enable_waf
+  enable_waf       = var.enable_waf
 
   endpoint_settings = [
     {
@@ -149,7 +149,7 @@ module "front_door" {
     #   private_link_target_type = "sites-${var.webapp_slot_name}"
     # }
   ]
-  unique_id = random_integer.unique_id.result
+    unique_id          = random_integer.unique_id.result
 
 }
 
@@ -214,10 +214,7 @@ module "app_insights" {
 }
 
 module "redis_cache" {
-  count = var.deployment_options.deploy_redis ? 1 : 0
-
-  source = "./redis-cache"
-
+  source                    = "./redis-cache"
   resource_group            = azurerm_resource_group.spoke.name
   application_name          = var.application_name
   environment               = var.environment
