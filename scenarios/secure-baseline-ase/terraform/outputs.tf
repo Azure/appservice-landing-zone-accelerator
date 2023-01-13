@@ -34,18 +34,22 @@ output "hubVNetName" {
   description = "Name of the provisioned Hub virtual network."
   value       = azurerm_virtual_network.vnetHub.name
 }
+
 output "spokeVNetName" {
   description = "Name of the provisioned Spoke virtual network."
   value       = azurerm_virtual_network.vnetSpoke.name
 }
+
 output "hubVNetId" {
   description = "ID of the provisioned Hub virtual network."
   value       = azurerm_virtual_network.vnetHub.id
 }
+
 output "spokeVNetId" {
   description = "ID of the provisioned Spoke virtual network."
   value       = azurerm_virtual_network.vnetSpoke.id
 }
+
 output "hubSubnets" {
   description = "Hub virtual network subnet name-to-id mapping."
   value       = local.hubSubnets
