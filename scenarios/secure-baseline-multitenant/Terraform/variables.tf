@@ -96,20 +96,24 @@ variable "vm_aad_admin_username" {
   description = "The Azure AD username for the VM admin account."
 }
 
-variable "enable_waf" {
-  type        = bool
-  description = "Enable WAF in Azure Front Door"
-  default     = true
-}
-
-variable "enable_egress_lockdown" {
-  type        = bool
-  description = "Deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall"
-  default     = true
-}
-
 variable "webapp_slot_name" {
   type        = string
   description = "The name of the app service slot"
-  default     = "slot"
+  default     = "deployment"
+}
+
+variable "deployment_options" {
+  type = object({
+    enable_waf             = bool
+    enable_egress_lockdown = bool
+    deploy_redis           = bool
+  })
+
+  description = "Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache."
+
+  default = {
+    enable_waf             = true
+    enable_egress_lockdown = true
+    deploy_redis           = true
+  }
 }

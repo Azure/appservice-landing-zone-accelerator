@@ -35,8 +35,7 @@ output "cmd_swap_slots" {
   value = "az webapp deployment slot swap -n ${module.spoke.web_app_name} -g ${module.spoke.rg_name} --slot ${var.webapp_slot_name} --target-slot production"
 }
 
-
 output "cmd_redis_connection_kvsecret" {
-  value = "az keyvault secret set --vault-name ${module.spoke.key_vault_name} --name ${module.spoke.redis_connection_secret_name} --value ${module.spoke.redis_connection_string}"
+  value = var.deployment_options.deploy_redis ? "az keyvault secret set --vault-name ${module.spoke.key_vault_name} --name ${module.spoke.redis_connection_secret_name} --value ${module.spoke.redis_connection_string}" : null
   sensitive = true
 }

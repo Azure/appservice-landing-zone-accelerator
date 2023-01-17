@@ -121,6 +121,11 @@ resource "azurerm_firewall_application_rule_collection" "core" {
       "raw.githubusercontent.com",
       "dev.azure.com",
       "portal.azure.com",
+      "*.portal.azure.com",
+      "*.portal.azure.net",
+      "appservice.azureedge.net",
+      "*.azurewebsites.net",
+      "edge.management.azure.com",
     ]
 
     protocol {
@@ -142,6 +147,7 @@ resource "azurerm_firewall_application_rule_collection" "core" {
       "www.microsoft.com",
       "*.digicert.com",
       "*.symantec.com",
+      "*.symcb.com",
       "*.d-trust.net",
     ]
 

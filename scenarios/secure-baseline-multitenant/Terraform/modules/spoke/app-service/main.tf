@@ -144,6 +144,10 @@ resource "azurerm_private_endpoint" "slot" {
     subresource_names              = ["sites-${var.webapp_slot_name}"]
     is_manual_connection           = false
   }
+
+  depends_on = [
+    azurerm_windows_web_app_slot.slot
+  ]
 }
 
 resource "azurerm_private_dns_a_record" "slot" {
