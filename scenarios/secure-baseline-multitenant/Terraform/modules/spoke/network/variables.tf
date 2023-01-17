@@ -50,3 +50,13 @@ variable "firewall_private_ip" {
   description = "The private IP address of the Azure Firewall"
   default     = null
 }
+
+variable "deployment_options" {
+  type = object({
+    enable_waf             = bool
+    enable_egress_lockdown = bool
+    deploy_redis           = bool
+  })
+
+  description = "Opt-in settings for the deployment"
+}

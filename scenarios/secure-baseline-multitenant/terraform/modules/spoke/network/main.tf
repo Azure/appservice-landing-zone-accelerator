@@ -160,6 +160,8 @@ resource "azurerm_route_table" "route_table" {
 }
 
 resource "azurerm_route" "default_route" {
+  count = var.deployment_options.enable_egress_lockdown ? 1 : 0
+
   name                   = "defaultRoute"
   resource_group_name    = var.resource_group
   route_table_name       = azurerm_route_table.route_table.name
