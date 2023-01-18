@@ -41,6 +41,7 @@ jobs:
         working-directory: ${{ env.modulePath }}
 
   build-and-deploy:
+    timeout-minutes: 360
     name: "Deploy Bicep templates"
     needs: validate_bicep
     runs-on: ubuntu-latest
