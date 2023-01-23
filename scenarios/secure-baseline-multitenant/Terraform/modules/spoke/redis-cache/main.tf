@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -53,10 +53,10 @@ resource "azurerm_private_endpoint" "redis_cache_private_endpoint" {
   }
 }
 
-resource "azurerm_private_dns_a_record" "redis_cache_private_dns" {
-  name                = lower(azurerm_redis_cache.redis_cache.name)
-  zone_name           = var.private_dns_zone_name
-  resource_group_name = var.resource_group
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.redis_cache_private_endpoint.private_service_connection[0].private_ip_address]
-}
+# resource "azurerm_private_dns_a_record" "redis_cache_private_dns" {
+#   name                = lower(azurerm_redis_cache.redis_cache.name)
+#   zone_name           = var.private_dns_zone_name
+#   resource_group_name = var.resource_group
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.redis_cache_private_endpoint.private_service_connection[0].private_ip_address]
+# }

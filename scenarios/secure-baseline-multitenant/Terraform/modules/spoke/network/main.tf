@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -28,7 +28,7 @@ resource "azurecaf_name" "appsvc_integration_subnet" {
 
 # https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration
 resource "azurerm_subnet" "appsvc_integration_subnet" {
-  address_prefixes     = var.appsvc_int_subnet_cidr
+  address_prefixes     = var.appsvc_subnet_cidr
   name                 = azurecaf_name.appsvc_integration_subnet.result
   resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.spoke_vnet.name

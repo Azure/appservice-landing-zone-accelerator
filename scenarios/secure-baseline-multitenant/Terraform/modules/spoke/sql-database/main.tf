@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -53,7 +53,7 @@ resource "azurerm_private_endpoint" "sql_server_pe" {
   name                = azurecaf_name.sql_server_pe.result
   location            = var.location
   resource_group_name = var.resource_group
-  subnet_id           = var.private-link-subnet-id
+  subnet_id           = var.private_link_subnet_id
 
   private_service_connection {
     name                           = "sql-private-endpoint"
@@ -63,11 +63,11 @@ resource "azurerm_private_endpoint" "sql_server_pe" {
   }
 }
 
-# Create a private DNS A Record for the SQL Server
-resource "azurerm_private_dns_a_record" "sql_private_dns" {
-  name                = lower(azurerm_mssql_server.sql_server.name)
-  zone_name           = var.private_dns_zone_name
-  resource_group_name = var.resource_group
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.sql_server_pe.private_service_connection[0].private_ip_address]
-}
+# # Create a private DNS A Record for the SQL Server
+# resource "azurerm_private_dns_a_record" "sql_private_dns" {
+#   name                = lower(azurerm_mssql_server.sql_server.name)
+#   zone_name           = var.private_dns_zone_name
+#   resource_group_name = var.resource_group
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.sql_server_pe.private_service_connection[0].private_ip_address]
+# }

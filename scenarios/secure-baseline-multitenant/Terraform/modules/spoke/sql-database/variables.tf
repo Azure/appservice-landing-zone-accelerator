@@ -42,7 +42,7 @@ variable "sql_db_name" {
   type    = string
 }
 
-variable "private-link-subnet-id" {
+variable "private_link_subnet_id" {
   type        = string
   description = "The subnet id where the SQL database will be integrated"
 }

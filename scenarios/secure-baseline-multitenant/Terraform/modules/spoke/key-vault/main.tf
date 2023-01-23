@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -87,10 +87,10 @@ resource "azurerm_private_endpoint" "key_vault_pe" {
   }
 }
 
-resource "azurerm_private_dns_a_record" "key_vault-private_dns" {
-  name                = lower(azurerm_key_vault.key_vault.name)
-  zone_name           = var.private_dns_zone_name
-  resource_group_name = var.resource_group
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.key_vault_pe.private_service_connection[0].private_ip_address]
-}
+# resource "azurerm_private_dns_a_record" "key_vault-private_dns" {
+#   name                = lower(azurerm_key_vault.key_vault.name)
+#   zone_name           = var.private_dns_zone_name
+#   resource_group_name = var.resource_group
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.key_vault_pe.private_service_connection[0].private_ip_address]
+# }

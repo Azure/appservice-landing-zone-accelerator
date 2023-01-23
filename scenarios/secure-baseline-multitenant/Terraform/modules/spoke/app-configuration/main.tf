@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -92,11 +92,11 @@ resource "azurerm_role_assignment" "web-app-slot-data-reader" {
   principal_id         = var.web_app_slot_principal_id
 }
 
-# Create a private DNS A Record for the SQL Server
-resource "azurerm_private_dns_a_record" "appcg-private-dns" {
-  name                = lower(azurerm_app_configuration.app_config.name)
-  zone_name           = var.private_dns_zone_name
-  resource_group_name = var.resource_group
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.appcg_private_endpoint.private_service_connection[0].private_ip_address]
-}
+# # Create a private DNS A Record for the SQL Server
+# resource "azurerm_private_dns_a_record" "appcg-private-dns" {
+#   name                = lower(azurerm_app_configuration.app_config.name)
+#   zone_name           = var.private_dns_zone_name
+#   resource_group_name = var.resource_group
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.appcg_private_endpoint.private_service_connection[0].private_ip_address]
+# }

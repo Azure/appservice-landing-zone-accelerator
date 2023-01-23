@@ -55,7 +55,7 @@ variable "spoke_vnet_cidr" {
   default     = null
 }
 
-variable "appsvc_int_subnet_cidr" {
+variable "appsvc_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
   default     = null
