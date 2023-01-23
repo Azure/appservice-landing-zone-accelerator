@@ -25,7 +25,7 @@ variable "vnet_cidr" {
   description = "The CIDR block for the virtual network."
 }
 
-variable "appsvc_int_subnet_cidr" {
+variable "appsvc_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
 }

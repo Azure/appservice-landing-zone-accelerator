@@ -1,9 +1,9 @@
 output "vnet_id" {
-  value = module.spoke_network.vnet_id
+  value = module.network.vnet_id
 }
 
 output "vnet_name" {
-  value = module.spoke_network.vnet_name
+  value = module.network.vnet_name
 }
 
 output "rg_name" {
@@ -24,6 +24,10 @@ output "web_app_name" {
 
 output "web_app_slot_name" {
   value = module.app_service.web_app_slot_name
+}
+
+output "web_app_private_endpoints" {
+  value = module.app_service.private_endpoints
 }
 
 output "key_vault_uri" {

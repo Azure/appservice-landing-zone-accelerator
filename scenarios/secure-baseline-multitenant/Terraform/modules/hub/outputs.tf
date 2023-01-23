@@ -3,11 +3,11 @@ output "rg_name" {
 }
 
 output "vnet_name" {
-  value = azurerm_virtual_network.hub_vnet.name
+  value = module.network.vnet_name
 }
 
 output "vnet_id" {
-  value = azurerm_virtual_network.hub_vnet.id
+  value = module.network.vnet_id
 }
 
 output "bastion_name" {

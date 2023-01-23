@@ -2,11 +2,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">=3.34.0"
+      version = ">=3.39.1"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -22,7 +22,7 @@ locals {
   firewall_subnet_cidr     = var.firewall_subnet_cidr == null ? "10.242.0.0/26" : var.firewall_subnet_cidr
   bastion_subnet_cidr      = var.bastion_subnet_cidr == null ? "10.242.0.64/26" : var.bastion_subnet_cidr
   spoke_vnet_cidr          = var.spoke_vnet_cidr == null ? ["10.240.0.0/20"] : var.spoke_vnet_cidr
-  appsvc_int_subnet_cidr   = var.appsvc_int_subnet_cidr == null ? ["10.240.0.0/26"] : var.appsvc_int_subnet_cidr
+  appsvc_subnet_cidr       = var.appsvc_subnet_cidr == null ? ["10.240.0.0/26"] : var.appsvc_subnet_cidr
   front_door_subnet_cidr   = var.front_door_subnet_cidr == null ? ["10.240.0.64/26"] : var.front_door_subnet_cidr
   devops_subnet_cidr       = var.devops_subnet_cidr == null ? ["10.240.10.128/26"] : var.devops_subnet_cidr
   private_link_subnet_cidr = var.private_link_subnet_cidr == null ? ["10.240.11.0/24"] : var.private_link_subnet_cidr
@@ -60,11 +60,57 @@ module "spoke" {
   vnet_cidr                 = local.spoke_vnet_cidr
   firewall_private_ip       = module.hub.firewall_private_ip
   firewall_rules            = module.hub.firewall_rules
-  appsvc_int_subnet_cidr    = local.appsvc_int_subnet_cidr
+  appsvc_subnet_cidr        = local.appsvc_subnet_cidr
   front_door_subnet_cidr    = local.front_door_subnet_cidr
   devops_subnet_cidr        = local.devops_subnet_cidr
   private_link_subnet_cidr  = local.private_link_subnet_cidr
   deployment_options        = var.deployment_options
+  private_dns_zones         = module.private_dns_zones.dns_zones
+}
+
+module "private_dns_zones" {
+  source = "./modules/shared/private-dns-zone"
+
+  resource_group = module.hub.rg_name
+
+  dns_zones = [
+    "privatelink.azurewebsites.net",
+    "privatelink.database.windows.net",
+    "privatelink.azconfig.io",
+    "privatelink.vaultcore.azure.net",
+    "privatelink.redis.cache.windows.net"
+  ]
+
+  vnet_links = [
+    {
+      vnet_id             = module.hub.vnet_id
+      vnet_resource_group = module.hub.rg_name
+    },
+    {
+      vnet_id             = module.spoke.vnet_id
+      vnet_resource_group = module.spoke.rg_name
+    }
+  ]
+}
+
+module "private_dns_records" {
+  count = length(module.spoke.web_app_private_endpoints)
+
+  source = "./modules/shared/private-dns-record"
+
+  resource_group = module.hub.rg_name
+
+  dns_records = [
+    {
+      zone_name          = "privatelink.azurewebsites.net"
+      dns_name           = module.spoke.web_app_private_endpoints[count.index].name
+      private_ip_address = module.spoke.web_app_private_endpoints[count.index].ip_address
+    }
+  ]
+
+  depends_on = [
+    module.private_dns_zones
+  ]
 }
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {

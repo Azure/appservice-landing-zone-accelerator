@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -114,10 +114,10 @@ resource "azurerm_private_endpoint" "webapp" {
   location            = var.location
   subnet_id           = var.frontend_subnet_id
 
-  private_dns_zone_group {
-    name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [var.private_dns_zone.id]
-  }
+  # private_dns_zone_group {
+  #   name                 = "private-dns-zone-group"
+  #   private_dns_zone_ids = [var.private_dns_zone.id]
+  # }
 
   private_service_connection {
     name                           = "webapp-private-connection"
@@ -140,7 +140,7 @@ resource "azurerm_private_endpoint" "slot" {
 
   private_service_connection {
     name                           = "webapp-slot-private-connection"
-    private_connection_resource_id = azurerm_windows_web_app.this.id  # Note: needs to be the resource id of the app, not the id of the slot
+    private_connection_resource_id = azurerm_windows_web_app.this.id # Note: needs to be the resource id of the app, not the id of the slot
     subresource_names              = ["sites-${var.webapp_slot_name}"]
     is_manual_connection           = false
   }
@@ -150,11 +150,34 @@ resource "azurerm_private_endpoint" "slot" {
   ]
 }
 
-resource "azurerm_private_dns_a_record" "slot" {
-  name                = lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}")
-  zone_name           = var.private_dns_zone.name
-  
-  resource_group_name = var.resource_group
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.slot.private_service_connection[0].private_ip_address]
-}
+# locals {
+#   private_endpoints = tolist(
+#     [
+#       {
+#         name       = lower("${azurerm_windows_web_app.this.name}")
+#         ip_address = azurerm_private_endpoint.webapp.private_service_connection[0].private_ip_address
+#       },
+#       {
+#           name = lower("${azurerm_windows_web_app.this.name}.scm")
+#           ip_address = azurerm_private_endpoint.webapp.private_service_connection[0].private_ip_address
+#       },
+#       # {
+#       #     "name" = lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}")
+#       #     "ip_address" = azurerm_private_endpoint.slot.private_service_connection[0].private_ip_address
+#       # },
+#       # {
+#       #     "name" = lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}.scm")
+#       #     "ip_address" = azurerm_private_endpoint.slot.private_service_connection[0].private_ip_address
+#       # },
+#     ]
+#   )
+# }
+
+# resource "azurerm_private_dns_a_record" "slot" {
+#   name                = lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}")
+#   zone_name           = var.private_dns_zone.name
+
+#   resource_group_name = var.resource_group
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.slot.private_service_connection[0].private_ip_address]
+# }

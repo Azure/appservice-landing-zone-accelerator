@@ -35,7 +35,7 @@ variable "vnet_cidr" {
   description = "The CIDR block for the virtual network."
 }
 
-variable "appsvc_int_subnet_cidr" {
+variable "appsvc_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
 }
@@ -83,6 +83,11 @@ variable "firewall_rules" {
 variable "webapp_slot_name" {
   type        = string
   description = "The name of the app service slot"
+}
+
+variable "private_dns_zones" {
+  type        = list(any)
+  description = "The list of private DNS zones deployed in the hub. This is a dependency for deploying the VM."
 }
 
 variable "deployment_options" {

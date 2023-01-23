@@ -9,7 +9,7 @@ variable "location" {
   default     = "westeurope"
 }
 
-variable "hub_vnet_id" {
+variable "subnet_id" {
   type        = string
-  description = "The ID of the hub virtual network."
+  description = "The ID of the subnet where the bastion host should be deployed."
 }
