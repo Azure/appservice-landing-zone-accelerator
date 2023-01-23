@@ -159,6 +159,7 @@ module redis 'redis.bicep' = if(createRedisResource) {
   name: 'redis-Deployment'
   params: {
     location: location
+    previousDeploymentLocation: networking.outputs.deployedRegion
     vnetId: networking.outputs.spokeVNetId
     redisPrivateEndpointSubnetId: networking.outputs.redisPrivateEndpointSubnetId
     naming: naming.outputs.names

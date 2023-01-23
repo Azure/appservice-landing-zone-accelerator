@@ -37,4 +37,5 @@
 - Your subnet should be sized with a /24 CIDR range, providing 256 addresses. 
 
 ### Azure Cache for Redis Enterprise
-- For security and isolation reasons the bicep files will deploy Azure Cache for Redis Enterprise inside its own subnet. Depending on the level of security needed and the topology of your network, you can us as-is or deploy to  an already established subnet that you have.
+
+- For security and isolation reasons the bicep files will deploy Azure Cache for Redis Enterprise inside its own subnet using a private endpoint. Depending on the level of security needed and the topology of your network, you can us as-is or deploy to  an already established subnet that you have.

@@ -4,7 +4,6 @@
 
 
 1. Active Azure subscription
-    - A credit card associated with your subscription is required if deploying Azure Cache for Redis Enterprise
 2. Active GitHub repository
 3. (Optional) Azure DevOps or GitHub account name
 

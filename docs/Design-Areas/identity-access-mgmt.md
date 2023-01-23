@@ -16,3 +16,4 @@
 - Ensure that users with access to Production resources in Azure are controlled and limited.
 - For automated deployment purposes, setup a [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals) that has the minimum required permissions to deploy from the pipeline
 - Review and follow the recommendations outlined in the [Identity and Access Control section](https://docs.microsoft.com/en-us/security/benchmark/azure/baselines/app-service-security-baseline?toc=/azure/app-service/toc.json#identity-and-access-control) of the Azure security baseline for App Service.
+- Review document on how to [connect](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-dotnet-how-to-use-azure-redis-cache) your application with Azure Cache for Redis
