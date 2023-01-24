@@ -24,9 +24,11 @@ Clone this repo, install Azure CLI, install Bicep.
 
 
 
-### Steps to deploy:
 
-the app service in the params should be same as the resource group name, pass the rg name below:
+
+### Deploy the App Service Landing Zone Bicep code
+
+The app service in the params should be same as the resource group name, pass the rg name below:
 MyResourceGroup=RgNameShouldBeSameAsAppServiceName
 
 # Enter parameters value in azuredeploy.bicep
@@ -41,14 +43,6 @@ az deployment group create \
    
    
 
-
-
-### Deploy the App Service Landing Zone Bicep code
-
-```bash
-TBD!
-
-```
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
 
 This is a manual step that is required to complete the private endpoint connection.
