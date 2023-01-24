@@ -1,15 +1,15 @@
-param cmLocation1 string = 'West Europe'
-param cmLocation2 string = cmLocation1
-param AppServiceName string
+
+param cmLocation2 string = 'West Europe'
+param AppServiceName string ='Same Name As RG'
 
 @secure()
-param AzureSqlLoginPassword string
-param HubVNetName string
-param SpokeVnetName string
-param SqlServerAdminAccountName string
+param AzureSqlLoginPassword string='Password'
+param HubVNetName string ='HubVnet'
+param SpokeVnetName string ='SpokeVnet'
+param SqlServerAdminAccountName string='User'
 
 @secure()
-param VmAdminPassword string
+param VmAdminPassword string='Password'
 
 var appConfiguration1_var = '${AppServiceName}-appcs'
 var applicationInsights1_var = '${AppServiceName}-appi'
@@ -202,9 +202,6 @@ resource AppServiceName_resource 'Microsoft.Web/sites@2020-12-01' = {
           value: reference(resourceId(resourceGroup1, 'Microsoft.Insights/components', applicationInsights1_var), '2015-05-01', 'Full').properties.InstrumentationKey
         }
       ]
-      connectionStrings: []
-      defaultDocuments: []
-      handlerMappings: []
       httpLoggingEnabled: false
       ipSecurityRestrictions: []
       minTlsVersion: '1.2'
@@ -982,7 +979,7 @@ resource cDNProfileFrontDoor1_cDNProfileFrontDoorOriginGroup1_cDNProfileFrontDoo
       privateLink: {
         id: resourceId(resourceGroup1, 'Microsoft.Web/sites', AppServiceName)
       }
-      privateLinkLocation: cmLocation1
+      privateLinkLocation: cmLocation2
       requestMessage: 'Approve request for App Service ADF PE'
     }
   }

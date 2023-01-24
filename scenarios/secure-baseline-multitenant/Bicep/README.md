@@ -22,15 +22,26 @@ Clone this repo, install Azure CLI, install Bicep.
 
 [Install Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 
-### Create parameters.json file
 
-An Azure AD group is required for the SQL Admins. The group must be created before running the Bicep code. This is the minimum required information for the Bicep parameters file that needs to be created in this folder:
 
-```bash
-tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_name      = "Azure AD SQL Admins"
-```
+### Steps to deploy 
+
+the app service in the params should be same as the resource group name, pass the rg name below:
+MyResourceGroup=RgNameShouldBeSameAsAppServiceName
+
+# Enter parameters value in azuredeploy.bicep
+
+
+az group create --name $MyResourceGroup-rg --location "West Europe"
+
+az deployment group create \
+  --name $MyResourceGroup-deployment \
+  --resource-group $MyResourceGroup-rg \
+   --template-file azuredeploy.bicep
+   
+   
+
+
 
 ### Deploy the App Service Landing Zone Bicep code
 
