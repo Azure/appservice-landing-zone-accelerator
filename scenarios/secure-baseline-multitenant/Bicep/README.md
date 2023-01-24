@@ -24,7 +24,7 @@ Clone this repo, install Azure CLI, install Bicep.
 
 
 
-### Steps to deploy 
+### Steps to deploy:
 
 the app service in the params should be same as the resource group name, pass the rg name below:
 MyResourceGroup=RgNameShouldBeSameAsAppServiceName
