@@ -70,7 +70,7 @@ For different environments collect telemetry data into different Application Ins
 
 ## Deploy this scenario
 
-A deployment for the reference architecture that implements these recommendations and considerations is available on [GitHub](https://github.com/Azure/appservice-landing-zone-accelerator/tree/main/reference-implementations/LOB-ILB-ASEv3).
+A deployment for the reference architecture that implements these recommendations and considerations is available on [GitHub](https://github.com/Azure/appservice-landing-zone-accelerator/tree/main/scenarios/secure-baseline-ase).
 
 
 

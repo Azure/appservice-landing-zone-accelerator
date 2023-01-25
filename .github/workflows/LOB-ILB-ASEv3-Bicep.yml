@@ -7,13 +7,13 @@ on:
     branches:
       - main
     paths:
-      - "reference-implementations/LOB-ILB-ASEv3/bicep/**"
+      - "scenarios/secure-baseline-ase/bicep/**"
 
   pull_request:
     branches:
       - main
     paths:
-      - "reference-implementations/LOB-ILB-ASEv3/bicep/**"
+      - "scenarios/secure-baseline-ase/bicep/**"
 
 jobs:
   validate_bicep:
