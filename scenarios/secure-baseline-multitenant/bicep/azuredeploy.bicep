@@ -1148,3 +1148,20 @@ resource networkPrivateDnsZone6_networkPrivateDnsZoneVirtualNetworkLink12 'Micro
     networkPrivateDnsZone6
   ]
 }
+
+//  Telemetry Deployment
+@description('Enable usage and telemetry feedback to Microsoft.')
+param enableTelemetry bool = true
+var telemetryId = 'cf7e9f0a-f872-49db-b72f-f2e318189a6d-${cmLocation2}-msb'
+resource telemetrydeployment 'Microsoft.Resources/deployments@2021-04-01' = if (enableTelemetry) {
+  name: telemetryId
+  location: cmLocation2
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#'
+      contentVersion: '1.0.0.0'
+      resources: {}
+    }
+  }
+}
