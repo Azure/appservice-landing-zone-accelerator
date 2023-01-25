@@ -14,9 +14,9 @@ This reference architecture shows how to run a web-app workload for line of busi
 Deployment Details:
 | Deployment Methodology | GitHub Actions
 |--------------|--------------|
-|[Bicep](/reference-implementations/LOB-ILB-ASEv3/bicep/README.md)|[LOB-ILB-ASEv3-Bicep.yml](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
-|[ARM](/reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/README.md)| Not provided* |
-|[Terraform](/reference-implementations/LOB-ILB-ASEv3/terraform/README.md)|Coming Soon|
+|[Bicep](/scenarios/secure-baseline-ase/bicep/README.md)|[LOB-ILB-ASEv3-Bicep.yml](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
+|[ARM](/scenarios/secure-baseline-ase/azure-resource-manager/README.md)| Not provided* |
+|[Terraform](/scenarios/secure-baseline-ase/terraform/README.md)|Coming Soon|
 
 ## Cost estimation:
 
