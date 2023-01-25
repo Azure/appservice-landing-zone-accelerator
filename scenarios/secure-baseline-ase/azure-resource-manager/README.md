@@ -25,7 +25,7 @@ Initially we had prepared automated way, so for the GitHub Actions you can use t
 
       # Exporting ARM template from the bicep file
       - name: Export ARM template
-        working-directory: ./reference-implementations/LOB-ILB-ASEv3/bicep
+        working-directory: ./scenarios/secure-baseline-ase/bicep
         run : |
           az bicep build --file main.bicep --outfile ../azure-resource-manager/ase-arm.json
       # Uploading exported ARM template to GitHub's artifact 
@@ -33,7 +33,7 @@ Initially we had prepared automated way, so for the GitHub Actions you can use t
         uses: actions/upload-artifact@v2
         with:
           name: ase-arm
-          path: /reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/ase-arm.json
+          path: /scenarios/secure-baseline-ase/azure-resource-manager/ase-arm.json
           retention-days: 2
 
       # Committing and pushing exported ARM template to the same repo.
@@ -43,7 +43,7 @@ Initially we had prepared automated way, so for the GitHub Actions you can use t
           author_name: APIM-Action
           author_email: <enter your email in here>
           message: 'ARM template updated'
-          cwd: '/reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/'
+          cwd: '/scenarios/secure-baseline-ase/azure-resource-manager/'
           branch_mode: create
           branch: 'arm-${{github.run_number}}'
           add: 'ase-arm.json' 

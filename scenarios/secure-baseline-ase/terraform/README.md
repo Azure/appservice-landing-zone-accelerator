@@ -181,6 +181,7 @@ As you configured the backend remote state with your live Azure infrastructure r
 | <a name="input_jumpBoxAddressPrefix"></a> [jumpBoxAddressPrefix](#input\_jumpBoxAddressPrefix) | CIDR prefix to use for Jumpbox VNet | `string` | `"10.0.3.0/24"` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure location where all resources should be created | `string` | `"westus2"` | no |
 | <a name="input_numberOfWorkers"></a> [numberOfWorkers](#input\_numberOfWorkers) | numberOfWorkers for ASE | `number` | `3` | no |
+| <a name="input_partner_id"></a> [partner\_id](#input\_partner\_id) | The partner id for the subscription | `string` | `null` | no |
 | <a name="input_spokeVNetNameAddressPrefix"></a> [spokeVNetNameAddressPrefix](#input\_spokeVNetNameAddressPrefix) | CIDR prefix to use for Spoke VNet | `string` | `"10.1.0.0/16"` | no |
 | <a name="input_vmadminPassword"></a> [vmadminPassword](#input\_vmadminPassword) | admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault | `string` | `null` | no |
 | <a name="input_vmadminUserName"></a> [vmadminUserName](#input\_vmadminUserName) | admin username for the virtual machine (devops agent, jumpbox) | `string` | `"vmadmin"` | no |

@@ -71,19 +71,19 @@ resource "random_password" "password" {
 #Devops agent
 module "devopsvm" {
   source             = "../winvm"
-  vmname             = "devopsvm"
+  vmname             = "asedevopsvm"
   location           = var.location
   resourceGroupName  = var.resourceGroupName
   adminUserName      = var.adminUsername
   adminPassword      = var.adminPassword == null ? random_password.password.0.result : var.adminPassword
   cidr               = var.devOpsVMSubnetId
-  installDevOpsAgent = true
+  installDevOpsAgent = false
 }
 
 #jumpbox
 module "jumpboxvm" {
   source             = "../winvm"
-  vmname             = "jumpboxvm"
+  vmname             = "asejumpboxvm"
   location           = var.location
   resourceGroupName  = var.resourceGroupName
   adminUserName      = var.adminUsername

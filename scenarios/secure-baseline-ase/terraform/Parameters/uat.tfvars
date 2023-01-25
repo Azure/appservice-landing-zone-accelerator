@@ -1,1 +1,2 @@
-location = "eastus"
+location           = "eastus"
+installDevOpsAgent = false
