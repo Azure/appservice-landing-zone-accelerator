@@ -2,6 +2,7 @@ deployment/bicep/localparam*.json
 deployment/bicep/localmain.bicep
 deployment/bicep/localtestscript.ps1
 deployment/bicep/main.json
+*.local.*
 
 # Local .terraform directories
 **/.terraform/*
