@@ -73,22 +73,28 @@ jobs:
         continue-on-error: true
         run: |
           terraform plan \
+            -input=false \
             -refresh-only \
+            -out=tfplan \
+            -no-color \
             -var-file="Parameters/uat.tfvars" \
-            -var "partner_id='${{ secrets.AZURE_PARTNER_ID }}'"
+            && terraform show -no-color tfplan 
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+          TF_VAR_partner_id: ${{ secrets.AZURE_PARTNER_ID }}
 
       - name: Terraform Apply
+        if: steps.plan.outcome == 'success'
+        id: apply
         run: |
           terraform apply \
             -auto-approve \
-            -var-file="Parameters/uat.tfvars" \
-            -var "partner_id=''${{ secrets.AZURE_PARTNER_ID }}'"
-
+            -input=false \
+            -no-color \
+            tfplan
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
