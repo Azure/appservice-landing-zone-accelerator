@@ -27,7 +27,7 @@ permissions:
 env:
   modulePath: 'scenarios/secure-baseline-multitenant/terraform'
   terraform_version: 1.3.7 # must be greater than or equal to 1.2 for OIDC
-  backend_key: secure-baseline-ase.tfstate
+  backend_key: secure-baseline-ase.multitenant.tfstate
 
 jobs:
   validate-plan-and-apply:
@@ -72,6 +72,7 @@ jobs:
         continue-on-error: true
         run: |
           terraform plan \
+            -refresh-only \
             -var-file="Parameters/uat.tfvars"
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
