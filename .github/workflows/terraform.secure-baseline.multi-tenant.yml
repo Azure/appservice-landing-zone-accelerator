@@ -76,7 +76,6 @@ jobs:
         run: |
           terraform plan \
             -input=false \
-            -refresh-only \
             -out=tfplan \
             -no-color \
             && terraform show -no-color tfplan
