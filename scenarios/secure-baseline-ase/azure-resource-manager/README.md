@@ -25,7 +25,7 @@ Initially we had prepared automated way, so for the GitHub Actions you can use t
 
       # Exporting ARM template from the bicep file
       - name: Export ARM template
-        working-directory: ./reference-implementations/LOB-ILB-ASEv3/bicep
+        working-directory: ./scenarios/secure-baseline-ase/bicep
         run : |
           az bicep build --file main.bicep --outfile ../azure-resource-manager/ase-arm.json
       # Uploading exported ARM template to GitHub's artifact 
