@@ -7,7 +7,7 @@ on:
       - main
       - jin/oidc-refactor
     paths:
-      - '.github/workflows/terraform.multi-tenant.secure-baseline-ase.yml'
+      - '.github/workflows/terraform.secure-baseline.multi-tenant.yml'
       - 'scenarios/secure-baseline-multitenant/terraform/**'
       - '!scenarios/secure-baseline-multitenant/**.md'
 
@@ -16,7 +16,7 @@ on:
       - main
       - feature/*
     paths:
-      - '.github/workflows/terraform.multi-tenant.secure-baseline-ase.yml'
+      - '.github/workflows/terraform.secure-baseline.multi-tenant.yml'
       - 'scenarios/secure-baseline-multitenant/terraform/**'
       - '!scenarios/secure-baseline-multitenant/**.md'
 

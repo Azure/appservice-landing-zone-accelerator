@@ -7,7 +7,7 @@ on:
       - main
       - jin/oidc-refactor
     paths:
-      - '.github/workflows/terraform.secure-baseline-ase.yml'
+      - '.github/workflows/terraform.secure-baseline.ase.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
 
@@ -16,7 +16,7 @@ on:
       - main
       - feature/*
     paths:
-      - '.github/workflows/terraform.secure-baseline-ase.yml'
+      - '.github/workflows/terraform.secure-baseline.ase.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
 
