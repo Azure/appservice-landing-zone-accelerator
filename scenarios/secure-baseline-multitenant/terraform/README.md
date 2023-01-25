@@ -22,18 +22,19 @@ This section is organized using folders that match the steps outlined below. Mak
 
 ### Prerequisites
 
-Clone this repo, install Azure CLI, install Terraform.
-
-[Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+1. Clone this repository.
+2. [Install Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+3. [Install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
 ### Create terraform.tfvars file
 
-An Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the terraform.tfvars file that needs to be created in this folder:
+An Azure AD user for the DevOps VM admin account and an Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the *terraform.tfvars* file that needs to be created in this folder.:
 
 ```bash
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 aad_admin_group_name      = "Azure AD SQL Admins"
+vm_aad_admin_username     = "bob@contoso.com"
 ```
 
 ### Deploy the App Service Landing Zone Terraform code
@@ -60,20 +61,18 @@ az network private-endpoint-connection approve --id $fd_conn_id --description "A
 
 ### Connect to the DevOps VM
 
-From a PowerShell terminal, connect to the DevOps VM using your AAD credentials. The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
+From a PowerShell terminal, connect to the DevOps VM using your Azure AD credentials (or Windows Hello). The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
 
 ```powershell
 az upgrade
 az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
-From SQL Management Studio, connect to the SQL Server using the SQL Admins group. The user needs to have the format `AzureAD\<user@domain.com>`.
-
 The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
 If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"), enroll the Jumpbox to Azure AD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
 
-Once completed, you should be able to connect to the SQL Server using the Azure AD account. On the sample database (sample-db), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
+Once completed, you should be able to connect to the SQL Server using the Azure AD account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
 
 ```sql
 CREATE USER [web-app-name] FROM EXTERNAL PROVIDER;
@@ -89,14 +88,10 @@ ALTER ROLE db_ddladmin ADD MEMBER [web-app-name/slots/slot-name];
 GO
 ```
 
-From a PowerShell terminal in your DevOps VM, you'll need to add a Key Vault secret for Redis Cache connetion string. 
-First, install `az cli` and execute `az keyvalut secret set`. The exact command will be provided in the output of the Terraform deployment (terraform output -raw cmd_redis_connection_kvsecret).
+From a PowerShell terminal in your DevOps VM, you'll need to add a Key Vault secret for Redis Cache connection string by executing `az keyvault secret set`. The exact command will be provided in the output of the Terraform deployment (terraform output -raw cmd_redis_connection_kvsecret).
 
 ```powershell
-$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
-
-az login
-az keyvault secret set --vault-name <key-valut-name> --name <kv-secret-name> --value <redis-cache-connection-string>
+az keyvault secret set --vault-name <keyvault-name> --name <kv-secret-name> --value <redis-cache-connection-string>
 ```
 
 ### Retrieve the Azure Front Door frontend endpoint URL and test the App Service

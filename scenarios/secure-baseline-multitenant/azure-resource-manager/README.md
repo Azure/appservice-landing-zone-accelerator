@@ -1,4 +1,4 @@
-# Multitenant App Service Secure Baseline Bicep Implementation
+# Multitenant App Service Secure Baseline ARM Template Implementation
 
 ## Steps of Implementation for App Service Construction Set
 
@@ -18,21 +18,16 @@ This section is organized using folders that match the steps outlined below. Mak
 
 ### Prerequisites
 
-Clone this repo, install Azure CLI, install Bicep.
+Clone this repo, install Azure CLI .
 
-[Install Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
+[Install Azure CLI ](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 
 ### Create parameters.json file
 
-An Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the terraform.tfvars file that needs to be created in this folder:
 
-```bash
-tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_name      = "Azure AD SQL Admins"
-```
 
-### Deploy the App Service Landing Zone Bicep code
+
+### Deploy the App Service Landing Zone ARM Template
 
 ```bash
 TBD!

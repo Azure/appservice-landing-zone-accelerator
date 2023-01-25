@@ -8,7 +8,7 @@
 
 ## Steps
 1. Clone this repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) to your organization/repository
-   ![Clone Repo](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/ASE.png)
+   ![Clone Repo](/scenarios/secure-baseline-ase/bicep/Images/ASE.png)
 2. Setup authentication between Azure and GitHub. Currently there are [two options](https://docs.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Cwindows) to configure this - through OpenID Connect(coming soon) or with a service principal. Only one of the two actions is required.  
    - Use a service principal secret
         1. Open [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview) in the Azure Portal or [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) locally
@@ -29,9 +29,9 @@
             }
             ```
         4. Navigate to where you cloned the GitHub repository and go to **Settings** and select **Secrets**.
-            ![Secrets](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/Secrets.png)
+            ![Secrets](/scenarios/secure-baseline-ase/bicep/Images/Secrets.png)
         5. Select **New repository secrets**.
-            ![New Secrets](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/NewSecrets.png)
+            ![New Secrets](/scenarios/secure-baseline-ase/bicep/Images/NewSecrets.png)
         6. Create a new secret called `AZURE_CREDENTIALS` with the JSON information in step 3 (in JSON format).
    - Use Azure login action with OpenID Connect (coming soon)
 3. Create the following secrets with corresponding infromation:
@@ -40,7 +40,7 @@
    - `PAT` (your personal access token for Azure Devops/GitHub in plain text)
    - `VM_PW` (password for the VMs that will be created in plain text)
    - (Optional) `ACTIONS_STEP_DEBUG` (set this to true if you want [additional information](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging) running the GitHub workflows)
-4. Navigate to [config.yml](/reference-implementations/LOB-ILB-ASEv3/bicep/config.yml) and modify any of the following vlaues as required:
+4. Navigate to [config.yml](/scenarios/secure-baseline-ase/bicep/config.yml) and modify any of the following vlaues as required:
     
     Below are the default values in config.yml
     
@@ -62,14 +62,14 @@
    - `ACCOUNT_NAME` (the value will be replaced with repository secret)
    - `CICD_AGENT_TYPE` (github, azuredevops, or none) 
 5. Push the configuration changes to your feature branch, then create a pull request to main. This should trigger the build. Current builds can be found at **Actions** with the selected workflow (AzureBicepDeploy in this case)
-   ![AzureBicepDeploy](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/AzureBicepDeploy.png)
+   ![AzureBicepDeploy](/scenarios/secure-baseline-ase/bicep/Images/AzureBicepDeploy.png)
    Alternatively, you can also trigger a build by going to **Actions** selecting the specific workflow (ie. AzureBicepDeploy), and then selecting **Run workflow**.
-   ![WorkflowDispatch](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/WorkFlowDispatch.png)
+   ![WorkflowDispatch](/scenarios/secure-baseline-ase/bicep/Images/WorkFlowDispatch.png)
 6. A deployment for an App Service Landing Zone Accelerator reference implementation should look something similar to the following:
-   ![Resource Groups](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/ResourceGroups.png)
+   ![Resource Groups](/scenarios/secure-baseline-ase/bicep/Images/ResourceGroups.png)
    Outputs from ASE Module:
-   ![ASE](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/ASE.png)
+   ![ASE](/scenarios/secure-baseline-ase/bicep/Images/ASE.png)
    Outputs from Shared Module:
-   ![Shared](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/Shared.png)
+   ![Shared](/scenarios/secure-baseline-ase/bicep/Images/Shared.png)
    Outputs from Networking Module:
-   ![Networking](/reference-implementations/LOB-ILB-ASEv3/bicep/Images/Networking.png)
+   ![Networking](/scenarios/secure-baseline-ase/bicep/Images/Networking.png)

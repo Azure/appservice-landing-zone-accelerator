@@ -7,19 +7,19 @@ on:
       - main
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
-      - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
-      - '!reference-implementations/LOB-ILB-ASEv3/terraform/**.md'
+      - 'scenarios/secure-baseline-ase/terraform/**'
+      - '!scenarios/secure-baseline-ase/terraform/**.md'
 
   pull_request:
     branches:
       - main
     paths:
       - '.github/workflows/LOB-ILB-ASEv3-Terraform.yml'
-      - 'reference-implementations/LOB-ILB-ASEv3/terraform/**'
-      - '!reference-implementations/LOB-ILB-ASEv3/terraform/**.md'
+      - 'scenarios/secure-baseline-ase/terraform/**'
+      - '!scenarios/secure-baseline-ase/terraform/**.md'
 
 env:
-  modulePath: 'reference-implementations/LOB-ILB-ASEv3/terraform'
+  modulePath: 'scenarios/secure-baseline-ase/terraform'
   terraform_version: 1.1.8
 
 jobs:
