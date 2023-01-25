@@ -75,7 +75,7 @@ jobs:
           terraform plan \
             -refresh-only \
             -var-file="Parameters/uat.tfvars" \
-            -var "partner_id=${{ secrets.AZURE_PARTNER_ID }}"
+            -var "partner_id='${{ secrets.AZURE_PARTNER_ID }}'"
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
@@ -87,7 +87,7 @@ jobs:
           terraform apply \
             -auto-approve \
             -var-file="Parameters/uat.tfvars" \
-            -var "partner_id=${{ secrets.AZURE_PARTNER_ID }}"
+            -var "partner_id=''${{ secrets.AZURE_PARTNER_ID }}'"
 
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
