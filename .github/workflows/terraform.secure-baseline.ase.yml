@@ -119,23 +119,25 @@ jobs:
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
             <details><summary>Show Plan</summary>
             \`\`\`\n
-            ${{ env.PLAN }}
+            ${{ steps.plan.outputs.stdout }}
             \`\`\`
             </details>
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
-
             #### Terraform Apply 📖\`${{ steps.apply.outcome }}\`
             <details><summary>Show Apply</summary>
             \`\`\`\n
             ${{ steps.apply.outputs.stdout }}
             \`\`\`
             </details>
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+
 
       - name: Post Plan Failure
         if: steps.plan.outcome == 'failure'
