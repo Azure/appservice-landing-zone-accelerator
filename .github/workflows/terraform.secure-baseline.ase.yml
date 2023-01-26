@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - jin/oidc-refactor
     paths:
       - '.github/workflows/terraform.secure-baseline.ase.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
@@ -138,12 +137,11 @@ jobs:
             \`\`\`\n
             ${{ steps.apply.outputs.stdout }}
             \`\`\`
+            </details>
 
       - name: Post Plan Failure
         if: steps.plan.outcome == 'failure'
         uses: actions/github-script@v6
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -155,8 +153,6 @@ jobs:
       - name: Post Apply Failure to GitHub PR
         if: steps.apply.outcome == 'failure'
         uses: actions/github-script@v6
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
