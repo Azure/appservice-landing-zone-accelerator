@@ -145,7 +145,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            Plan failed for **${{ matrix.path }}**:
+            Plan failed:
 
             ```
             ${{ steps.plan.outputs.stderr }}
@@ -156,7 +156,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            Apply failed for **${{ matrix.path }}**:
+            Apply failed:
 
             ```
             ${{ steps.apply.outputs.stderr }}
