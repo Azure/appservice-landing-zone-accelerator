@@ -24,11 +24,14 @@ resource "azurerm_key_vault" "keyvault" {
     object_id = data.azurerm_client_config.current.object_id
     key_permissions = [
       "Get",
+      "List",
       "Update"
     ]
     secret_permissions = [
       "Get",
       "Set",
+      "List",
+      "Recover",
       "Delete",
       "Purge"
     ]
@@ -68,19 +71,19 @@ resource "random_password" "password" {
 #Devops agent
 module "devopsvm" {
   source             = "../winvm"
-  vmname             = "devopsvm"
+  vmname             = "asedevopsvm"
   location           = var.location
   resourceGroupName  = var.resourceGroupName
   adminUserName      = var.adminUsername
   adminPassword      = var.adminPassword == null ? random_password.password.0.result : var.adminPassword
   cidr               = var.devOpsVMSubnetId
-  installDevOpsAgent = true
+  installDevOpsAgent = false
 }
 
 #jumpbox
 module "jumpboxvm" {
   source             = "../winvm"
-  vmname             = "jumpboxvm"
+  vmname             = "asejumpboxvm"
   location           = var.location
   resourceGroupName  = var.resourceGroupName
   adminUserName      = var.adminUsername

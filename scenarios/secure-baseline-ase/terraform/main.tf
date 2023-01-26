@@ -1,4 +1,3 @@
-
 locals {
   // Variables
   resourceSuffix              = "${var.workloadName}-${var.environment}-${var.location}-001"

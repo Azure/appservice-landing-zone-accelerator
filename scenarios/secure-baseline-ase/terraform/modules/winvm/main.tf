@@ -55,6 +55,8 @@ resource "azurerm_virtual_machine_extension" "installagent" {
   #PROTECTED_SETTINGS
 
   #"commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File agentsetup.ps1 -Command \"./agentsetup.ps1; exit 0;\"",
+
+  # !!!!! Hardcoded installagent URI does not exist anymore !!!!!
   protected_settings = <<PROTECTED_SETTINGS
     {
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File agentsetup.ps1 ",

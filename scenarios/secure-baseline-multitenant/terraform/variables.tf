@@ -4,6 +4,12 @@ variable "application_name" {
   default     = "secure-baseline"
 }
 
+variable "partner_id" {
+  description = "The partner id for the subscription"
+  type        = string
+  default     = null
+}
+
 variable "environment" {
   type        = string
   description = "The environment (dev, qa, staging, prod)"

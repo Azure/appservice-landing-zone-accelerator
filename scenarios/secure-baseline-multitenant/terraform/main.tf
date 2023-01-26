@@ -1,22 +1,3 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">=3.34.0"
-    }
-    azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-  disable_terraform_partner_id = false
-  partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
-}
-
 locals {
   hub_vnet_cidr            = var.hub_vnet_cidr == null ? ["10.242.0.0/20"] : var.hub_vnet_cidr
   firewall_subnet_cidr     = var.firewall_subnet_cidr == null ? "10.242.0.0/26" : var.firewall_subnet_cidr

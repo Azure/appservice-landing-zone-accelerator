@@ -75,3 +75,9 @@ variable "vmadminPassword" {
   type        = string
   default     = null
 }
+
+variable "partner_id" {
+  description = "The partner id for the subscription"
+  type        = string
+  default     = null
+}
