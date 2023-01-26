@@ -150,7 +150,6 @@ To deploy App Service into an existing network, use the [App Service for Existin
 | <a name="input_front_door_subnet_cidr"></a> [front\_door\_subnet\_cidr](#input\_front\_door\_subnet\_cidr) | The CIDR block for the subnet. | `list(string)` | `null` | no |
 | <a name="input_hub_vnet_cidr"></a> [hub\_vnet\_cidr](#input\_hub\_vnet\_cidr) | The CIDR block for the hub virtual network. | `list(string)` | `null` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure region where all resources in this example should be created | `string` | `"westeurope"` | no |
-| <a name="input_partner_id"></a> [partner\_id](#input\_partner\_id) | The partner id for the subscription | `string` | `null` | no |
 | <a name="input_private_link_subnet_cidr"></a> [private\_link\_subnet\_cidr](#input\_private\_link\_subnet\_cidr) | The CIDR block for the subnet. | `list(string)` | `null` | no |
 | <a name="input_spoke_vnet_cidr"></a> [spoke\_vnet\_cidr](#input\_spoke\_vnet\_cidr) | The CIDR block for the virtual network. | `list(string)` | `null` | no |
 | <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Azure AD tenant ID for the identities | `string` | n/a | yes |

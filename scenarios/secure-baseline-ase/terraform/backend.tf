@@ -12,6 +12,8 @@ terraform {
 
 provider "azurerm" {
   features {}
-  disable_terraform_partner_id = var.partner_id == null ? true : false
-  partner_id                   = var.partner_id
+
+  # DO NOT CHANGE THE BELOW VALUES
+  disable_terraform_partner_id = false
+  partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
 }

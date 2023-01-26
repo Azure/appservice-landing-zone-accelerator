@@ -86,7 +86,6 @@
 #           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
 #           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 #           ARM_USE_OIDC: true
-#           TF_VAR_partner_id: ${{ secrets.AZURE_PARTNER_ID }}
 #           TF_VAR_aad_admin_group_name: ${{ secrets.AZURE_AAD_ADMIN_GROUP_NAME }}
 #           TF_VAR_aad_admin_group_object_id: ${{ secrets.AZURE_AAD_ADMIN_GROUP_OBJECT_ID }}
 #           TF_VAR_vm_aad_admin_username: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
