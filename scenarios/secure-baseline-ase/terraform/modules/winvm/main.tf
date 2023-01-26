@@ -58,7 +58,7 @@ resource "azurerm_virtual_machine_extension" "installagent" {
   protected_settings = <<PROTECTED_SETTINGS
     {
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File agentsetup.ps1 ",
-        "fileUris": ["https://raw.githubusercontent.com/cykreng/Enterprise-Scale-AppService/main/scenarios/secure-baseline-ase/bicep/shared/agentsetup.ps1"]
+        "fileUris": ["https://github.com/Azure/appservice-landing-zone-accelerator/raw/main/scenarios/secure-baseline-ase/bicep/shared/agentsetup.ps1"]
     }
   PROTECTED_SETTINGS
 }
