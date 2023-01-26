@@ -1,7 +1,7 @@
 variable "workloadName" {
   description = "A short name for the workload being deployed"
   type        = string
-  default     = "ase"
+  default     = "sec-baseline-sgl" # ase single tenant
 }
 
 variable "environment" {
@@ -66,12 +66,12 @@ variable "workerPool" {
 
 variable "vmadminUserName" {
   description = "admin username for the virtual machine (devops agent, jumpbox)"
-  type = string
-  default = "vmadmin"
+  type        = string
+  default     = "vmadmin"
 }
 
 variable "vmadminPassword" {
   description = "admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }

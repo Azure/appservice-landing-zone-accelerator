@@ -1,0 +1,19 @@
+---
+checks:
+  - code: CUS001
+    description: Custom check to ensure the Azure backend block is present and empty
+    impact: By not having an empty remote state backend declaration, we will not be able to track .tfstate files within the pipeline and exposes potential local changes to pipeline managed resources.
+    resolution: Add or modify existing backend block to an empty `backend "azurerm" {}` declaration within the terraform configuration
+    requiredTypes:
+    - terraform
+    requiredLabels:
+    - "*"
+    severity: ERROR
+    matchSpec:
+      action: isPresent
+      name: backend
+      subMatch:
+        action : and
+        predicateMatchSpec:
+          - action: isEmpty
+            name: backend

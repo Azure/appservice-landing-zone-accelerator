@@ -22,6 +22,7 @@ param numericSuffix string = ''
 @description('Required. The user name to be used as the Administrator for all VMs created by this deployment')
 param vmUsername string
 
+@secure()
 @description('Required. The password for the Administrator user for all VMs created by this deployment')
 param vmPassword string
 
