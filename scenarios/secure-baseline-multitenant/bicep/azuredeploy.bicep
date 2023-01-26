@@ -30,7 +30,7 @@ var VaultCorePrivateLink = 'privatelink.vaultcore.azure.net'
 var AzurewebsitesPrivateLink = 'privatelink.azurewebsites.net'
 var AzureCRPrivateLink = 'privatelink.azurecr.io'
 var azuresqlendpoint = environment().suffixes.sqlServerHostname
-var AzureSqlDBPrivateLink = 'privatelink.${azuresqlendpoint}'
+var AzureSqlDBPrivateLink = 'privatelink${azuresqlendpoint}'
 
 
 var RedisPrivateLink = 'privatelink.redis.cache.windows.net'
