@@ -1,18 +1,3 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "= 3.9.0"
-    }
-
-  }
-}
-
-provider "azurerm" {
-  features {}
-  disable_terraform_partner_id = false
-  partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
-}
 
 locals {
   // Variables
