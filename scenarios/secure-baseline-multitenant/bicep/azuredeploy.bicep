@@ -1,80 +1,83 @@
 
-param cmLocation2 string = 'West Europe'
-param AppServiceName string ='Same Name As RG'
+param AppServiceName string 
 
 @secure()
-param AzureSqlLoginPassword string='Password'
-param HubVNetName string ='HubVnet'
-param SpokeVnetName string ='SpokeVnet'
-param SqlServerAdminAccountName string='User'
-
+param VmAdminPassword string 
 @secure()
-param VmAdminPassword string='Password'
+param AzureSqlLoginPassword string
+param ContainerRegistryName string 
+param HubVNetName string 
+param ResourceGroupLocation string 
+param SpokeVnetName string
+param SqlServerAdminAccountName string
+var cmLocation1  = ResourceGroupLocation
+var VmAdminUserName =SqlServerAdminAccountName
 
-var appConfiguration1_var = '${AppServiceName}-appcs'
-var applicationInsights1_var = '${AppServiceName}-appi'
-var appServiceConfigRegionalVirtualNetworkIntegration1 = 'virtualNetwork'
-var bastion1_var = '${HubVNetName}-bas'
-var cDNProfileFrontDoor1_var = '${AppServiceName}-afd'
-var cDNProfileFrontDoorEndpoint1 = '${cDNProfileFrontDoor1_var}-fde'
-var cDNProfileFrontDoorEndpointsRoute1 = '${cDNProfileFrontDoor1_var}-route'
-var cDNProfileFrontDoorOriginGroup1 = '${cDNProfileFrontDoor1_var}-AfdAsOG'
-var cDNProfileFrontDoorOriginGroupOrigin1 = '${cDNProfileFrontDoor1_var}-origin'
-var containerRegistry1_var = '${AppServiceName}cr'
-var dDOSProtectionPlan1_var = '${SpokeVnetName}-DDOSProtection'
-var keyVault1_var = '${AppServiceName}-kv'
-var networkFirewall1_var = '${HubVNetName}-afw'
-var networkInterface1_var = '${virtualMachine1_var}-interface'
+var AppConfigResourceName = '${AppServiceName}-appcs'
+var AppInsightResourceName = '${AppServiceName}-appi'
+var BastionResourceName = '${HubVNetName}-bas'
+var CdnProfileFrontDoorResource = '${AppServiceName}-afd'
+var cDNProfileFrontDoorEndpoint1 = '${CdnProfileFrontDoorResource}-fde'
+var cDNProfileFrontDoorEndpointsRoute1 = '${CdnProfileFrontDoorResource}-route'
+var cDNProfileFrontDoorOriginGroup1 = '${CdnProfileFrontDoorResource}-AfdAsOG'
+var cDNProfileFrontDoorOriginGroupOrigin1 = '${CdnProfileFrontDoorResource}-origin'
+var KeyVaultResourceName = '${AppServiceName}-kv'
+var AzureFireWallResourceName = '${HubVNetName}-afw'
+var AzureVNetInterface = '${VirtualMachineDevOpsResource}-interface'
 var networkInterfaceIPConfiguration1 = 'config1'
-var networkPrivateDnsZone1_var = 'privatelink.azconfig.io'
-var networkPrivateDnsZone2_var = 'privatelink.vaultcore.azure.net'
-var networkPrivateDnsZone3_var = 'privatelink.redis.cache.windows.net'
-var networkPrivateDnsZone4_var = 'privatelink.azurewebsites.net'
-var networkPrivateDnsZone5_var = 'privatelink.azurecr.io'
-var networkPrivateDnsZone6_var = 'privatelink.database.windows.net'
+var AzConfigPrivateLink = 'privatelink.azconfig.io'
+var VaultCorePrivateLink = 'privatelink.vaultcore.azure.net'
+var AzurewebsitesPrivateLink = 'privatelink.azurewebsites.net'
+var AzureCRPrivateLink = 'privatelink.azurecr.io'
+var azuresqlendpoint = environment().suffixes.sqlServerHostname
+var AzureSqlDBPrivateLink = 'privatelink.${azuresqlendpoint}'
+
+
+var RedisPrivateLink = 'privatelink.redis.cache.windows.net'
 var networkPrivateDnsZoneVirtualNetworkLink1 = 'spoke'
 var networkPrivateDnsZoneVirtualNetworkLink10 = 'HubAppService'
 var networkPrivateDnsZoneVirtualNetworkLink11 = 'hub'
 var networkPrivateDnsZoneVirtualNetworkLink12 = 'hub'
 var networkPrivateDnsZoneVirtualNetworkLink2 = 'spoke'
-var networkPrivateDnsZoneVirtualNetworkLink3 = 'spoke'
-var networkPrivateDnsZoneVirtualNetworkLink4 = 'SpokeAppService'
+var networkPrivateDnsZoneVirtualNetworkLink3 = 'SpokeAppService'
+var networkPrivateDnsZoneVirtualNetworkLink4 = 'spoke'
 var networkPrivateDnsZoneVirtualNetworkLink5 = 'spoke'
-var networkPrivateDnsZoneVirtualNetworkLink6 = 'spoke'
-var networkPrivateDnsZoneVirtualNetworkLink7 = 'hub'
+var networkPrivateDnsZoneVirtualNetworkLink6 = 'hub'
+var networkPrivateDnsZoneVirtualNetworkLink7 = 'spoke'
 var networkPrivateDnsZoneVirtualNetworkLink8 = 'hub'
 var networkPrivateDnsZoneVirtualNetworkLink9 = 'hub'
-var networkPrivateEndpoint1_var = '${SpokeVnetName}-appcspep'
-var networkPrivateEndpoint2_var = '${SpokeVnetName}-crpep'
-var networkPrivateEndpoint3_var = '${SpokeVnetName}-sqldbpep'
-var networkPrivateEndpoint4_var = '${SpokeVnetName}-kvpep'
-var networkPrivateEndpoint5_var = '${SpokeVnetName}-AppSVC'
-var networkSecurityGroup1_var = '${subnet1}-nsg'
-var networkSecurityGroup2_var = '${subnet2}-nsg'
-var networkSecurityGroup3_var = '${subnet3}-nsg'
-var networkSecurityGroup4_var = '${subnet4}-nsg'
-var networkSecurityGroup5_var = '${subnet5}-nsg'
+var appcspepPrivateEndpoint = '${SpokeVnetName}-appcspep'
+var crpepPrivateEndpoint = '${SpokeVnetName}-crpep'
+var sqldbpepPrivateEndpoint = '${SpokeVnetName}-sqldbpep'
+var kvpepPrivateEndpoint = '${SpokeVnetName}-kvpep'
+var AppSVCPrivateEndpoint = '${SpokeVnetName}-AppSVC'
+var networkSecurityGroup1Subnet1 = '${subnet1}-nsg'
+var networkSecurityGroup1Subnet2 = '${subnet2}-nsg'
+var networkSecurityGroup1Subnet3 = '${subnet3}-nsg'
+var networkSecurityGroup1Subnet4 = '${subnet4}-nsg'
+var networkSecurityGroup1Subnet5 = '${subnet5}-nsg'
 var networkVirtualNetworkVirtualNetworkPeering1 = 'HubPeering'
 var networkVirtualNetworkVirtualNetworkPeering2 = 'Spoke'
-var operationalInsightsWorkspace1_var = '${AppServiceName}-log'
-var publicIpAddress1_var = 'AzFirewallpop'
-var publicIpAddress2_var = '${subnet4}-PIP'
-var redisCache1_var = '${AppServiceName}-redis'
-var resourceGroup1 = '${AppServiceName}-rg'
-var sQLServer1_var = '${AppServiceName}-sql'
+var LogAnalyticsResoourceName = '${AppServiceName}-log'
+var AzureFireWallPipResourceName = 'AzFirewallpip'
+var PublicIpResourceName = '${subnet4}-PIP'
+var AzureRedisResourceName = '${AppServiceName}-redis'
+var AzureSqlResourceName = '${AppServiceName}-sql'
 var subnet1 = '${SpokeVnetName}-pepsnet'
-var subnet2 = '${SpokeVnetName}-appsubnet'
-var subnet3 = '${SpokeVnetName}-Vmsssnet'
+var subnet2 = '${SpokeVnetName}-Spokevnet'
+var subnet3 = '${SpokeVnetName}-Vmss-vnet'
 var subnet4 = 'AzureBastionSubnet'
 var subnet5 = '${SpokeVnetName}-AFDSubnet'
 var subnet6 = 'AzureFirewallSubnet'
-var virtualMachine1_var = '${AppServiceName}-DevOpsvm'
+var VirtualMachineDevOpsResource = '${AppServiceName}-DevOpsvm'
 var virtualMachineOSDiskWindows1 = 'OsDisk'
-var webServerfarm1_var = '${AppServiceName}-asp'
+var AzureSpokeVnetResourceName = SpokeVnetName
+var AzureHubVnetResourceName = HubVNetName
+var AppServicePlanResourceName = '${AppServiceName}-asp'
 
 resource keyVault1 'Microsoft.KeyVault/vaults@2019-09-01' = {
-  name: keyVault1_var
-  location: cmLocation2
+  name: KeyVaultResourceName
+  location: cmLocation1
   properties: {
     accessPolicies: []
     enabledForDeployment: false
@@ -90,8 +93,8 @@ resource keyVault1 'Microsoft.KeyVault/vaults@2019-09-01' = {
 }
 
 resource appConfiguration1 'Microsoft.AppConfiguration/configurationStores@2019-10-01' = {
-  name: appConfiguration1_var
-  location: cmLocation2
+  name: AppConfigResourceName
+  location: cmLocation1
   properties: {
   }
   sku: {
@@ -100,8 +103,8 @@ resource appConfiguration1 'Microsoft.AppConfiguration/configurationStores@2019-
 }
 
 resource operationalInsightsWorkspace1 'Microsoft.OperationalInsights/workspaces@2015-11-01-preview' = {
-  name: operationalInsightsWorkspace1_var
-  location: cmLocation2
+  name: LogAnalyticsResoourceName
+  location: cmLocation1
   properties: {
     sku: {
       name: 'PerGB2018'
@@ -109,51 +112,34 @@ resource operationalInsightsWorkspace1 'Microsoft.OperationalInsights/workspaces
   }
 }
 
-resource applicationInsights1 'Microsoft.Insights/components@2015-05-01' = {
-  name: applicationInsights1_var
-  location: cmLocation2
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
-    Request_Source: 'rest'
-  }
-}
-
-resource dDOSProtectionPlan1 'Microsoft.Network/ddosProtectionPlans@2020-08-01' = {
-  name: dDOSProtectionPlan1_var
-  location: cmLocation2
-  properties: {
-  }
-}
-
 resource networkSecurityGroup1 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
-  name: networkSecurityGroup1_var
-  location: cmLocation2
+  name: networkSecurityGroup1Subnet1
+  location: cmLocation1
   properties: {
     securityRules: []
   }
 }
 
 resource networkSecurityGroup2 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
-  name: networkSecurityGroup2_var
-  location: cmLocation2
+  name: networkSecurityGroup1Subnet2
+  location: cmLocation1
   properties: {
     securityRules: []
   }
 }
 
 resource sQLServer1 'Microsoft.Sql/servers@2019-06-01-preview' = {
-  name: sQLServer1_var
-  location: cmLocation2
+  name: AzureSqlResourceName
+  location: cmLocation1
   properties: {
     administratorLogin: SqlServerAdminAccountName
     administratorLoginPassword: AzureSqlLoginPassword
   }
 }
 
-resource containerRegistry1 'Microsoft.ContainerRegistry/registries@2021-09-01' = {
-  name: containerRegistry1_var
-  location: cmLocation2
+resource ContainerRegistryName_resource 'Microsoft.ContainerRegistry/registries@2021-09-01' = {
+  name: ContainerRegistryName
+  location: cmLocation1
   properties: {
     adminUserEnabled: false
   }
@@ -163,16 +149,16 @@ resource containerRegistry1 'Microsoft.ContainerRegistry/registries@2021-09-01' 
 }
 
 resource networkSecurityGroup3 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
-  name: networkSecurityGroup3_var
-  location: cmLocation2
+  name: networkSecurityGroup1Subnet3
+  location: cmLocation1
   properties: {
     securityRules: []
   }
 }
 
 resource webServerfarm1 'Microsoft.Web/serverfarms@2020-12-01' = {
-  name: webServerfarm1_var
-  location: cmLocation2
+  name: AppServicePlanResourceName
+  location: cmLocation1
   properties: {
     targetWorkerCount: 1
     targetWorkerSizeId: 1
@@ -183,69 +169,29 @@ resource webServerfarm1 'Microsoft.Web/serverfarms@2020-12-01' = {
   }
 }
 
-resource AppServiceName_resource 'Microsoft.Web/sites@2020-12-01' = {
-  name: AppServiceName
-  identity: {
-    type: 'SystemAssigned'
-  }
-  location: cmLocation2
-  properties: {
-    virtualNetworkSubnetId : resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', SpokeVnetName, subnet2)
-    clientAffinityEnabled: false
-    httpsOnly: true
-    serverFarmId: resourceId(resourceGroup1, 'Microsoft.Web/serverfarms', webServerfarm1_var)
-    siteConfig: {
-      alwaysOn: true
-      appSettings: [
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: reference(resourceId(resourceGroup1, 'Microsoft.Insights/components', applicationInsights1_var), '2015-05-01', 'Full').properties.InstrumentationKey
-        }
-      ]
-      httpLoggingEnabled: false
-      ipSecurityRestrictions: []
-      minTlsVersion: '1.2'
-      remoteDebuggingEnabled: false
-      scmIpSecurityRestrictions: []
-      vnetRouteAllEnabled: true
-      webSocketsEnabled: false
-      http20Enabled: true
-    }
-  }
-  dependsOn: [
-    webServerfarm1
-    applicationInsights1
-  ]
-}
-
 resource networkPrivateDnsZone1 'Microsoft.Network/privateDnsZones@2018-09-01' = {
-  name: networkPrivateDnsZone1_var
+  name: AzConfigPrivateLink
   location: 'global'
 }
 
 resource networkPrivateDnsZone2 'Microsoft.Network/privateDnsZones@2018-09-01' = {
-  name: networkPrivateDnsZone2_var
+  name: VaultCorePrivateLink
   location: 'global'
 }
 
 resource networkPrivateDnsZone3 'Microsoft.Network/privateDnsZones@2018-09-01' = {
-  name: networkPrivateDnsZone3_var
+  name: AzurewebsitesPrivateLink
   location: 'global'
 }
 
 resource networkPrivateDnsZone4 'Microsoft.Network/privateDnsZones@2018-09-01' = {
-  name: networkPrivateDnsZone4_var
-  location: 'global'
-}
-
-resource networkPrivateDnsZone5 'Microsoft.Network/privateDnsZones@2018-09-01' = {
-  name: networkPrivateDnsZone5_var
+  name: AzureCRPrivateLink
   location: 'global'
 }
 
 resource redisCache1 'Microsoft.Cache/Redis@2017-10-01' = {
-  name: redisCache1_var
-  location: cmLocation2
+  name: AzureRedisResourceName
+  location: cmLocation1
   properties: {
     sku: {
       capacity: 0
@@ -256,7 +202,7 @@ resource redisCache1 'Microsoft.Cache/Redis@2017-10-01' = {
 }
 
 resource cDNProfileFrontDoor1 'Microsoft.Cdn/profiles@2021-06-01' = {
-  name: cDNProfileFrontDoor1_var
+  name: CdnProfileFrontDoorResource
   location: 'global'
   properties: {
   }
@@ -265,14 +211,14 @@ resource cDNProfileFrontDoor1 'Microsoft.Cdn/profiles@2021-06-01' = {
   }
 }
 
-resource networkPrivateDnsZone6 'Microsoft.Network/privateDnsZones@2018-09-01' = {
-  name: networkPrivateDnsZone6_var
+resource networkPrivateDnsZone5 'Microsoft.Network/privateDnsZones@2018-09-01' = {
+  name: AzureSqlDBPrivateLink
   location: 'global'
 }
 
 resource networkSecurityGroup4 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
-  name: networkSecurityGroup4_var
-  location: cmLocation2
+  name: networkSecurityGroup1Subnet4
+  location: cmLocation1
   properties: {
     securityRules: [
       {
@@ -424,8 +370,8 @@ resource networkSecurityGroup4 'Microsoft.Network/networkSecurityGroups@2020-08-
 }
 
 resource publicIpAddress1 'Microsoft.Network/publicIPAddresses@2020-08-01' = {
-  name: publicIpAddress1_var
-  location: cmLocation2
+  name: AzureFireWallPipResourceName
+  location: cmLocation1
   sku: {
     name: 'Standard'
     tier: 'Regional'
@@ -439,8 +385,8 @@ resource publicIpAddress1 'Microsoft.Network/publicIPAddresses@2020-08-01' = {
 }
 
 resource publicIpAddress2 'Microsoft.Network/publicIPAddresses@2020-08-01' = {
-  name: publicIpAddress2_var
-  location: cmLocation2
+  name: PublicIpResourceName
+  location: cmLocation1
   sku: {
     name: 'Standard'
   }
@@ -452,16 +398,31 @@ resource publicIpAddress2 'Microsoft.Network/publicIPAddresses@2020-08-01' = {
 }
 
 resource networkSecurityGroup5 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
-  name: networkSecurityGroup5_var
-  location: cmLocation2
+  name: networkSecurityGroup1Subnet5
+  location: cmLocation1
   properties: {
     securityRules: []
   }
 }
 
-resource SpokeVnetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' = {
-  name: SpokeVnetName
-  location: cmLocation2
+resource networkPrivateDnsZone6 'Microsoft.Network/privateDnsZones@2018-09-01' = {
+  name: RedisPrivateLink
+  location: 'global'
+}
+
+resource applicationInsights1 'Microsoft.Insights/components@2015-05-01' = {
+  name: AppInsightResourceName
+  location: cmLocation1
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Request_Source: 'rest'
+  }
+}
+
+resource virtualNetwork1 'Microsoft.Network/virtualNetworks@2020-08-01' = {
+  name: AzureSpokeVnetResourceName
+  location: cmLocation1
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -474,7 +435,7 @@ resource SpokeVnetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' =
         properties: {
           addressPrefix: '10.240.11.0/24'
           networkSecurityGroup: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/networkSecurityGroups', networkSecurityGroup1_var)
+            id: networkSecurityGroup1.id
           }
           serviceEndpoints: []
           serviceEndpointPolicies: []
@@ -486,7 +447,7 @@ resource SpokeVnetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' =
         properties: {
           addressPrefix: '10.240.0.0/26'
           networkSecurityGroup: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/networkSecurityGroups', networkSecurityGroup2_var)
+            id: networkSecurityGroup2.id
           }
           serviceEndpoints: []
           serviceEndpointPolicies: []
@@ -505,7 +466,7 @@ resource SpokeVnetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' =
         properties: {
           addressPrefix: '10.240.10.128/26'
           networkSecurityGroup: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/networkSecurityGroups', networkSecurityGroup3_var)
+            id: networkSecurityGroup3.id
           }
           serviceEndpoints: []
           serviceEndpointPolicies: []
@@ -517,7 +478,7 @@ resource SpokeVnetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' =
         properties: {
           addressPrefix: '10.240.0.64/26'
           networkSecurityGroup: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/networkSecurityGroups', networkSecurityGroup5_var)
+            id: networkSecurityGroup5.id
           }
           serviceEndpoints: []
           serviceEndpointPolicies: []
@@ -525,31 +486,21 @@ resource SpokeVnetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' =
         }
       }
     ]
-    enableDdosProtection: true
-    ddosProtectionPlan: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/ddosProtectionPlans', dDOSProtectionPlan1_var)
-    }
+    enableDdosProtection: false
   }
-  dependsOn: [
-   networkSecurityGroup1
-   networkSecurityGroup2
-   networkSecurityGroup3
-   networkSecurityGroup5
-   dDOSProtectionPlan1
-  ]
 }
 
 resource networkPrivateEndpoint1 'Microsoft.Network/privateEndpoints@2020-11-01' = {
-  name: networkPrivateEndpoint1_var
-  location: cmLocation2
+  name: appcspepPrivateEndpoint
+  location: cmLocation1
   properties: {
     subnet: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', SpokeVnetName, subnet1)
+      id: resourceId('Microsoft.Network/virtualNetworks/subnets', AzureSpokeVnetResourceName, subnet1)
     }
     privateLinkServiceConnections: [
       {
         properties: {
-          privateLinkServiceId: resourceId(resourceGroup1, 'Microsoft.AppConfiguration/configurationStores', appConfiguration1_var)
+          privateLinkServiceId: appConfiguration1.id
           groupIds: [
             'configurationStores'
           ]
@@ -559,22 +510,22 @@ resource networkPrivateEndpoint1 'Microsoft.Network/privateEndpoints@2020-11-01'
     ]
   }
   dependsOn: [
-    SpokeVnetName_resource
-    appConfiguration1
+    virtualNetwork1
+
   ]
 }
 
 resource networkPrivateEndpoint2 'Microsoft.Network/privateEndpoints@2020-11-01' = {
-  name: networkPrivateEndpoint2_var
-  location: cmLocation2
+  name: crpepPrivateEndpoint
+  location: cmLocation1
   properties: {
     subnet: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', SpokeVnetName, subnet1)
+      id: resourceId('Microsoft.Network/virtualNetworks/subnets', AzureSpokeVnetResourceName, subnet1)
     }
     privateLinkServiceConnections: [
       {
         properties: {
-          privateLinkServiceId: resourceId(resourceGroup1, 'Microsoft.ContainerRegistry/registries', containerRegistry1_var)
+          privateLinkServiceId: ContainerRegistryName_resource.id
           groupIds: [
             'registry'
           ]
@@ -584,23 +535,55 @@ resource networkPrivateEndpoint2 'Microsoft.Network/privateEndpoints@2020-11-01'
     ]
   }
   dependsOn: [
-    SpokeVnetName_resource
-    containerRegistry1
+    virtualNetwork1
+
   ]
 }
 
+resource AppServiceName_resource 'Microsoft.Web/sites@2020-12-01' = {
+  name: AppServiceName
+  identity: {
+    type: 'SystemAssigned'
+  }
+  location: cmLocation1
+  properties: {
+    clientAffinityEnabled: false
+    virtualNetworkSubnetId :  resourceId('Microsoft.Network/virtualNetworks/subnets', AzureSpokeVnetResourceName, subnet2)
+    httpsOnly: true
+    serverFarmId: webServerfarm1.id
+    siteConfig: {
+      alwaysOn: true
+      appSettings: [
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: reference(applicationInsights1.id, '2015-05-01', 'Full').properties.InstrumentationKey
+        }
+      ]
+      connectionStrings: []
+      defaultDocuments: []
+      handlerMappings: []
+      httpLoggingEnabled: false
+      ipSecurityRestrictions: []
+      minTlsVersion: '1.2'
+      remoteDebuggingEnabled: false
+      scmIpSecurityRestrictions: []
+      vnetRouteAllEnabled: true
+      webSocketsEnabled: false
+    }
+  }
+}
 
 resource networkPrivateEndpoint3 'Microsoft.Network/privateEndpoints@2020-11-01' = {
-  name: networkPrivateEndpoint3_var
-  location: cmLocation2
+  name: sqldbpepPrivateEndpoint
+  location: cmLocation1
   properties: {
     subnet: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', SpokeVnetName, subnet1)
+      id: resourceId('Microsoft.Network/virtualNetworks/subnets', AzureSpokeVnetResourceName, subnet1)
     }
     privateLinkServiceConnections: [
       {
         properties: {
-          privateLinkServiceId: resourceId(resourceGroup1, 'Microsoft.Sql/servers', sQLServer1_var)
+          privateLinkServiceId: sQLServer1.id
           groupIds: [
             'sqlServer'
           ]
@@ -610,22 +593,22 @@ resource networkPrivateEndpoint3 'Microsoft.Network/privateEndpoints@2020-11-01'
     ]
   }
   dependsOn: [
-    SpokeVnetName_resource
-    sQLServer1
+    virtualNetwork1
+
   ]
 }
 
 resource networkPrivateEndpoint4 'Microsoft.Network/privateEndpoints@2020-11-01' = {
-  name: networkPrivateEndpoint4_var
-  location: cmLocation2
+  name: kvpepPrivateEndpoint
+  location: cmLocation1
   properties: {
     subnet: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', SpokeVnetName, subnet1)
+      id: resourceId('Microsoft.Network/virtualNetworks/subnets', AzureSpokeVnetResourceName, subnet1)
     }
     privateLinkServiceConnections: [
       {
         properties: {
-          privateLinkServiceId: resourceId(resourceGroup1, 'Microsoft.KeyVault/vaults', keyVault1_var)
+          privateLinkServiceId: keyVault1.id
           groupIds: [
             'vault'
           ]
@@ -635,14 +618,14 @@ resource networkPrivateEndpoint4 'Microsoft.Network/privateEndpoints@2020-11-01'
     ]
   }
   dependsOn: [
-    SpokeVnetName_resource
-    keyVault1
+    virtualNetwork1
+
   ]
 }
 
 resource networkInterface1 'Microsoft.Network/networkInterfaces@2020-08-01' = {
-  name: networkInterface1_var
-  location: cmLocation2
+  name: AzureVNetInterface
+  location: cmLocation1
   properties: {
     ipConfigurations: [
       {
@@ -651,7 +634,7 @@ resource networkInterface1 'Microsoft.Network/networkInterfaces@2020-08-01' = {
           privateIPAllocationMethod: 'Dynamic'
           privateIPAddressVersion: 'IPv4'
           subnet: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', SpokeVnetName, subnet3)
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', AzureSpokeVnetResourceName, subnet3)
           }
           applicationSecurityGroups: []
         }
@@ -661,13 +644,13 @@ resource networkInterface1 'Microsoft.Network/networkInterfaces@2020-08-01' = {
     enableIPForwarding: false
   }
   dependsOn: [
-    SpokeVnetName_resource
+    virtualNetwork1
   ]
 }
 
 resource virtualMachine1 'Microsoft.Compute/virtualMachines@2022-03-01' = {
-  name: virtualMachine1_var
-  location: cmLocation2
+  name: VirtualMachineDevOpsResource
+  location: cmLocation1
   properties: {
     hardwareProfile: {
       vmSize: 'Standard_B2ms'
@@ -675,7 +658,7 @@ resource virtualMachine1 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: resourceId(resourceGroup1, 'Microsoft.Network/networkInterfaces', networkInterface1_var)
+          id: networkInterface1.id
           properties: {
             deleteOption: 'Delete'
             primary: true
@@ -685,7 +668,7 @@ resource virtualMachine1 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     }
     osProfile: {
       adminPassword: VmAdminPassword
-      adminUsername: 'adminuser'
+      adminUsername: VmAdminUserName
       computerName: 'vmname'
       secrets: []
     }
@@ -704,27 +687,21 @@ resource virtualMachine1 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     }
   }
   zones: []
-  dependsOn: [
-    networkInterface1
-  ]
 }
 
 resource cDNProfileFrontDoor1_cDNProfileFrontDoorEndpoint1 'Microsoft.Cdn/profiles/afdEndpoints@2021-06-01' = {
   parent: cDNProfileFrontDoor1
-  name: '${cDNProfileFrontDoorEndpoint1}'
+  name: cDNProfileFrontDoorEndpoint1
   location: 'global'
   properties: {
     autoGeneratedDomainNameLabelScope: 'ResourceGroupReuse'
     enabledState: 'Enabled'
   }
-  dependsOn: [
-    cDNProfileFrontDoor1
-  ]
 }
 
 resource cDNProfileFrontDoor1_cDNProfileFrontDoorOriginGroup1 'Microsoft.Cdn/profiles/originGroups@2021-06-01' = {
   parent: cDNProfileFrontDoor1
-  name: '${cDNProfileFrontDoorOriginGroup1}'
+  name: cDNProfileFrontDoorOriginGroup1
   properties: {
     healthProbeSettings: {
       probeProtocol: 'Http'
@@ -736,14 +713,11 @@ resource cDNProfileFrontDoor1_cDNProfileFrontDoorOriginGroup1 'Microsoft.Cdn/pro
       successfulSamplesRequired: 5
     }
   }
-  dependsOn: [
-    cDNProfileFrontDoor1
-  ]
 }
 
-resource HubVNetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' = {
-  name: HubVNetName
-  location: cmLocation2
+resource virtualNetwork2 'Microsoft.Network/virtualNetworks@2020-08-01' = {
+  name: AzureHubVnetResourceName
+  location: cmLocation1
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -756,7 +730,7 @@ resource HubVNetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' = {
         properties: {
           addressPrefix: '10.242.0.64/26'
           networkSecurityGroup: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/networkSecurityGroups', networkSecurityGroup4_var)
+            id: networkSecurityGroup4.id
           }
           serviceEndpoints: []
           serviceEndpointPolicies: []
@@ -775,24 +749,21 @@ resource HubVNetName_resource 'Microsoft.Network/virtualNetworks@2020-08-01' = {
     ]
     enableDdosProtection: false
   }
-  dependsOn: [
-    networkSecurityGroup4
-  ]
 }
 
 resource networkFirewall1 'Microsoft.Network/azureFirewalls@2022-01-01' = {
-  name: networkFirewall1_var
-  location: cmLocation2
+  name: AzureFireWallResourceName
+  location: cmLocation1
   properties: {
     ipConfigurations: [
       {
         name: 'AFWIpConfig'
         properties: {
           publicIPAddress: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/publicIPAddresses', publicIpAddress1_var)
+            id: publicIpAddress1.id
           }
           subnet: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', HubVNetName, subnet6)
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', AzureHubVnetResourceName, subnet6)
           }
         }
       }
@@ -804,14 +775,14 @@ resource networkFirewall1 'Microsoft.Network/azureFirewalls@2022-01-01' = {
   }
   zones: []
   dependsOn: [
-    publicIpAddress1
-    HubVNetName_resource
+
+    virtualNetwork2
   ]
 }
 
 resource bastion1 'Microsoft.Network/bastionHosts@2021-05-01' = {
-  name: bastion1_var
-  location: cmLocation2
+  name: BastionResourceName
+  location: cmLocation1
   properties: {
     ipConfigurations: [
       {
@@ -819,10 +790,10 @@ resource bastion1 'Microsoft.Network/bastionHosts@2021-05-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', HubVNetName, subnet4)
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', AzureHubVnetResourceName, subnet4)
           }
           publicIPAddress: {
-            id: resourceId(resourceGroup1, 'Microsoft.Network/publicIPAddresses', publicIpAddress2_var)
+            id: publicIpAddress2.id
           }
         }
       }
@@ -830,22 +801,22 @@ resource bastion1 'Microsoft.Network/bastionHosts@2021-05-01' = {
     scaleUnits: 2
   }
   dependsOn: [
-    HubVNetName_resource
-    publicIpAddress2
+    virtualNetwork2
+
   ]
 }
 
 resource networkPrivateEndpoint5 'Microsoft.Network/privateEndpoints@2020-11-01' = {
-  name: networkPrivateEndpoint5_var
-  location: cmLocation2
+  name: AppSVCPrivateEndpoint
+  location: cmLocation1
   properties: {
     subnet: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks/subnets', SpokeVnetName, subnet5)
+      id: resourceId('Microsoft.Network/virtualNetworks/subnets', AzureSpokeVnetResourceName, subnet5)
     }
     privateLinkServiceConnections: [
       {
         properties: {
-          privateLinkServiceId: resourceId(resourceGroup1, 'Microsoft.Web/sites', AppServiceName)
+          privateLinkServiceId: AppServiceName_resource.id
           groupIds: [
             'sites'
           ]
@@ -855,111 +826,91 @@ resource networkPrivateEndpoint5 'Microsoft.Network/privateEndpoints@2020-11-01'
     ]
   }
   dependsOn: [
-    SpokeVnetName_resource
-    AppServiceName_resource
+    virtualNetwork1
+
   ]
 }
 
-resource SpokeVnetName_networkVirtualNetworkVirtualNetworkPeering1 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-08-01' = {
-  parent: SpokeVnetName_resource
-  name: '${networkVirtualNetworkVirtualNetworkPeering1}'
+resource virtualNetwork1_networkVirtualNetworkVirtualNetworkPeering1 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-08-01' = {
+  parent: virtualNetwork1
+  name: networkVirtualNetworkVirtualNetworkPeering1
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: false
     allowGatewayTransit: false
     useRemoteGateways: false
     remoteVirtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', HubVNetName)
+      id: virtualNetwork2.id
     }
   }
-  dependsOn: [
-    HubVNetName_resource
-    SpokeVnetName_resource
-  ]
 }
+
 
 resource networkPrivateDnsZone1_networkPrivateDnsZoneVirtualNetworkLink1 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
   parent: networkPrivateDnsZone1
-  name: '${networkPrivateDnsZoneVirtualNetworkLink1}'
+  name: networkPrivateDnsZoneVirtualNetworkLink1
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', SpokeVnetName)
+      id: virtualNetwork1.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    SpokeVnetName_resource
-    SpokeVnetName_networkVirtualNetworkVirtualNetworkPeering1
-    networkPrivateDnsZone1
+
+    virtualNetwork1_networkVirtualNetworkVirtualNetworkPeering1
+
   ]
 }
 
 resource networkPrivateDnsZone2_networkPrivateDnsZoneVirtualNetworkLink2 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
   parent: networkPrivateDnsZone2
-  name: '${networkPrivateDnsZoneVirtualNetworkLink2}'
+  name: networkPrivateDnsZoneVirtualNetworkLink2
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', SpokeVnetName)
+      id: virtualNetwork1.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    SpokeVnetName_resource
-    SpokeVnetName_networkVirtualNetworkVirtualNetworkPeering1
-    networkPrivateDnsZone2
+
+    virtualNetwork1_networkVirtualNetworkVirtualNetworkPeering1
+
   ]
 }
 
 resource networkPrivateDnsZone3_networkPrivateDnsZoneVirtualNetworkLink3 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
   parent: networkPrivateDnsZone3
-  name: '${networkPrivateDnsZoneVirtualNetworkLink3}'
+  name: networkPrivateDnsZoneVirtualNetworkLink3
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', SpokeVnetName)
+      id: virtualNetwork1.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    SpokeVnetName_resource
-    SpokeVnetName_networkVirtualNetworkVirtualNetworkPeering1
-    networkPrivateDnsZone3
+
+    virtualNetwork1_networkVirtualNetworkVirtualNetworkPeering1
+
   ]
 }
 
 resource networkPrivateDnsZone4_networkPrivateDnsZoneVirtualNetworkLink4 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
   parent: networkPrivateDnsZone4
-  name: '${networkPrivateDnsZoneVirtualNetworkLink4}'
+  name: networkPrivateDnsZoneVirtualNetworkLink4
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', SpokeVnetName)
+      id: virtualNetwork1.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    SpokeVnetName_resource
-    SpokeVnetName_networkVirtualNetworkVirtualNetworkPeering1
-    networkPrivateDnsZone4
-  ]
-}
 
-resource networkPrivateDnsZone5_networkPrivateDnsZoneVirtualNetworkLink5 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
-  parent: networkPrivateDnsZone5
-  name: '${networkPrivateDnsZoneVirtualNetworkLink5}'
-  properties: {
-    virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', SpokeVnetName)
-    }
-    registrationEnabled: false
-  }
-  location: 'global'
-  dependsOn: [
-    SpokeVnetName_resource
-    SpokeVnetName_networkVirtualNetworkVirtualNetworkPeering1
-    networkPrivateDnsZone5
+    virtualNetwork1_networkVirtualNetworkVirtualNetworkPeering1
+
   ]
 }
 
@@ -977,135 +928,144 @@ resource cDNProfileFrontDoor1_cDNProfileFrontDoorOriginGroup1_cDNProfileFrontDoo
     sharedPrivateLinkResource: {
       groupId: 'sites'
       privateLink: {
-        id: resourceId(resourceGroup1, 'Microsoft.Web/sites', AppServiceName)
+        id: AppServiceName_resource.id
       }
-      privateLinkLocation: cmLocation2
+      privateLinkLocation: ResourceGroupLocation
       requestMessage: 'Approve request for App Service ADF PE'
     }
   }
-  dependsOn: [
-    AppServiceName_resource
-    cDNProfileFrontDoor1_cDNProfileFrontDoorOriginGroup1
-  ]
 }
 
-resource networkPrivateDnsZone6_networkPrivateDnsZoneVirtualNetworkLink6 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
-  parent: networkPrivateDnsZone6
-  name: '${networkPrivateDnsZoneVirtualNetworkLink6}'
+resource networkPrivateDnsZone5_networkPrivateDnsZoneVirtualNetworkLink5 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+  parent: networkPrivateDnsZone5
+  name: networkPrivateDnsZoneVirtualNetworkLink5
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', SpokeVnetName)
+      id: virtualNetwork1.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    SpokeVnetName_resource
-    SpokeVnetName_networkVirtualNetworkVirtualNetworkPeering1
-    networkPrivateDnsZone6
+
+    virtualNetwork1_networkVirtualNetworkVirtualNetworkPeering1
+
   ]
 }
 
-resource HubVNetName_networkVirtualNetworkVirtualNetworkPeering2 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-08-01' = {
-  parent: HubVNetName_resource
-  name: '${networkVirtualNetworkVirtualNetworkPeering2}'
+resource virtualNetwork2_networkVirtualNetworkVirtualNetworkPeering2 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-08-01' = {
+  parent: virtualNetwork2
+  name: networkVirtualNetworkVirtualNetworkPeering2
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: false
     allowGatewayTransit: false
     useRemoteGateways: false
     remoteVirtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', SpokeVnetName)
+      id: virtualNetwork1.id
     }
   }
+}
+
+resource networkPrivateDnsZone6_networkPrivateDnsZoneVirtualNetworkLink6 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+  parent: networkPrivateDnsZone6
+  name: networkPrivateDnsZoneVirtualNetworkLink6
+  properties: {
+    virtualNetwork: {
+      id: virtualNetwork2.id
+    }
+    registrationEnabled: false
+  }
+  location: 'global'
   dependsOn: [
-    SpokeVnetName_resource
-    HubVNetName_resource
+
+    virtualNetwork2_networkVirtualNetworkVirtualNetworkPeering2
+
   ]
 }
 
-resource networkPrivateDnsZone1_networkPrivateDnsZoneVirtualNetworkLink7 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+resource networkPrivateDnsZone6_networkPrivateDnsZoneVirtualNetworkLink7 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+  parent: networkPrivateDnsZone6
+  name: networkPrivateDnsZoneVirtualNetworkLink7
+  properties: {
+    virtualNetwork: {
+      id: virtualNetwork1.id
+    }
+    registrationEnabled: false
+  }
+  location: 'global'
+  dependsOn: [
+
+    virtualNetwork1_networkVirtualNetworkVirtualNetworkPeering1
+
+  ]
+}
+
+resource networkPrivateDnsZone1_networkPrivateDnsZoneVirtualNetworkLink8 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
   parent: networkPrivateDnsZone1
-  name: '${networkPrivateDnsZoneVirtualNetworkLink7}'
+  name: networkPrivateDnsZoneVirtualNetworkLink8
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', HubVNetName)
+      id: virtualNetwork2.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    HubVNetName_resource
-    HubVNetName_networkVirtualNetworkVirtualNetworkPeering2
-    networkPrivateDnsZone1
+
+    virtualNetwork2_networkVirtualNetworkVirtualNetworkPeering2
+
   ]
 }
 
-resource networkPrivateDnsZone2_networkPrivateDnsZoneVirtualNetworkLink8 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+resource networkPrivateDnsZone2_networkPrivateDnsZoneVirtualNetworkLink9 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
   parent: networkPrivateDnsZone2
-  name: '${networkPrivateDnsZoneVirtualNetworkLink8}'
+  name: networkPrivateDnsZoneVirtualNetworkLink9
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', HubVNetName)
+      id: virtualNetwork2.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    HubVNetName_resource
-    HubVNetName_networkVirtualNetworkVirtualNetworkPeering2
-    networkPrivateDnsZone2
+
+    virtualNetwork2_networkVirtualNetworkVirtualNetworkPeering2
+
   ]
 }
 
-resource networkPrivateDnsZone3_networkPrivateDnsZoneVirtualNetworkLink9 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+resource networkPrivateDnsZone3_networkPrivateDnsZoneVirtualNetworkLink10 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
   parent: networkPrivateDnsZone3
-  name: '${networkPrivateDnsZoneVirtualNetworkLink9}'
+  name: networkPrivateDnsZoneVirtualNetworkLink10
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', HubVNetName)
+      id: virtualNetwork2.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    HubVNetName_resource
-    HubVNetName_networkVirtualNetworkVirtualNetworkPeering2
-    networkPrivateDnsZone3
+
+    virtualNetwork2_networkVirtualNetworkVirtualNetworkPeering2
+
   ]
 }
 
-resource networkPrivateDnsZone4_networkPrivateDnsZoneVirtualNetworkLink10 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+resource networkPrivateDnsZone4_networkPrivateDnsZoneVirtualNetworkLink11 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
   parent: networkPrivateDnsZone4
-  name: '${networkPrivateDnsZoneVirtualNetworkLink10}'
+  name: networkPrivateDnsZoneVirtualNetworkLink11
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', HubVNetName)
+      id: virtualNetwork2.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    HubVNetName_resource
-    HubVNetName_networkVirtualNetworkVirtualNetworkPeering2
-    networkPrivateDnsZone4
-  ]
-}
 
-resource networkPrivateDnsZone5_networkPrivateDnsZoneVirtualNetworkLink11 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
-  parent: networkPrivateDnsZone5
-  name: '${networkPrivateDnsZoneVirtualNetworkLink11}'
-  properties: {
-    virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', HubVNetName)
-    }
-    registrationEnabled: false
-  }
-  location: 'global'
-  dependsOn: [
-    HubVNetName_resource
-    HubVNetName_networkVirtualNetworkVirtualNetworkPeering2
-    networkPrivateDnsZone5
+    virtualNetwork2_networkVirtualNetworkVirtualNetworkPeering2
+
   ]
 }
 
@@ -1118,7 +1078,7 @@ resource cDNProfileFrontDoor1_cDNProfileFrontDoorEndpoint1_cDNProfileFrontDoorEn
     forwardingProtocol: 'MatchRequest'
     linkToDefaultDomain: 'Enabled'
     originGroup: {
-      id: resourceId(resourceGroup1, 'Microsoft.Cdn/profiles/originGroups', cDNProfileFrontDoor1_var, cDNProfileFrontDoorOriginGroup1)
+      id: cDNProfileFrontDoor1_cDNProfileFrontDoorOriginGroup1.id
     }
     originPath: '/*'
     patternsToMatch: []
@@ -1126,42 +1086,25 @@ resource cDNProfileFrontDoor1_cDNProfileFrontDoorEndpoint1_cDNProfileFrontDoorEn
     supportedProtocols: []
   }
   dependsOn: [
-    cDNProfileFrontDoor1_cDNProfileFrontDoorOriginGroup1
+
     cDNProfileFrontDoor1_cDNProfileFrontDoorOriginGroup1_cDNProfileFrontDoorOriginGroupOrigin1
-    cDNProfileFrontDoor1_cDNProfileFrontDoorEndpoint1
+
   ]
 }
 
-resource networkPrivateDnsZone6_networkPrivateDnsZoneVirtualNetworkLink12 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
-  parent: networkPrivateDnsZone6
-  name: '${networkPrivateDnsZoneVirtualNetworkLink12}'
+resource networkPrivateDnsZone5_networkPrivateDnsZoneVirtualNetworkLink12 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+  parent: networkPrivateDnsZone5
+  name: networkPrivateDnsZoneVirtualNetworkLink12
   properties: {
     virtualNetwork: {
-      id: resourceId(resourceGroup1, 'Microsoft.Network/virtualNetworks', HubVNetName)
+      id: virtualNetwork2.id
     }
     registrationEnabled: false
   }
   location: 'global'
   dependsOn: [
-    HubVNetName_resource
-    HubVNetName_networkVirtualNetworkVirtualNetworkPeering2
-    networkPrivateDnsZone6
-  ]
-}
 
-//  Telemetry Deployment
-@description('Enable usage and telemetry feedback to Microsoft.')
-param enableTelemetry bool = true
-var telemetryId = 'cf7e9f0a-f872-49db-b72f-f2e318189a6d-${cmLocation2}-msb'
-resource telemetrydeployment 'Microsoft.Resources/deployments@2021-04-01' = if (enableTelemetry) {
-  name: telemetryId
-  location: cmLocation2
-  properties: {
-    mode: 'Incremental'
-    template: {
-      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#'
-      contentVersion: '1.0.0.0'
-      resources: {}
-    }
-  }
+    virtualNetwork2_networkVirtualNetworkVirtualNetworkPeering2
+
+  ]
 }
