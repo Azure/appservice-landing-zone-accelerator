@@ -154,21 +154,21 @@ module "app_service" {
   }
 }
 
-module "devops_vm" {
-  source = "../shared/windows-vm"
+# module "devops_vm" {
+#   source = "../shared/windows-vm"
 
-  resource_group     = azurerm_resource_group.spoke.name
-  vm_name            = "devops"
-  location           = var.location
-  vm_subnet_id       = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.devops_subnet.result)].id
-  unique_id          = random_integer.unique_id.result
-  admin_username     = local.vm_admin_username
-  admin_password     = local.vm_admin_password
-  aad_admin_username = var.vm_aad_admin_username
-  enroll_with_mdm    = false
-  install_extensions = false
-  firewall_rules     = var.firewall_rules
-}
+#   resource_group     = azurerm_resource_group.spoke.name
+#   vm_name            = "devops"
+#   location           = var.location
+#   vm_subnet_id       = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.devops_subnet.result)].id
+#   unique_id          = random_integer.unique_id.result
+#   admin_username     = local.vm_admin_username
+#   admin_password     = local.vm_admin_password
+#   aad_admin_username = var.vm_aad_admin_username
+#   enroll_with_mdm    = false
+#   install_extensions = false
+#   firewall_rules     = var.firewall_rules
+# }
 
 module "front_door" {
   source = "./front-door"

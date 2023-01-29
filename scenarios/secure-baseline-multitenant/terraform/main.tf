@@ -1,21 +1,21 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">=3.39.1"
-    }
-    azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = ">=1.2.23"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     azurerm = {
+#       source  = "hashicorp/azurerm"
+#       version = ">=3.39.1"
+#     }
+#     azurecaf = {
+#       source  = "aztfmod/azurecaf"
+#       version = ">=1.2.23"
+#     }
+#   }
+# }
 
-provider "azurerm" {
-  features {}
-  disable_terraform_partner_id = false
-  partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
-}
+# # provider "azurerm" {
+# #   features {}
+# #   disable_terraform_partner_id = false
+# #   partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
+# # }
 
 locals {
   hub_vnet_cidr            = var.hub_vnet_cidr == null ? ["10.242.0.0/20"] : var.hub_vnet_cidr
