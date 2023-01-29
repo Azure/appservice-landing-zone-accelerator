@@ -23,25 +23,21 @@ Clone this repo, install Azure CLI, install Bicep.
 [Install Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 
 
-
-
-
 ### Deploy the App Service Landing Zone Bicep code
 
-The app service in the params should be same as the resource group name, pass the rg name below:
-MyResourceGroup=RgNameShouldBeSameAsAppServiceName
 
-# Enter parameters value in azuredeploy.bicep
+```bash
+# Pass parameters values in parameters.azuredeploy.json
 
+ResourceGroupName=ResourceGroupName
+ResourceGroupLocation='West Europe'
 
-az group create --name $MyResourceGroup-rg --location "West Europe"
+az group create --name $ResourceGroupName --location $ResourceGroupLocation
 
-az deployment group create \
-  --name $MyResourceGroup-deployment \
-  --resource-group $MyResourceGroup-rg \
-   --template-file azuredeploy.bicep
-   
-   
+az deployment group create --name $ResourceGroupName-deployment --resource-group $ResourceGroupName --template-file azuredeploy.bicep --parameters  parameters.azuredeploy.json
+
+```
+
 
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
 

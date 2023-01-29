@@ -1,0 +1,35 @@
+
+  {
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "AppServiceName": {
+        "value": "AppServiceName"
+      },
+      "VmAdminPassword": {
+        "value": "VmAdminPassword"
+        
+      },
+      "AzureSqlLoginPassword": {
+        "value": "AzureSqlAdminPassword"
+     
+      },
+      "ContainerRegistryName": {
+        "value": "ContainerName "
+      },
+      "HubVNetName": {
+        "value": "Hub Virtual Network Name"
+      },
+      "ResourceGroupLocation": {
+        "value": "Location"
+      },
+      "SpokeVnetName": {
+        "value": "Spoke Virtual Network"
+      },
+      "SqlServerAdminAccountName": {
+        "value": "Sql Admin Account Name "
+      }
+    }
+  }
+
+
