@@ -13,6 +13,7 @@ param CICDAgentSubnetId string
 param vmUsername string
 
 @description('The password for the Administrator user for all VMs created by this deployment')
+@secure()
 param vmPassword string
 
 @description('The CI/CD platform to be used, and for which an agent will be configured for the ASE deployment. Specify \'none\' if no agent needed')

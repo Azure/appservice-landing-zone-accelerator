@@ -22,6 +22,7 @@ param numericSuffix string = ''
 @description('Required. The user name to be used as the Administrator for all VMs created by this deployment')
 param vmUsername string
 
+@secure()
 @description('Required. The password for the Administrator user for all VMs created by this deployment')
 param vmPassword string
 
@@ -44,7 +45,7 @@ param personalAccessToken string
 param tags object = {}
 
 @description('Optional. Create Redis resource.')
-param createRedisResource bool = true
+param createRedisResource bool = false
 
 // Variables
 
@@ -167,3 +168,20 @@ module redis 'redis.bicep' = if(createRedisResource) {
 output networkResourceGroupName string = networkingResourceGroup.name
 output sharedResourceGroupName string = sharedResourceGroup.name
 output aseResourceGroupName string = aseResourceGroup.name
+
+//  Telemetry Deployment
+@description('Enable usage and telemetry feedback to Microsoft.')
+param enableTelemetry bool = true
+var telemetryId = 'cf7e9f0a-f872-49db-b72f-f2e318189a6d-${location}-asesb'
+resource telemetrydeployment 'Microsoft.Resources/deployments@2021-04-01' = if (enableTelemetry) {
+  name: telemetryId
+  location: location
+  properties: {
+    mode: 'Incremental'
+    template: {
+      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#'
+      contentVersion: '1.0.0.0'
+      resources: {}
+    }
+  }
+}

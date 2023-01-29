@@ -1,0 +1,121 @@
+# WIP - Blocked on MultiTenant AAD Service Principal Config
+
+# name: 'Multi-tenant Secure Baseline: Terraform Deploy'
+
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - main
+#       - jin/oidc-refactor
+#     paths:
+#       - '.github/workflows/terraform.secure-baseline.multi-tenant.yml'
+#       - 'scenarios/secure-baseline-multitenant/terraform/**'
+#       - '!scenarios/secure-baseline-multitenant/**.md'
+
+#   pull_request:
+#     branches:
+#       - main
+#       - feature/*
+#     paths:
+#       - '.github/workflows/terraform.secure-baseline.multi-tenant.yml'
+#       - 'scenarios/secure-baseline-multitenant/terraform/**'
+#       - '!scenarios/secure-baseline-multitenant/**.md'
+
+# permissions:
+#   id-token: write
+#   contents: read
+
+# env:
+#   modulePath: 'scenarios/secure-baseline-multitenant/terraform'
+#   terraform_version: 1.3.7 # must be greater than or equal to 1.2 for OIDC
+#   backend_key: secure-baseline.multitenant.tfstate
+
+# jobs:
+#   validate-plan-and-apply:
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         working-directory: ${{ env.modulePath }}
+#     steps:
+#       - name: Checkout the code
+#         uses: actions/checkout@main
+
+#       # Log into Azure via OIDC
+#       - uses: azure/login@v1
+#         with:
+#           client-id: ${{ secrets.AZURE_CLIENT_ID }}
+#           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+#           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: ${{ env.terraform_version }}
+
+#       - name: Terraform Init
+#         id: init
+#         run: |
+#           terraform init \
+#             -input=false \
+#             -backend-config="resource_group_name=${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}"   \
+#             -backend-config="storage_account_name=${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}" \
+#             -backend-config="container_name=${{ secrets.AZURE_TF_STATE_STORAGE_CONTAINER_NAME }}"     \
+#             -backend-config="key=${{ env.backend_key }}"
+#         env:
+#           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+#           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#           ARM_USE_OIDC: true
+
+#       - name: Terraform Validate
+#         id: validate
+#         run: terraform validate
+
+#       - name: Terraform Plan
+#         id: plan
+#         continue-on-error: true
+#         run: |
+#           terraform plan \
+#             -input=false \
+#             -out=tfplan \
+#             -no-color \
+#             && terraform show -no-color tfplan
+#         env:
+#           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+#           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#           ARM_USE_OIDC: true
+#           TF_VAR_aad_admin_group_name: ${{ secrets.AZURE_AAD_ADMIN_GROUP_NAME }}
+#           TF_VAR_aad_admin_group_object_id: ${{ secrets.AZURE_AAD_ADMIN_GROUP_OBJECT_ID }}
+#           TF_VAR_vm_aad_admin_username: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
+#           TF_VAR_tenant_id: ${{ secrets.AZURE_MULTITENANT_TARGET_TENANT_ID }}
+
+#       - name: Reformat Plan
+#         if: steps.plan.outcome == 'success'
+#         run: |
+#           echo '${{ steps.plan.outputs.stdout || steps.plan.outputs.stderr }}' \
+#           | sed -E 's/^([[:space:]]+)([-+])/\2\1/g' > plan.txt  
+
+#       - name: Put Plan in Env Var
+#         if: steps.plan.outcome == 'success'
+#         run: |
+#           PLAN=$(cat plan.txt)
+#           echo "PLAN<<EOF" >> $GITHUB_ENV
+#           echo "$PLAN" >> $GITHUB_ENV
+#           echo "EOF" >> $GITHUB_ENV
+
+#       - name: Terraform Apply
+#         if: steps.plan.outcome == 'success'
+#         id: apply
+#         run: |
+#           terraform apply \
+#             -auto-approve \
+#             -input=false \
+#             -no-color \
+#             tfplan
+#         env:
+#           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+#           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#           ARM_USE_OIDC: true

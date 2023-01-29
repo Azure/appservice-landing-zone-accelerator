@@ -1,0 +1,1276 @@
+{
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "author": "Cloud Maker",
+    "comments": "Generated with Cloud Maker. Try it yourself at https://cloudmaker.ai."
+  },
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "parameters": {
+    "__cmLocation1": {
+      "type": "string",
+      "defaultValue": "West Europe"
+    },
+    "__cmLocation2": {
+      "type": "string",
+      "defaultValue": "[parameters('__cmLocation1')]"
+    },
+    "AppServiceName": {
+      "type": "string"
+    },
+    "AzureSqlLoginPassword": {
+      "type": "secureString"
+    },
+    "HubVNetName": {
+      "type": "string"
+    },
+    "SpokeVnetName": {
+      "type": "string"
+    },
+    "SqlServerAdminAccountName": {
+      "type": "string"
+    },
+    "VmAdminPassword": {
+      "type": "secureString"
+    }
+  },
+  "variables": {
+    "appConfiguration1": "[concat(parameters('AppServiceName'), '-appcs')]",
+    "applicationInsights1": "[concat(parameters('AppServiceName'), '-appi')]",
+    "appServiceConfigRegionalVirtualNetworkIntegration1": "virtualNetwork",
+    "bastion1": "[concat(parameters('HubVNetName'), '-bas')]",
+    "cDNProfileFrontDoor1": "[concat(parameters('AppServiceName'), '-afd')]",
+    "cDNProfileFrontDoorEndpoint1": "[concat(variables('cDNProfileFrontDoor1'), '-fde')]",
+    "cDNProfileFrontDoorEndpointsRoute1": "[concat(variables('cDNProfileFrontDoor1'), '-route')]",
+    "cDNProfileFrontDoorOriginGroup1": "[concat(variables('cDNProfileFrontDoor1'), '-AfdAsOG')]",
+    "cDNProfileFrontDoorOriginGroupOrigin1": "[concat(variables('cDNProfileFrontDoor1'), '-origin')]",
+    "containerRegistry1": "[concat(parameters('AppServiceName'), 'cr')]",
+    "dDOSProtectionPlan1": "[concat(parameters('SpokeVnetName'), '-DDOSProtection')]",
+    "keyVault1": "[concat(parameters('AppServiceName'), '-kv')]",
+    "networkFirewall1": "[concat(parameters('HubVNetName'), '-afw')]",
+    "networkInterface1": "[concat(variables('virtualMachine1'), '-interface')]",
+    "networkInterfaceIPConfiguration1": "config1",
+    "networkPrivateDnsZone1": "privatelink.azconfig.io",
+    "networkPrivateDnsZone2": "privatelink.vaultcore.azure.net",
+    "networkPrivateDnsZone3": "privatelink.redis.cache.windows.net",
+    "networkPrivateDnsZone4": "privatelink.azurewebsites.net",
+    "networkPrivateDnsZone5": "privatelink.azurecr.io",
+    "networkPrivateDnsZone6": "privatelink.database.windows.net",
+    "networkPrivateDnsZoneVirtualNetworkLink1": "spoke",
+    "networkPrivateDnsZoneVirtualNetworkLink10": "HubAppService",
+    "networkPrivateDnsZoneVirtualNetworkLink11": "hub",
+    "networkPrivateDnsZoneVirtualNetworkLink12": "hub",
+    "networkPrivateDnsZoneVirtualNetworkLink2": "spoke",
+    "networkPrivateDnsZoneVirtualNetworkLink3": "spoke",
+    "networkPrivateDnsZoneVirtualNetworkLink4": "SpokeAppService",
+    "networkPrivateDnsZoneVirtualNetworkLink5": "spoke",
+    "networkPrivateDnsZoneVirtualNetworkLink6": "spoke",
+    "networkPrivateDnsZoneVirtualNetworkLink7": "hub",
+    "networkPrivateDnsZoneVirtualNetworkLink8": "hub",
+    "networkPrivateDnsZoneVirtualNetworkLink9": "hub",
+    "networkPrivateEndpoint1": "[concat(parameters('SpokeVnetName'), '-appcspep')]",
+    "networkPrivateEndpoint2": "[concat(parameters('SpokeVnetName'), '-crpep')]",
+    "networkPrivateEndpoint3": "[concat(parameters('SpokeVnetName'), '-sqldbpep')]",
+    "networkPrivateEndpoint4": "[concat(parameters('SpokeVnetName'), '-kvpep')]",
+    "networkPrivateEndpoint5": "[concat(parameters('SpokeVnetName'), '-AppSVC')]",
+    "networkSecurityGroup1": "[concat(variables('subnet1'), '-nsg')]",
+    "networkSecurityGroup2": "[concat(variables('subnet2'), '-nsg')]",
+    "networkSecurityGroup3": "[concat(variables('subnet3'), '-nsg')]",
+    "networkSecurityGroup4": "[concat(variables('subnet4'), '-nsg')]",
+    "networkSecurityGroup5": "[concat(variables('subnet5'), '-nsg')]",
+    "networkVirtualNetworkVirtualNetworkPeering1": "HubPeering",
+    "networkVirtualNetworkVirtualNetworkPeering2": "Spoke",
+    "operationalInsightsWorkspace1": "[concat(parameters('AppServiceName'), '-log')]",
+    "publicIpAddress1": "AzFirewallpop",
+    "publicIpAddress2": "[concat(variables('subnet4'), '-PIP')]",
+    "redisCache1": "[concat(parameters('AppServiceName'), '-redis')]",
+    "resourceGroup1": "[concat(parameters('AppServiceName'), '-rg')]",
+    "sQLServer1": "[concat(parameters('AppServiceName'), '-sql')]",
+    "subnet1": "[concat(parameters('SpokeVnetName'), '-pepsnet')]",
+    "subnet2": "[concat(parameters('SpokeVnetName'), '-appsubnet')]",
+    "subnet3": "[concat(parameters('SpokeVnetName'), '-Vmsssnet')]",
+    "subnet4": "AzureBastionSubnet",
+    "subnet5": "[concat(parameters('SpokeVnetName'), '-AFDSubnet')]",
+    "subnet6": "AzureFirewallSubnet",
+    "virtualMachine1": "[concat(parameters('AppServiceName'), '-DevOpsvm')]",
+    "virtualMachineOSDiskWindows1": "OsDisk",
+    "webServerfarm1": "[concat(parameters('AppServiceName'), '-asp')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2019-09-01",
+      "type": "Microsoft.KeyVault/vaults",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2019-09-01/vaults",
+      "name": "[variables('keyVault1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "accessPolicies": [],
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false,
+        "enableSoftDelete": true,
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[subscription().tenantId]"
+      }
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "type": "Microsoft.AppConfiguration/configurationStores",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.AppConfiguration/2019-10-01/configurationStores",
+      "name": "[variables('appConfiguration1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {},
+      "sku": {
+        "name": "Standard"
+      }
+    },
+    {
+      "apiVersion": "2015-11-01-preview",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.OperationalInsights/2015-11-01-preview/workspaces",
+      "name": "[variables('operationalInsightsWorkspace1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-05-01",
+      "type": "Microsoft.Insights/components",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Insights/2015-05-01/components",
+      "name": "[variables('applicationInsights1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "Request_Source": "rest"
+      }
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/ddosProtectionPlans",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/ddosProtectionPlans",
+      "name": "[variables('dDOSProtectionPlan1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {}
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/networkSecurityGroups",
+      "name": "[variables('networkSecurityGroup1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/networkSecurityGroups",
+      "name": "[variables('networkSecurityGroup2')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "apiVersion": "2019-06-01-preview",
+      "type": "Microsoft.Sql/servers",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Sql/2019-06-01-preview/servers",
+      "name": "[variables('sQLServer1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "administratorLogin": "[parameters('SqlServerAdminAccountName')]",
+        "administratorLoginPassword": "[parameters('AzureSqlLoginPassword')]"
+      }
+    },
+    {
+      "apiVersion": "2021-09-01",
+      "type": "Microsoft.ContainerRegistry/registries",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2021-09-01/registries",
+      "name": "[variables('containerRegistry1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "adminUserEnabled": false
+      },
+      "sku": {
+        "name": "Premium"
+      }
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/networkSecurityGroups",
+      "name": "[variables('networkSecurityGroup3')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "apiVersion": "2020-12-01",
+      "type": "Microsoft.Web/serverfarms",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Web/2020-12-01/serverfarms",
+      "name": "[variables('webServerfarm1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "targetWorkerCount": 1,
+        "targetWorkerSizeId": 1
+      },
+      "sku": {
+        "capacity": 1,
+        "name": "S2"
+      }
+    },
+    {
+      "apiVersion": "2020-12-01",
+      "type": "Microsoft.Web/sites",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Web/2020-12-01/sites",
+      "name": "[parameters('AppServiceName')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "clientAffinityEnabled": false,
+        "httpsOnly": true,
+        "serverFarmId": "[resourceId(variables('resourceGroup1'), 'Microsoft.Web/serverfarms', variables('webServerfarm1'))]",
+        "siteConfig": {
+          "alwaysOn": true,
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId(variables('resourceGroup1'), 'Microsoft.Insights/components', variables('applicationInsights1')), '2015-05-01', 'Full').properties.InstrumentationKey]"
+            }
+          ],
+          "connectionStrings": [],
+          "defaultDocuments": [],
+          "handlerMappings": [],
+          "httpLoggingEnabled": false,
+          "ipSecurityRestrictions": [],
+          "minTlsVersion": "1.2",
+          "remoteDebuggingEnabled": false,
+          "scmIpSecurityRestrictions": [],
+          "vnetRouteAllEnabled": true,
+          "webSocketsEnabled": false
+        }
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Web/serverfarms', variables('webServerfarm1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Insights/components', variables('applicationInsights1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[variables('networkPrivateDnsZone1')]",
+      "location": "global"
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[variables('networkPrivateDnsZone2')]",
+      "location": "global"
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[variables('networkPrivateDnsZone3')]",
+      "location": "global"
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[variables('networkPrivateDnsZone4')]",
+      "location": "global"
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[variables('networkPrivateDnsZone5')]",
+      "location": "global"
+    },
+    {
+      "apiVersion": "2017-10-01",
+      "type": "Microsoft.Cache/Redis",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Cache/2017-10-01/Redis",
+      "name": "[variables('redisCache1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "sku": {
+          "capacity": 0,
+          "family": "C",
+          "name": "Standard"
+        }
+      }
+    },
+    {
+      "apiVersion": "2021-06-01",
+      "type": "Microsoft.Cdn/profiles",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Cdn/2021-06-01/profiles",
+      "name": "[variables('cDNProfileFrontDoor1')]",
+      "location": "global",
+      "properties": {},
+      "sku": {
+        "name": "Premium_AzureFrontDoor"
+      }
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[variables('networkPrivateDnsZone6')]",
+      "location": "global"
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/networkSecurityGroups",
+      "name": "[variables('networkSecurityGroup4')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "securityRules": [
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "Internet",
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefix": "*",
+              "destinationAddressPrefixes": [],
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Inbound"
+            },
+            "name": "AllowHttpsInBound"
+          },
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "GatewayManager",
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefix": "*",
+              "destinationAddressPrefixes": [],
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "access": "Allow",
+              "priority": 130,
+              "direction": "Inbound"
+            },
+            "name": "AllowGatewayManagerInbound"
+          },
+          {
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefixes": [],
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "8080",
+                "5701"
+              ],
+              "access": "Allow",
+              "priority": 150,
+              "direction": "Inbound"
+            },
+            "name": "AllowBastionHostCommunicationInBound"
+          },
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "AzureLoadBalancer",
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefix": "*",
+              "destinationAddressPrefixes": [],
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "access": "Allow",
+              "priority": 140,
+              "direction": "Inbound"
+            },
+            "name": "AllowLoadBalancerInBound"
+          },
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefixes": [],
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "22",
+                "3389"
+              ],
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound"
+            },
+            "name": "AllowSshRdpOutBound"
+          },
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "*",
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefix": "AzureCloud",
+              "destinationAddressPrefixes": [],
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Outbound"
+            },
+            "name": "AllowAzureCloudCommunicationOutBound"
+          },
+          {
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefixes": [],
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "8080",
+                "5701"
+              ],
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Outbound"
+            },
+            "name": "AllowBastionHostCommunicationOutBound"
+          },
+          {
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefix": "Internet",
+              "destinationAddressPrefixes": [],
+              "sourcePortRanges": [],
+              "destinationPortRanges": [
+                "80",
+                "443"
+              ],
+              "access": "Allow",
+              "priority": 130,
+              "direction": "Outbound"
+            },
+            "name": "AllowGetSessionInformationOutBound"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/publicIPAddresses",
+      "name": "[variables('publicIpAddress1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Regional"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "publicIPAddressVersion": "IPv4",
+        "ipTags": []
+      },
+      "zones": []
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/publicIPAddresses",
+      "name": "[variables('publicIpAddress2')]",
+      "location": "[parameters('__cmLocation2')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "ipTags": []
+      },
+      "zones": []
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/networkSecurityGroups",
+      "name": "[variables('networkSecurityGroup5')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/virtualNetworks",
+      "name": "[parameters('SpokeVnetName')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.240.0.0/20"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnet1')]",
+            "properties": {
+              "addressPrefix": "10.240.11.0/24",
+              "networkSecurityGroup": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup1'))]"
+              },
+              "serviceEndpoints": [],
+              "serviceEndpointPolicies": [],
+              "delegations": []
+            }
+          },
+          {
+            "name": "[variables('subnet2')]",
+            "properties": {
+              "addressPrefix": "10.240.0.0/26",
+              "networkSecurityGroup": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup2'))]"
+              },
+              "serviceEndpoints": [],
+              "serviceEndpointPolicies": [],
+              "delegations": [
+                {
+                  "properties": {
+                    "serviceName": "Microsoft.Web/serverFarms"
+                  },
+                  "name": "appservicedelegation"
+                }
+              ]
+            }
+          },
+          {
+            "name": "[variables('subnet3')]",
+            "properties": {
+              "addressPrefix": "10.240.10.128/26",
+              "networkSecurityGroup": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup3'))]"
+              },
+              "serviceEndpoints": [],
+              "serviceEndpointPolicies": [],
+              "delegations": []
+            }
+          },
+          {
+            "name": "[variables('subnet5')]",
+            "properties": {
+              "addressPrefix": "10.240.0.64/26",
+              "networkSecurityGroup": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup5'))]"
+              },
+              "serviceEndpoints": [],
+              "serviceEndpointPolicies": [],
+              "delegations": []
+            }
+          }
+        ],
+        "enableDdosProtection": true,
+        "ddosProtectionPlan": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/ddosProtectionPlans', variables('dDOSProtectionPlan1'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup2'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup3'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup5'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/ddosProtectionPlans', variables('dDOSProtectionPlan1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/privateEndpoints",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-11-01/privateEndpoints",
+      "name": "[variables('networkPrivateEndpoint1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "subnet": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('SpokeVnetName'), variables('subnet1'))]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "properties": {
+              "privateLinkServiceId": "[resourceId(variables('resourceGroup1'), 'Microsoft.AppConfiguration/configurationStores', variables('appConfiguration1'))]",
+              "groupIds": [
+                "configurationStores"
+              ]
+            },
+            "name": "PrivateLinkServiceappconfig"
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.AppConfiguration/configurationStores', variables('appConfiguration1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/privateEndpoints",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-11-01/privateEndpoints",
+      "name": "[variables('networkPrivateEndpoint2')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "subnet": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('SpokeVnetName'), variables('subnet1'))]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "properties": {
+              "privateLinkServiceId": "[resourceId(variables('resourceGroup1'), 'Microsoft.ContainerRegistry/registries', variables('containerRegistry1'))]",
+              "groupIds": [
+                "registry"
+              ]
+            },
+            "name": "PrivateLinkServicecr"
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.ContainerRegistry/registries', variables('containerRegistry1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-11-01",
+      "type": "Microsoft.Web/sites/config",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Web/2018-11-01/sites",
+      "name": "[concat(parameters('AppServiceName'), '/', variables('appServiceConfigRegionalVirtualNetworkIntegration1'))]",
+      "properties": {
+        "subnetResourceId": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('SpokeVnetName'), variables('subnet2'))]"
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Web/sites', parameters('AppServiceName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/privateEndpoints",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-11-01/privateEndpoints",
+      "name": "[variables('networkPrivateEndpoint3')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "subnet": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('SpokeVnetName'), variables('subnet1'))]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "properties": {
+              "privateLinkServiceId": "[resourceId(variables('resourceGroup1'), 'Microsoft.Sql/servers', variables('sQLServer1'))]",
+              "groupIds": [
+                "sqlServer"
+              ]
+            },
+            "name": "PrivateLinkServicesql"
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Sql/servers', variables('sQLServer1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/privateEndpoints",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-11-01/privateEndpoints",
+      "name": "[variables('networkPrivateEndpoint4')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "subnet": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('SpokeVnetName'), variables('subnet1'))]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "properties": {
+              "privateLinkServiceId": "[resourceId(variables('resourceGroup1'), 'Microsoft.KeyVault/vaults', variables('keyVault1'))]",
+              "groupIds": [
+                "vault"
+              ]
+            },
+            "name": "PrivateLinkServicekv"
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.KeyVault/vaults', variables('keyVault1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/networkInterfaces",
+      "name": "[variables('networkInterface1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "properties": {
+              "loadBalancerBackendAddressPools": [],
+              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAddressVersion": "IPv4",
+              "subnet": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('SpokeVnetName'), variables('subnet3'))]"
+              },
+              "applicationSecurityGroups": []
+            },
+            "name": "[variables('networkInterfaceIPConfiguration1')]"
+          }
+        ],
+        "enableIPForwarding": false
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2022-03-01",
+      "type": "Microsoft.Compute/virtualMachines",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Compute/2022-03-01/virtualMachines",
+      "name": "[variables('virtualMachine1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B2ms"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkInterfaces', variables('networkInterface1'))]",
+              "properties": {
+                "deleteOption": "Delete",
+                "primary": true
+              }
+            }
+          ]
+        },
+        "osProfile": {
+          "adminPassword": "[parameters('VmAdminPassword')]",
+          "adminUsername": "adminuser",
+          "computerName": "vmname",
+          "secrets": []
+        },
+        "storageProfile": {
+          "dataDisks": [],
+          "imageReference": {
+            "offer": "WindowsServer",
+            "publisher": "MicrosoftWindowsServer",
+            "sku": "2022-datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[variables('virtualMachineOSDiskWindows1')]",
+            "createOption": "FromImage"
+          }
+        }
+      },
+      "zones": [],
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkInterfaces', variables('networkInterface1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2021-06-01",
+      "type": "Microsoft.Cdn/profiles/afdEndpoints",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Cdn/2021-06-01/profiles",
+      "name": "[concat(variables('cDNProfileFrontDoor1'), '/', variables('cDNProfileFrontDoorEndpoint1'))]",
+      "location": "global",
+      "properties": {
+        "autoGeneratedDomainNameLabelScope": "ResourceGroupReuse",
+        "enabledState": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Cdn/profiles', variables('cDNProfileFrontDoor1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2021-06-01",
+      "type": "Microsoft.Cdn/profiles/originGroups",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Cdn/2021-06-01/profiles",
+      "name": "[concat(variables('cDNProfileFrontDoor1'), '/', variables('cDNProfileFrontDoorOriginGroup1'))]",
+      "properties": {
+        "healthProbeSettings": {
+          "probeProtocol": "Http",
+          "probeRequestType": "GET"
+        },
+        "loadBalancingSettings": {
+          "additionalLatencyInMilliseconds": 500,
+          "sampleSize": 10,
+          "successfulSamplesRequired": 5
+        }
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Cdn/profiles', variables('cDNProfileFrontDoor1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/virtualNetworks",
+      "name": "[parameters('HubVNetName')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.242.0.0/20"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnet4')]",
+            "properties": {
+              "addressPrefix": "10.242.0.64/26",
+              "networkSecurityGroup": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup4'))]"
+              },
+              "serviceEndpoints": [],
+              "serviceEndpointPolicies": [],
+              "delegations": []
+            }
+          },
+          {
+            "name": "[variables('subnet6')]",
+            "properties": {
+              "addressPrefix": "10.242.0.0/26",
+              "serviceEndpoints": [],
+              "serviceEndpointPolicies": [],
+              "delegations": []
+            }
+          }
+        ],
+        "enableDdosProtection": false
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroup4'))]"
+      ]
+    },
+    {
+      "apiVersion": "2022-01-01",
+      "type": "Microsoft.Network/azureFirewalls",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2022-01-01/azureFirewalls",
+      "name": "[variables('networkFirewall1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "AFWIpConfig",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/publicIPAddresses', variables('publicIpAddress1'))]"
+              },
+              "subnet": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('HubVNetName'), variables('subnet6'))]"
+              }
+            }
+          }
+        ],
+        "sku": {
+          "name": "AZFW_VNet",
+          "tier": "Standard"
+        }
+      },
+      "zones": [],
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/publicIPAddresses', variables('publicIpAddress1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2021-05-01",
+      "type": "Microsoft.Network/bastionHosts",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2021-05-01/bastionHosts",
+      "name": "[variables('bastion1')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipConfig",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('HubVNetName'), variables('subnet4'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/publicIPAddresses', variables('publicIpAddress2'))]"
+              }
+            }
+          }
+        ],
+        "scaleUnits": 2
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/publicIPAddresses', variables('publicIpAddress2'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/privateEndpoints",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-11-01/privateEndpoints",
+      "name": "[variables('networkPrivateEndpoint5')]",
+      "location": "[parameters('__cmLocation2')]",
+      "properties": {
+        "subnet": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/subnets', parameters('SpokeVnetName'), variables('subnet5'))]"
+        },
+        "privateLinkServiceConnections": [
+          {
+            "properties": {
+              "privateLinkServiceId": "[resourceId(variables('resourceGroup1'), 'Microsoft.Web/sites', parameters('AppServiceName'))]",
+              "groupIds": [
+                "sites"
+              ]
+            },
+            "name": "PrivateLinkServiceAppSVc"
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Web/sites', parameters('AppServiceName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/virtualNetworks",
+      "name": "[concat(parameters('SpokeVnetName'), '/', variables('networkVirtualNetworkVirtualNetworkPeering1'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": false,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone1'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink1'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('SpokeVnetName'), variables('networkVirtualNetworkVirtualNetworkPeering1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone2'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink2'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('SpokeVnetName'), variables('networkVirtualNetworkVirtualNetworkPeering1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone2'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone3'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink3'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('SpokeVnetName'), variables('networkVirtualNetworkVirtualNetworkPeering1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone3'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone4'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink4'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('SpokeVnetName'), variables('networkVirtualNetworkVirtualNetworkPeering1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone4'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone5'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink5'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('SpokeVnetName'), variables('networkVirtualNetworkVirtualNetworkPeering1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone5'))]"
+      ]
+    },
+    {
+      "apiVersion": "2021-06-01",
+      "type": "Microsoft.Cdn/profiles/originGroups/origins",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Cdn/2021-06-01/profiles",
+      "name": "[concat(variables('cDNProfileFrontDoor1'), '/', variables('cDNProfileFrontDoorOriginGroup1'), '/', variables('cDNProfileFrontDoorOriginGroupOrigin1'))]",
+      "properties": {
+        "enabledState": "Enabled",
+        "enforceCertificateNameCheck": true,
+        "hostName": "[concat(parameters('AppServiceName'), '.azurewebsites.net')]",
+        "httpPort": 80,
+        "httpsPort": 443,
+        "originHostHeader": "[concat(parameters('AppServiceName'), '.azurewebsites.net')]",
+        "priority": 1,
+        "sharedPrivateLinkResource": {
+          "groupId": "sites",
+          "privateLink": {
+            "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Web/sites', parameters('AppServiceName'))]"
+          },
+          "privateLinkLocation": "[parameters('__cmLocation1')]",
+          "requestMessage": "Approve request for App Service ADF PE"
+        }
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Web/sites', parameters('AppServiceName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Cdn/profiles/originGroups', variables('cDNProfileFrontDoor1'), variables('cDNProfileFrontDoorOriginGroup1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone6'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink6'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('SpokeVnetName'), variables('networkVirtualNetworkVirtualNetworkPeering1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone6'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2020-08-01/virtualNetworks",
+      "name": "[concat(parameters('HubVNetName'), '/', variables('networkVirtualNetworkVirtualNetworkPeering2'))]",
+      "properties": {
+        "allowVirtualNetworkAccess": true,
+        "allowForwardedTraffic": false,
+        "allowGatewayTransit": false,
+        "useRemoteGateways": false,
+        "remoteVirtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('SpokeVnetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone1'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink7'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('HubVNetName'), variables('networkVirtualNetworkVirtualNetworkPeering2'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone2'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink8'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('HubVNetName'), variables('networkVirtualNetworkVirtualNetworkPeering2'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone2'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone3'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink9'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('HubVNetName'), variables('networkVirtualNetworkVirtualNetworkPeering2'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone3'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone4'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink10'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('HubVNetName'), variables('networkVirtualNetworkVirtualNetworkPeering2'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone4'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone5'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink11'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('HubVNetName'), variables('networkVirtualNetworkVirtualNetworkPeering2'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone5'))]"
+      ]
+    },
+    {
+      "apiVersion": "2021-06-01",
+      "type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Cdn/2021-06-01/profiles",
+      "name": "[concat(variables('cDNProfileFrontDoor1'), '/', variables('cDNProfileFrontDoorEndpoint1'), '/', variables('cDNProfileFrontDoorEndpointsRoute1'))]",
+      "properties": {
+        "customDomains": [],
+        "enabledState": "Enabled",
+        "forwardingProtocol": "MatchRequest",
+        "linkToDefaultDomain": "Enabled",
+        "originGroup": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Cdn/profiles/originGroups', variables('cDNProfileFrontDoor1'), variables('cDNProfileFrontDoorOriginGroup1'))]"
+        },
+        "originPath": "/*",
+        "patternsToMatch": [],
+        "ruleSets": [],
+        "supportedProtocols": []
+      },
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Cdn/profiles/originGroups', variables('cDNProfileFrontDoor1'), variables('cDNProfileFrontDoorOriginGroup1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Cdn/profiles/originGroups/origins', variables('cDNProfileFrontDoor1'), variables('cDNProfileFrontDoorOriginGroup1'), variables('cDNProfileFrontDoorOriginGroupOrigin1'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Cdn/profiles/afdEndpoints', variables('cDNProfileFrontDoor1'), variables('cDNProfileFrontDoorEndpoint1'))]"
+      ]
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "comments": "Property reference: https://docs.microsoft.com/en-us/azure/templates/Microsoft.Network/2018-09-01/privateDnsZones",
+      "name": "[concat(variables('networkPrivateDnsZone6'), '/', variables('networkPrivateDnsZoneVirtualNetworkLink12'))]",
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]"
+        },
+        "registrationEnabled": false
+      },
+      "location": "global",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks', parameters('HubVNetName'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('HubVNetName'), variables('networkVirtualNetworkVirtualNetworkPeering2'))]",
+        "[resourceId(variables('resourceGroup1'), 'Microsoft.Network/privateDnsZones', variables('networkPrivateDnsZone6'))]"
+      ]
+    }
+  ],
+  "outputs": {}
+}

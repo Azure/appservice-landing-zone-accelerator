@@ -3,9 +3,9 @@
 This reference architecture shows how to run a web-app workload on Azure App Services in a secure configuration. This secure baseline follow [Defence in Depth](https://learn.microsoft.com/en-us/shows/azure-videos/defense-in-depth-security-in-azure) approach to protect AppService workload against cloud vulnerabilities along with additional [Well-Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/) pillars to enable a resilient solution.
 
 # Architecture
-![image](/docs/Images/AppServiceLandingZoneArchitecture-multitenant.png)
+![image](/docs/Images/Multitenant/AppServiceLandingZoneArchitecture-multitenant.png)
 
-*Download a [Visio](/docs/AppServiceLandingZoneArchitecture.vsd) file that contains this architecture diagram.*
+
 ## Core architecture components
 * The application's users are authenticated by [Azure Active Directory (Azure AD)](https://azure.microsoft.com/services/active-directory/) or [Azure AD B2C](https://azure.microsoft.com/services/active-directory/external-identities/b2c/). The browser performs DNS lookups to resolve addresses to Azure Front Door.
 * [Virtual Network](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-group-how-it-works) enables Azure resources to securely communicate with each other, the internet, and on-premises networks by creating boundaries, isolation and segmentation of your workloads in the cloud, much like a physical network.
@@ -104,6 +104,6 @@ Azure Front Door Premium is not available in Azure Government cloud.  The refere
 
 Pick one of the IaC options below and follow the instructions to deploy the App Service reference implementation.
 
-:arrow_forward: [Terraform](./Terraform/README.md)
+:arrow_forward: [Terraform](./terraform/README.md)
 
-:arrow_forward: [Bicep](./Bicep/README.md)
+:arrow_forward: [Bicep](./bicep/README.md)

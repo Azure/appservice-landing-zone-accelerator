@@ -26,6 +26,7 @@ param vmSize string = 'Standard_D4_v3'
 @description('The user name to be used as the Administrator for all VMs created by this deployment')
 param username string
 
+@secure()
 @description('The password for the Administrator user for all VMs created by this deployment')
 param password string
 
@@ -54,7 +55,7 @@ param poolName string = 'Default'
 param CICDAgentType string
 
 @description('The base URI where the CI/CD agent artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated.')
-param artifactsLocation string = 'https://github.com/Azure/appservice-landing-zone-accelerator/raw/main/reference-implementations/LOB-ILB-ASEv3/bicep/shared/agentsetup.ps1'
+param artifactsLocation string = 'https://github.com/Azure/appservice-landing-zone-accelerator/raw/main/shared/agentsetup.ps1'
 
 @description('Optional. The tags to be assigned to the created resources.')
 param tags object = {}

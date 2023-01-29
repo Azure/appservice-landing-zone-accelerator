@@ -35,8 +35,8 @@ resource "azurerm_windows_virtual_machine" "vm" {
     sku       = "2016-Datacenter"
     version   = "latest"
   }
-  provision_vm_agent          = true
-  allow_extension_operations  = true
+  provision_vm_agent         = true
+  allow_extension_operations = true
 }
 
 resource "azurerm_virtual_machine_extension" "installagent" {
@@ -55,10 +55,12 @@ resource "azurerm_virtual_machine_extension" "installagent" {
   #PROTECTED_SETTINGS
 
   #"commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File agentsetup.ps1 -Command \"./agentsetup.ps1; exit 0;\"",
+
+  # !!!!! Hardcoded installagent URI does not exist anymore !!!!!
   protected_settings = <<PROTECTED_SETTINGS
     {
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File agentsetup.ps1 ",
-        "fileUris": ["https://raw.githubusercontent.com/cykreng/Enterprise-Scale-AppService/main/reference-implementations/LOB-ILB-ASEv3/bicep/shared/agentsetup.ps1"]
+        "fileUris": ["https://github.com/Azure/appservice-landing-zone-accelerator/raw/main/shared/agentsetup.ps1"]
     }
   PROTECTED_SETTINGS
 }

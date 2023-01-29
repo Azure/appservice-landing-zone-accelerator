@@ -1,8 +1,8 @@
-locals{
-    tempKeyVaultName  = substr("kv-shared-${var.resourceSuffix}",0, 24)
-    keyvaultname      = (substr(local.tempKeyVaultName,1,24) == "-") ? substr(local.tempKeyVaultName, 0, length(local.tempKeyVaultName) - 1): local.tempKeyVaultName
-    loganalyticsname  = "log-shared-${var.resourceSuffix}"
-    appinsightsname   = "insights-shared-${var.resourceSuffix}"
+locals {
+  tempKeyVaultName = substr("kv-shared-${var.resourceSuffix}", 0, 24)
+  keyvaultname     = (substr(local.tempKeyVaultName, 1, 24) == "-") ? substr(local.tempKeyVaultName, 0, length(local.tempKeyVaultName) - 1) : local.tempKeyVaultName
+  loganalyticsname = "log-shared-${var.resourceSuffix}"
+  appinsightsname  = "insights-shared-${var.resourceSuffix}"
 }
 
 data "azurerm_client_config" "current" {}
@@ -24,12 +24,16 @@ resource "azurerm_key_vault" "keyvault" {
     object_id = data.azurerm_client_config.current.object_id
     key_permissions = [
       "Get",
+      "List",
       "Update"
     ]
     secret_permissions = [
       "Get",
       "Set",
-      "Delete"
+      "List",
+      "Recover",
+      "Delete",
+      "Purge"
     ]
     storage_permissions = [
       "Get",
@@ -58,7 +62,7 @@ resource "azurerm_application_insights" "appinsights" {
 }
 
 resource "random_password" "password" {
-  count = var.adminPassword == null ? 2 : 0
+  count            = var.adminPassword == null ? 2 : 0
   length           = 16
   special          = true
   override_special = "!#$%&*?"
@@ -66,38 +70,38 @@ resource "random_password" "password" {
 
 #Devops agent
 module "devopsvm" {
-    source              = "../winvm"
-    vmname              = "devopsvm"
-    location            = var.location
-    resourceGroupName   = var.resourceGroupName
-    adminUserName       = var.adminUsername
-    adminPassword       = var.adminPassword == null ? random_password.password.0.result : var.adminPassword
-    cidr                = var.devOpsVMSubnetId
-    installDevOpsAgent  = true
+  source             = "../winvm"
+  vmname             = "asedevopsvm"
+  location           = var.location
+  resourceGroupName  = var.resourceGroupName
+  adminUserName      = var.adminUsername
+  adminPassword      = var.adminPassword == null ? random_password.password.0.result : var.adminPassword
+  cidr               = var.devOpsVMSubnetId
+  installDevOpsAgent = false
 }
 
 #jumpbox
 module "jumpboxvm" {
-    source                = "../winvm"
-    vmname                = "jumpboxvm"
-    location              = var.location
-    resourceGroupName     = var.resourceGroupName
-    adminUserName         = var.adminUsername
-    adminPassword       = var.adminPassword == null ? random_password.password.1.result : var.adminPassword
-    cidr                  = var.jumpboxVMSubnetId
-    installDevOpsAgent    = false
+  source             = "../winvm"
+  vmname             = "asejumpboxvm"
+  location           = var.location
+  resourceGroupName  = var.resourceGroupName
+  adminUserName      = var.adminUsername
+  adminPassword      = var.adminPassword == null ? random_password.password.1.result : var.adminPassword
+  cidr               = var.jumpboxVMSubnetId
+  installDevOpsAgent = false
 }
 
 # If no VM password is provided, store the generated passwords into the Key Vault as secrets
 resource "azurerm_key_vault_secret" "devopsvm_password" {
-  count = var.adminPassword == null ? 1 : 0
+  count        = var.adminPassword == null ? 1 : 0
   name         = module.devopsvm.name
   value        = random_password.password.0.result
   key_vault_id = azurerm_key_vault.keyvault.id
 }
 
 resource "azurerm_key_vault_secret" "jumpboxvm_password" {
-  count = var.adminPassword == null ? 1 : 0
+  count        = var.adminPassword == null ? 1 : 0
   name         = module.jumpboxvm.name
   value        = random_password.password.1.result
   key_vault_id = azurerm_key_vault.keyvault.id
