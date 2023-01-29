@@ -12,11 +12,11 @@ This reference architecture shows how to run a web-app workload for line of busi
 ![image](/docs/Images/ASE/AppServiceDeployedResources.png)
 
 Deployment Details:
-| Deployment Methodology | GitHub Actions
-|--------------|--------------|
-|[Bicep](/scenarios/secure-baseline-ase/bicep/README.md)|[LOB-ILB-ASEv3-Bicep.yml](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
+| Deployment Methodology | GitHub Actions | Status
+|--------------|--------------|-----------|
+|[Bicep](/scenarios/secure-baseline-ase/bicep/README.md)|[LOB-ILB-ASEv3-Bicep.yml](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml) | [![Single-tenant ASEv3 Secure Baseline: Bicep Deploy](https://github.com/Azure/appservice-landing-zone-accelerator/actions/workflows/bicep.secure-baseline.ase.yml/badge.svg)](https://github.com/Azure/appservice-landing-zone-accelerator/actions/workflows/bicep.secure-baseline.ase.yml)
+|[Terraform](/scenarios/secure-baseline-ase/terraform/README.md)|Coming Soon| [![Terraform Deploy](https://github.com/Azure/appservice-landing-zone-accelerator/actions/workflows/terraform.secure-baseline.ase.yml/badge.svg)](https://github.com/Azure/appservice-landing-zone-accelerator/actions/workflows/terraform.secure-baseline.ase.yml)
 |[ARM](/scenarios/secure-baseline-ase/azure-resource-manager/README.md)| Not provided* |
-|[Terraform](/scenarios/secure-baseline-ase/terraform/README.md)|Coming Soon|
 
 ## Cost estimation:
 

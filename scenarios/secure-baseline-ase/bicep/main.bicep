@@ -45,7 +45,7 @@ param personalAccessToken string
 param tags object = {}
 
 @description('Optional. Create Redis resource.')
-param createRedisResource bool = true
+param createRedisResource bool = false
 
 // Variables
 
