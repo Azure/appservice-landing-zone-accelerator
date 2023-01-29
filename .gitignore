@@ -2,6 +2,7 @@ deployment/bicep/localparam*.json
 deployment/bicep/localmain.bicep
 deployment/bicep/localtestscript.ps1
 deployment/bicep/main.json
+*.local.*
 
 # Local .terraform directories
 **/.terraform/*
@@ -42,3 +43,5 @@ terraform.rc
 shared/agentsetup.ps1
 .vscode/tasks.json
 .vscode/launch.json
+.vscode/launch.json
+.vscode/tasks.json
