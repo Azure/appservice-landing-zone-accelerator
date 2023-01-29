@@ -112,22 +112,32 @@ jobs:
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
             <details><summary>Validation Output</summary>
+
             \`\`\`\n
             ${{ steps.validate.outputs.stdout }}
             \`\`\`
+
             </details>
+
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
             <details><summary>Show Plan</summary>
+
             \`\`\`\n
             ${{ steps.plan.outputs.stdout }}
             \`\`\`
+
             </details>
+
             #### Terraform Apply 📖\`${{ steps.apply.outcome }}\`
+
             <details><summary>Show Apply</summary>
+
             \`\`\`\n
             ${{ steps.apply.outputs.stdout }}
             \`\`\`
             </details>
+
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
             
             await github.rest.issues.createComment({
