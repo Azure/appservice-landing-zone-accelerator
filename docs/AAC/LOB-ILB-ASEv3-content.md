@@ -32,7 +32,7 @@ The solution uses the following Azure services:
 
 These considerations implement the pillars of the Azure Well-Architected Framework, which is a set of guiding tenets that can be used to improve the quality of a workload. For more information, see [Microsoft Azure Well-Architected Framework](/azure/architecture/framework).
 
-- Review the reference implementation resources at [LOB-ILB-ASEv3](../../reference-implementations/LOB-ILB-ASEv3/) to better understand the specifics of this implementation.
+- Review the reference implementation resources at [LOB-ILB-ASEv3](../../scenarios/secure-baseline-ase/) to better understand the specifics of this implementation.
 - It is recommended that you clone this repo and modify the reference implementation resources to suit your requirements and your organization's specific landing zone guidelines.
 - Ensure that the service principal used to deploy the solution has the required permissions to create the resource types listed above.
 - Consider the CI/CD service you will use for deploying the reference implementation. As this reference implementation is an internal ASE, a self-hosted agent is needed to execute the deployment pipelines.  As such the choice is to use either a DevOps Agent or a GitHub Runner. Refer to the [user guide](../README.md) on specific configuration values required for each.
@@ -70,7 +70,7 @@ For different environments collect telemetry data into different Application Ins
 
 ## Deploy this scenario
 
-A deployment for the reference architecture that implements these recommendations and considerations is available on [GitHub](https://github.com/Azure/appservice-landing-zone-accelerator/tree/main/reference-implementations/LOB-ILB-ASEv3).
+A deployment for the reference architecture that implements these recommendations and considerations is available on [GitHub](https://github.com/Azure/appservice-landing-zone-accelerator/tree/main/scenarios/secure-baseline-ase).
 
 
 

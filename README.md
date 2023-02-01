@@ -1,12 +1,16 @@
 # App Service Landing Zone Accelerator
 
-This is a repository ([aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)) that contains both enterprise architecture (proven recommendations and considerations across both multi-tenant and App Service Environment use cases) and reference implementation (deployable artifacts for a common implementation). 
+This repository encompasses both enterprise architecture guidelines and a reference implementation for deploying Azure App Service solutions in multi-tenant and App Service Environment scenarios. It includes best practices, considerations and deployable artifacts for implementing a common reference architecture.
+
+[aka.ms/EnterpriseScale-AppService](https://aka.ms/EnterpriseScale-AppService)
+
+![image](/docs/Images/home-page.gif)
 
 ## Enterprise-Scale Architecture
 
 The enterprise architecture is broken down into six different design areas, where you can find the links to each at:
 | Design Area|Considerations|Recommendations|
-|:--------------:|:--------------:|:--------------:|
+|--------------|--------------|--------------|
 | Identity and Access Management|[Design Considerations](/docs/Design-Areas/identity-access-mgmt.md#design-considerations)|[Design Recommendations](/docs/Design-Areas/identity-access-mgmt.md#design-recommendations)|
 | Network Topology and Connectivity|[Design Considerations](/docs/Design-Areas/networking.md#design-considerations)|[Design Recommendations](/docs/Design-Areas/networking.md#design-recommendations)|
 | Management and Monitoring|[Design Considerations](/docs/Design-Areas/mgmt-monitoring.md#design-consideration)|[Design Recommendations](/docs/Design-Areas/mgmt-monitoring.md#design-recommendation)|
@@ -18,35 +22,31 @@ The enterprise architecture is broken down into six different design areas, wher
 
 In this repo you will find reference implementations with supporting Infrastructure as Code templates. More reference implementations will be added as they become available. [User guide](/docs/README.md) goes into details on how to deploy each reference implementations to your subscription. 
 
----
+## Next Steps to implement the Azure App Service Landing Zone Accelerator
+> Reference implementations
 
-### [Reference Implementation 1](/reference-implementations/LOB-ILB-ASEv3/bicep): Line of Business application using internal App Service Environment v3
+Pick one of the scenarios below to get started on a reference implementation.
 
-Architectural Diagram:
+:arrow_forward: [Scenario 1: Multitenant App Service Secure Baseline](scenarios/secure-baseline-multitenant/README.md)
 
-![image](./docs/Images/AppServiceLandingZoneArchitecture.png)
-
-Deployed Resources:
-
-![image](./docs/Images/AppServiceDeployedResources.png)
-
-Deployment Details:
-| Deployment Methodology | GitHub Actions
-|--------------|--------------|
-|[Bicep](/reference-implementations/LOB-ILB-ASEv3/bicep/README.md)|[LOB-ILB-ASEv3-Bicep.yml](/.github/workflows/LOB-ILB-ASEv3-Bicep.yml)
-|[ARM](/reference-implementations/LOB-ILB-ASEv3/azure-resource-manager/README.md)| Not provided* |
-|[Terraform](/reference-implementations/LOB-ILB-ASEv3/terraform/README.md)|Coming Soon|
-
-Cost estimation:
-
-The current default will cost approx. $40-$50 per day depending on the selected region (without any workload or Redis Enterprise). If deploying the current defult plus Redis Enterprise it will cost approx. $72-$82 per day. It is deploying an ASE V3 that is zone-redundant and one Isolated V2 SKU Windows App Service Plan scaled to 3 instances (default with zone redundancy). For more accurate prices please check [pricing models for ASE V3](https://docs.microsoft.com/en-us/azure/app-service/environment/overview#pricing) and [pricing for Azure Cache for Redis](https://azure.microsoft.com/en-us/pricing/details/cache/).
+:arrow_forward: [Scenario 2: Line of Business application using internal App Service Environment v3](scenarios/secure-baseline-ase//README.md)
 
 ---
 
-## Other Considerations
+## Got a feedback
 
-1. Please leverage issues if you have any feedback or request on how we can improve on this repository.
-2. The redis.bicep contains an optional parameter to select the enterprise tier that best apply for your scenario.
+Please leverage issues if you have any feedback or request on how we can improve on this repository.
+
+---
+## Data Collection
+
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the repository. There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at https://go.microsoft.com/fwlink/?LinkId=521839. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+
+### Telemetry Configuration
+
+Telemetry collection is on by default.
+
+To opt-out, set the variable enableTelemetry to `false` in Bicep/ARM file and disable_terraform_partner_id to `false` on Terraform files.
 
 ---
 
