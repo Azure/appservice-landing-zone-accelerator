@@ -93,6 +93,9 @@ param availabilityZoneOption bool = true
 @description('Required. Key Vault Name')
 param keyVaultName string
 
+@description('Required. Previous deployment location')
+param previousDeploymentLocation string
+
 // Variables
 var resourceNames = {
   redisName: naming.redisCache.name
@@ -104,11 +107,12 @@ var resourceNames = {
 var rdbPersistence = persistenceOption == 'RDB' ? true : false
 var aofPersistence = persistenceOption == 'AOF' ? true : false
 var enableZoneRedundancy = availabilityZoneOption == true ? ['1','2','3'] : null
+var deploymentLocation = (location != previousDeploymentLocation) ? previousDeploymentLocation : location
 
 //Resources
 resource redis 'Microsoft.Cache/redisEnterprise@2022-01-01' = {
   name: resourceNames.redisName
-  location: location
+  location: deploymentLocation
   sku: {
     name: skuName
     capacity: capacity
@@ -121,7 +125,8 @@ resource redis 'Microsoft.Cache/redisEnterprise@2022-01-01' = {
 }
 
 resource redisEnterpriseDb 'Microsoft.Cache/redisEnterprise/databases@2022-01-01' = {
-  name: resourceNames.redisDbName
+  // For OSS Tiers you can use resourceNames.redisDbName
+  name: 'default'
   parent: redis
   properties: {
     clientProtocol:'Encrypted'
@@ -142,7 +147,7 @@ resource redisEnterpriseDb 'Microsoft.Cache/redisEnterprise/databases@2022-01-01
 
 resource redisPrivateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
   name: resourceNames.redisPrivateEndpointName
-  location: location
+  location: deploymentLocation
   properties: {
     subnet: {
       id: redisPrivateEndpointSubnetId

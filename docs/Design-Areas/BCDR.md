@@ -28,3 +28,14 @@
 - Where your ASE instances are deployed across Availability Zones in the same region, use Azure Application Gateway to provide load balancing and WAF capabilities between the instances.
 - Where cross-regional high availability is required, utilize Azure Front Door to provide load balancing and WAF capabilities between the different instances.
 - Modify your CI/CD processes so that changes to the solution are deployed to each target ASE instance.
+
+### Azure Cache for Redis Enterprise:
+
+- You can achieve different tiers of high availability.
+  - 99.9% (Default configuration, deploying Azure Cache for Redis Enterprise without Zone Redudancy option enabled)
+  - 99.99% (Deploying Azure Cache for Redis Enterprise with Zone Redundancy option enabled)
+  - 99.999% (Deploying Azure Cache fore Redis Enterprise with Zone Redundancy option enabled + Active Geo Replication)
+
+- The application should decide to which instance or instances use for read and write requests. If you have deployed app services to multiple regions, the application should write/read to Azure Cache for Redis Enterprise located on the same region or the closest region.
+
+- In case of a region outage and using Active Geo Replication, remember to force-unlink the caches that are affected. This will ensure that the healthy clusters that are part of the replication group don't fail. Read more [here](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-active-geo-replication#force-unlink-if-theres-a-region-outage)
