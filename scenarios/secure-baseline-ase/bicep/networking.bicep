@@ -216,3 +216,4 @@ output aseSubnetId string = '${vnetSpoke.id}/subnets/${resourceNames.aseSubnet}'
 
 output redisPrivateEndpointSubnetName string = createRedisPrivateEndpointSubnet ? resourceNames.redisPrivateEndpointSubnet : ''
 output redisPrivateEndpointSubnetId string = createRedisPrivateEndpointSubnet ? '${vnetSpoke.id}/subnets/${resourceNames.redisPrivateEndpointSubnet}' : ''
+output deployedRegion string = vnetSpoke.location

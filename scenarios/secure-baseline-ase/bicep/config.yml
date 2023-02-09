@@ -5,4 +5,5 @@ DEPLOYMENT_NAME: 'ase-secure-baseline'
 VM_USERNAME: 'agent'
 ACCOUNT_NAME: 'replace me in repo secrets'
 CICD_AGENT_TYPE: 'azuredevops'
-CREATE_REDIS_RESOURCE: true
+CREATE_REDIS_RESOURCE: false
+REDIS_TIER: 'Enterprise_E10'

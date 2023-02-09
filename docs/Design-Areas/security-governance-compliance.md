@@ -14,4 +14,4 @@
 - [Enable Cross-Origin Resource Sharing (CORS)](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-rest-api#enable-cors) within App Services or using your own CORS utilities to indicate which origins the user’s browser should permit resources to be loaded from.
 - When deploying containerized web applications to App Services, [enable Azure Defender for container registries](https://docs.microsoft.com/en-us/azure/security-center/defender-for-container-registries-introduction) to automatically scan images for vulnerabilities.
 - Enable[ Azure Defender for App Service](https://docs.microsoft.com/en-us/azure/security-center/defender-for-app-service-introduction#:~:text=%20When%20you%20enable%20Azure%20Defender%20for%20App,App%20Service%20resources%20by%20monitoring%3A%0Athe%20VM...%20More%20) to assess the security of your web applications and detect threats to your App Service resources.
-
+- Use [Private Endpoint for Azure Cache for Redis Enterprise](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-private-link)
