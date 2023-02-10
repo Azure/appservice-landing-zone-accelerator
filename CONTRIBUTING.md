@@ -270,10 +270,10 @@ var storageName='ttst20230301'
 resource resourceModuleA 'module/someResource' = {
   name: 'myResource'
 
-  //This is wrong, does not build implicit depedency
+  //This is wrong, does NOT build implicit depedency
   //storageAccountName: storageName
 
-   //This is OK, does not build implicit depedency
+   //This is OK, does build implicit depedency
   storageAccountName: storage.name
 }
 
@@ -285,7 +285,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2019-06-01' = {
     name: skuName
   }
   tags: union(tags, {
-    displayName: name
+    displayName: storageName
   })
   properties: {
     accessTier: 'Hot'
