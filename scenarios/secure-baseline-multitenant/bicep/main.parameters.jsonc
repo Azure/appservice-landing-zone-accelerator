@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        // suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<applicationName>
+        "applicationName" : {
+           "value": "appSvc-LZA"         
+        },
+        // Azure region where the resources will be deployed in
+        "location": {
+            "value": "northeurope"
+        },
+        //Required. The environment for which the deployment is being executed ( 'dev', 'uat', 'prod','dr')
+        "environment": {
+            "value": "dev"
+        },
+        //Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)
+        "resourceTags": {
+            "value": {
+                "deployment": "bicep"   
+            }
+        }
+    }
+}

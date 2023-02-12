@@ -22,33 +22,22 @@ Clone this repo, install Azure CLI, install Bicep.
 
 [Install Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 
+### Create parameters.json file
 
+An Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the terraform.tfvars file that needs to be created in this folder:
 
-
+```bash
+tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+aad_admin_group_name      = "Azure AD SQL Admins"
+```
 
 ### Deploy the App Service Landing Zone Bicep code
 
-The app service in the params should be same as the resource group name, pass the rg name below:
-MyResourceGroup=RgNameShouldBeSameAsAppServiceName
+```bash
+TBD!
 
-# Enter parameters value in azuredeploy.bicep
-
-
-``` bash
-
-# az group create --name $MyResourceGroup-rg --location "West Europe"
-
-az deployment sub create \
-  --name appSvcLza-deployment \
-  --template-file main.bicep \
-  --location WestUS \
-  --parameters @main.parameters.jsonc
-
-   
 ```
-   
-   
-
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
 
 This is a manual step that is required to complete the private endpoint connection.
