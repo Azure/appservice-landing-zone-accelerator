@@ -12,16 +12,15 @@ param vnetId string = ''
 var bastionNameMaxLength = 80
 var bastionNameSantized = length(name) > bastionNameMaxLength ? substring(name, 0, bastionNameMaxLength) : name
 
-//auxiliary but mandatory resource that needs to be created
-resource publicIp 'Microsoft.Network/publicIPAddresses@2022-07-01' = {
-  name: 'pip-${name}'
-  location: location
-  tags: tags
-  sku: {
-    name: 'Standard'
-  }
-  properties: {
-    publicIPAllocationMethod: 'Static'
+
+module publicIp 'publicIp.bicep' = {
+  name: 'pipBastionHostDeployment'
+  params: {
+    location: location
+    name: 'pip-${bastionNameSantized}'
+    skuTier: 'Regional'
+    skuName: 'Standard'
+    publicIPAllocationMethod: 'Static'    
   }
 }
 
@@ -38,7 +37,7 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-07-01' = {
             id: '${vnetId}/subnets/AzureBastionSubnet' 
           }
           publicIPAddress: {
-            id: publicIp.id
+            id: publicIp.outputs.pipResourceId
           }
         }
       }
@@ -47,4 +46,4 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-07-01' = {
 }
 
 @description('The standard public IP assigned to the Bastion Service')
-output bastionPublicIp string = publicIp.properties.ipAddress
+output bastionPublicIp string = publicIp.outputs.ipAddress

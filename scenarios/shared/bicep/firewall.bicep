@@ -130,21 +130,19 @@ var ipConfigurations = [{
       id: '${vnetId}/subnets/AzureFirewallSubnet' 
     }
     publicIPAddress: {
-      id: publicIp.id
+      id: publicIp.outputs.pipResourceId
     }
   }
 }]
 
-resource publicIp 'Microsoft.Network/publicIPAddresses@2022-07-01' = {
-  name: 'pip-${name}'
-  location: location
-  tags: tags
-  sku: {
-    name: 'Standard'
-  }
-  properties: {
-    publicIPAllocationMethod: 'Static'
-    
+module publicIp 'publicIp.bicep' = {
+  name: 'pipAzFwDeployment'
+  params: {
+    location: location
+    name: 'pip-${azFwNameSantized}'
+    skuTier: 'Regional'
+    skuName: 'Standard'
+    publicIPAllocationMethod: 'Static'    
   }
 }
 
@@ -181,7 +179,6 @@ resource azureFirewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
     networkRuleCollections: networkRuleCollections
   }
 }
-
 
 
 @description('The resource ID of the Azure Firewall.')
