@@ -19,6 +19,12 @@ param location string
 ])
 param environment string
 
+@description('CIDR of the HUB vnet i.e. 192.168.0.0/24')
+param hubVnetAddressSpace string
+
+@description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
+param spokeVnetAddressSpace string
+
 @description('Optional. A numeric suffix (e.g. "001") to be appended on the naming generated for the resources. Defaults to empty.')
 param numericSuffix string = ''
 
@@ -40,8 +46,8 @@ var tags = union({
 
 var resourceSuffix = '${applicationName}-${environment}-${location}'
 //TODO: Change name of hubResourceGroupName (tt 20230129)
-var hubResourceGroupName = 'rg-hub-test'
-var spokeResourceGroupName = 'rg-${resourceSuffix}'
+var hubResourceGroupName = 'rg-hub-${resourceSuffix}'
+var spokeResourceGroupName = 'rg-spoke-${resourceSuffix}'
 
 var defaultSuffixes = [
   applicationName
@@ -90,6 +96,7 @@ module hub 'hub.deployment.bicep' = {
   params: {
     naming: naming.outputs.names
     location: location
+    hubVnetAddressSpace: hubVnetAddressSpace
     tags: tags
   }
 }
