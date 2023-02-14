@@ -72,6 +72,7 @@ module laws '../../shared/bicep/log-analytics-ws.bicep' = {
   params: {
     location: location
     name: resourceNames.laws
+
     tags: tags
   }
 }
@@ -82,6 +83,7 @@ module azFw '../../shared/bicep/firewall.bicep' = {
     location: location
     name: resourceNames.azFw    
     vnetId: vnetHub.outputs.vnetId
+    diagnosticWorkspaceId: laws.outputs.logAnalyticsWsId
     tags: tags
   }
 }

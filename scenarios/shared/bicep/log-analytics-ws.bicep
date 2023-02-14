@@ -59,7 +59,7 @@ resource laws 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
 }
 
 @description('The name of the resource.')
-output logAnalyticsWSName string = laws.name
+output logAnalyticsWsName string = laws.name
 
 @description('The resource ID of the resource.')
-output logAnalyticsWSID string = laws.id
+output logAnalyticsWsId string = laws.id

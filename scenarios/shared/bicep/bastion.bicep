@@ -4,6 +4,7 @@ param name string
 @description('Azure region where the resources will be deployed in')
 param location string
 
+@description('Optional. Tags of the Azure Firewall resource.')
 param tags object = {}
 
 @description('The virtual network ID containing AzureBastionSubnet. ')
