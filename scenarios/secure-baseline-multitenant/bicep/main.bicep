@@ -102,7 +102,7 @@ module hub 'hub.deployment.bicep' = {
 }
 
 module spoke 'spoke.deployment.bicep' = {
-  scope: resourceGroup(hubResourceGroup.name)
+  scope: resourceGroup(spokeResourceGroup.name)
   name: 'spokeDeployment'
   params: {
     naming: naming.outputs.names
