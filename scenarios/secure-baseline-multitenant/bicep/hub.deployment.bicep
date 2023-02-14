@@ -11,10 +11,12 @@ param hubVnetAddressSpace string
 
 param tags object
 
+
+//look https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
 var privateDnsZoneNames = {
   appConfiguration: 'privatelink.azconfig.io'
   webApps: 'privaprivatelink.azurewebsites.net'
-  sqlDb: 'privatelink.${environment().suffixes.sqlServerHostname}'
+  sqlDb: 'privatelink${environment().suffixes.sqlServerHostname}'
   redis: 'privatelink.redis.cache.windows.net'
   keyvault: 'privatelink.vaultcore.azure.net'
 }
