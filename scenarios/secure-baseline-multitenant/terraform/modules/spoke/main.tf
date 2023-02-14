@@ -129,46 +129,75 @@ module "network" {
       delegation  = null
     }
   ]
+}
+
+module "user_defined_routes" {
+  count = var.deployment_options.enable_egress_lockdown ? 1 : 0
+
+  source = "../shared/user-defined-routes"
+
+  resource_group   = azurerm_resource_group.spoke.name
+  location         = var.location
+  route_table_name = "egress-lockdown"
+
+  routes = [
+    {
+      name                   = "defaultRoute"
+      address_prefix         = "0.0.0.0/0"
+      next_hop_type          = "VirtualAppliance"
+      next_hop_in_ip_address = var.firewall_private_ip
+    }
+  ]
+
+  subnet_ids = module.network.subnets[*].id
+}
+
+locals {
 
 }
 
 module "app_service" {
   source = "./app-service"
 
-  resource_group       = azurerm_resource_group.spoke.name
-  application_name     = var.application_name
-  webapp_slot_name     = var.webapp_slot_name
-  environment          = var.environment
-  location             = var.location
-  unique_id            = random_integer.unique_id.result
-  sku_name             = "S1"
-  os_type              = "Windows"
-  instrumentation_key  = module.app_insights.instrumentation_key
-  ai_connection_string = module.app_insights.connection_string
-  appsvc_subnet_id     = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.appsvc_subnet.result)].id
-  frontend_subnet_id   = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.ingress_subnet.result)].id
+  resource_group     = azurerm_resource_group.spoke.name
+  application_name   = var.application_name
+  environment        = var.environment
+  location           = var.location
+  unique_id          = random_integer.unique_id.result
+  appsvc_subnet_id   = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.appsvc_subnet.result)].id
+  frontend_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.ingress_subnet.result)].id
+
+  service_plan_options = var.appsvc_options.service_plan
+
+  webapp_options = {
+    ai_connection_string = module.app_insights.connection_string
+    instrumentation_key  = module.app_insights.instrumentation_key
+    slots                = var.appsvc_options.web_app.slots
+    application_stack    = var.appsvc_options.web_app.application_stack
+  }
 
   private_dns_zone = {
-    name = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azurewebsites.net")].name
-    id   = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azurewebsites.net")].id
+    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azurewebsites.net")].name
+    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azurewebsites.net")].id
+    resource_group = var.private_dns_zones_rg
   }
 }
 
-# module "devops_vm" {
-#   source = "../shared/windows-vm"
+module "devops_vm" {
+  source = "../shared/windows-vm"
 
-#   resource_group     = azurerm_resource_group.spoke.name
-#   vm_name            = "devops"
-#   location           = var.location
-#   vm_subnet_id       = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.devops_subnet.result)].id
-#   unique_id          = random_integer.unique_id.result
-#   admin_username     = local.vm_admin_username
-#   admin_password     = local.vm_admin_password
-#   aad_admin_username = var.vm_aad_admin_username
-#   enroll_with_mdm    = false
-#   install_extensions = false
-#   firewall_rules     = var.firewall_rules
-# }
+  resource_group       = azurerm_resource_group.spoke.name
+  vm_name              = "devops"
+  location             = var.location
+  vm_subnet_id         = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.devops_subnet.result)].id
+  unique_id            = random_integer.unique_id.result
+  admin_username       = local.vm_admin_username
+  admin_password       = local.vm_admin_password
+  aad_admin_username   = var.vm_aad_admin_username
+  enable_azure_ad_join = true
+  install_extensions   = true
+  firewall_rules       = var.firewall_rules
+}
 
 module "front_door" {
   source = "./front-door"
@@ -188,7 +217,7 @@ module "front_door" {
       private_link_target_type = "sites"
     },
 
-    # Connecting a front door origin to an app service slot through private link is currently not working
+    # Connecting a front door origin to an app service slot through private link is currently not supported
     # {
     #   endpoint_name            = "${var.application_name}-${var.environment}-${var.webapp_slot_name}"
     #   web_app_id               = module.app_service.web_app_id # Note: needs to be the resource id of the app, not the id of the slot
@@ -203,6 +232,8 @@ module "front_door" {
 }
 
 module "sql_database" {
+  count = var.deployment_options.deploy_sql_database ? 1 : 0
+
   source = "./sql-database"
 
   resource_group            = azurerm_resource_group.spoke.name
@@ -213,42 +244,69 @@ module "sql_database" {
   tenant_id                 = var.tenant_id
   aad_admin_group_object_id = var.aad_admin_group_object_id
   aad_admin_group_name      = var.aad_admin_group_name
-  sql_db_name               = "sample-db"
   private_link_subnet_id    = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
-  private_dns_zone_name     = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.database.windows.net")].name
+
+  sql_databases = [
+    {
+      name     = "sample-db"
+      sku_name = "S0"
+    }
+  ]
+
+  private_dns_zone = {
+    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.database.windows.net")].name
+    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.database.windows.net")].id
+    resource_group = var.private_dns_zones_rg
+  }
 }
 
 module "app_configuration" {
+  count = var.deployment_options.deploy_app_config ? 1 : 0
+
   source = "./app-configuration"
 
-  resource_group            = azurerm_resource_group.spoke.name
-  application_name          = var.application_name
-  environment               = var.environment
-  location                  = var.location
-  unique_id                 = random_integer.unique_id.result
-  tenant_id                 = var.tenant_id
-  web_app_principal_id      = module.app_service.web_app_principal_id
-  web_app_slot_principal_id = module.app_service.web_app_slot_principal_id
-  private_link_subnet_id    = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
-  private_dns_zone_name     = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azconfig.io")].id
-  sql_server_name           = module.sql_database.sql_server_name
-  sql_db_name               = module.sql_database.sql_db_name
+  resource_group         = azurerm_resource_group.spoke.name
+  application_name       = var.application_name
+  environment            = var.environment
+  location               = var.location
+  unique_id              = random_integer.unique_id.result
+  tenant_id              = var.tenant_id
+  private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
+
+  data_reader_identities = [
+    module.app_service.web_app_principal_id,
+    module.app_service.web_app_slot_principal_id
+  ]
+
+  private_dns_zone = {
+    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azconfig.io")].name
+    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azconfig.io")].id
+    resource_group = var.private_dns_zones_rg
+  }
 }
 
 module "key_vault" {
   source = "./key-vault"
 
-  resource_group            = azurerm_resource_group.spoke.name
-  application_name          = var.application_name
-  environment               = var.environment
-  location                  = var.location
-  tenant_id                 = var.tenant_id
-  unique_id                 = random_integer.unique_id.result
-  sku_name                  = "standard"
-  web_app_principal_id      = module.app_service.web_app_principal_id
-  web_app_slot_principal_id = module.app_service.web_app_slot_principal_id
-  private_link_subnet_id    = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
-  private_dns_zone_name     = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.vaultcore.azure.net")].name
+  resource_group         = azurerm_resource_group.spoke.name
+  application_name       = var.application_name
+  environment            = var.environment
+  location               = var.location
+  tenant_id              = var.tenant_id
+  unique_id              = random_integer.unique_id.result
+  sku_name               = "standard"
+  private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
+
+  secret_reader_identities = [
+    module.app_service.web_app_principal_id,
+    module.app_service.web_app_slot_principal_id
+  ]
+
+  private_dns_zone = {
+    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.vaultcore.azure.net")].name
+    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.vaultcore.azure.net")].id
+    resource_group = var.private_dns_zones_rg
+  }
 }
 
 module "app_insights" {
@@ -267,15 +325,17 @@ module "redis_cache" {
 
   source = "./redis-cache"
 
-  resource_group            = azurerm_resource_group.spoke.name
-  application_name          = var.application_name
-  environment               = var.environment
-  location                  = var.location
-  unique_id                 = random_integer.unique_id.result
-  tenant_id                 = var.tenant_id
-  sku_name                  = "Standard"
-  private_link_subnet_id    = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
-  private_dns_zone_name     = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.redis.cache.windows.net")].name
-  web_app_principal_id      = module.app_service.web_app_principal_id
-  web_app_slot_principal_id = module.app_service.web_app_slot_principal_id
+  resource_group         = azurerm_resource_group.spoke.name
+  application_name       = var.application_name
+  environment            = var.environment
+  location               = var.location
+  unique_id              = random_integer.unique_id.result
+  sku_name               = "Standard"
+  private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
+
+  private_dns_zone = {
+    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.redis.cache.windows.net")].name
+    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.redis.cache.windows.net")].id
+    resource_group = var.private_dns_zones_rg
+  }
 }

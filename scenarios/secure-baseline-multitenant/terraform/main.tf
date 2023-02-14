@@ -1,22 +1,3 @@
-# terraform {
-#   required_providers {
-#     azurerm = {
-#       source  = "hashicorp/azurerm"
-#       version = ">=3.39.1"
-#     }
-#     azurecaf = {
-#       source  = "aztfmod/azurecaf"
-#       version = ">=1.2.23"
-#     }
-#   }
-# }
-
-# # provider "azurerm" {
-# #   features {}
-# #   disable_terraform_partner_id = false
-# #   partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
-# # }
-
 locals {
   hub_vnet_cidr            = var.hub_vnet_cidr == null ? ["10.242.0.0/20"] : var.hub_vnet_cidr
   firewall_subnet_cidr     = var.firewall_subnet_cidr == null ? "10.242.0.0/26" : var.firewall_subnet_cidr
@@ -47,25 +28,30 @@ module "hub" {
 module "spoke" {
   source = "./modules/spoke"
 
-  application_name          = var.application_name
-  environment               = var.environment
-  location                  = var.location
-  tenant_id                 = var.tenant_id
+  application_name   = var.application_name
+  environment        = var.environment
+  location           = var.location
+  tenant_id          = var.tenant_id
+  deployment_options = var.deployment_options
+  appsvc_options     = var.appsvc_options
+
   aad_admin_group_object_id = var.aad_admin_group_object_id
   aad_admin_group_name      = var.aad_admin_group_name
   vm_admin_username         = var.vm_admin_username
   vm_admin_password         = var.vm_admin_password
   vm_aad_admin_username     = var.vm_aad_admin_username
-  webapp_slot_name          = var.webapp_slot_name
-  vnet_cidr                 = local.spoke_vnet_cidr
-  firewall_private_ip       = module.hub.firewall_private_ip
-  firewall_rules            = module.hub.firewall_rules
-  appsvc_subnet_cidr        = local.appsvc_subnet_cidr
-  front_door_subnet_cidr    = local.front_door_subnet_cidr
-  devops_subnet_cidr        = local.devops_subnet_cidr
-  private_link_subnet_cidr  = local.private_link_subnet_cidr
-  deployment_options        = var.deployment_options
-  private_dns_zones         = module.private_dns_zones.dns_zones
+
+  firewall_private_ip = module.hub.firewall_private_ip
+  firewall_rules      = module.hub.firewall_rules
+
+  vnet_cidr                = local.spoke_vnet_cidr
+  appsvc_subnet_cidr       = local.appsvc_subnet_cidr
+  front_door_subnet_cidr   = local.front_door_subnet_cidr
+  devops_subnet_cidr       = local.devops_subnet_cidr
+  private_link_subnet_cidr = local.private_link_subnet_cidr
+
+  private_dns_zones    = module.private_dns_zones.dns_zones
+  private_dns_zones_rg = module.hub.rg_name
 }
 
 module "private_dns_zones" {
@@ -93,26 +79,6 @@ module "private_dns_zones" {
   ]
 }
 
-module "private_dns_records" {
-  count = length(module.spoke.web_app_private_endpoints)
-
-  source = "./modules/shared/private-dns-record"
-
-  resource_group = module.hub.rg_name
-
-  dns_records = [
-    {
-      zone_name          = "privatelink.azurewebsites.net"
-      dns_name           = module.spoke.web_app_private_endpoints[count.index].name
-      private_ip_address = module.spoke.web_app_private_endpoints[count.index].ip_address
-    }
-  ]
-
-  depends_on = [
-    module.private_dns_zones
-  ]
-}
-
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   name                         = "hub-to-spoke-${var.application_name}"
   resource_group_name          = module.hub.rg_name
@@ -134,4 +100,3 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   allow_gateway_transit        = false
   use_remote_gateways          = false
 }
-

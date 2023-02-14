@@ -7,7 +7,6 @@ terraform {
   }
 }
 
-
 resource "azurecaf_name" "sql_server" {
   name          = var.application_name
   resource_type = "azurerm_mssql_server"
@@ -15,7 +14,7 @@ resource "azurecaf_name" "sql_server" {
 }
 
 # Create the SQL Server 
-resource "azurerm_mssql_server" "sql_server" {
+resource "azurerm_mssql_server" "this" {
   name                          = azurecaf_name.sql_server.result
   resource_group_name           = var.resource_group
   location                      = var.location
@@ -25,49 +24,50 @@ resource "azurerm_mssql_server" "sql_server" {
   minimum_tls_version           = "1.2"
 
   tags = {
-    environment = "App Service Secure Baseline"
+    environment = var.environment
   }
 
   azuread_administrator {
     login_username              = var.aad_admin_group_name
     object_id                   = var.aad_admin_group_object_id
-    azuread_authentication_only = true # this is changed after the SQL Server is configured with the managed identity: az sql server ad-only-auth enable
+    azuread_authentication_only = true 
     tenant_id                   = var.tenant_id
   }
 }
 
 # Create a the SQL database 
-resource "azurerm_mssql_database" "sample_db" {
-  name      = var.sql_db_name
-  server_id = azurerm_mssql_server.sql_server.id
-  sku_name  = "S0"
+resource "azurerm_mssql_database" "this" {
+  count = length(var.sql_databases)
+
+  server_id = azurerm_mssql_server.this.id
+  name      = var.sql_databases[count.index].name
+  sku_name  = var.sql_databases[count.index].sku_name
 }
 
-resource "azurecaf_name" "sql_server_pe" {
-  name          = azurerm_mssql_server.sql_server.name
+resource "azurecaf_name" "private_endpoint" {
+  name          = azurerm_mssql_server.this.name
   resource_type = "azurerm_private_endpoint"
 }
 
 # Create a private endpoint for the SQL Server
-resource "azurerm_private_endpoint" "sql_server_pe" {
-  name                = azurecaf_name.sql_server_pe.result
+resource "azurerm_private_endpoint" "this" {
+  name                = azurecaf_name.private_endpoint.result
   location            = var.location
   resource_group_name = var.resource_group
   subnet_id           = var.private_link_subnet_id
 
   private_service_connection {
-    name                           = "sql-private-endpoint"
+    name                           = azurecaf_name.private_endpoint.result
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_mssql_server.sql_server.id
+    private_connection_resource_id = azurerm_mssql_server.this.id
     subresource_names              = ["sqlServer"]
   }
 }
 
-# # Create a private DNS A Record for the SQL Server
-# resource "azurerm_private_dns_a_record" "sql_private_dns" {
-#   name                = lower(azurerm_mssql_server.sql_server.name)
-#   zone_name           = var.private_dns_zone_name
-#   resource_group_name = var.resource_group
-#   ttl                 = 300
-#   records             = [azurerm_private_endpoint.sql_server_pe.private_service_connection[0].private_ip_address]
-# }
+resource "azurerm_private_dns_a_record" "this" {
+  name                = lower(azurerm_mssql_server.this.name)
+  zone_name           = var.private_dns_zone.name
+  resource_group_name = var.private_dns_zone.resource_group
+  ttl                 = 300
+  records             = [azurerm_private_endpoint.this.private_service_connection[0].private_ip_address]
+}

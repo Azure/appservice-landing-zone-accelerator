@@ -107,7 +107,7 @@ resource "azurerm_virtual_machine_extension" "install_sql" {
   protected_settings = <<PROTECTED_SETTINGS
     {
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File ssms-setup.ps1",
-        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario/scenarios/secure-baseline-multitenant/Terraform/modules/shared/windows-vm/ssms-setup.ps1"]
+        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/main/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm/ssms-setup.ps1"]
     }
   PROTECTED_SETTINGS
 

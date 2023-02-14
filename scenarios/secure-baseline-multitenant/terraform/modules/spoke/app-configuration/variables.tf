@@ -31,32 +31,28 @@ variable "tenant_id" {
   description = "The tenant id where the resources will be created"
 }
 
-variable "web_app_principal_id" {
-    type        = string
-    description = "The identity principal id of the web app"
+variable "data_reader_identities" {
+  type        = list(string)
+  description = "The list of identities that will be granted data reader permissions"
 }
 
-variable "web_app_slot_principal_id" {
-    type        = string
-    description = "The identity principal id of the web app slot"
+variable "data_owner_identities" {
+  type        = list(string)
+  description = "The list of identities that will be granted data owner permissions"
+  default     = []
 }
 
-variable "private_dns_zone_name" {
-  type        = string
-  description = "The private dns zone name where the app config service will be integrated"
+variable "private_dns_zone" {
+  type = object({
+    id             = string
+    name           = string
+    resource_group = string
+  })
+
+  description = "The private dns zone id where the app service will be integrated"
 }
 
 variable "private_link_subnet_id" {
   type        = string
   description = "The subnet id where the private link will be integrated"
-}
-
-variable "sql_server_name" {
-  type        = string
-  description = "The name of the SQL server"
-}
-
-variable "sql_db_name" {
-  type        = string
-  description = "The name of the SQL database"
 }
