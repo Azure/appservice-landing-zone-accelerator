@@ -11,7 +11,7 @@ output "rg_name" {
 }
 
 output "sql_db_connection_string" {
-  value = module.sql_database.sql_db_connection_string
+  value = var.deployment_options.deploy_sql_database ? module.sql_database[0].sql_db_connection_string : null
 }
 
 output "devops_vm_id" {

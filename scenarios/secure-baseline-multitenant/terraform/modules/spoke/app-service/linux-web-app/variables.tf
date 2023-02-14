@@ -1,6 +1,11 @@
-variable "application_name" {
+variable "web_app_name" {
   type        = string
-  description = "The name of your application"
+  description = "The name of the web application"
+}
+
+variable "service_plan_id" {
+  type        = string
+  description = "The id of the service plan where the web application will be created"
 }
 
 variable "resource_group" {

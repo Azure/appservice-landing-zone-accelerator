@@ -38,16 +38,26 @@ variable "aad_admin_group_name" {
   type    = string
 }
 
-variable "sql_db_name" {
-  type    = string
-}
-
-variable "private-link-subnet-id" {
+variable "private_link_subnet_id" {
   type        = string
   description = "The subnet id where the SQL database will be integrated"
 }
 
-variable "private_dns_zone_name" {
-  type        = string
-  description = "The private dns zone name for SQL database"
+variable "sql_databases" {
+  type    = list(object({
+    name = string
+    sku_name = string
+  }))
+
+  description = "The list of SQL databases to be created"
+}
+
+variable "private_dns_zone" {
+  type = object({
+    id             = string
+    name           = string
+    resource_group = string
+  })
+
+  description = "The private dns zone id where the app service will be integrated"
 }

@@ -80,9 +80,14 @@ variable "firewall_rules" {
   description = "The list of firewall rules deployed in the Azure Firewall. This is a dependency for deploying the VM."
 }
 
-variable "webapp_slot_name" {
+variable "private_dns_zones" {
+  type        = list(any)
+  description = "The list of private DNS zones deployed in the hub. This is a dependency for deploying the VM."
+}
+
+variable "private_dns_zones_rg" {
   type        = string
-  description = "The name of the app service slot"
+  description = "The name of the resource group where the private DNS zones are deployed."
 }
 
 variable "deployment_options" {
@@ -90,7 +95,61 @@ variable "deployment_options" {
     enable_waf             = bool
     enable_egress_lockdown = bool
     deploy_redis           = bool
+    deploy_sql_database    = bool
+    deploy_app_config      = bool
   })
 
   description = "Opt-in settings for the deployment"
+}
+
+variable "appsvc_options" {
+  type = object({
+    service_plan = object({
+      os_type  = string
+      sku_name = string
+    })
+    web_app = object({
+      slots = list(string)
+
+      application_stack = object({
+        current_stack  = string
+        dotnet_version = optional(string)
+        java_version   = optional(string)
+        php_version    = optional(string)
+        node_version   = optional(string)
+      })
+    })
+  })
+
+  description = "The options for the app service"
+
+  default = {
+    service_plan = {
+      os_type  = "Windows"
+      sku_name = "S1"
+    }
+    web_app = {
+      slots = []
+
+      application_stack = {
+        current_stack  = "dotnet"
+        dotnet_version = "6.0"
+      }
+    }
+  }
+
+  validation {
+    condition     = contains(["Windows", "Linux"], var.appsvc_options.service_plan.os_type)
+    error_message = "Please, choose among one of the following operating systems: Windows or Linux."
+  }
+
+  validation {
+    condition     = contains(["S1", "S2", "S3", "P1v2", "P2v2", "P3v2"], var.appsvc_options.service_plan.sku_name)
+    error_message = "Please, choose among one of the following SKUs for production workloads: S1, S2, S3, P1v2, P2v2 or P3v2."
+  }
+
+  validation {
+    condition     = contains(["dotnet", "dotnetcore", "java", "php", "python", "node"], var.appsvc_options.web_app.application_stack.current_stack)
+    error_message = "Please, choose among one of the following stacks: dotnet, dotnetcore, java, php, python or node."
+  }
 }

@@ -13,14 +13,14 @@ resource "azurecaf_name" "app_config" {
   suffixes      = [var.environment, var.unique_id] #NOTE: globally unique
 }
 
-resource "azurerm_app_configuration" "app_config" {
+resource "azurerm_app_configuration" "this" {
   name                       = azurecaf_name.app_config.result
   resource_group_name        = var.resource_group
   location                   = var.location
   sku                        = "standard"
   local_auth_enabled         = false
   public_network_access      = "Disabled"
-  purge_protection_enabled   = false
+  purge_protection_enabled   = true
   soft_delete_retention_days = 7
 
   #   identity {
@@ -36,38 +36,18 @@ resource "azurerm_app_configuration" "app_config" {
   #   }
 
   tags = {
-    environment = "development"
+    environment = var.environment
   }
-
-  #   depends_on = [
-  #     azurerm_key_vault_access_policy.client,
-  #     azurerm_key_vault_access_policy.server,
-  #   ]
 }
 
-# "Server=tcp:<server-name>.database.windows.net;Authentication=Active Directory Default; Database=<database-name>;"
-
-locals {
-  sql-connectionstring = "Server=tcp:${var.sql_server_name}.database.windows.net;Authentication=Active Directory Default; Database=${var.sql_db_name};"
-}
-
-# resource "azurerm_app_configuration_key" "sql-connectionstring" {
-#   configuration_store_id = azurerm_app_configuration.app_config.id
-#   key                    = "sql-connectionstring"
-#   label                  = var.environment
-#   content_type           = "connectionstring"
-#   value                  = "Server=tcp:${var.sql_server_name}.database.windows.net;Authentication=Active Directory Default; Database=${var.sql_db_name};"
-# }
-
-
-resource "azurecaf_name" "appcg_private_endpoint" {
-  name          = azurerm_app_configuration.app_config.name
+resource "azurecaf_name" "private_endpoint" {
+  name          = azurerm_app_configuration.this.name
   resource_type = "azurerm_private_endpoint"
 }
 
 # Create a private endpoint for the SQL Server
-resource "azurerm_private_endpoint" "appcg_private_endpoint" {
-  name                = azurecaf_name.appcg_private_endpoint.result
+resource "azurerm_private_endpoint" "this" {
+  name                = azurecaf_name.private_endpoint.result
   location            = var.location
   resource_group_name = var.resource_group
   subnet_id           = var.private_link_subnet_id
@@ -75,28 +55,31 @@ resource "azurerm_private_endpoint" "appcg_private_endpoint" {
   private_service_connection {
     name                           = "app-config-private-endpoint"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_app_configuration.app_config.id
+    private_connection_resource_id = azurerm_app_configuration.this.id
     subresource_names              = ["configurationStores"]
   }
 }
 
-resource "azurerm_role_assignment" "web-app-data-reader" {
-  scope                = azurerm_app_configuration.app_config.id
+resource "azurerm_role_assignment" "data_readers" {
+  count = length(var.data_reader_identities)
+
+  scope                = azurerm_app_configuration.this.id
   role_definition_name = "App Configuration Data Reader"
-  principal_id         = var.web_app_principal_id
+  principal_id         = var.data_reader_identities[count.index]
 }
 
-resource "azurerm_role_assignment" "web-app-slot-data-reader" {
-  scope                = azurerm_app_configuration.app_config.id
-  role_definition_name = "App Configuration Data Reader"
-  principal_id         = var.web_app_slot_principal_id
+resource "azurerm_role_assignment" "data_owners" {
+  count = length(var.data_owner_identities)
+  
+  scope                = azurerm_app_configuration.this.id
+  role_definition_name = "App Configuration Data Owner"
+  principal_id         = var.data_owner_identities[count.index]
 }
 
-# Create a private DNS A Record for the SQL Server
-resource "azurerm_private_dns_a_record" "appcg-private-dns" {
-  name                = lower(azurerm_app_configuration.app_config.name)
-  zone_name           = var.private_dns_zone_name
-  resource_group_name = var.resource_group
+resource "azurerm_private_dns_a_record" "this" {
+  name                = lower(azurerm_app_configuration.this.name)
+  zone_name           = var.private_dns_zone.name
+  resource_group_name = var.private_dns_zone.resource_group
   ttl                 = 300
-  records             = [azurerm_private_endpoint.appcg_private_endpoint.private_service_connection[0].private_ip_address]
+  records             = [azurerm_private_endpoint.this.private_service_connection[0].private_ip_address]
 }

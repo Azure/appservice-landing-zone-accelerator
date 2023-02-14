@@ -35,27 +35,27 @@ variable "private_link_subnet_id" {
   description = "The subnet id"
 }
 
-variable "private_dns_zone_name" {
-  type        = string
-  description = "The private dns zone name"
-}
-
 variable "sku_name" {
   type        = string
   description = "The sku name for the app service plan"
   default     = "standard"
   validation {
     condition = contains(["standard", "premium"], var.sku_name)
-    error_message = "Please, choose among one of the following SKUs for production workloads: standard, premium"
+    error_message = "Please, choose among one of the following SKUs for production workloads: standard, premium."
   }
 }
 
-variable "web_app_principal_id" {
-  type        = string
-  description = "The principal id of the web app"
+variable "secret_reader_identities" {
+  type        = list(string)
+  description = "The list of identities that will be granted secret reader permissions"
 }
 
-variable "web_app_slot_principal_id" {
-  type        = string
-  description = "The principal id of the web app slot"
+variable "private_dns_zone" {
+  type = object({
+    id             = string
+    name           = string
+    resource_group = string
+  })
+
+  description = "The private dns zone id where the app service will be integrated"
 }

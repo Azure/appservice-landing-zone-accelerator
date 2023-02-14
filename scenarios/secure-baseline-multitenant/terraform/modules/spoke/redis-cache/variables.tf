@@ -20,11 +20,6 @@ variable "location" {
   default     = "westeurope"
 }
 
-variable "tenant_id" {
-  type        = string
-  description = "The tenant id"
-}
-
 variable "unique_id" {
   type        = string
   description = "The unique id"
@@ -35,27 +30,22 @@ variable "private_link_subnet_id" {
   description = "The subnet id"
 }
 
-variable "private_dns_zone_name" {
-  type        = string
-  description = "The private dns zone name"
-}
-
 variable "sku_name" {
   type        = string
   description = "The sku name for the redis-cache"
   default     = "standard"
   validation {
     condition = contains(["Basic", "Standard", "Premium"], var.sku_name)
-    error_message = "Please, choose among one of the following SKUs for production workloads: Basic, Standard, Premium"
+    error_message = "Please, choose among one of the following SKUs for production workloads: Basic, Standard, Premium."
   }
 }
 
-variable "web_app_principal_id" {
-  type        = string
-  description = "The principal id of the web app"
-}
+variable "private_dns_zone" {
+  type = object({
+    id             = string
+    name           = string
+    resource_group = string
+  })
 
-variable "web_app_slot_principal_id" {
-  type        = string
-  description = "The principal id of the web app slot"
+  description = "The private dns zone id where the app service will be integrated"
 }

@@ -1,31 +1,31 @@
 output "web_app_id" {
-    value = azurerm_windows_web_app.this.id
+    value = coalesce(module.windows_web_app[0].web_app_id)
 }
 
 output "web_app_name" {
-    value = azurerm_windows_web_app.this.name
+    value = coalesce(module.windows_web_app[0].web_app_name)
 }
 
 output "web_app_hostname" {
-    value = azurerm_windows_web_app.this.default_hostname
+    value = coalesce(module.windows_web_app[0].web_app_hostname) 
 }
 
 output "web_app_principal_id" {
-    value = azurerm_windows_web_app.this.identity.0.principal_id
+    value = coalesce(module.windows_web_app[0].web_app_principal_id)
 }
 
 output "web_app_slot_id" {
-    value = azurerm_windows_web_app_slot.slot.id
+    value = coalesce(module.windows_web_app[0].web_app_slot_id)
 }
 
 output "web_app_slot_name" {
-    value = azurerm_windows_web_app_slot.slot.name
+    value = coalesce(module.windows_web_app[0].web_app_slot_name)
 }
 
 output "web_app_slot_hostname" {
-    value = azurerm_windows_web_app_slot.slot.default_hostname
+    value = coalesce(module.windows_web_app[0].web_app_slot_hostname)
 }
 
 output "web_app_slot_principal_id" {
-    value = azurerm_windows_web_app_slot.slot.identity.0.principal_id
+    value = coalesce(module.windows_web_app[0].web_app_slot_principal_id)
 }

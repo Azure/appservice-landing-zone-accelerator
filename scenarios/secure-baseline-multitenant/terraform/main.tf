@@ -28,24 +28,55 @@ module "hub" {
 module "spoke" {
   source = "./modules/spoke"
 
-  application_name          = var.application_name
-  environment               = var.environment
-  location                  = var.location
-  tenant_id                 = var.tenant_id
+  application_name   = var.application_name
+  environment        = var.environment
+  location           = var.location
+  tenant_id          = var.tenant_id
+  deployment_options = var.deployment_options
+  appsvc_options     = var.appsvc_options
+
   aad_admin_group_object_id = var.aad_admin_group_object_id
   aad_admin_group_name      = var.aad_admin_group_name
   vm_admin_username         = var.vm_admin_username
   vm_admin_password         = var.vm_admin_password
   vm_aad_admin_username     = var.vm_aad_admin_username
-  webapp_slot_name          = var.webapp_slot_name
-  vnet_cidr                 = local.spoke_vnet_cidr
-  firewall_private_ip       = module.hub.firewall_private_ip
-  firewall_rules            = module.hub.firewall_rules
-  appsvc_int_subnet_cidr    = local.appsvc_int_subnet_cidr
-  front_door_subnet_cidr    = local.front_door_subnet_cidr
-  devops_subnet_cidr        = local.devops_subnet_cidr
-  private_link_subnet_cidr  = local.private_link_subnet_cidr
-  deployment_options        = var.deployment_options
+
+  firewall_private_ip = module.hub.firewall_private_ip
+  firewall_rules      = module.hub.firewall_rules
+
+  vnet_cidr                = local.spoke_vnet_cidr
+  appsvc_subnet_cidr       = local.appsvc_subnet_cidr
+  front_door_subnet_cidr   = local.front_door_subnet_cidr
+  devops_subnet_cidr       = local.devops_subnet_cidr
+  private_link_subnet_cidr = local.private_link_subnet_cidr
+
+  private_dns_zones    = module.private_dns_zones.dns_zones
+  private_dns_zones_rg = module.hub.rg_name
+}
+
+module "private_dns_zones" {
+  source = "./modules/shared/private-dns-zone"
+
+  resource_group = module.hub.rg_name
+
+  dns_zones = [
+    "privatelink.azurewebsites.net",
+    "privatelink.database.windows.net",
+    "privatelink.azconfig.io",
+    "privatelink.vaultcore.azure.net",
+    "privatelink.redis.cache.windows.net"
+  ]
+
+  vnet_links = [
+    {
+      vnet_id             = module.hub.vnet_id
+      vnet_resource_group = module.hub.rg_name
+    },
+    {
+      vnet_id             = module.spoke.vnet_id
+      vnet_resource_group = module.spoke.rg_name
+    }
+  ]
 }
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
@@ -69,4 +100,3 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   allow_gateway_transit        = false
   use_remote_gateways          = false
 }
-

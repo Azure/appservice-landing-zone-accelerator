@@ -7,6 +7,17 @@ terraform {
   }
 }
 
+locals {
+  # Some resources need to be deployed *after* the firewall rules are deployed, or will otherwise fail.
+  # For this, we output this value to a local variable, and use it as a dependency for those resources. 
+  firewall_rules = {
+    core                  = azurerm_firewall_application_rule_collection.core.id
+    azure_monitor         = azurerm_firewall_application_rule_collection.azure_monitor.id
+    windows_vm_devops     = azurerm_firewall_application_rule_collection.windows_vm_devops.id
+    windows_vm_devops_net = azurerm_firewall_network_rule_collection.windows_vm_devops.id
+  }
+}
+
 resource "azurecaf_name" "firewall" {
   name          = "hub"
   resource_type = "azurerm_firewall"
@@ -40,8 +51,8 @@ resource "azurerm_firewall" "firewall" {
   }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_settings" {
-  name                           = "tf-firewall-diagnostic-settings"
+resource "azurerm_monitor_diagnostic_setting" "this" {
+  name                           = "${azurerm_firewall.firewall.name}-diagnostic-settings}"
   target_resource_id             = azurerm_firewall.firewall.id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = "AzureDiagnostics"
@@ -64,17 +75,6 @@ resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_settings" {
       days    = 0
       enabled = false
     }
-  }
-}
-
-locals {
-  # Some resources need to be deployed *after* the firewall rules are deployed, or will otherwise fail.
-  # For this, we output this value to a local variable, and use it as a dependency for those resources. 
-  firewall_rules = {
-    core                  = azurerm_firewall_application_rule_collection.core.id
-    azure_monitor         = azurerm_firewall_application_rule_collection.azure_monitor.id
-    windows_vm_devops     = azurerm_firewall_application_rule_collection.windows_vm_devops.id
-    windows_vm_devops_net = azurerm_firewall_network_rule_collection.windows_vm_devops.id
   }
 }
 
@@ -140,6 +140,7 @@ resource "azurerm_firewall_application_rule_collection" "core" {
     source_addresses = var.firewall_rules_source_addresses
 
     target_fqdns = [
+      "*.delivery.mp.microsoft.com",
       "ctldl.windowsupdate.com",
       "ocsp.msocsp.com",
       "oneocsp.microsoft.com",
@@ -214,6 +215,8 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
       "manage-beta.microsoft.com",
       "manage.microsoft.com",
       "aadcdn.msauth.net",
+      "aadcdn.msftauth.net",
+      "aadcdn.msftauthimages.net",
       "*.sts.microsoft.com",
       "*.manage-beta.microsoft.com",
       "*.manage.microsoft.com",
