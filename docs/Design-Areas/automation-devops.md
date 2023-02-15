@@ -17,5 +17,5 @@
 - Separate infrastructure deployment from application deployment. Core infrastructure changes less than applications. Treat each type of deployment as a separate flow and pipeline.
 - Store secrets and other sensitive artifacts in the relevant secret store (eg Azure Key Vault or GitHub secrets), allowing actions and other workflow parts to read them if needed while executing.
 -  Strive for maximized deployment concurrency by avoiding hardcoded configuration items and settings.
--  Embrace [shift left](https://docs.microsoft.com/en-us/azure/devops/learn/devops-at-microsoft/shift-left-make-testing-fast-reliable) security by adding vulnerability and secret scanning tools like container scanning early in the pipeline.
-- Leverage blue/green deployment using deployment slots to validate application changes and minimize downtime. 
+-  Embrace [shift left](https://learn.microsoft.com/en-us/azure/devops/learn/devops-at-microsoft/shift-left-make-testing-fast-reliable) security by adding vulnerability and secret scanning tools like container scanning early in the pipeline.
+- Leverage blue/green deployment using deployment slots to validate application changes and minimize downtime.

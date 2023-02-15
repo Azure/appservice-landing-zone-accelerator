@@ -1,21 +1,21 @@
 # Business Continuity and Disaster Recovery
 ## Design Considerations
-- If an Application Gateway is used along with [App Service](https://docs.microsoft.com/en-us/azure/app-service/networking/app-gateway-with-service-endpoints) or [App Service Environment](https://docs.microsoft.com/en-us/azure/app-service/environment/integrate-with-application-gateway#:~:text=The%20integration%20of%20the%20application%20gateway%20with%20the,specific%20apps%20in%20your%20ILB%20App%20Service%20Environment.), consider Recovery Point Objective (RPO) and Recovery Time Objective(RTO) requirements, as those will dictate if App Gateway needs to be deployed in:
+- If an Application Gateway is used along with [App Service](https://learn.microsoft.com/en-us/azure/app-service/networking/app-gateway-with-service-endpoints) or [App Service Environment](https://learn.microsoft.com/en-us/azure/app-service/environment/integrate-with-application-gateway#:~:text=The%20integration%20of%20the%20application%20gateway%20with%20the,specific%20apps%20in%20your%20ILB%20App%20Service%20Environment.), consider Recovery Point Objective (RPO) and Recovery Time Objective(RTO) requirements, as those will dictate if App Gateway needs to be deployed in:
     - Single or Multi Region
     - Active-Active or Active-Standby Configuration
-- Consider whether a single point of entry or multiple entry points are required based on where the requests are coming from. This will facilitate decision for [Traffic Manager](https://docs.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview) or [Azure Front Door](https://docs.microsoft.com/en-us/azure/frontdoor/front-door-overview)
+- Consider whether a single point of entry or multiple entry points are required based on where the requests are coming from. This will facilitate decision for [Traffic Manager](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-overview) or [Azure Front Door](https://learn.microsoft.com/en-us/azure/frontdoor/front-door-overview)
     - Is cost a concern?
     - Is latency or an extra hop a concern?
     - Any third-party solution used to direct traffic to App Gateway? 
 - Backup of App Gateway configuration – Only ARM Template? Where is it stored and how it’ll be utilized – Manually or through automation e.g., ADO pipelines?
-- Consider the [information that can be backed up](https://docs.microsoft.com/en-us/azure/app-service/manage-backup#what-gets-backed-up) and the [requirements and restrictions](https://docs.microsoft.com/en-us/azure/app-service/manage-backup#requirements-and-restrictions)
+- Consider the [information that can be backed up](https://learn.microsoft.com/en-us/azure/app-service/manage-backup#what-gets-backed-up) and the [requirements and restrictions](https://learn.microsoft.com/en-us/azure/app-service/manage-backup#requirements-and-restrictions)
 ### Multi-Tenanted:
 - If your application needs to be redundant across regions, deploy the solution in more than one region and use Traffic Manager or Azure Front Door to balance load between these deployments.
 - If your application span geographies, consider deploying to a single region in each applicable geography and use Traffic Manager or Azure Front Door to provide geography-based routing.  This will provide enhanced performance and increased redundancy.
 - If you need to recover from a disaster, consider if redeploying the application from a CI/CD process would be adequate.  Also consider that a web app is a component in a larger solution, and you will need to consider the DR processes for the other components in the solution.
 ### App Service Environment:
-- Guidance on architecting an [ASE-based solution for high availability within a region](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/enterprise-integration/ase-high-availability-deployment)
-- Guidance on [geographic redundancy](https://docs.microsoft.com/en-us/azure/app-service/environment/app-service-app-service-environment-geo-distributed-scale) 
+- Guidance on architecting an [ASE-based solution for high availability within a region](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/enterprise-integration/ase-high-availability-deployment)
+- Guidance on [geographic redundancy](https://learn.microsoft.com/en-us/azure/app-service/environment/app-service-app-service-environment-geo-distributed-scale) 
 
 ## Design Recommendations
 ### Multi-Tenanted:
