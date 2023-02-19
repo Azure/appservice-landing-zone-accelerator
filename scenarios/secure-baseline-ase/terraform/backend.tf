@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">=1.2" # must be greater than or equal to 1.2 for OIDC
+  required_version = ">=1.3.7" # must be greater than or equal to 1.2 for OIDC
 
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~>3.7.0"
+      version = "~>3.44.0"
     }
   }
   backend "azurerm" {}
