@@ -27,6 +27,11 @@ on:
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
 
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
 env:
   modulePath: 'scenarios/secure-baseline-ase/terraform'
   terraform_version: 1.3.7 # must be greater than or equal to 1.2 for OIDC
@@ -34,10 +39,6 @@ env:
 
 jobs:
   tfsec:
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
     name: tfsec PR commenter
     runs-on: ubuntu-latest
     steps:
@@ -50,10 +51,6 @@ jobs:
         github_token: ${{ github.token }}
 
   validate-plan:
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
     timeout-minutes: 360
     needs: tfsec
     runs-on: ubuntu-latest
@@ -100,12 +97,11 @@ jobs:
       run: |
         terraform plan \
           -input=false \
-          -out=${{ github.run_id }}.tfplan \
+          -out=tfplan \
           -no-color \
           -var-file="Parameters/uat.tfvars" \
-          && terraform show -no-color ${{ github.run_id }}.tfplan 
+          && terraform show -no-color tfplan 
       env:  
-        TF_LOG: DEBUG
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -115,7 +111,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ github.run_id }}.tfplan
-        path: ${{ github.run_id }}.tfplan
+        path: tfplan
         retention-days: 5
 
     - name: Post Plan to GitHub PR
@@ -174,13 +170,8 @@ jobs:
             repo: context.repo.repo,
             body: output
           })
-          exit 1
 
   deploy:
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     needs: validate-plan
     environment: 'Production'
