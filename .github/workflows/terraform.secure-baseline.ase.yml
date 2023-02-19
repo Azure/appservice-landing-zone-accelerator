@@ -51,6 +51,7 @@ jobs:
         github_token: ${{ github.token }}
 
   validate-plan:
+    environment: 'Production'
     timeout-minutes: 360
     needs: tfsec
     runs-on: ubuntu-latest
