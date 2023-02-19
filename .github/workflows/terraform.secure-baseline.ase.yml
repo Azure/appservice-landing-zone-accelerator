@@ -152,15 +152,24 @@ jobs:
           })
 
     - name: Post Plan Failure
-      if: steps.plan.outcome == 'failure'
+      if: github.event_name == 'pull_request' && steps.plan.outcome == 'failure'
       uses: actions/github-script@v6
       with:
         script: |
-          Plan failed:
+          const output = `#### Terraform Plan failed
+          <details><summary>Plan Error Output</summary>
 
-          ```
+          \`\`\`\n
           ${{ steps.plan.outputs.stderr }}
-          ```
+          \`\`\`
+
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
 
   deploy:
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
@@ -221,14 +230,21 @@ jobs:
           ARM_USE_OIDC: true
 
       - name: Post Apply Failure to GitHub PR
-        if: steps.apply.outcome == 'failure'
+        if: github.event_name == 'pull_request' && steps.apply.outcome == 'failure'
         uses: actions/github-script@v6
         with:
           script: |
-            Apply failed:
+            const output = `#### Terraform Apply failed
+            <details><summary>Apply Error Output</summary>
 
-            ```
+            \`\`\`\n
             ${{ steps.apply.outputs.stderr }}
-            ```
+            \`\`\`
 
-
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
