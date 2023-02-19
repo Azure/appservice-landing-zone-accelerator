@@ -39,6 +39,7 @@ env:
 
 jobs:
   tfsec:
+    if: github.event_name == 'pull_request'
     name: tfsec PR commenter
     runs-on: ubuntu-latest
     steps:
@@ -51,7 +52,6 @@ jobs:
         github_token: ${{ github.token }}
 
   validate-plan:
-    environment: 'Production'
     timeout-minutes: 360
     needs: tfsec
     runs-on: ubuntu-latest
