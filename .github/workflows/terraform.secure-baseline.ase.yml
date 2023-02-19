@@ -252,7 +252,7 @@ jobs:
               body: output
             })
 
-  cleanup:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' 
-    needs: deploy
-    runs-on: ubuntu-latest
+  # cleanup:
+  #   if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' 
+  #   needs: deploy
+  #   runs-on: ubuntu-latest
