@@ -1,3 +1,14 @@
+variable "app_service_environment_name" {
+  description = "[Optional] The NAME of an already existing App Service Environment to deploy the App Service Plan to. Will create a new ASE v3 if not provided."
+  type        = string
+  default     = null
+}
+variable "app_service_environment_resource_group_name" {
+  description = "[Optional] The Resource Group NAME of an already existing App Service Environment to deploy the App Service Plan to. Will create a new ASE v3 if not provided."
+  type        = string
+  default     = null
+}
+
 variable "workloadName" {
   description = "A short name for the workload being deployed"
   type        = string
