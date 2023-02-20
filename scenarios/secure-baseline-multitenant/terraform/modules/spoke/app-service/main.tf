@@ -8,12 +8,12 @@ terraform {
 }
 
 locals {
-  app-svc-plan-name = "asp-${var.application_name}-${var.environment}"
-  web-app-name      = "app-${var.application_name}-${var.environment}-${var.unique_id}"
+  appsvc-plan-name = "asp-${var.application_name}-${substr(lower(var.service_plan_options.os_type), 0, 3)}-${var.environment}"
+  web-app-name     = "app-${var.application_name}-${var.environment}-${var.unique_id}"
 }
 
 resource "azurerm_service_plan" "this" {
-  name                = local.app-svc-plan-name
+  name                = local.appsvc-plan-name
   resource_group_name = var.resource_group
   location            = var.location
   sku_name            = var.service_plan_options.sku_name
@@ -25,31 +25,33 @@ module "windows_web_app" {
 
   source = "./windows-web-app"
 
-  resource_group     = var.resource_group
-  web_app_name       = local.web-app-name
-  environment        = var.environment
-  location           = var.location
-  unique_id          = var.unique_id
-  service_plan_id    = azurerm_service_plan.this.id
-  appsvc_subnet_id   = var.appsvc_subnet_id
-  frontend_subnet_id = var.frontend_subnet_id
-  webapp_options     = var.webapp_options
-  private_dns_zone   = var.private_dns_zone
+  resource_group        = var.resource_group
+  web_app_name          = local.web-app-name
+  environment           = var.environment
+  location              = var.location
+  unique_id             = var.unique_id
+  service_plan_id       = azurerm_service_plan.this.id
+  service_plan_resource = azurerm_service_plan.this
+  appsvc_subnet_id      = var.appsvc_subnet_id
+  frontend_subnet_id    = var.frontend_subnet_id
+  webapp_options        = var.webapp_options
+  private_dns_zone      = var.private_dns_zone
 }
 
 module "linux_web_app" {
   count = var.service_plan_options.os_type == "Linux" ? 1 : 0
 
-  source = "./windows-web-app"
+  source = "./linux-web-app"
 
-  resource_group     = var.resource_group
-  web_app_name       = local.web-app-name
-  environment        = var.environment
-  location           = var.location
-  unique_id          = var.unique_id
-  service_plan_id    = azurerm_service_plan.this.id
-  appsvc_subnet_id   = var.appsvc_subnet_id
-  frontend_subnet_id = var.frontend_subnet_id
-  webapp_options     = var.webapp_options
-  private_dns_zone   = var.private_dns_zone
+  resource_group        = var.resource_group
+  web_app_name          = local.web-app-name
+  environment           = var.environment
+  location              = var.location
+  unique_id             = var.unique_id
+  service_plan_id       = azurerm_service_plan.this.id
+  service_plan_resource = azurerm_service_plan.this
+  appsvc_subnet_id      = var.appsvc_subnet_id
+  frontend_subnet_id    = var.frontend_subnet_id
+  webapp_options        = var.webapp_options
+  private_dns_zone      = var.private_dns_zone
 }

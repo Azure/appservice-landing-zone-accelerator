@@ -7,13 +7,13 @@ terraform {
   }
 }
 
-provider "azurerm" {
-  features {
-    resource_group {
-      prevent_deletion_if_contains_resources = false
-    }
-  }
-}
+# provider "azurerm" {
+#   features {
+#     resource_group {
+#       prevent_deletion_if_contains_resources = false
+#     }
+#   }
+# }
 
 resource "random_password" "vm_admin_username" {
   length  = 10
@@ -184,6 +184,8 @@ module "app_service" {
 }
 
 module "devops_vm" {
+  count = var.deployment_options.deploy_vm ? 1 : 0
+
   source = "../shared/windows-vm"
 
   resource_group       = azurerm_resource_group.spoke.name
@@ -196,7 +198,6 @@ module "devops_vm" {
   aad_admin_username   = var.vm_aad_admin_username
   enable_azure_ad_join = true
   install_extensions   = true
-  firewall_rules       = var.firewall_rules
 }
 
 module "front_door" {

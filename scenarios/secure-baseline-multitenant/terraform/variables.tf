@@ -96,19 +96,15 @@ variable "vm_aad_admin_username" {
   description = "The Azure AD username for the VM admin account."
 }
 
-variable "webapp_slot_name" {
-  type        = string
-  description = "The name of the app service slot"
-  default     = "deployment"
-}
-
 variable "deployment_options" {
   type = object({
     enable_waf             = bool
     enable_egress_lockdown = bool
+    deploy_bastion         = bool
     deploy_redis           = bool
     deploy_sql_database    = bool
     deploy_app_config      = bool
+    deploy_vm              = bool
   })
 
   description = "Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache."
@@ -116,9 +112,11 @@ variable "deployment_options" {
   default = {
     enable_waf             = true
     enable_egress_lockdown = true
+    deploy_bastion         = true
     deploy_redis           = true
     deploy_sql_database    = true
     deploy_app_config      = true
+    deploy_vm              = true
   }
 }
 
@@ -132,11 +130,20 @@ variable "appsvc_options" {
       slots = list(string)
 
       application_stack = object({
-        current_stack  = string
-        dotnet_version = optional(string)
-        java_version   = optional(string)
-        php_version    = optional(string)
-        node_version   = optional(string)
+        current_stack       = string # required for windows
+        dotnet_version      = optional(string)
+        php_version         = optional(string)
+        node_version        = optional(string)
+        java_version        = optional(string)
+        python              = optional(bool)   # windows only
+        python_version      = optional(string) # linux only
+        java_server         = optional(string) # linux only
+        java_server_version = optional(string) # linux only
+        go_version          = optional(string) # linux only
+        docker_image        = optional(string) # linux only
+        docker_image_tag    = optional(string) # linux only
+        go_version          = optional(string) # linux only
+        ruby_version        = optional(string) # linux only
       })
     })
   })

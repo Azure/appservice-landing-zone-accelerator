@@ -11,7 +11,7 @@ output "vnet_id" {
 }
 
 output "bastion_name" {
-  value = module.bastion.name
+  value = var.deploy_bastion ? module.bastion[0].name : null
 }
 
 output "firewall_private_ip" {

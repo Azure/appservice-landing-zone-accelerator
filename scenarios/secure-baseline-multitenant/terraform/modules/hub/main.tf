@@ -69,6 +69,8 @@ module "network" {
 }
 
 module "bastion" {
+  count = var.deploy_bastion ? 1 : 0
+
   source = "./bastion"
 
   # Retrieve the subnet id by a lookup on subnet name from the list of subnets in the module output

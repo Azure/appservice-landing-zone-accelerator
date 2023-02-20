@@ -56,11 +56,20 @@ variable "webapp_options" {
     slots                = list(string)
 
     application_stack = object({
-      current_stack  = string
-      dotnet_version = optional(string)
-      java_version   = optional(string)
-      php_version    = optional(string)
-      node_version   = optional(string)
+      current_stack       = string # required for windows
+      dotnet_version      = optional(string)
+      php_version         = optional(string)
+      node_version        = optional(string)
+      java_version        = optional(string)
+      python              = optional(bool)   # windows only
+      python_version      = optional(string) # linux only
+      java_server         = optional(string) # linux only
+      java_server_version = optional(string) # linux only
+      go_version          = optional(string) # linux only
+      docker_image        = optional(string) # linux only
+      docker_image_tag    = optional(string) # linux only
+      go_version          = optional(string) # linux only
+      ruby_version        = optional(string) # linux only
     })
   })
 

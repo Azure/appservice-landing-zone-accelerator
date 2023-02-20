@@ -15,7 +15,7 @@ output "sql_db_connection_string" {
 }
 
 output "devops_vm_id" {
-  value = module.devops_vm.id
+  value = var.deployment_options.deploy_vm ? module.devops_vm[0].vm_id : null
 }
 
 output "web_app_name" {
