@@ -98,25 +98,27 @@ variable "vm_aad_admin_username" {
 
 variable "deployment_options" {
   type = object({
-    enable_waf             = bool
-    enable_egress_lockdown = bool
-    deploy_bastion         = bool
-    deploy_redis           = bool
-    deploy_sql_database    = bool
-    deploy_app_config      = bool
-    deploy_vm              = bool
+    enable_waf                 = bool
+    enable_egress_lockdown     = bool
+    enable_diagnostic_settings = bool
+    deploy_bastion             = bool
+    deploy_redis               = bool
+    deploy_sql_database        = bool
+    deploy_app_config          = bool
+    deploy_vm                  = bool
   })
 
   description = "Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache."
 
   default = {
-    enable_waf             = true
-    enable_egress_lockdown = true
-    deploy_bastion         = true
-    deploy_redis           = true
-    deploy_sql_database    = true
-    deploy_app_config      = true
-    deploy_vm              = true
+    enable_waf                 = true
+    enable_egress_lockdown     = true
+    enable_diagnostic_settings = true
+    deploy_bastion             = true
+    deploy_redis               = true
+    deploy_sql_database        = true
+    deploy_app_config          = true
+    deploy_vm                  = true
   }
 }
 

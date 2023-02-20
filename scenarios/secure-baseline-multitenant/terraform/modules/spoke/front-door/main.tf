@@ -19,6 +19,34 @@ resource "azurerm_cdn_frontdoor_profile" "frontdoor" {
   sku_name            = var.azure_frontdoor_sku
 }
 
+resource "azurerm_monitor_diagnostic_setting" "this" {
+  count = var.enable_diagnostic_settings ? 1 : 0
+
+  name                           = "${azurerm_cdn_frontdoor_profile.frontdoor.name}-diagnostic-settings}"
+  target_resource_id             = azurerm_cdn_frontdoor_profile.frontdoor.id
+  log_analytics_workspace_id     = var.log_analytics_workspace_id
+  log_analytics_destination_type = "Dedicated"
+
+  enabled_log {
+    category_group = "allLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = false
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+}
+
 locals {
   endpoint_uris = {
     for endpoint in module.endpoint :

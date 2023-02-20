@@ -55,7 +55,7 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   name                           = "${azurerm_firewall.firewall.name}-diagnostic-settings}"
   target_resource_id             = azurerm_firewall.firewall.id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
-  log_analytics_destination_type = "AzureDiagnostics"
+  log_analytics_destination_type = "Dedicated"
 
   enabled_log {
     category_group = "allLogs"

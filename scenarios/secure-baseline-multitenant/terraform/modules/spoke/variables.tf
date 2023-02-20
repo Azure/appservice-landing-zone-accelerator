@@ -87,12 +87,14 @@ variable "private_dns_zones_rg" {
 
 variable "deployment_options" {
   type = object({
-    enable_waf             = bool
-    enable_egress_lockdown = bool
-    deploy_redis           = bool
-    deploy_sql_database    = bool
-    deploy_app_config      = bool
-    deploy_vm              = bool
+    enable_waf                 = bool
+    enable_egress_lockdown     = bool
+    enable_diagnostic_settings = bool
+    deploy_bastion             = bool
+    deploy_redis               = bool
+    deploy_sql_database        = bool
+    deploy_app_config          = bool
+    deploy_vm                  = bool
   })
 
   description = "Opt-in settings for the deployment"

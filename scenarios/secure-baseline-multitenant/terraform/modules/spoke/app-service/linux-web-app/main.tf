@@ -82,6 +82,34 @@ resource "azurerm_linux_web_app" "this" {
   }
 }
 
+resource "azurerm_monitor_diagnostic_setting" "this" {
+  count = var.enable_diagnostic_settings ? 1 : 0
+  
+  name                           = "${azurerm_linux_web_app.this.name}-diagnostic-settings}"
+  target_resource_id             = azurerm_linux_web_app.this.id
+  log_analytics_workspace_id     = var.log_analytics_workspace_id
+  log_analytics_destination_type = "Dedicated"
+
+  enabled_log {
+    category_group = "allLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = false
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+}
+
 resource "azurecaf_name" "webapp" {
   name          = var.web_app_name
   resource_type = "azurerm_private_endpoint"

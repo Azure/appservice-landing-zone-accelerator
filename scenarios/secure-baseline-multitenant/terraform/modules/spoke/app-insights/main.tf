@@ -19,6 +19,6 @@ resource "azurerm_application_insights" "this" {
   resource_group_name           = var.resource_group
   workspace_id                  = var.log_analytics_workspace_id
   application_type              = "web"
-  local_authentication_disabled = true
-  internet_ingestion_enabled    = false
+  local_authentication_disabled = false
+  internet_ingestion_enabled    = true
 }

@@ -35,6 +35,17 @@ variable "unique_id" {
   description = "A unique identifier"
 }
 
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "The log analytics workspace id"
+}
+
+variable "enable_diagnostic_settings" {
+  type        = bool
+  description = "Enable diagnostic settings"
+  default     = false
+}
+
 variable "service_plan_options" {
   type = object({
     os_type  = string

@@ -159,14 +159,16 @@ locals {
 module "app_service" {
   source = "./app-service"
 
-  resource_group     = azurerm_resource_group.spoke.name
-  application_name   = var.application_name
-  environment        = var.environment
-  location           = var.location
-  unique_id          = random_integer.unique_id.result
-  appsvc_subnet_id   = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.appsvc_subnet.result)].id
-  frontend_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.ingress_subnet.result)].id
+  resource_group             = azurerm_resource_group.spoke.name
+  application_name           = var.application_name
+  environment                = var.environment
+  location                   = var.location
+  unique_id                  = random_integer.unique_id.result
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+  enable_diagnostic_settings = var.deployment_options.enable_diagnostic_settings
 
+  appsvc_subnet_id     = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.appsvc_subnet.result)].id
+  frontend_subnet_id   = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.ingress_subnet.result)].id
   service_plan_options = var.appsvc_options.service_plan
 
   webapp_options = {
@@ -203,12 +205,14 @@ module "devops_vm" {
 module "front_door" {
   source = "./front-door"
 
-  resource_group   = azurerm_resource_group.spoke.name
-  application_name = var.application_name
-  environment      = var.environment
-  location         = var.location
-  enable_waf       = var.deployment_options.enable_waf
-  unique_id        = random_integer.unique_id.result
+  resource_group             = azurerm_resource_group.spoke.name
+  application_name           = var.application_name
+  environment                = var.environment
+  location                   = var.location
+  enable_waf                 = var.deployment_options.enable_waf
+  unique_id                  = random_integer.unique_id.result
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+  enable_diagnostic_settings = var.deployment_options.enable_diagnostic_settings
 
   endpoint_settings = [
     {
