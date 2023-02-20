@@ -3,10 +3,10 @@ name: 'Single-tenant ASEv3 Secure Baseline: Terraform Deploy'
 on:
   workflow_dispatch:
     inputs:
-      removeAfterStaging:
-        description: 'Remove resources after staging?'
+      destroy:
+        description: 'Destroy resources?'
         required: true
-        default: 'true'
+        default: 'false'
         options:
           - 'true'
           - 'false'
@@ -96,12 +96,22 @@ jobs:
       id: plan
       continue-on-error: true
       run: |
-        terraform plan \
-          -input=false \
-          -out=tfplan \
-          -no-color \
-          -var-file="Parameters/uat.tfvars" \
-          && terraform show -no-color tfplan 
+        if [ "${{ github.event.inputs.destroy }}" = "true" ]; then
+          terraform plan \
+            -destroy \
+            -input=false \
+            -out=tfplan \
+            -no-color \
+            -var-file="Parameters/uat.tfvars" \
+            && terraform show -no-color tfplan
+        else
+          terraform plan \
+            -input=false \
+            -out=tfplan \
+            -no-color \
+            -var-file="Parameters/uat.tfvars" \
+            && terraform show -no-color tfplan
+        fi
       env:  
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
