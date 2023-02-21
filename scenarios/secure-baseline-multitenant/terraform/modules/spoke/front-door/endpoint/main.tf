@@ -1,6 +1,20 @@
+resource "null_resource" "web_app" {
+  triggers = {
+    web_app_hostname         = var.web_app_hostname,
+    web_app_id               = var.web_app_id,
+    private_link_target_type = var.private_link_target_type
+  }
+}
+
 resource "azurerm_cdn_frontdoor_endpoint" "web_app" {
   name                     = var.endpoint_name
   cdn_frontdoor_profile_id = var.frontdoor_profile_id
+
+  lifecycle {
+    replace_triggered_by = [
+      null_resource.web_app
+    ]
+  }
 }
 
 resource "azurerm_cdn_frontdoor_origin_group" "web_app" {
@@ -20,10 +34,16 @@ resource "azurerm_cdn_frontdoor_origin_group" "web_app" {
     protocol            = "Https"
     interval_in_seconds = 100
   }
+
+  lifecycle {
+    replace_triggered_by = [
+      null_resource.web_app
+    ]
+  }
 }
 
 resource "azurerm_cdn_frontdoor_origin" "web_app" {
-  
+
   name                           = var.endpoint_name
   cdn_frontdoor_origin_group_id  = azurerm_cdn_frontdoor_origin_group.web_app.id
   enabled                        = true
@@ -36,10 +56,16 @@ resource "azurerm_cdn_frontdoor_origin" "web_app" {
   certificate_name_check_enabled = true
 
   private_link {
-    request_message        = "Request access for CDN Frontdoor Private Link Origin to Web App"
+    request_message        = "Request access for CDN Frontdoor Private Link Origin to Web App 2"
     target_type            = var.private_link_target_type
     location               = var.location
     private_link_target_id = var.web_app_id
+  }
+
+  lifecycle {
+    replace_triggered_by = [
+      null_resource.web_app
+    ]
   }
 }
 
@@ -53,4 +79,10 @@ resource "azurerm_cdn_frontdoor_route" "web_app" {
   forwarding_protocol           = "HttpsOnly"
   link_to_default_domain        = true
   https_redirect_enabled        = true
+
+  lifecycle {
+    replace_triggered_by = [
+      null_resource.web_app
+    ]
+  }
 }

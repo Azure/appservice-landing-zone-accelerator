@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -54,7 +54,7 @@ resource "azurerm_private_endpoint" "this" {
   name                = azurecaf_name.private_endpoint.result
   location            = var.location
   resource_group_name = var.resource_group
-  subnet_id           = var.private-link-subnet-id
+  subnet_id           = var.private_link_subnet_id
 
   private_service_connection {
     name                           = azurecaf_name.private_endpoint.result

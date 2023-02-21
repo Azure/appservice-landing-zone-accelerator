@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -89,10 +89,6 @@ resource "azurerm_virtual_machine_extension" "aad" {
   timeouts {
     create = "60m"
   }
-
-  depends_on = [
-    var.firewall_rules
-  ]
 }
 
 resource "azurerm_virtual_machine_extension" "install_sql" {
@@ -114,8 +110,4 @@ resource "azurerm_virtual_machine_extension" "install_sql" {
   timeouts {
     create = "60m"
   }
-
-  depends_on = [
-    var.firewall_rules
-  ]
 }

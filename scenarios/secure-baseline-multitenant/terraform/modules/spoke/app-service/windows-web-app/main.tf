@@ -7,6 +7,14 @@ terraform {
   }
 }
 
+resource "null_resource" "service_plan" {
+  triggers = {
+    service_plan_id   = var.service_plan_resource.id,
+    service_plan_name = var.service_plan_resource.name,
+    service_plan_os   = var.service_plan_resource.os_type
+  }
+}
+
 resource "azurerm_windows_web_app" "this" {
   name                      = var.web_app_name
   resource_group_name       = var.resource_group
@@ -64,6 +72,40 @@ resource "azurerm_windows_web_app" "this" {
     "XDT_MicrosoftApplicationInsights_NodeJS"         = "1"
     "XDT_MicrosoftApplicationInsights_PreemptSdk"     = "disabled"
   }
+
+  lifecycle {
+    replace_triggered_by = [
+      null_resource.service_plan
+    ]
+  }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "this" {
+  count = var.enable_diagnostic_settings ? 1 : 0
+
+  name                           = "${azurerm_windows_web_app.this.name}-diagnostic-settings}"
+  target_resource_id             = azurerm_windows_web_app.this.id
+  log_analytics_workspace_id     = var.log_analytics_workspace_id
+  log_analytics_destination_type = "Dedicated"
+
+  enabled_log {
+    category_group = "allLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = false
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
 }
 
 resource "azurecaf_name" "webapp" {
@@ -91,7 +133,7 @@ module "private_endpoint" {
 }
 
 resource "azurerm_windows_web_app_slot" "slot" {
-  name                      = var.webapp_options.slot_name
+  name                      = var.webapp_options.slots[0]
   app_service_id            = azurerm_windows_web_app.this.id
   virtual_network_subnet_id = var.appsvc_subnet_id
   https_only                = true
@@ -114,7 +156,7 @@ resource "azurerm_windows_web_app_slot" "slot" {
 }
 
 resource "azurecaf_name" "slot" {
-  name          = "${var.web_app_name}-${var.webapp_options.slot_name}"
+  name          = "${var.web_app_name}-${var.webapp_options.slots[0]}"
   resource_type = "azurerm_private_endpoint"
 }
 
@@ -127,7 +169,7 @@ module "private_endpoint_slot" {
   subnet_id                      = var.frontend_subnet_id
   private_connection_resource_id = azurerm_windows_web_app.this.id
 
-  subresource_names = ["sites-${var.webapp_options.slot_name}"]
+  subresource_names = ["sites-${var.webapp_options.slots[0]}"]
 
   private_dns_zone = var.private_dns_zone
 

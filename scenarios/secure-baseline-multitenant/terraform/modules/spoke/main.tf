@@ -1,23 +1,19 @@
 terraform {
   required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">=3.34.0"
-    }
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
 
-provider "azurerm" {
-  features {
-    resource_group {
-      prevent_deletion_if_contains_resources = false
-    }
-  }
-}
+# provider "azurerm" {
+#   features {
+#     resource_group {
+#       prevent_deletion_if_contains_resources = false
+#     }
+#   }
+# }
 
 resource "random_password" "vm_admin_username" {
   length  = 10
@@ -163,14 +159,16 @@ locals {
 module "app_service" {
   source = "./app-service"
 
-  resource_group     = azurerm_resource_group.spoke.name
-  application_name   = var.application_name
-  environment        = var.environment
-  location           = var.location
-  unique_id          = random_integer.unique_id.result
-  appsvc_subnet_id   = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.appsvc_subnet.result)].id
-  frontend_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.ingress_subnet.result)].id
+  resource_group             = azurerm_resource_group.spoke.name
+  application_name           = var.application_name
+  environment                = var.environment
+  location                   = var.location
+  unique_id                  = random_integer.unique_id.result
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+  enable_diagnostic_settings = var.deployment_options.enable_diagnostic_settings
 
+  appsvc_subnet_id     = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.appsvc_subnet.result)].id
+  frontend_subnet_id   = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.ingress_subnet.result)].id
   service_plan_options = var.appsvc_options.service_plan
 
   webapp_options = {
@@ -188,6 +186,8 @@ module "app_service" {
 }
 
 module "devops_vm" {
+  count = var.deployment_options.deploy_vm ? 1 : 0
+
   source = "../shared/windows-vm"
 
   resource_group       = azurerm_resource_group.spoke.name
@@ -200,17 +200,19 @@ module "devops_vm" {
   aad_admin_username   = var.vm_aad_admin_username
   enable_azure_ad_join = true
   install_extensions   = true
-  firewall_rules       = var.firewall_rules
 }
 
 module "front_door" {
   source = "./front-door"
 
-  resource_group   = azurerm_resource_group.spoke.name
-  application_name = var.application_name
-  environment      = var.environment
-  location         = var.location
-  enable_waf       = var.deployment_options.enable_waf
+  resource_group             = azurerm_resource_group.spoke.name
+  application_name           = var.application_name
+  environment                = var.environment
+  location                   = var.location
+  enable_waf                 = var.deployment_options.enable_waf
+  unique_id                  = random_integer.unique_id.result
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+  enable_diagnostic_settings = var.deployment_options.enable_diagnostic_settings
 
   endpoint_settings = [
     {
@@ -228,8 +230,10 @@ module "front_door" {
     #   private_link_target_type = "sites-${var.webapp_slot_name}"
     # }
   ]
-  unique_id = random_integer.unique_id.result
 
+  depends_on = [
+    module.app_service
+  ]
 }
 
 module "sql_database" {

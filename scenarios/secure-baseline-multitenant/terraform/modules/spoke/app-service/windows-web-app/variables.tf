@@ -8,6 +8,11 @@ variable "service_plan_id" {
   description = "The id of the service plan where the web application will be created"
 }
 
+variable "service_plan_resource" {
+  type        = any
+  description = "The service plan resource where the web application will be created"
+}
+
 variable "resource_group" {
   type        = string
   description = "The name of the resource group where all resources in this example should be created."
@@ -28,6 +33,17 @@ variable "location" {
 variable "unique_id" {
   type        = string
   description = "A unique identifier"
+}
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "The log analytics workspace id"
+}
+
+variable "enable_diagnostic_settings" {
+  type        = bool
+  description = "Enable diagnostic settings"
+  default     = false
 }
 
 variable "service_plan_options" {
@@ -61,11 +77,20 @@ variable "webapp_options" {
     slots                = list(string)
 
     application_stack = object({
-      current_stack  = string
-      dotnet_version = optional(string)
-      java_version   = optional(string)
-      php_version    = optional(string)
-      node_version   = optional(string)
+      current_stack       = string # required for windows
+      dotnet_version      = optional(string)
+      php_version         = optional(string)
+      node_version        = optional(string)
+      java_version        = optional(string)
+      python              = optional(bool)   # windows only
+      python_version      = optional(string) # linux only
+      java_server         = optional(string) # linux only
+      java_server_version = optional(string) # linux only
+      go_version          = optional(string) # linux only
+      docker_image        = optional(string) # linux only
+      docker_image_tag    = optional(string) # linux only
+      go_version          = optional(string) # linux only
+      ruby_version        = optional(string) # linux only
     })
   })
 

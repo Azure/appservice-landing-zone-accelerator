@@ -4,20 +4,28 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">=3.34.0"
+      version = ">=3.39.0"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
-  backend "azurerm" {}
+  # backend "azurerm" {}
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 
   # DO NOT CHANGE THE BELOW VALUES
   disable_terraform_partner_id = false
   partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
+}
+
+provider "azurecaf" {
+
 }

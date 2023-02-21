@@ -46,3 +46,14 @@ variable "unique_id" {
   type        = string
   description = "The unique id"
 }
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "The log analytics workspace id"
+}
+
+variable "enable_diagnostic_settings" {
+  type        = bool
+  description = "Enable diagnostic settings"
+  default     = false
+}

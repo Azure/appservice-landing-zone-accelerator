@@ -35,7 +35,7 @@ variable "vnet_cidr" {
   description = "The CIDR block for the virtual network."
 }
 
-variable "appsvc_int_subnet_cidr" {
+variable "appsvc_subnet_cidr" {
   type        = list(string)
   description = "The CIDR block for the subnet."
 }
@@ -75,11 +75,6 @@ variable "firewall_private_ip" {
   description = "The private IP address of the Azure Firewall (needed to setup UDRs)"
 }
 
-variable "firewall_rules" {
-  type        = map(any)
-  description = "The list of firewall rules deployed in the Azure Firewall. This is a dependency for deploying the VM."
-}
-
 variable "private_dns_zones" {
   type        = list(any)
   description = "The list of private DNS zones deployed in the hub. This is a dependency for deploying the VM."
@@ -92,11 +87,14 @@ variable "private_dns_zones_rg" {
 
 variable "deployment_options" {
   type = object({
-    enable_waf             = bool
-    enable_egress_lockdown = bool
-    deploy_redis           = bool
-    deploy_sql_database    = bool
-    deploy_app_config      = bool
+    enable_waf                 = bool
+    enable_egress_lockdown     = bool
+    enable_diagnostic_settings = bool
+    deploy_bastion             = bool
+    deploy_redis               = bool
+    deploy_sql_database        = bool
+    deploy_app_config          = bool
+    deploy_vm                  = bool
   })
 
   description = "Opt-in settings for the deployment"
@@ -112,11 +110,20 @@ variable "appsvc_options" {
       slots = list(string)
 
       application_stack = object({
-        current_stack  = string
-        dotnet_version = optional(string)
-        java_version   = optional(string)
-        php_version    = optional(string)
-        node_version   = optional(string)
+        current_stack       = string # required for windows
+        dotnet_version      = optional(string)
+        php_version         = optional(string)
+        node_version        = optional(string)
+        java_version        = optional(string)
+        python              = optional(bool)   # windows only
+        python_version      = optional(string) # linux only
+        java_server         = optional(string) # linux only
+        java_server_version = optional(string) # linux only
+        go_version          = optional(string) # linux only
+        docker_image        = optional(string) # linux only
+        docker_image_tag    = optional(string) # linux only
+        go_version          = optional(string) # linux only
+        ruby_version        = optional(string) # linux only
       })
     })
   })

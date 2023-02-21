@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = ">=1.2.22"
+      version = ">=1.2.23"
     }
   }
 }
@@ -46,7 +46,7 @@ resource "azurerm_firewall" "firewall" {
 
   ip_configuration {
     name                 = "firewallIpConfiguration"
-    subnet_id            = "${var.hub_vnet_id}/subnets/AzureFirewallSubnet"
+    subnet_id            = var.subnet_id
     public_ip_address_id = azurerm_public_ip.firewall_pip.id
   }
 }
@@ -55,11 +55,10 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   name                           = "${azurerm_firewall.firewall.name}-diagnostic-settings}"
   target_resource_id             = azurerm_firewall.firewall.id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
-  log_analytics_destination_type = "AzureDiagnostics"
+  log_analytics_destination_type = "Dedicated"
 
-  log {
+  enabled_log {
     category_group = "allLogs"
-    enabled        = true
 
     retention_policy {
       days    = 0

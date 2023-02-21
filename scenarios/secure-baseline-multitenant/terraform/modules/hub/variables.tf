@@ -24,6 +24,11 @@ variable "deploy_firewall" {
   default = false
 }
 
+variable "deploy_bastion" {
+  type    = bool
+  default = false  
+}
+
 variable "firewall_rules_source_addresses" {
   type        = list(string)
   description = "The source addresses for the firewall rules."

@@ -3,7 +3,7 @@ locals {
   firewall_subnet_cidr     = var.firewall_subnet_cidr == null ? "10.242.0.0/26" : var.firewall_subnet_cidr
   bastion_subnet_cidr      = var.bastion_subnet_cidr == null ? "10.242.0.64/26" : var.bastion_subnet_cidr
   spoke_vnet_cidr          = var.spoke_vnet_cidr == null ? ["10.240.0.0/20"] : var.spoke_vnet_cidr
-  appsvc_int_subnet_cidr   = var.appsvc_int_subnet_cidr == null ? ["10.240.0.0/26"] : var.appsvc_int_subnet_cidr
+  appsvc_subnet_cidr       = var.appsvc_subnet_cidr == null ? ["10.240.0.0/26"] : var.appsvc_subnet_cidr
   front_door_subnet_cidr   = var.front_door_subnet_cidr == null ? ["10.240.0.64/26"] : var.front_door_subnet_cidr
   devops_subnet_cidr       = var.devops_subnet_cidr == null ? ["10.240.10.128/26"] : var.devops_subnet_cidr
   private_link_subnet_cidr = var.private_link_subnet_cidr == null ? ["10.240.11.0/24"] : var.private_link_subnet_cidr
@@ -17,7 +17,9 @@ module "hub" {
   firewall_subnet_cidr = local.firewall_subnet_cidr
   bastion_subnet_cidr  = local.bastion_subnet_cidr
   devops_subnet_cidr   = local.devops_subnet_cidr
-  deploy_firewall      = var.deployment_options.enable_egress_lockdown
+
+  deploy_firewall = var.deployment_options.enable_egress_lockdown
+  deploy_bastion  = var.deployment_options.deploy_bastion
 
   firewall_rules_source_addresses = [
     local.hub_vnet_cidr[0],
@@ -41,17 +43,23 @@ module "spoke" {
   vm_admin_password         = var.vm_admin_password
   vm_aad_admin_username     = var.vm_aad_admin_username
 
-  firewall_private_ip = module.hub.firewall_private_ip
-  firewall_rules      = module.hub.firewall_rules
-
   vnet_cidr                = local.spoke_vnet_cidr
   appsvc_subnet_cidr       = local.appsvc_subnet_cidr
   front_door_subnet_cidr   = local.front_door_subnet_cidr
   devops_subnet_cidr       = local.devops_subnet_cidr
   private_link_subnet_cidr = local.private_link_subnet_cidr
+  firewall_private_ip      = module.hub.firewall_private_ip
 
   private_dns_zones    = module.private_dns_zones.dns_zones
   private_dns_zones_rg = module.hub.rg_name
+
+  providers = {
+    azurecaf = azurecaf
+  }
+
+  depends_on = [
+    module.hub.firewall_rules
+  ]
 }
 
 module "private_dns_zones" {

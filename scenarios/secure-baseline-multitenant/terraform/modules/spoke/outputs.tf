@@ -1,9 +1,9 @@
 output "vnet_id" {
-  value = module.spoke_network.vnet_id
+  value = module.network.vnet_id
 }
 
 output "vnet_name" {
-  value = module.spoke_network.vnet_name
+  value = module.network.vnet_name
 }
 
 output "rg_name" {
@@ -15,7 +15,7 @@ output "sql_db_connection_string" {
 }
 
 output "devops_vm_id" {
-  value = module.devops_vm.id
+  value = var.deployment_options.deploy_vm ? module.devops_vm[0].vm_id : null
 }
 
 output "web_app_name" {
