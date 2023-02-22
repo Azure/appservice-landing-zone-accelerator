@@ -12,6 +12,9 @@ param vnetId string = ''
 
 var bastionNameMaxLength = 80
 var bastionNameSantized = length(name) > bastionNameMaxLength ? substring(name, 0, bastionNameMaxLength) : name
+var snetBastion = {
+  id: '${vnetId}/subnets/AzureBastionSubnet' 
+}
 
 
 module publicIp 'publicIp.bicep' = {
@@ -34,9 +37,7 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-07-01' = {
       {
         name: 'IpConf'
         properties: {
-          subnet: {
-            id: '${vnetId}/subnets/AzureBastionSubnet' 
-          }
+          subnet: snetBastion
           publicIPAddress: {
             id: publicIp.outputs.pipResourceId
           }

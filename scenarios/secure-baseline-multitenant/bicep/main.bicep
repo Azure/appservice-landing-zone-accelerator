@@ -22,6 +22,12 @@ param environment string
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24')
 param hubVnetAddressSpace string
 
+@description('CIDR of the subnet hosting the azure Firewall')
+param subnetHubFirewallAddressSpace string
+
+@description('CIDR of the subnet hosting the Bastion Service')
+param subnetHubBastionddressSpace string
+
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param spokeVnetAddressSpace string
 
@@ -98,6 +104,8 @@ module hub 'hub.deployment.bicep' = {
     location: location
     hubVnetAddressSpace: hubVnetAddressSpace
     tags: tags
+    subnetHubBastionddressSpace: subnetHubBastionddressSpace
+    subnetHubFirewallAddressSpace: subnetHubFirewallAddressSpace
   }
 }
 

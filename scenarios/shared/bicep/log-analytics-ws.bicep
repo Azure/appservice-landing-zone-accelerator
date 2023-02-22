@@ -1,4 +1,9 @@
-@description('Required. Name of the Bastion Service.')
+
+@description('Required. Name of the Log Analytics Workspace Service. It must be between 4 and 63 characters and can contain only letters, numbers and "-". The "-" should not be the first or the last symbol')
+//The workspace name .
+//The workspace name can contain only letters, numbers and '-'. The '-' shouldn't be the first or the last symbol.
+@minLength(4)
+@maxLength(63)
 param name string
 
 @description('Azure region where the resources will be deployed in')
@@ -38,7 +43,7 @@ param publicNetworkAccessForQuery string = 'Enabled'
 param useResourcePermissions bool = false
 
 var lawsMaxLength = 63
-var lawsNameSantized = replace(name, '_', '-')
+var lawsNameSantized = replace(replace(name, '_', '-'), '.', '-')
 var lawsName = length(lawsNameSantized) > lawsMaxLength ? substring(lawsNameSantized, 0, lawsMaxLength) : lawsNameSantized
 
 resource laws 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -63,3 +68,5 @@ output logAnalyticsWsName string = laws.name
 
 @description('The resource ID of the resource.')
 output logAnalyticsWsId string = laws.id
+
+

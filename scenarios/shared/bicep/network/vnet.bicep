@@ -17,7 +17,7 @@ param subnetsInfo array
 var vnetNameMaxLength = 80
 var vnetName = length(name) > vnetNameMaxLength ? substring(name, 0, vnetNameMaxLength) : name
 
-resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: vnetName
   location: location
   properties: {

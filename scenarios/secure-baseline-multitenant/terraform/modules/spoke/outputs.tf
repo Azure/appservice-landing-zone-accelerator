@@ -14,9 +14,9 @@ output "sql_db_connection_string" {
   value = module.sql_database.sql_db_connection_string
 }
 
-# output "devops_vm_id" {
-#   value = module.devops_vm.id
-# }
+output "devops_vm_id" {
+  value = module.devops_vm.id
+}
 
 output "web_app_name" {
   value = module.app_service.web_app_name

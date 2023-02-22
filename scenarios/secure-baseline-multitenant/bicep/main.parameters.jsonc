@@ -17,6 +17,14 @@
         "hubVnetAddressSpace": {
             "value": "10.242.0.0/20"
         },
+        // CIDR of the subnet hosting the private endpoints of any desired servies (key vault, ACR, DBs etc)
+        "subnetHubFirewallAddressSpace": {
+            "value": "10.242.0.0/26"
+        },
+        // CIDR of the subnet hosting the application Gateway V2. needs to be big enough to accomdate scaling
+        "subnetHubBastionddressSpace": {
+            "value": "10.242.0.64/26"
+        },
         "spokeVnetAddressSpace": {
             "value": "TODO"
         },

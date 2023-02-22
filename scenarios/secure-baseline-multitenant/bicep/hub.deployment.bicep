@@ -6,10 +6,18 @@ param naming object
 @description('Azure region where the resources will be deployed in')
 param location string = resourceGroup().location
 
+@description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
+param tags object
+
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24')
 param hubVnetAddressSpace string
 
-param tags object
+@description('CIDR of the subnet hosting the azure Firewall')
+param subnetHubFirewallAddressSpace string
+
+@description('CIDR of the subnet hosting the Bastion Service')
+param subnetHubBastionddressSpace string
+
 
 
 //look https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
@@ -26,17 +34,29 @@ var resourceNames = {
   laws: '${naming.logAnalyticsWorkspace.name}-hub'
   azFw: naming.firewall.name
   vnetHub: '${naming.virtualNetwork.name}-hub'
+  subnetFirewall: 'AzureFirewallSubnet'
+  subnetBastion: 'AzureBastionSubnet'
 }
 
-var subnetInfo = loadJsonContent('./hub-vnet-snet-config.jsonc')
-
-var hubVnetSubnets = [for item in subnetInfo.subnets: {
-  name: item.name
-  properties: {
-    addressPrefix: item.addressPrefix
-    privateEndpointNetworkPolicies: item.privateEndpointNetworkPolicies =~ 'Disabled' ? 'Disabled' : 'Enabled'
+var subnets = [ 
+  {
+    name: resourceNames.subnetFirewall
+    properties: {
+      addressPrefix: subnetHubFirewallAddressSpace
+      privateEndpointNetworkPolicies: 'Disabled'  
+      // networkSecurityGroup: {
+      //   id: nsgAca.outputs.nsgID
+      // } 
+    } 
   }
-}]
+  {
+    name: resourceNames.subnetBastion
+    properties: {
+      addressPrefix: subnetHubBastionddressSpace
+      privateEndpointNetworkPolicies: 'Disabled'    
+    }
+  }
+]
 
 var virtualNetworkLinks = [
   {
@@ -46,18 +66,18 @@ var virtualNetworkLinks = [
   }
 ]
 
-module vnetHub '../../shared/bicep/vnet.bicep' = {
+module vnetHub '../../shared/bicep/network/vnet.bicep' = {
   name: 'vnetHubDeployment'
   params: {
     location: location
     name: resourceNames.vnetHub
-    subnetsInfo: hubVnetSubnets
+    subnetsInfo: subnets
     tags: tags
     vnetAddressSpace:  hubVnetAddressSpace
   }
 }
 
-module bastionSvc '../../shared/bicep/bastion.bicep' = {
+module bastionSvc '../../shared/bicep/network/bastion.bicep' = {
   name: 'bastionSvcDeployment'
   params: {
     location: location
@@ -77,7 +97,7 @@ module laws '../../shared/bicep/log-analytics-ws.bicep' = {
   }
 }
 
-module azFw '../../shared/bicep/firewall.bicep' = {
+module azFw '../../shared/bicep/network/firewall.bicep' = {
   name: 'azFWDeployment'
   params: {
     location: location
