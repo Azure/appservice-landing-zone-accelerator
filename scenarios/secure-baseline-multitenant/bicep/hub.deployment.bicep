@@ -21,13 +21,14 @@ param subnetHubBastionddressSpace string
 
 
 //look https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
-var privateDnsZoneNames = {
-  appConfiguration: 'privatelink.azconfig.io'
-  webApps: 'privaprivatelink.azurewebsites.net'
-  sqlDb: 'privatelink${environment().suffixes.sqlServerHostname}'
-  redis: 'privatelink.redis.cache.windows.net'
-  keyvault: 'privatelink.vaultcore.azure.net'
-}
+// TODO: Check if this is required or if we go with module (inline) implementation
+// var privateDnsZoneNames = {
+//   appConfiguration: 'privatelink.azconfig.io'
+//   webApps: 'privaprivatelink.azurewebsites.net'
+//   sqlDb: 'privatelink${environment().suffixes.sqlServerHostname}'
+//   redis: 'privatelink.redis.cache.windows.net'
+//   keyvault: 'privatelink.vaultcore.azure.net'
+// }
 
 var resourceNames = {
   bastionService: naming.bastionHost.name
@@ -58,13 +59,6 @@ var subnets = [
   }
 ]
 
-var virtualNetworkLinks = [
-  {
-    vnetName: vnetHub.outputs.vnetName
-    vnetId: vnetHub.outputs.vnetId
-    registrationEnabled: false
-  }
-]
 
 module vnetHub '../../shared/bicep/network/vnet.bicep' = {
   name: 'vnetHubDeployment'
@@ -108,47 +102,51 @@ module azFw '../../shared/bicep/network/firewall.bicep' = {
   }
 }
 
-module privateDnsZoneAppConfig  '../../shared/bicep/private-dns-zone.bicep' = {
-  name: 'privateDnsZoneAppConfigDeployment'
-  params: {
-    name: privateDnsZoneNames.appConfiguration
-    virtualNetworkLinks: virtualNetworkLinks
-    tags: tags
-  }
-}
+// module privateDnsZoneAppConfig  '../../shared/bicep/private-dns-zone.bicep' = {
+//   name: 'privateDnsZoneAppConfigDeployment'
+//   params: {
+//     name: privateDnsZoneNames.appConfiguration
+//     virtualNetworkLinks: virtualNetworkLinks
+//     tags: tags
+//   }
+// }
 
-module privateDnsKeyvault  '../../shared/bicep/private-dns-zone.bicep' = {
-  name: 'privateDnsKeyvaultDeployment'
-  params: {
-    name: privateDnsZoneNames.keyvault
-    virtualNetworkLinks: virtualNetworkLinks
-    tags: tags
-  }
-}
+// module privateDnsKeyvault  '../../shared/bicep/private-dns-zone.bicep' = {
+//   name: 'privateDnsKeyvaultDeployment'
+//   params: {
+//     name: privateDnsZoneNames.keyvault
+//     virtualNetworkLinks: virtualNetworkLinks
+//     tags: tags
+//   }
+// }
 
-module privateDnsRedis  '../../shared/bicep/private-dns-zone.bicep' = {
-  name: 'privateDnsRedisDeployment'
-  params: {
-    name: privateDnsZoneNames.redis
-    virtualNetworkLinks: virtualNetworkLinks
-    tags: tags
-  }
-}
+// module privateDnsRedis  '../../shared/bicep/private-dns-zone.bicep' = {
+//   name: 'privateDnsRedisDeployment'
+//   params: {
+//     name: privateDnsZoneNames.redis
+//     virtualNetworkLinks: virtualNetworkLinks
+//     tags: tags
+//   }
+// }
 
-module privateDnsZoneSql  '../../shared/bicep/private-dns-zone.bicep' = {
-  name: 'privateDnsZoneSqlDeployment'
-  params: {
-    name: privateDnsZoneNames.sqlDb
-    virtualNetworkLinks: virtualNetworkLinks
-    tags: tags
-  }
-}
+// module privateDnsZoneSql  '../../shared/bicep/private-dns-zone.bicep' = {
+//   name: 'privateDnsZoneSqlDeployment'
+//   params: {
+//     name: privateDnsZoneNames.sqlDb
+//     virtualNetworkLinks: virtualNetworkLinks
+//     tags: tags
+//   }
+// }
 
-module privateDnsWebApps  '../../shared/bicep/private-dns-zone.bicep' = {
-  name: 'privateDnsWebAppsDeployment'
-  params: {
-    name: privateDnsZoneNames.webApps
-    virtualNetworkLinks: virtualNetworkLinks
-    tags: tags
-  }
-}
+// module privateDnsWebApps  '../../shared/bicep/private-dns-zone.bicep' = {
+//   name: 'privateDnsWebAppsDeployment'
+//   params: {
+//     name: privateDnsZoneNames.webApps
+//     virtualNetworkLinks: virtualNetworkLinks
+//     tags: tags
+//   }
+// }
+
+
+output vnetHubName string = vnetHub.outputs.vnetName
+output vnetHubId string = vnetHub.outputs.vnetId

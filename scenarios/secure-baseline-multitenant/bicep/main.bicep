@@ -31,11 +31,23 @@ param subnetHubBastionddressSpace string
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param spokeVnetAddressSpace string
 
+@description('CIDR of the subnet that will hold the app services plan')
+param subnetSpokeAppSvcAddressSpace string
+
+@description('CIDR of the subnet that will hold devOps agents etc ')
+param subnetSpokeDevOpsAddressSpace string
+
+@description('CIDR of the subnet that will hold the private endpoints of the supporting services')
+param subnetSpokePrivateEndpointAddressSpace string
+
 @description('Optional. A numeric suffix (e.g. "001") to be appended on the naming generated for the resources. Defaults to empty.')
 param numericSuffix string = ''
 
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param resourceTags object = {}
+
+@description('If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet')
+param vnetHubResourceId string
 
 @description('Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.')
 param enableTelemetry bool = true
@@ -83,7 +95,7 @@ module naming '../../shared/bicep/naming.module.bicep' = {
  
 
 //TODO: hub must be optional to create - might already exist and we need to attach to - might be in different subscription (tt20230129)
-resource hubResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource hubResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = if ( empty(vnetHubResourceId) ) {
   name: hubResourceGroupName
   location: location
   tags: tags
@@ -96,7 +108,7 @@ resource spokeResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
 }
 
 //TODO: Needs to be optional (tt20230212)
-module hub 'hub.deployment.bicep' = {
+module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
   scope: resourceGroup(hubResourceGroup.name)
   name: 'hubDeployment'
   params: {
@@ -116,6 +128,12 @@ module spoke 'spoke.deployment.bicep' = {
     naming: naming.outputs.names
     location: location
     tags: tags
+    spokeVnetAddressSpace: spokeVnetAddressSpace
+    subnetSpokeAppSvcAddressSpace: subnetSpokeAppSvcAddressSpace
+    subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
+    subnetSpokePrivateEndpointAddressSpace: subnetSpokePrivateEndpointAddressSpace
+    vnetHubResourceId: empty(vnetHubResourceId) ? hub.outputs.vnetHubId : vnetHubResourceId
+    
   }
 }
 
