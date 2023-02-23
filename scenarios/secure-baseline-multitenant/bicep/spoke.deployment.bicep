@@ -152,7 +152,6 @@ var accessPolicies = [
 module keyvault 'modules/keyvault.module.bicep' = {
   name: 'keyvaultModuleDeployment'
   params: {
-    hasPrivateEnpoint: true
     location: location
     name: resourceNames.keyvault
     vnetHubResourceId: vnetHubResourceId

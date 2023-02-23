@@ -5,7 +5,7 @@ param name string
 @description('Optional. Location for all resources.')
 param location string
 
-
+@description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param tags object = {}
 
 @allowed([

@@ -1,10 +1,12 @@
+@description('Required. Name of the Key Vault. Must be globally unique.')
+@maxLength(24)
 param name string
 
+@description('Optional. Location for all resources.')
 param location string
 
+@description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param tags object
-
-param hasPrivateEnpoint bool
 
 @description('Array of access policy configurations, schema ref: https://docs.microsoft.com/en-us/azure/templates/microsoft.keyvault/vaults/accesspolicies?tabs=json#microsoftkeyvaultvaultsaccesspolicies-object')
 param accessPolicies array = []
@@ -12,7 +14,8 @@ param accessPolicies array = []
 @description('Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled')
 param virtualNetworkLinks array = []
 
-param subnetPrivateEnpointId string 
+@description('Default is empty. If empty no Private endpoint will be created fro the resoure. Otherwise, the subnet where the private endpoint will be attached to')
+param subnetPrivateEnpointId string = ''
 
 // /subscriptions/f446c3cb-cee2-43df-a12c-2c858a062fdd/resourceGroups/rg-hub-appSvc-LZA-dev-northeurope/providers/Microsoft.Network/virtualNetworks/vnet-appsvc-lza-dev-neu-hub",
 @description('if empty, private dns zone will be deployed in the current RG scope')
@@ -28,12 +31,12 @@ module keyvault '../../../shared/bicep/keyvault.bicep' = {
     name: name
     location: location
     tags: tags
-    hasPrivateEndpoint: hasPrivateEnpoint
+    hasPrivateEndpoint: !empty(subnetPrivateEnpointId) // hasPrivateEnpoint
     accessPolicies: accessPolicies
   }
 }
 
-module keyvaultPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if (hasPrivateEnpoint) {
+module keyvaultPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEnpointId) ) {
   // condiotional scope is not working: https://github.com/Azure/bicep/issues/7367
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
@@ -45,7 +48,7 @@ module keyvaultPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = i
   }
 }
 
-module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if (hasPrivateEnpoint) {
+module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEnpointId) ) {
   name: 'peKeyvaultDeployment'
   params: {
     name: 'pe-${keyvault.outputs.keyvaultName}'
