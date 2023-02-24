@@ -24,6 +24,9 @@ param vnetHubResourceId string = ''
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param tags object
 
+@description('Kind of server OS of the App Service Plan')
+param webAppBaseOS string
+
 var resourceNames = {
   storageAccount: naming.storageAccount.nameUnique
   vnetSpoke: '${naming.virtualNetwork.name}-spoke'
@@ -87,6 +90,27 @@ var virtualNetworkLinks = [
   }
 ]
 
+var accessPolicies = [
+      {
+        tenantId: appSvcUserAssignedManagedIdenity.outputs.tenantId
+        objectId: appSvcUserAssignedManagedIdenity.outputs.principalId
+        permissions: {
+          secrets: [
+            'get'
+            'list'
+          ]     
+          keys: [
+            'get'
+            'list'
+          ] 
+          certificates: [
+            'get'
+            'list'
+          ]      
+        }
+      }
+    ]
+
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 
 // TODO: It seems I get a compiler errpr when assigning tokens[index] (with index > 0) to variables. Ugly but necessary
@@ -127,67 +151,41 @@ module appSvcUserAssignedManagedIdenity '../../shared/bicep/managed-identity.bic
   }
 }
 
-var accessPolicies = [
-      {
-        tenantId: appSvcUserAssignedManagedIdenity.outputs.tenantId
-        objectId: appSvcUserAssignedManagedIdenity.outputs.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]     
-          keys: [
-            'get'
-            'list'
-          ] 
-          certificates: [
-            'get'
-            'list'
-          ]      
-        }
-      }
-    ]
-
+module logAnalyticsWs '../../shared/bicep/log-analytics-ws.bicep' = {
+  name: 'logAnalyticsWsDeployment'
+  params: {
+    name: resourceNames.logAnalyticsWs
+    location: location
+    tags: tags
+  }
+}
 
 module keyvault 'modules/keyvault.module.bicep' = {
   name: 'keyvaultModuleDeployment'
   params: {
     location: location
     name: resourceNames.keyvault
-    vnetHubResourceId: vnetHubResourceId
-    subnetPrivateEnpointId: snetPe.id
+    vnetHubResourceId: vnetHubResourceId    
     tags: tags
     accessPolicies: accessPolicies
+    subnetPrivateEndpointId: snetPe.id
     virtualNetworkLinks: virtualNetworkLinks
   }
 }
-// module keyvault '../../shared/bicep/keyvault.bicep' = {
-//   name: 'keyvaultDeployment'
-//   params: {
-//     hasPrivateEndpoint: true
-//     location: location
-//     name: resourceNames.keyvault
-//     tags: tags
-//     // TODO: check what is required
-//     accessPolicies: [
-//       {
-//         tenantId: appSvcUserAssignedManagedIdenity.outputs.tenantId
-//         objectId: appSvcUserAssignedManagedIdenity.outputs.principalId
-//         permissions: {
-//           secrets: [
-//             'get'
-//             'list'
-//           ]     
-//           keys: [
-//             'get'
-//             'list'
-//           ] 
-//           certificates: [
-//             'get'
-//             'list'
-//           ]      
-//         }
-//       }
-//     ]
-//   }
-// }
+
+//TODO: Add Slot
+module webApp 'modules/app-service.module.bicep' = {
+  name: 'webAppModuleDeployment'
+  params: {
+    appServicePlanName: resourceNames.aspName
+    webAppName: resourceNames.webApp
+    location: location
+    logAnalyticsWsId: logAnalyticsWs.outputs.logAnalyticsWsId
+    subnetIdForVnetInjection: snetAppSvc.id
+    tags: tags
+    vnetHubResourceId: vnetHubResourceId
+    webAppBaseOS: webAppBaseOS
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks   
+  }
+}

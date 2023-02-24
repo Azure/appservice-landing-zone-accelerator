@@ -15,9 +15,8 @@ param accessPolicies array = []
 param virtualNetworkLinks array = []
 
 @description('Default is empty. If empty no Private endpoint will be created fro the resoure. Otherwise, the subnet where the private endpoint will be attached to')
-param subnetPrivateEnpointId string = ''
+param subnetPrivateEndpointId string = ''
 
-// /subscriptions/f446c3cb-cee2-43df-a12c-2c858a062fdd/resourceGroups/rg-hub-appSvc-LZA-dev-northeurope/providers/Microsoft.Network/virtualNetworks/vnet-appsvc-lza-dev-neu-hub",
 @description('if empty, private dns zone will be deployed in the current RG scope')
 param vnetHubResourceId string
 
@@ -31,12 +30,12 @@ module keyvault '../../../shared/bicep/keyvault.bicep' = {
     name: name
     location: location
     tags: tags
-    hasPrivateEndpoint: !empty(subnetPrivateEnpointId) // hasPrivateEnpoint
+    hasPrivateEndpoint: !empty(subnetPrivateEndpointId) // hasPrivateEnpoint
     accessPolicies: accessPolicies
   }
 }
 
-module keyvaultPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEnpointId) ) {
+module keyvaultPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   // condiotional scope is not working: https://github.com/Azure/bicep/issues/7367
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
@@ -48,7 +47,7 @@ module keyvaultPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = i
   }
 }
 
-module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEnpointId) ) {
+module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   name: 'peKeyvaultDeployment'
   params: {
     name: 'pe-${keyvault.outputs.keyvaultName}'
@@ -56,7 +55,7 @@ module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(s
     tags: tags
     privateDnsZonesId: keyvaultPrivateDnsZone.outputs.privateDnsZonesId
     privateLinkServiceId: keyvault.outputs.keyvaultId
-    snetId: subnetPrivateEnpointId
+    snetId: subnetPrivateEndpointId
     subresource: 'vault'
   }
 }

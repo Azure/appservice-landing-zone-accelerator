@@ -52,6 +52,9 @@ param vnetHubResourceId string
 @description('Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.')
 param enableTelemetry bool = true
 
+@description('Kind of server OS of the App Service Plan')
+param webAppBaseOS string
+
 
 // ================ //
 // Variables        //
@@ -133,7 +136,7 @@ module spoke 'spoke.deployment.bicep' = {
     subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
     subnetSpokePrivateEndpointAddressSpace: subnetSpokePrivateEndpointAddressSpace
     vnetHubResourceId: empty(vnetHubResourceId) ? hub.outputs.vnetHubId : vnetHubResourceId
-    
+    webAppBaseOS: webAppBaseOS
   }
 }
 

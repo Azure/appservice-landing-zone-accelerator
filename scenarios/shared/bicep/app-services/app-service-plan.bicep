@@ -4,44 +4,14 @@
 param name string
 
 @description('Optional. Location for all resources.')
-param location string = resourceGroup().location
+param location string
 
 @description('Optional. Tags of the resource.')
 param tags object = {}
 
-// EXAMPLE OF USE 
-// Example of SKU for Elastic Plan (hosting functions)
-// sku object = {
-//     name: 'EP1'
-//     tier: 'ElasticPremium'
-//     size: 'EP1'
-//     family: 'EP'
-//     capacity: 1
-// }
-// Example of SKU for Premium Plan (hosting apps or non auto scaling functions)
-// sku object = {
-//     name: 'P1v2'
-//     tier: 'PremiumV2'
-//     size: 'P1v2'
-//     family: 'Pv2'
-//     capacity: 1
-// }
-// Example of SKU for Standard Plan (hosting apps or non auto scaling functions)
-// sku object = {
-//     name: 'S1'
-//     tier: 'Standard'
-//     size: 'S1'
-//     family: 'S'
-//     capacity: 1
-// }
-@description('Optional EP1 is default. Defines the name, tier, size, family and capacity of the App Service Plan.')
-param sku object = {
-        name: 'EP1'
-        tier: 'ElasticPremium'
-        size: 'EP1'
-        family: 'EP'
-        capacity: 1
-    }
+@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. EP* is only for functions')
+@allowed([ 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'PV1', 'PV2', 'PV3', 'EP1', 'EP2', 'EP3' ])
+param sku string = 'S1'
 
 @description('Optional, default is Windows. Kind of server OS.')
 @allowed([
@@ -49,9 +19,6 @@ param sku object = {
   'Linux'
 ])
 param serverOS string = 'Windows'
-
-@description('If sku is Elastic Premium - used for EP Function hosting. Default is true')
-param isElasticPremium bool = true
 
 // @description('Optional. The Resource ID of the App Service Environment to use for the App Service Plan.')
 // param appServiceEnvironmentId string = ''
@@ -79,12 +46,6 @@ param targetWorkerCount int = 0
 ])
 param targetWorkerSize int = 0
 
-// @description('Optional. Array of role assignment objects that contain the \'roleDefinitionIdOrName\' and \'principalId\' to define RBAC role assignments on this resource. In the roleDefinitionIdOrName attribute, you can provide either the display name of the role definition, or its fully qualified ID in the following format: \'/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11\'.')
-// param roleAssignments array = []
-
-// @description('Optional. Enable telemetry via the Customer Usage Attribution ID (GUID).')
-// param enableDefaultTelemetry bool = true
-
 @description('Optional. The name of the diagnostic setting, if deployed.')
 param diagnosticSettingsName string = '${name}-diagnosticSettings'
 
@@ -93,17 +54,8 @@ param diagnosticSettingsName string = '${name}-diagnosticSettings'
 @maxValue(365)
 param diagnosticLogsRetentionInDays int = 365
 
-@description('Optional. Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
-param diagnosticStorageAccountId string = ''
-
 @description('Optional. Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
 param diagnosticWorkspaceId string = ''
-
-@description('Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.')
-param diagnosticEventHubAuthorizationRuleId string = ''
-
-@description('Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
-param diagnosticEventHubName string = ''
 
 @description('Optional. The name of metrics that will be streamed.')
 @allowed([
@@ -117,6 +69,9 @@ param diagnosticMetricsToEnable array = [
 // Variables   //
 // =========== //
 
+// If sku is Elastic Premium - used for EP Function hosting. Default is true
+// param isElasticPremium bool = true
+var isElasticPremium = startsWith(sku, 'EP') ? true : false
 var aspKind = isElasticPremium ? 'elastic' : (serverOS == 'Windows' ? '' : 'linux')
 
 var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
@@ -129,18 +84,104 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   }
 }]
 
+// https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/patterns-configuration-set#example
+var skuConfigurationMap = {
+  EP1: {
+    name: 'EP1'
+    tier: 'ElasticPremium'
+    size: 'EP1'
+    family: 'EP'
+    capacity: 1
+  }
+  EP2: {
+    name: 'EP2'
+    tier: 'ElasticPremium'
+    size: 'EP2'
+    family: 'EP'
+    capacity: 1
+  }
+  EP3: {
+    name: 'EP3'
+    tier: 'ElasticPremium'
+    size: 'EP3'
+    family: 'EP'
+    capacity: 1
+  }
+  B1: {
+    name: 'B1'
+    tier: 'Basic'
+    size: 'B1'
+    family: 'B'
+    capacity: 1
+  }
+  B2: {
+    name: 'B2'
+    tier: 'Basic'
+    size: 'B2'
+    family: 'B'
+    capacity: 1
+  }
+  B3: {
+    name: 'B3'
+    tier: 'Basic'
+    size: 'B3'
+    family: 'B'
+    capacity: 1
+  }
+  S1: {
+    name: 'S1'
+    tier: 'Standard'
+    size: 'S1'
+    family: 'S'
+    capacity: 1
+  }
+  S2: {
+    name: 'S2'
+    tier: 'Standard'
+    size: 'S2'
+    family: 'S'
+    capacity: 1
+  }
+  S3: {
+    name: 'S3'
+    tier: 'Standard'
+    size: 'S3'
+    family: 'S'
+    capacity: 1
+  }
+  P1V3: {
+    name: 'P1V3'
+    tier: 'PremiumV2'
+    size: 'P1V3'
+    family: 'Pv3'
+    capacity: 1
+  }
+  P2V3: {
+    name: 'P2V3'
+    tier: 'PremiumV2'
+    size: 'P2V3'
+    family: 'Pv3'
+    capacity: 1
+  }
+  P3V3: {
+    name: 'P3V3'
+    tier: 'PremiumV2'
+    size: 'P3V3'
+    family: 'Pv3'
+    capacity: 1
+  }
+}
+
 // =========== //
 // Deployments //
 // =========== //
-
-
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: name
   kind: aspKind
   location: location
   tags: tags
-  sku: sku
+  sku: skuConfigurationMap[sku]
   properties: {
     perSiteScaling: perSiteScaling
     maximumElasticWorkerCount: maximumElasticWorkerCount
@@ -151,13 +192,13 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   }
 }
 
-resource appServicePlan_diagnosticSettings 'Microsoft.Insights/diagnosticsettings@2021-05-01-preview' = if ((!empty(diagnosticStorageAccountId)) || (!empty(diagnosticWorkspaceId)) || (!empty(diagnosticEventHubAuthorizationRuleId)) || (!empty(diagnosticEventHubName))) {
+resource appServicePlan_diagnosticSettings 'Microsoft.Insights/diagnosticsettings@2021-05-01-preview' = if ( !empty(diagnosticWorkspaceId) ) {
   name: diagnosticSettingsName
   properties: {
-    storageAccountId: !empty(diagnosticStorageAccountId) ? diagnosticStorageAccountId : null
+    storageAccountId: null
     workspaceId: !empty(diagnosticWorkspaceId) ? diagnosticWorkspaceId : null
-    eventHubAuthorizationRuleId: !empty(diagnosticEventHubAuthorizationRuleId) ? diagnosticEventHubAuthorizationRuleId : null
-    eventHubName: !empty(diagnosticEventHubName) ? diagnosticEventHubName : null
+    eventHubAuthorizationRuleId:  null
+    eventHubName: null
     metrics: diagnosticsMetrics
     logs: []
   }
@@ -171,7 +212,7 @@ resource appServicePlan_diagnosticSettings 'Microsoft.Insights/diagnosticsetting
 output resourceGroupName string = resourceGroup().name
 
 @description('The name of the app service plan.')
-output name string = appServicePlan.name  
+output name string = appServicePlan.name
 
 @description('The resource ID of the app service plan.')
 output resourceId string = appServicePlan.id
