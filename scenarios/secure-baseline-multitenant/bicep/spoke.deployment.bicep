@@ -173,7 +173,8 @@ module keyvault 'modules/keyvault.module.bicep' = {
   }
 }
 
-//TODO: Add Slot
+// TODO: Add Slots
+// TODO: Add Managed Identity and access to keyvaults
 module webApp 'modules/app-service.module.bicep' = {
   name: 'webAppModuleDeployment'
   params: {
@@ -189,3 +190,8 @@ module webApp 'modules/app-service.module.bicep' = {
     virtualNetworkLinks: virtualNetworkLinks   
   }
 }
+
+
+output vnetSpokeName string = vnetSpoke.outputs.vnetName
+output vnetSpokeId string = vnetSpoke.outputs.vnetId
+//output sampleAppIngress string = webApp.outputs.fqdn

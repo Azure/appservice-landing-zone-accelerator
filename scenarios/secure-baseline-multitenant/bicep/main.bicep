@@ -79,6 +79,9 @@ var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuff
   numericSuffix
 ])
 
+// var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
+//TODO: we need to consider if we do peering no matter waht (existing or new hub resources) - maybe rbac of end user is not enough
+var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : split(hubVnet.id, '/')
 
 // ================ //
 // Resources        //
@@ -110,7 +113,6 @@ resource spokeResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   tags: tags
 }
 
-//TODO: Needs to be optional (tt20230212)
 module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
   scope: resourceGroup(hubResourceGroup.name)
   name: 'hubDeployment'
@@ -122,6 +124,11 @@ module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
     subnetHubBastionddressSpace: subnetHubBastionddressSpace
     subnetHubFirewallAddressSpace: subnetHubFirewallAddressSpace
   }
+}
+
+resource hubVnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
+  scope: resourceGroup(hubResourceGroup.name) 
+  name: hub.outputs.vnetHubName
 }
 
 module spoke 'spoke.deployment.bicep' = {
@@ -137,6 +144,28 @@ module spoke 'spoke.deployment.bicep' = {
     subnetSpokePrivateEndpointAddressSpace: subnetSpokePrivateEndpointAddressSpace
     vnetHubResourceId: empty(vnetHubResourceId) ? hub.outputs.vnetHubId : vnetHubResourceId
     webAppBaseOS: webAppBaseOS
+  }
+}
+
+module peerSpokeToHub '../../shared/bicep/network/peering.bicep' = if (!empty(vnetHubResourceId) )  {
+  name: 'peerSpokeToHubDeployment'
+  scope: resourceGroup(last(split(subscription().id, '/'))!, spokeResourceGroup.name)
+  params: {
+    localVnetName: spoke.outputs.vnetSpokeName
+    remoteVnetName: vnetHubResourceIdSplitTokens[8]
+    remoteRgName: vnetHubResourceIdSplitTokens[4]
+    remoteSubscriptionId: vnetHubResourceIdSplitTokens[2]
+  }
+}
+
+module peerHubToSpoke '../../shared/bicep/network/peering.bicep' = if (!empty(vnetHubResourceId) )  {
+  name: 'peerHubToSpokeDeployment'
+  scope: resourceGroup(vnetHubResourceIdSplitTokens[2], vnetHubResourceIdSplitTokens[4])
+    params: {
+      localVnetName: vnetHubResourceIdSplitTokens[8]
+      remoteVnetName: spoke.outputs.vnetSpokeName
+      remoteRgName: spokeResourceGroup.name
+      remoteSubscriptionId: last(split(subscription().id, '/'))!
   }
 }
 
