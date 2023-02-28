@@ -183,8 +183,6 @@ var identity = identityType != 'None' ? {
   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 } : null
 
-var enableReferencedModulesTelemetry = false
-
 var webapp_dns_name = '.azurewebsites.net'
 
 // ============ //

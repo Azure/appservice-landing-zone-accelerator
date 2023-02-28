@@ -27,6 +27,13 @@ param tags object
 @description('Kind of server OS of the App Service Plan')
 param webAppBaseOS string
 
+@description('optional, default value is azureuser')
+param adminUsername string
+
+@description('mandatory, the password of the admin user')
+@secure()
+param adminPassword string
+
 var resourceNames = {
   storageAccount: naming.storageAccount.nameUnique
   vnetSpoke: '${naming.virtualNetwork.name}-spoke'
@@ -39,6 +46,7 @@ var resourceNames = {
   appInsights: naming.applicationInsights.name
   aspName: naming.appServicePlan.name
   webApp: naming.appService.nameUnique
+  vmWindowsJumpbox: '${naming.windowsVirtualMachine.name}-win-jumpbox'
 }
 
 
@@ -191,6 +199,18 @@ module webApp 'modules/app-service.module.bicep' = {
   }
 }
 
+module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = {
+  name: 'vmWindowsDeployment'
+  params: {
+    name:  resourceNames.vmWindowsJumpbox 
+    location: location
+    tags: tags
+    adminPassword: adminPassword
+    adminUsername: adminUsername
+    subnetId: snetDevOps.id
+    enableAzureAdJoin: true
+  }
+}
 
 output vnetSpokeName string = vnetSpoke.outputs.vnetName
 output vnetSpokeId string = vnetSpoke.outputs.vnetId

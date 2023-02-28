@@ -47,7 +47,7 @@ module appInsights '../../../shared/bicep/app-insights.bicep' = {
 }
 
 module asp '../../../shared/bicep/app-services/app-service-plan.bicep' = {
-  name: 'appSvcPlanDeployment'
+  name: take('appSvcPlan-${appServicePlanName}-Deployment', 64)
   params: {
     name: appServicePlanName
     location: location
@@ -87,7 +87,7 @@ module webAppPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if 
 }
 
 module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
-  name: 'peKeyvaultDeployment'
+  name: 'peWebAppDeployment'
   params: {
     name: 'pe-${webApp.outputs.name}'
     location: location

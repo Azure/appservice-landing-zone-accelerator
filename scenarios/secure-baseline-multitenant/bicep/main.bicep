@@ -55,6 +55,13 @@ param enableTelemetry bool = true
 @description('Kind of server OS of the App Service Plan')
 param webAppBaseOS string
 
+@description('mandatory, the username of the admin user')
+param adminUsername string
+
+@description('mandatory, the password of the admin user')
+@secure()
+param adminPassword string
+
 
 // ================ //
 // Variables        //
@@ -79,9 +86,9 @@ var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuff
   numericSuffix
 ])
 
-// var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
+var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 //TODO: we need to consider if we do peering no matter waht (existing or new hub resources) - maybe rbac of end user is not enough
-var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : split(hubVnet.id, '/')
+// var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : split(hubVnet.id, '/')
 
 // ================ //
 // Resources        //
@@ -97,8 +104,6 @@ module naming '../../shared/bicep/naming.module.bicep' = {
     uniqueLength: 6
   }
 }
-
- 
 
 //TODO: hub must be optional to create - might already exist and we need to attach to - might be in different subscription (tt20230129)
 resource hubResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = if ( empty(vnetHubResourceId) ) {
@@ -126,10 +131,10 @@ module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
   }
 }
 
-resource hubVnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
-  scope: resourceGroup(hubResourceGroup.name) 
-  name: hub.outputs.vnetHubName
-}
+// resource hubVnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
+//   scope: resourceGroup(hubResourceGroup.name)
+//   name: hub.outputs.vnetHubName
+// }
 
 module spoke 'spoke.deployment.bicep' = {
   scope: resourceGroup(spokeResourceGroup.name)
@@ -144,28 +149,20 @@ module spoke 'spoke.deployment.bicep' = {
     subnetSpokePrivateEndpointAddressSpace: subnetSpokePrivateEndpointAddressSpace
     vnetHubResourceId: empty(vnetHubResourceId) ? hub.outputs.vnetHubId : vnetHubResourceId
     webAppBaseOS: webAppBaseOS
+    adminPassword: adminPassword
+    adminUsername: adminUsername
   }
 }
 
-module peerSpokeToHub '../../shared/bicep/network/peering.bicep' = if (!empty(vnetHubResourceId) )  {
-  name: 'peerSpokeToHubDeployment'
-  scope: resourceGroup(last(split(subscription().id, '/'))!, spokeResourceGroup.name)
+// once the spoke is ready we need to peer either to the newly created hub vnet, or to an existing Hub vnet
+//TODO: we might need not to peer at all (because of lack of RBAC)
+module peerings 'peerings.deployment.bicep' = {
+  scope: resourceGroup(spokeResourceGroup.name)
+  name: 'perrings-deployment'
   params: {
-    localVnetName: spoke.outputs.vnetSpokeName
-    remoteVnetName: vnetHubResourceIdSplitTokens[8]
-    remoteRgName: vnetHubResourceIdSplitTokens[4]
-    remoteSubscriptionId: vnetHubResourceIdSplitTokens[2]
-  }
-}
-
-module peerHubToSpoke '../../shared/bicep/network/peering.bicep' = if (!empty(vnetHubResourceId) )  {
-  name: 'peerHubToSpokeDeployment'
-  scope: resourceGroup(vnetHubResourceIdSplitTokens[2], vnetHubResourceIdSplitTokens[4])
-    params: {
-      localVnetName: vnetHubResourceIdSplitTokens[8]
-      remoteVnetName: spoke.outputs.vnetSpokeName
-      remoteRgName: spokeResourceGroup.name
-      remoteSubscriptionId: last(split(subscription().id, '/'))!
+    rgSpokeName: spokeResourceGroup.name
+    spokeName: spoke.outputs.vnetSpokeName
+    vnetHubResourceId:  !empty(vnetHubResourceId) ? vnetHubResourceId :  hub.outputs.vnetHubId //hubVnet.id
   }
 }
 

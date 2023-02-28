@@ -54,6 +54,14 @@
         {
             "value": "Windows"
         },
+        // admin username of the VM agent deployed in the Spoke
+        "adminUsername": {
+            "value": "azureuser"
+        },
+        // admin password of the VM agent deployed in the Spoke
+        "adminPassword": {
+            "value": "zxNMasKL12()"
+        },
         //Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)
         "resourceTags": {
             "value": {
