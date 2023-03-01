@@ -34,6 +34,9 @@ param adminUsername string
 @secure()
 param adminPassword string
 
+@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
+param sqlServerAdministrators object = {}
+
 var resourceNames = {
   storageAccount: naming.storageAccount.nameUnique
   vnetSpoke: '${naming.virtualNetwork.name}-spoke'
@@ -48,6 +51,8 @@ var resourceNames = {
   webApp: naming.appService.nameUnique
   vmWindowsJumpbox: '${naming.windowsVirtualMachine.name}-win-jumpbox'
   redisCache: naming.redisCache.nameUnique
+  sqlServer: naming.mssqlServer.nameUnique
+  sqlDb:'sample-db'
 }
 
 
@@ -183,7 +188,8 @@ module keyvault 'modules/keyvault.module.bicep' = {
 }
 
 // TODO: Add Slots
-// TODO: Add Managed Identity and access to keyvaults
+// TODO: Add Managed Identity and access to keyvaults\
+// TODO: Need to expose (bubble up) parameter for AZ - 
 module webApp 'modules/app-service.module.bicep' = {
   name: 'webAppModuleDeployment'
   params: {
@@ -214,6 +220,7 @@ module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = {
   }
 }
 
+// TODO: We need feature flag to deploy or not Redis - should not be default
 module redisCache 'modules/redis.module.bicep' = {
   name: take('${resourceNames.redisCache}-redisModule-Deployment', 64)
   params: {
@@ -226,6 +233,22 @@ module redisCache 'modules/redis.module.bicep' = {
     virtualNetworkLinks: virtualNetworkLinks
   }
 }
+
+//TODO: conditional deployment of SQL
+module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = {
+  name: take('${resourceNames.sqlServer}-redisModule-Deployment', 64)
+  params: {
+    name: resourceNames.sqlServer
+    databaseName: resourceNames.sqlDb
+    location: location
+    tags: tags 
+    vnetHubResourceId: vnetHubResourceId
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks
+    administrators: sqlServerAdministrators
+  }
+}
+
 
 output vnetSpokeName string = vnetSpoke.outputs.vnetName
 output vnetSpokeId string = vnetSpoke.outputs.vnetId

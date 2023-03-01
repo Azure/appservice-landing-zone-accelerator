@@ -59,7 +59,7 @@ module asp '../../../shared/bicep/app-services/app-service-plan.bicep' = {
 }
 
 module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
-  name: 'test-webAppWinDeployment'
+  name: take('${webAppName}-Deployment', 64)
   params: {
     kind: 'app'
     name:  webAppName

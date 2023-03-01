@@ -59,7 +59,4 @@ module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(s
     subresource: 'vault'
   }
 }
-
-output vnetHubResourceId string = vnetHubResourceId
-output tokens array = vnetHubSplitTokens
 //output scopeRG string = resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]).id

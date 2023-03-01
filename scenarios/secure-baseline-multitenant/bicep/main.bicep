@@ -62,6 +62,9 @@ param adminUsername string
 @secure()
 param adminPassword string
 
+@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
+param sqlServerAdministrators object = {}
+
 
 // ================ //
 // Variables        //
@@ -85,6 +88,12 @@ var defaultSuffixes = [
 var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuffixes, [
   numericSuffix
 ])
+
+var administrators = empty (sqlServerAdministrators) ? {} : union ({
+                                                                    administratorType: 'ActiveDirectory'
+                                                                    principalType: 'Group'
+                                                                    azureADOnlyAuthentication: true //TODO: not sure this should be default
+                                                                  }, sqlServerAdministrators)
 
 //TODO: we need to consider if we do peering no matter waht (existing or new hub resources) - maybe rbac of end user is not enough
 // var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : split(hubVnet.id, '/')
@@ -115,6 +124,7 @@ resource spokeResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: spokeResourceGroupName
   location: location
   tags: tags
+
 }
 
 module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
@@ -150,6 +160,7 @@ module spoke 'spoke.deployment.bicep' = {
     webAppBaseOS: webAppBaseOS
     adminPassword: adminPassword
     adminUsername: adminUsername
+    sqlServerAdministrators: administrators
   }
 }
 

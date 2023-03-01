@@ -67,6 +67,14 @@
             "value": {
                 "deployment": "bicep"
             }
+        }, 
+        // The Azure Active Directory (AAD) administrator group used for SQL Server authentication
+        "sqlServerAdministrators": {
+            "value": {
+                "login": "Azure AD SQL Admins",
+                "sid": "5f8d07e6-7571-4608-9a7a-025e6f7a7083",
+                "tenantId": "d6455890-05df-4021-8842-973ebc62aaeb"
+            }
         }
     }
 }
