@@ -86,7 +86,6 @@ var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuff
   numericSuffix
 ])
 
-var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 //TODO: we need to consider if we do peering no matter waht (existing or new hub resources) - maybe rbac of end user is not enough
 // var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : split(hubVnet.id, '/')
 
@@ -156,9 +155,9 @@ module spoke 'spoke.deployment.bicep' = {
 
 // once the spoke is ready we need to peer either to the newly created hub vnet, or to an existing Hub vnet
 //TODO: we might need not to peer at all (because of lack of RBAC)
-module peerings 'peerings.deployment.bicep' = {
+module peerings 'modules/peerings.deployment.bicep' = {
   scope: resourceGroup(spokeResourceGroup.name)
-  name: 'perrings-deployment'
+  name: 'peerings-deployment'
   params: {
     rgSpokeName: spokeResourceGroup.name
     spokeName: spoke.outputs.vnetSpokeName

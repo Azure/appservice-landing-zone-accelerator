@@ -47,6 +47,7 @@ var resourceNames = {
   aspName: naming.appServicePlan.name
   webApp: naming.appService.nameUnique
   vmWindowsJumpbox: '${naming.windowsVirtualMachine.name}-win-jumpbox'
+  redisCache: naming.redisCache.nameUnique
 }
 
 
@@ -169,12 +170,12 @@ module logAnalyticsWs '../../shared/bicep/log-analytics-ws.bicep' = {
 }
 
 module keyvault 'modules/keyvault.module.bicep' = {
-  name: 'keyvaultModuleDeployment'
+  name: take('${resourceNames.keyvault}-keyvaultModule-Deployment', 64)
   params: {
-    location: location
     name: resourceNames.keyvault
+    location: location
+    tags: tags   
     vnetHubResourceId: vnetHubResourceId    
-    tags: tags
     accessPolicies: accessPolicies
     subnetPrivateEndpointId: snetPe.id
     virtualNetworkLinks: virtualNetworkLinks
@@ -199,6 +200,7 @@ module webApp 'modules/app-service.module.bicep' = {
   }
 }
 
+//TODO: Check with username/password AAD join and DevOps Agent
 module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = {
   name: 'vmWindowsDeployment'
   params: {
@@ -209,6 +211,19 @@ module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = {
     adminUsername: adminUsername
     subnetId: snetDevOps.id
     enableAzureAdJoin: true
+  }
+}
+
+module redisCache 'modules/redis.module.bicep' = {
+  name: take('${resourceNames.redisCache}-redisModule-Deployment', 64)
+  params: {
+    name: resourceNames.redisCache
+    location: location
+    tags: tags
+    logAnalyticsWsId: logAnalyticsWs.outputs.logAnalyticsWsId  
+    vnetHubResourceId: vnetHubResourceId
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks
   }
 }
 

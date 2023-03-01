@@ -10,7 +10,7 @@ param vnetHubResourceId string
 
 var vnetHubResourceIdSplitTokens = split(vnetHubResourceId, '/') 
 
-module peerSpokeToHub '../../shared/bicep/network/peering.bicep' = {
+module peerSpokeToHub '../../../shared/bicep/network/peering.bicep' = {
   name: 'peerSpokeToHubDeployment'
   scope: resourceGroup(last(split(subscription().id, '/'))!, rgSpokeName)
   params: {
@@ -21,7 +21,7 @@ module peerSpokeToHub '../../shared/bicep/network/peering.bicep' = {
   }
 }
 
-module peerHubToSpoke '../../shared/bicep/network/peering.bicep' =   {
+module peerHubToSpoke '../../../shared/bicep/network/peering.bicep' =   {
   name: 'peerHubToSpokeDeployment'
   scope: resourceGroup(vnetHubResourceIdSplitTokens[2], vnetHubResourceIdSplitTokens[4])
     params: {
