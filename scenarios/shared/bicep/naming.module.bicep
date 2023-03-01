@@ -118,9 +118,9 @@
      slug: 'apim'
    }
    appConfiguration: { 
-     name: endsWith(take(replace(nt, ph, 'appcg'), 50), d) ? take(replace(nt, ph, 'appcg'), 50-1) : take(replace(nt, ph, 'appcg'), 50)
-     nameUnique: endsWith(take(replace(nut, ph, 'appcg'), 50), d) ? take(replace(nut, ph, 'appcg'), 50-1) : take(replace(nut, ph, 'appcg'), 50)
-     slug: 'appcg'
+     name: endsWith(take(replace(nt, ph, 'appcs'), 50), d) ? take(replace(nt, ph, 'appcs'), 50-1) : take(replace(nt, ph, 'appcs'), 50)
+     nameUnique: endsWith(take(replace(nut, ph, 'appcs'), 50), d) ? take(replace(nut, ph, 'appcs'), 50-1) : take(replace(nut, ph, 'appcs'), 50)
+     slug: 'appcs'
    }
    appServiceEnvironment: { 
      name: endsWith(take(replace(nt, ph, 'ase'), 36), d) ? take(replace(nt, ph, 'ase'), 36-1) : take(replace(nt, ph, 'ase'), 36)

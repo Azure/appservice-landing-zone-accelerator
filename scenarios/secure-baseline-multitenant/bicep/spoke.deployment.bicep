@@ -53,6 +53,7 @@ var resourceNames = {
   redisCache: naming.redisCache.nameUnique
   sqlServer: naming.mssqlServer.nameUnique
   sqlDb:'sample-db'
+  appConfig: naming.appConfiguration.nameUnique
 }
 
 
@@ -203,6 +204,7 @@ module webApp 'modules/app-service.module.bicep' = {
     webAppBaseOS: webAppBaseOS
     subnetPrivateEndpointId: snetPe.id
     virtualNetworkLinks: virtualNetworkLinks   
+    appConfigurationName: resourceNames.appConfig
   }
 }
 

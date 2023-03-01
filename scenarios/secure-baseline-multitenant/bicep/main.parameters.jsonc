@@ -60,7 +60,7 @@
         },
         // admin password of the VM agent deployed in the Spoke
         "adminPassword": {
-            "value": "zxNMasKL12()"
+            "value": "strongpassword"
         },
         //Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)
         "resourceTags": {
@@ -72,8 +72,8 @@
         "sqlServerAdministrators": {
             "value": {
                 "login": "Azure AD SQL Admins",
-                "sid": "5f8d07e6-7571-4608-9a7a-025e6f7a7083",
-                "tenantId": "d6455890-05df-4021-8842-973ebc62aaeb"
+                "sid": "xxx-xxxx-xxxx-xxxx",
+                "tenantId": "xxxx-xxxxxx-xxxxx-xxxxx-xxx"
             }
         }
     }

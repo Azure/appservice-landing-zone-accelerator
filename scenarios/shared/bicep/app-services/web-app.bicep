@@ -2,6 +2,8 @@
 // Parameters       //
 // ================ //
 // General
+
+@maxLength(60)
 @description('Required. Name of the site.')
 param name string
 
