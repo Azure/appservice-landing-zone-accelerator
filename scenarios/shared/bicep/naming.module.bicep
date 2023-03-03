@@ -493,14 +493,14 @@
      slug: 'afwp'
    }
    frontDoor: { 
-     name: endsWith(take(replace(nt, ph, 'fd'), 64), d) ? take(replace(nt, ph, 'fd'), 64-1) : take(replace(nt, ph, 'fd'), 64)
-     nameUnique: endsWith(take(replace(nut, ph, 'fd'), 64), d) ? take(replace(nut, ph, 'fd'), 64-1) : take(replace(nut, ph, 'fd'), 64)
-     slug: 'fd'
+     name: endsWith(take(replace(nt, ph, 'afd'), 64), d) ? take(replace(nt, ph, 'afd'), 64-1) : take(replace(nt, ph, 'afd'), 64)
+     nameUnique: endsWith(take(replace(nut, ph, 'afd'), 64), d) ? take(replace(nut, ph, 'afd'), 64-1) : take(replace(nut, ph, 'afd'), 64)
+     slug: 'afd'
    }
    frontDoorFirewallPolicy: { 
-     name: endsWith(take(replace(nt, ph, 'fdfw'), 80), d) ? take(replace(nt, ph, 'fdfw'), 80-1) : take(replace(nt, ph, 'fdfw'), 80)
-     nameUnique: endsWith(take(replace(nut, ph, 'fdfw'), 80), d) ? take(replace(nut, ph, 'fdfw'), 80-1) : take(replace(nut, ph, 'fdfw'), 80)
-     slug: 'fdfw'
+     name: take(replace(nst, ph, 'fdfp'), 128)
+     nameUnique: take(replace(nust, ph, 'fdfp'), 128)
+     slug: 'fdfp'
    }
    functionApp: { 
      name: endsWith(take(replace(nt, ph, 'func'), 60), d) ? take(replace(nt, ph, 'func'), 60-1) : take(replace(nt, ph, 'func'), 60)

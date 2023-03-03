@@ -53,7 +53,7 @@ param vnetHubResourceId string
 param enableTelemetry bool = true
 
 @description('Kind of server OS of the App Service Plan')
-param webAppBaseOS string
+param webAppBaseOs string
 
 @description('mandatory, the username of the admin user')
 param adminUsername string
@@ -157,7 +157,7 @@ module spoke 'spoke.deployment.bicep' = {
     subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
     subnetSpokePrivateEndpointAddressSpace: subnetSpokePrivateEndpointAddressSpace
     vnetHubResourceId: empty(vnetHubResourceId) ? hub.outputs.vnetHubId : vnetHubResourceId
-    webAppBaseOS: webAppBaseOS
+    webAppBaseOs: webAppBaseOs
     adminPassword: adminPassword
     adminUsername: adminUsername
     sqlServerAdministrators: administrators

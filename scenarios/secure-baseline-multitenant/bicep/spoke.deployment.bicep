@@ -25,7 +25,7 @@ param vnetHubResourceId string = ''
 param tags object
 
 @description('Kind of server OS of the App Service Plan')
-param webAppBaseOS string
+param webAppBaseOs string
 
 @description('optional, default value is azureuser')
 param adminUsername string
@@ -54,6 +54,9 @@ var resourceNames = {
   sqlServer: naming.mssqlServer.nameUnique
   sqlDb:'sample-db'
   appConfig: naming.appConfiguration.nameUnique
+  frontDoor: naming.frontDoor.name
+  frontDoorEndPoint: 'webAppLza-${ take( uniqueString(resourceGroup().id, subscription().id), 6) }'  //globally unique
+  frontDoorWaf: naming.frontDoorFirewallPolicy.name
 }
 
 
@@ -201,10 +204,34 @@ module webApp 'modules/app-service.module.bicep' = {
     subnetIdForVnetInjection: snetAppSvc.id
     tags: tags
     vnetHubResourceId: vnetHubResourceId
-    webAppBaseOS: webAppBaseOS
+    webAppBaseOs: webAppBaseOs
     subnetPrivateEndpointId: snetPe.id
     virtualNetworkLinks: virtualNetworkLinks   
     appConfigurationName: resourceNames.appConfig
+  }
+}
+
+module afd '../../shared/bicep/network/front-door.bicep' = {
+  name: take ('AzureFrontDoor-${resourceNames.frontDoor}-deployment', 64)
+  params: {
+    afdName: resourceNames.frontDoor
+    diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
+    endpointName: resourceNames.frontDoorEndPoint
+    originGroupName: resourceNames.frontDoorEndPoint
+    origins: [
+      {
+          name: webApp.outputs.webAppName  //1-50 Alphanumerics and hyphens
+          hostname: webApp.outputs.webAppHostName
+          enabledState: true
+          privateLinkOrigin: {
+            privateEndpointResourceId: webApp.outputs.webAppResourceId
+            privateLinkResourceType: 'sites'
+            privateEndpointLocation: webApp.outputs.webAppLocation
+          }
+      }
+    ]
+    skuName:'Premium_AzureFrontDoor'
+    wafPolicyName: resourceNames.frontDoorWaf
   }
 }
 

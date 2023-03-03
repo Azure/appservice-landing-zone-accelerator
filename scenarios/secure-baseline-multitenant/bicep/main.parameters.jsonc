@@ -50,7 +50,7 @@
             "value": "10.240.11.0/24"
         },
         // two options: Windows or Linux
-        "webAppBaseOS" : 
+        "webAppBaseOs" : 
         {
             "value": "Windows"
         },

@@ -347,38 +347,18 @@ resource slot_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-
   scope: app
 }
 
-
-// module app_privateEndpoints '../../Microsoft.Network/privateEndpoints/deploy.bicep' = [for (privateEndpoint, index) in privateEndpoints: {
-//   name: '${uniqueString(deployment().name, location)}-Site-PrivateEndpoint-${index}'
-//   params: {
-//     groupIds: [
-//       privateEndpoint.service
-//     ]
-//     name: contains(privateEndpoint, 'name') ? privateEndpoint.name : 'pe-${last(split(app.id, '/'))}-${privateEndpoint.service}-${index}'
-//     serviceResourceId: app.id
-//     subnetResourceId: privateEndpoint.subnetResourceId
-//     enableDefaultTelemetry: enableReferencedModulesTelemetry
-//     location: reference(split(privateEndpoint.subnetResourceId, '/subnets/')[0], '2020-06-01', 'Full').location
-//     lock: contains(privateEndpoint, 'lock') ? privateEndpoint.lock : lock
-//     privateDnsZoneGroup: contains(privateEndpoint, 'privateDnsZoneGroup') ? privateEndpoint.privateDnsZoneGroup : {}
-//     roleAssignments: contains(privateEndpoint, 'roleAssignments') ? privateEndpoint.roleAssignments : []
-//     tags: contains(privateEndpoint, 'tags') ? privateEndpoint.tags : {}
-//     manualPrivateLinkServiceConnections: contains(privateEndpoint, 'manualPrivateLinkServiceConnections') ? privateEndpoint.manualPrivateLinkServiceConnections : []
-//     customDnsConfigs: contains(privateEndpoint, 'customDnsConfigs') ? privateEndpoint.customDnsConfigs : []
-//     ipConfigurations: contains(privateEndpoint, 'ipConfigurations') ? privateEndpoint.ipConfigurations : []
-//     applicationSecurityGroups: contains(privateEndpoint, 'applicationSecurityGroups') ? privateEndpoint.applicationSecurityGroups : []
-//     customNetworkInterfaceName: contains(privateEndpoint, 'customNetworkInterfaceName') ? privateEndpoint.customNetworkInterfaceName : ''
-//   }
-// }]
-
 // =========== //
 // Outputs     //
 // =========== //
+
 @description('The name of the site.')
 output name string = app.name
 
 @description('The resource ID of the site.')
 output resourceId string = app.id
+
+@description('The azure location of the site.')
+output location string = app.location
 
 // @description('The list of the slots.')
 // output slots array = [for (slot, index) in slots: app_slots[index].name]

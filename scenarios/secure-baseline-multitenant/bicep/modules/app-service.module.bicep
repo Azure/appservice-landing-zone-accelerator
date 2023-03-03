@@ -29,7 +29,7 @@ param virtualNetworkLinks array = []
 param vnetHubResourceId string
 
 @description('Kind of server OS of the App Service Plan')
-param webAppBaseOS string
+param webAppBaseOs string
 
 @description('An existing Log Analytics WS Id for creating app Insights, diagnostics etc.')
 param logAnalyticsWsId string
@@ -59,7 +59,7 @@ module asp '../../../shared/bicep/app-services/app-service-plan.bicep' = {
     location: location
     tags: tags
     sku: sku
-    serverOS: (webAppBaseOS =~ 'linux') ? 'Linux' : 'Windows'
+    serverOS: (webAppBaseOs =~ 'linux') ? 'Linux' : 'Windows'
     diagnosticWorkspaceId: logAnalyticsWsId
   }
 }
@@ -74,7 +74,7 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     diagnosticWorkspaceId: logAnalyticsWsId   
     virtualNetworkSubnetId: subnetIdForVnetInjection
     appInsightId: appInsights.outputs.appInsResourceId
-    siteConfigSelection:  (webAppBaseOS =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
+    siteConfigSelection:  (webAppBaseOs =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
     hasPrivateLink: (!empty (subnetPrivateEndpointId))
     systemAssignedIdentity: true
     // TODO Idenity - assign to KeyVault as well
@@ -154,3 +154,8 @@ module webAppSystemIdenityOnAppConfigDataReader '../../../shared/bicep/role-assi
 
 output appConfigStoreName string = appConfigStore.outputs.name
 output appConfigStoreId string = appConfigStore.outputs.resourceId
+output webAppName string = webApp.outputs.name
+output webAppHostName string = webApp.outputs.defaultHostname
+output webAppResourceId string = webApp.outputs.resourceId
+output webAppLocation string = webApp.outputs.location
+output webAppSystemAssignedPrincipalId string = webApp.outputs.systemAssignedPrincipalId
