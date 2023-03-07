@@ -179,7 +179,7 @@ jobs:
       run: exit 1
 
   deploy:
-    if: github.ref == 'refs/heads/main' || ( github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' )
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     needs: validate-plan
     environment: 'Production'
     timeout-minutes: 360
@@ -258,7 +258,7 @@ jobs:
 
   cleanup-deployment:
     environment: 'Production'
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/main' || ( github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' )
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
