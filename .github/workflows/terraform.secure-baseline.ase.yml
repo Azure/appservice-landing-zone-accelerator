@@ -36,6 +36,7 @@ env:
   modulePath: 'scenarios/secure-baseline-ase/terraform'
   terraform_version: 1.3.9 # must be greater than or equal to 1.2 for OIDC
   backend_key: secure-baseline-ase.tfstate
+  tfvarPath: 'Parameters/uat.tfvars'
 
 jobs:
   validate-plan:
@@ -94,14 +95,14 @@ jobs:
             -input=false \
             -out=tfplan \
             -no-color \
-            -var-file="Parameters/uat.tfvars" \
+            -var-file="${{ env.tfvarPath }}" \
             && terraform show -no-color tfplan
         else
           terraform plan \
             -input=false \
             -out=tfplan \
             -no-color \
-            -var-file="Parameters/uat.tfvars" \
+            -var-file="${{ env.tfvarPath }}" \
             && terraform show -no-color tfplan
         fi
       env:  
@@ -178,7 +179,7 @@ jobs:
       run: exit 1
 
   deploy:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/main' || ( github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' )
     needs: validate-plan
     environment: 'Production'
     timeout-minutes: 360
@@ -257,7 +258,7 @@ jobs:
 
   cleanup-deployment:
     environment: 'Production'
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
@@ -294,12 +295,14 @@ jobs:
         ARM_USE_OIDC: true
 
     - name: Terraform Destroy
-      id: plan
+      id: destroy
       continue-on-error: true
       run: |
         terraform destroy \
+          -auto-approve \
+          -input=false \
           -no-color \
-          -var-file="Parameters/uat.tfvars"
+          -var-file="${{ env.tfvarPath }}"
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
