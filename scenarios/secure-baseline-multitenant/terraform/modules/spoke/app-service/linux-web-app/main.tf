@@ -59,10 +59,12 @@ resource "azurerm_linux_web_app" "this" {
     ]
   }
 
+  //ToDo: Check if this is really needed
+
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY"                  = "${var.webapp_options.instrumentation_key}"
-    "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
-    "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
+    # "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
+    # "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
     "APPLICATIONINSIGHTS_CONNECTION_STRING"           = "${var.webapp_options.ai_connection_string}"
     "ApplicationInsightsAgent_EXTENSION_VERSION"      = "~2"
     "DiagnosticServices_EXTENSION_VERSION"            = "~3"

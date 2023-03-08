@@ -42,35 +42,35 @@ resource "azurerm_windows_web_app" "this" {
   sticky_settings {
     app_setting_names = [
       "APPINSIGHTS_INSTRUMENTATIONKEY",
-      "APPINSIGHTS_PROFILERFEATURE_VERSION",
-      "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
+      # "APPINSIGHTS_PROFILERFEATURE_VERSION",
+      # "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
       "APPLICATIONINSIGHTS_CONNECTION_STRING",
-      "ApplicationInsightsAgent_EXTENSION_VERSION",
-      "DiagnosticServices_EXTENSION_VERSION",
-      "InstrumentationEngine_EXTENSION_VERSION",
-      "SnapshotDebugger_EXTENSION_VERSION",
-      "XDT_MicrosoftApplicationInsights_BaseExtensions",
-      "XDT_MicrosoftApplicationInsights_Java",
-      "XDT_MicrosoftApplicationInsights_Mode",
-      "XDT_MicrosoftApplicationInsights_NodeJS",
-      "XDT_MicrosoftApplicationInsights_PreemptSdk"
+      # "ApplicationInsightsAgent_EXTENSION_VERSION",
+      # "DiagnosticServices_EXTENSION_VERSION",
+      # "InstrumentationEngine_EXTENSION_VERSION",
+      # "SnapshotDebugger_EXTENSION_VERSION",
+      # "XDT_MicrosoftApplicationInsights_BaseExtensions",
+      # "XDT_MicrosoftApplicationInsights_Java",
+      # "XDT_MicrosoftApplicationInsights_Mode",
+      # "XDT_MicrosoftApplicationInsights_NodeJS",
+      # "XDT_MicrosoftApplicationInsights_PreemptSdk"
     ]
   }
 
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY"                  = "${var.webapp_options.instrumentation_key}"
-    "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
-    "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
+    # "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
+    # "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
     "APPLICATIONINSIGHTS_CONNECTION_STRING"           = "${var.webapp_options.ai_connection_string}"
-    "ApplicationInsightsAgent_EXTENSION_VERSION"      = "~2"
-    "DiagnosticServices_EXTENSION_VERSION"            = "~3"
-    "InstrumentationEngine_EXTENSION_VERSION"         = "~1"
-    "SnapshotDebugger_EXTENSION_VERSION"              = "~1"
-    "XDT_MicrosoftApplicationInsights_BaseExtensions" = "~1"
-    "XDT_MicrosoftApplicationInsights_Java"           = "1"
-    "XDT_MicrosoftApplicationInsights_Mode"           = "recommended"
-    "XDT_MicrosoftApplicationInsights_NodeJS"         = "1"
-    "XDT_MicrosoftApplicationInsights_PreemptSdk"     = "disabled"
+    # "ApplicationInsightsAgent_EXTENSION_VERSION"      = "~2"
+    # "DiagnosticServices_EXTENSION_VERSION"            = "~3"
+    # "InstrumentationEngine_EXTENSION_VERSION"         = "~1"
+    # "SnapshotDebugger_EXTENSION_VERSION"              = "~1"
+    # "XDT_MicrosoftApplicationInsights_BaseExtensions" = "~1"
+    # "XDT_MicrosoftApplicationInsights_Java"           = "1"
+    # "XDT_MicrosoftApplicationInsights_Mode"           = "recommended"
+    # "XDT_MicrosoftApplicationInsights_NodeJS"         = "1"
+    # "XDT_MicrosoftApplicationInsights_PreemptSdk"     = "disabled"
   }
 
   lifecycle {

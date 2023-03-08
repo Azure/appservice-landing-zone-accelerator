@@ -2,27 +2,28 @@ variable "vm_name" {
   description = "name of the virtual machine"
 }
 
-variable "unique_id" {
-  type        = string
-  description = "A unique identifier"
-}
-
 variable "resource_group" {
   type        = string
-  description = "The name of the resource group where all resources in this example should be created."
+  description = "The name of the resource group where all resources should be created."
 }
 
 variable "location" {
-  type = string
+  type        = string
+  description = "The location (Azure region) where the resources should be created."
+}
+
+variable "user_assigned_identity_id" {
+  type        = string
+  description = "value of the user assigned identity id"
 }
 
 variable "admin_username" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "admin_password" {
-  type = string
+  type    = string
   default = null
 }
 
@@ -58,27 +59,4 @@ variable "vm_image_sku" {
 variable "vm_image_version" {
   type    = string
   default = "latest"
-}
-
-variable "install_extensions" {
-  type    = bool
-  default = false
-}
-
-variable "enable_azure_ad_join" {
-  type    = bool
-  default = true
-  description = "True to enable Azure AD join of the VM."
-}
-
-variable "enroll_with_mdm" {
-  type        = bool
-  default     = true
-  description = "True to enroll the device with an approved MDM provider like Intune."
-}
-
-variable "mdm_id" {
-  type        = string
-  default     = "0000000a-0000-0000-c000-000000000000"
-  description = "The default value is the MDM Id for Intune, but you can use your own MDM id if you want to use a different MDM service."
 }

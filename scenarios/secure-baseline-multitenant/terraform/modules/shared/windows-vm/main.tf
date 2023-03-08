@@ -1,36 +1,17 @@
-terraform {
-  required_providers {
-    azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = ">=1.2.23"
-    }
-  }
-}
-
-resource "azurecaf_name" "vm" {
-  name          = var.vm_name
-  resource_type = "azurerm_windows_virtual_machine"
-  suffixes      = [var.unique_id]
-}
-
-locals {
-  vm_name = azurecaf_name.vm.result
-}
-
 resource "azurerm_network_interface" "vm_nic" {
-  name                = "${local.vm_name}-nic"
+  name                = "${var.vm_name}-nic"
   location            = var.location
   resource_group_name = var.resource_group
 
   ip_configuration {
-    name                          = "${var.vm_name}-vm-ipconfig"
+    name                          = "${var.vm_name}-ipconfig"
     subnet_id                     = var.vm_subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
 resource "azurerm_windows_virtual_machine" "vm" {
-  name                       = local.vm_name
+  name                       = var.vm_name
   resource_group_name        = var.resource_group
   location                   = var.location
   size                       = var.vm_size
@@ -49,7 +30,10 @@ resource "azurerm_windows_virtual_machine" "vm" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type = "UserAssigned"
+    identity_ids = [
+      var.user_assigned_identity_id
+    ]
   }
 
   source_image_reference {
@@ -58,6 +42,10 @@ resource "azurerm_windows_virtual_machine" "vm" {
     sku       = var.vm_image_sku
     version   = var.vm_image_version
   }
+
+  # provisioner "remote-exec" {
+  #   inline = var.remote_exec_commands
+  # }
 }
 
 data "azuread_user" "vm_admin" {
@@ -68,46 +56,4 @@ resource "azurerm_role_assignment" "vm_admin_role_assignment" {
   scope                = azurerm_windows_virtual_machine.vm.id
   role_definition_name = "Virtual Machine Administrator Login"
   principal_id         = data.azuread_user.vm_admin.object_id
-}
-
-resource "azurerm_virtual_machine_extension" "aad" {
-  count = var.enable_azure_ad_join ? 1 : 0
-
-  name                       = "aad-login-for-windows"
-  publisher                  = "Microsoft.Azure.ActiveDirectory"
-  type                       = "AADLoginForWindows"
-  type_handler_version       = "1.0"
-  auto_upgrade_minor_version = true
-  virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
-
-  settings = !var.enroll_with_mdm ? null : <<SETTINGS
-    {
-      "mdmId": "${var.mdm_id}"
-    }
-  SETTINGS
-
-  timeouts {
-    create = "60m"
-  }
-}
-
-resource "azurerm_virtual_machine_extension" "install_sql" {
-  count = var.install_extensions ? 1 : 0
-
-  name                 = "install-ssms"
-  virtual_machine_id   = azurerm_windows_virtual_machine.vm.id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
-
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File ssms-setup.ps1",
-        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/main/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm/ssms-setup.ps1"]
-    }
-  PROTECTED_SETTINGS
-
-  timeouts {
-    create = "60m"
-  }
 }

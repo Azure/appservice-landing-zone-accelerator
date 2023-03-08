@@ -125,8 +125,10 @@ variable "deployment_options" {
 variable "appsvc_options" {
   type = object({
     service_plan = object({
-      os_type  = string
-      sku_name = string
+      os_type        = string
+      sku_name       = string
+      worker_count   = optional(number)
+      zone_redundant = optional(bool)
     })
     web_app = object({
       slots = list(string)

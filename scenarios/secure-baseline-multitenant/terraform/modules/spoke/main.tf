@@ -7,14 +7,6 @@ terraform {
   }
 }
 
-# provider "azurerm" {
-#   features {
-#     resource_group {
-#       prevent_deletion_if_contains_resources = false
-#     }
-#   }
-# }
-
 resource "random_password" "vm_admin_username" {
   length  = 10
   special = false
@@ -93,6 +85,9 @@ resource "azurecaf_name" "private_link_subnet" {
   resource_type = "azurerm_subnet"
 }
 
+//ToDo: Determine if it makes sense to have the ingress subnet or just use the private link subnet
+//ToDo: Revisit the default IP ranges to smaller (more realistic)
+
 module "network" {
   source = "../shared/network"
 
@@ -152,9 +147,9 @@ module "user_defined_routes" {
   subnet_ids = module.network.subnets[*].id
 }
 
-locals {
-
-}
+//ToDo: System assigned identities vs user assigned identities
+//ToDo: Add Redis Cache connectiong string reference to app settings (Key Vault)
+//ToDo: Add SQL Server connectiong string reference to app settings (App Config)
 
 module "app_service" {
   source = "./app-service"
@@ -185,21 +180,80 @@ module "app_service" {
   }
 }
 
+//ToDo: Enable extension to deploy DevOps agent
+
+resource "azurecaf_name" "devops_vm" {
+  name          = "devops"
+  resource_type = "azurerm_windows_virtual_machine"
+  suffixes      = [random_integer.unique_id.result]
+}
+
+resource "azurecaf_name" "devops_vm_identity" {
+  name          = azurecaf_name.devops_vm.result
+  resource_type = "azurerm_user_assigned_identity"
+}
+
+resource "azurerm_user_assigned_identity" "devops_vm" {
+  name                = azurecaf_name.devops_vm_identity.result
+  location            = var.location
+  resource_group_name = azurerm_resource_group.spoke.name
+}
+
 module "devops_vm" {
   count = var.deployment_options.deploy_vm ? 1 : 0
 
   source = "../shared/windows-vm"
 
-  resource_group       = azurerm_resource_group.spoke.name
-  vm_name              = "devops"
-  location             = var.location
-  vm_subnet_id         = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.devops_subnet.result)].id
-  unique_id            = random_integer.unique_id.result
-  admin_username       = local.vm_admin_username
-  admin_password       = local.vm_admin_password
-  aad_admin_username   = var.vm_aad_admin_username
+  resource_group            = azurerm_resource_group.spoke.name
+  vm_name                   = azurecaf_name.devops_vm.result
+  location                  = var.location
+  user_assigned_identity_id = azurerm_user_assigned_identity.devops_vm.id
+  vm_subnet_id              = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.devops_subnet.result)].id
+  admin_username            = local.vm_admin_username
+  admin_password            = local.vm_admin_password
+  aad_admin_username        = var.vm_aad_admin_username
+
+  # enable_azure_ad_join = false
+  # install_extensions   = false
+
+  # remote_exec_commands = [
+  #   "powershell.exe -Command \"(New-Object System.Net.WebClient).DownloadFile('https://aka.ms/installazurecliwindows', 'C:\\Temp\\AzureCLI.msi')\"",
+  #   "msiexec.exe /i C:\\Temp\\AzureCLI.msi /quiet /qn /norestart",
+  #   "powershell.exe -Command \"az login --identity\"",
+  #   "powershell.exe -Command \"az keyvault secret set --vault-name ${module.key_vault.vault_name} --name sql_connstring --value ${module.sql_database[0].sql_db_connection_string}\""
+  # ]
+}
+
+module "devops_vm_extension" {
+  count = var.deployment_options.deploy_vm ? 1 : 0
+
+  source = "../shared/windows-vm-ext"
+
+  vm_id = module.devops_vm[0].id
+
   enable_azure_ad_join = true
-  install_extensions   = true
+  install_extensions   = false
+}
+
+resource "azurerm_virtual_machine_extension" "post_deploy_actions" {
+  count = var.deployment_options.deploy_vm ? 1 : 0
+
+  name                 = "post-deployment-script"
+  virtual_machine_id   = module.devops_vm[0].id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File deploy-config.ps1",
+        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm-ext/deploy-config.ps1"]
+    }
+  PROTECTED_SETTINGS
+
+  timeouts {
+    create = "30m"
+  }
 }
 
 module "front_door" {
@@ -265,6 +319,8 @@ module "sql_database" {
   }
 }
 
+//ToDo: Add SQL Database connectiong string (without secrets) 
+
 module "app_configuration" {
   count = var.deployment_options.deploy_app_config ? 1 : 0
 
@@ -283,12 +339,18 @@ module "app_configuration" {
     module.app_service.web_app_slot_principal_id
   ]
 
+  data_owner_identities = [
+    azurerm_user_assigned_identity.devops_vm.principal_id
+  ]
+
   private_dns_zone = {
     name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azconfig.io")].name
     id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azconfig.io")].id
     resource_group = var.private_dns_zones_rg
   }
 }
+
+//ToDo: Add Redis Cache connectiong string (without secrets) 
 
 module "key_vault" {
   source = "./key-vault"
@@ -305,6 +367,10 @@ module "key_vault" {
   secret_reader_identities = [
     module.app_service.web_app_principal_id,
     module.app_service.web_app_slot_principal_id
+  ]
+
+  secret_officer_identities = [
+    azurerm_user_assigned_identity.devops_vm.principal_id
   ]
 
   private_dns_zone = {

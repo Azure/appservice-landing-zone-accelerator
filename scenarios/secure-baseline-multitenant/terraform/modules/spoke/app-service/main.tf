@@ -18,6 +18,9 @@ resource "azurerm_service_plan" "this" {
   location            = var.location
   sku_name            = var.service_plan_options.sku_name
   os_type             = var.service_plan_options.os_type
+
+  worker_count           = coalesce(var.service_plan_options.worker_count, 1)
+  zone_balancing_enabled = coalesce(var.service_plan_options.zone_redundant, false)
 }
 
 module "windows_web_app" {

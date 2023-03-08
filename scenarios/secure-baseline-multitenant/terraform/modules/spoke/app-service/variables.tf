@@ -40,6 +40,8 @@ variable "service_plan_options" {
   type = object({
     os_type  = string
     sku_name = string
+    worker_count = optional(number)
+    zone_redundant = optional(bool)
   })
 
   description = "The options for the app service"

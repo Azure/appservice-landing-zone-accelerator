@@ -40,7 +40,7 @@ variable "sku_name" {
   description = "The sku name for the app service plan"
   default     = "standard"
   validation {
-    condition = contains(["standard", "premium"], var.sku_name)
+    condition     = contains(["standard", "premium"], var.sku_name)
     error_message = "Please, choose among one of the following SKUs for production workloads: standard, premium."
   }
 }
@@ -48,6 +48,12 @@ variable "sku_name" {
 variable "secret_reader_identities" {
   type        = list(string)
   description = "The list of identities that will be granted secret reader permissions"
+}
+
+variable "secret_officer_identities" {
+  type        = list(string)
+  description = "The list of identities that will be granted secret officer permissions"
+  default     = []
 }
 
 variable "private_dns_zone" {

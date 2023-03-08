@@ -35,12 +35,20 @@ resource "azurerm_key_vault" "this" {
   }
 }
 
-resource "azurerm_role_assignment" "data_readers" {
+resource "azurerm_role_assignment" "secrets_user" {
   count = length(var.secret_reader_identities)
 
   scope                = azurerm_key_vault.this.id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = var.secret_reader_identities[count.index]
+}
+
+resource "azurerm_role_assignment" "secrets_officer" {
+  count = length(var.secret_officer_identities)
+
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = var.secret_officer_identities[count.index]
 }
 
 resource "azurecaf_name" "private_endpoint" {
