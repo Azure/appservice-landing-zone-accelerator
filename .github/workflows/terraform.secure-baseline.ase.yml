@@ -95,25 +95,29 @@ jobs:
             -input=false \
             -out=tfplan \
             -no-color \
-            -var-file="${{ env.tfvarPath }}" \
-            && terraform show -no-color tfplan
+            -var-file="${{ env.tfvarPath }}"
         else
           terraform plan \
             -input=false \
             -out=tfplan \
             -no-color \
-            -var-file="${{ env.tfvarPath }}" \
-            && terraform show -no-color tfplan
+            -var-file="${{ env.tfvarPath }}"
         fi
         ls -al
+        pwd
       env:  
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         ARM_USE_OIDC: true
-  
+
+    - name: Show TFPlan
+      id: show
+      if: steps.plan.outcome == 'success'
+      run: terraform show -no-color tfplan
+
     - name: 'Upload TFPlan Artifact'
-      if: success()
+      if: steps.plan.outcome == 'success'
       uses: actions/upload-artifact@v3
       with:
         name: ${{ github.run_id }}.tfplan
@@ -124,7 +128,7 @@ jobs:
       uses: actions/github-script@v6
       if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
       env:
-        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
       with:
         script: |
           const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
@@ -143,7 +147,7 @@ jobs:
           <details><summary>Show Plan</summary>
 
           \`\`\`\n
-          ${{ steps.plan.outputs.stdout }}
+          ${{ steps.show.outputs.stdout }}
           \`\`\`
 
           </details>
