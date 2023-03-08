@@ -103,8 +103,6 @@ jobs:
             -no-color \
             -var-file="${{ env.tfvarPath }}"
         fi
-        ls -al
-        pwd
       env:  
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
