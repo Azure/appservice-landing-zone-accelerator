@@ -209,7 +209,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.run_id }}.tfplan
-
+          path: ${{ env.modulePath }}
+          
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
