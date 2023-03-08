@@ -210,7 +210,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.run_id }}.tfplan
-          path: ${{ env.modulePath }}/${{ github.run_id }}.tfplan
+          path: ${{ env.modulePath }}
 
       - name: Setup Terraform
         if: steps.download.outcome == 'success'
@@ -241,7 +241,7 @@ jobs:
             -auto-approve \
             -input=false \
             -no-color \
-            ${{ github.run_id }}.tfplan
+            tfplan
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
