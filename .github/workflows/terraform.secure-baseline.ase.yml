@@ -206,12 +206,14 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
 
       - name: Download a single artifact
+        id: download
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.run_id }}.tfplan
           path: ${{ env.modulePath }}
 
       - name: Setup Terraform
+        if: steps.download.outcome == 'success'
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.terraform_version }}
@@ -234,6 +236,7 @@ jobs:
         id: apply
         run: |
           ls -al
+          ls ${{steps.download.outputs.download-path}}
           terraform apply \
             -auto-approve \
             -input=false \
