@@ -18,14 +18,14 @@ on:
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
 
-  pull_request:
-    branches:
-      - main
-      - feature/*
-    paths:
-      - '.github/workflows/terraform.secure-baseline.ase.yml'
-      - 'scenarios/secure-baseline-ase/terraform/**'
-      - '!scenarios/secure-baseline-ase/**.md'
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - feature/*
+  #   paths:
+  #     - '.github/workflows/terraform.secure-baseline.ase.yml'
+  #     - 'scenarios/secure-baseline-ase/terraform/**'
+  #     - '!scenarios/secure-baseline-ase/**.md'
 
 permissions:
   id-token: write
@@ -210,7 +210,7 @@ jobs:
         with:
           name: ${{ github.run_id }}.tfplan
           path: ${{ env.modulePath }}
-          
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -233,6 +233,7 @@ jobs:
       - name: Terraform Apply
         id: apply
         run: |
+          ls -al
           terraform apply \
             -auto-approve \
             -input=false \
