@@ -210,7 +210,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.run_id }}.tfplan
-          path: ${{ env.modulePath }}
+          path: ${{ env.modulePath }}/${{ github.run_id }}.tfplan
 
       - name: Setup Terraform
         if: steps.download.outcome == 'success'
