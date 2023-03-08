@@ -203,6 +203,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.run_id }}.tfplan
+          path: tfplan
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -259,7 +260,8 @@ jobs:
 
   cleanup-deployment:
     environment: 'Production'
-    if: github.ref == 'refs/heads/main' || ( github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' )
+    # if: github.ref == 'refs/heads/main' || ( github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' )
+    if: github.ref == 'feature/107/pipelines-refactor' || ( github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' )
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
