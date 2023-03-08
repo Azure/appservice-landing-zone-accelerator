@@ -77,7 +77,7 @@ jobs:
 
     - name: Terraform Validate
       id: validate
-      run: terraform validate
+      run: terraform validate -no-color
 
     - name: tfsec
       uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
