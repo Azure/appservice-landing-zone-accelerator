@@ -18,14 +18,14 @@ on:
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
 
-  # pull_request:
-  #   branches:
-  #     - main
-  #     - feature/*
-  #   paths:
-  #     - '.github/workflows/terraform.secure-baseline.ase.yml'
-  #     - 'scenarios/secure-baseline-ase/terraform/**'
-  #     - '!scenarios/secure-baseline-ase/**.md'
+  pull_request:
+    branches:
+      - main
+      - feature/*
+    paths:
+      - '.github/workflows/terraform.secure-baseline.ase.yml'
+      - 'scenarios/secure-baseline-ase/terraform/**'
+      - '!scenarios/secure-baseline-ase/**.md'
 
 permissions:
   id-token: write
@@ -185,8 +185,7 @@ jobs:
       run: exit 1
 
   deploy:
-    # if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-    if: github.ref == 'feature/107/pipelines-refactor' || github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     needs: validate-plan
     environment: 'Production'
     timeout-minutes: 360
@@ -235,8 +234,6 @@ jobs:
       - name: Terraform Apply
         id: apply
         run: |
-          ls -al
-          ls ${{steps.download.outputs.download-path}}
           terraform apply \
             -auto-approve \
             -input=false \
@@ -248,30 +245,9 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
 
-      - name: Post Apply Failure to GitHub PR
-        if: github.event_name == 'pull_request' && steps.apply.outcome == 'failure'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const output = `#### Terraform Apply failed
-            <details><summary>Apply Error Output</summary>
-
-            \`\`\`\n
-            ${{ steps.apply.outputs.stderr }}
-            \`\`\`
-
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
-
   cleanup-deployment:
     environment: 'Production'
-    # if: github.ref == 'refs/heads/main'
-    if: github.ref == 'feature/107/pipelines-refactor'
+    if: github.ref == 'refs/heads/main'
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
