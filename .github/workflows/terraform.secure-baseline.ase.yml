@@ -105,6 +105,7 @@ jobs:
             -var-file="${{ env.tfvarPath }}" \
             && terraform show -no-color tfplan
         fi
+        ls -al
       env:  
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
@@ -112,6 +113,7 @@ jobs:
         ARM_USE_OIDC: true
   
     - name: 'Upload TFPlan Artifact'
+      if: success()
       uses: actions/upload-artifact@v3
       with:
         name: ${{ github.run_id }}.tfplan
@@ -260,8 +262,8 @@ jobs:
 
   cleanup-deployment:
     environment: 'Production'
-    # if: github.ref == 'refs/heads/main' || ( github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' )
-    if: github.ref == 'feature/107/pipelines-refactor' || ( github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' )
+    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'feature/107/pipelines-refactor'
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
