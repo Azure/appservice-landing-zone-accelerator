@@ -121,7 +121,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ github.run_id }}.tfplan
-        path: tfplan
+        path: ${{ env.modulePath }}/tfplan
         retention-days: 5
 
     - name: Post Plan to GitHub PR
@@ -209,7 +209,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.run_id }}.tfplan
-          path: tfplan
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
