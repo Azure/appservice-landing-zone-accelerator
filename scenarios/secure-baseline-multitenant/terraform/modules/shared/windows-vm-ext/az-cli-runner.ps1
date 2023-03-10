@@ -1,6 +1,6 @@
 param (
     [Parameter(Mandatory = $true)]
-    [string[]]$commands
+    [string]$command
 )
 
 # Install the Azure CLI
@@ -17,7 +17,9 @@ $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 # )
 
 # Execute each command in the list
-foreach ($command in $commands) {
+# foreach ($command in $commands) {
     Write-Host "Executing command: $command"
     Invoke-Expression $command
-}
+# }
+
+exit 0;
