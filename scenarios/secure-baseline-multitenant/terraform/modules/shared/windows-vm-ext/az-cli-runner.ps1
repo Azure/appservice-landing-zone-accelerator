@@ -3,6 +3,11 @@ param (
     [string]$command
 )
 
+Start-Transcript (".\InstallPSScript.log")
+Write-Host "Received command: $command"
+
+
+Write-Host "Installing Azure CLI..."
 # Install the Azure CLI
 Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; 
 Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet';
@@ -21,5 +26,3 @@ $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
     Write-Host "Executing command: $command"
     Invoke-Expression $command
 # }
-
-exit 0;
