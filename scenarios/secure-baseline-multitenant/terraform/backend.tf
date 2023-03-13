@@ -15,9 +15,17 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 
   # DO NOT CHANGE THE BELOW VALUES
   disable_terraform_partner_id = false
   partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
+}
+
+provider "azurecaf" {
+
 }
