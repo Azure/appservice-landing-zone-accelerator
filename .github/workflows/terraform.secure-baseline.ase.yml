@@ -243,55 +243,55 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
 
-  cleanup-deployment:
-    environment: 'Production'
-    if: github.ref == 'refs/heads/main'
-    needs: deploy
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ env.modulePath }}
-    steps:
-    - name: Checkout the code
-      uses: actions/checkout@main
+  # cleanup-deployment:
+  #   environment: 'Production'
+  #   if: github.ref == 'refs/heads/main'
+  #   needs: deploy
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ${{ env.modulePath }}
+  #   steps:
+  #   - name: Checkout the code
+  #     uses: actions/checkout@main
   
-    # Log into Azure via OIDC
-    - uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+  #   # Log into Azure via OIDC
+  #   - uses: azure/login@v1
+  #     with:
+  #       client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #       tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #       subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: ${{ env.terraform_version }}
+  #   - name: Setup Terraform
+  #     uses: hashicorp/setup-terraform@v2
+  #     with:
+  #       terraform_version: ${{ env.terraform_version }}
 
-    - name: Terraform Init
-      id: init
-      run: |
-        terraform init \
-          -backend-config="resource_group_name=${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}"   \
-          -backend-config="storage_account_name=${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}" \
-          -backend-config="container_name=${{ secrets.AZURE_TF_STATE_STORAGE_CONTAINER_NAME }}"     \
-          -backend-config="key=${{ env.backend_key }}"
-      env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        ARM_USE_OIDC: true
+  #   - name: Terraform Init
+  #     id: init
+  #     run: |
+  #       terraform init \
+  #         -backend-config="resource_group_name=${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}"   \
+  #         -backend-config="storage_account_name=${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}" \
+  #         -backend-config="container_name=${{ secrets.AZURE_TF_STATE_STORAGE_CONTAINER_NAME }}"     \
+  #         -backend-config="key=${{ env.backend_key }}"
+  #     env:
+  #       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  #       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+  #       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  #       ARM_USE_OIDC: true
 
-    - name: Terraform Destroy
-      id: destroy
-      continue-on-error: true
-      run: |
-        terraform destroy \
-          -auto-approve \
-          -input=false \
-          -no-color \
-          -var-file="${{ env.tfvarPath }}"
-      env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        ARM_USE_OIDC: true
+  #   - name: Terraform Destroy
+  #     id: destroy
+  #     continue-on-error: true
+  #     run: |
+  #       terraform destroy \
+  #         -auto-approve \
+  #         -input=false \
+  #         -no-color \
+  #         -var-file="${{ env.tfvarPath }}"
+  #     env:
+  #       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  #       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+  #       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  #       ARM_USE_OIDC: true
