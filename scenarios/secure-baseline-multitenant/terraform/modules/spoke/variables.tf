@@ -138,11 +138,11 @@ variable "appsvc_options" {
       sku_name = "S1"
     }
     web_app = {
-      slots = []
+      slots = ["deployment"]
 
       application_stack = {
         current_stack  = "dotnet"
-        dotnet_version = "6.0"
+        dotnet_version = "v6.0"
       }
     }
   }
