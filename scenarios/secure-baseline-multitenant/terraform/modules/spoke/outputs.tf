@@ -26,10 +26,6 @@ output "web_app_slot_name" {
   value = module.app_service.web_app_slot_name
 }
 
-output "web_app_private_endpoints" {
-  value = module.app_service.private_endpoints
-}
-
 output "key_vault_uri" {
     value = module.key_vault.vault_uri
 }

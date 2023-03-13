@@ -175,6 +175,8 @@ A guide outlining the coding conventions and style guidelines that should be fol
   \\ GOOD PRACTICE variable EXAMPLES
   var appGwSubnetName = 'xyz'  
 
+  \\ GOOD PRACTICE output EXAMPLES
+  output acrId string = acr.id
   ```
 
 

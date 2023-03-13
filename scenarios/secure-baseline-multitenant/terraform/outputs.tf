@@ -43,6 +43,6 @@ output "cmd_swap_slots" {
 }
 
 output "cmd_redis_connection_kvsecret" {
-  value = var.deployment_options.deploy_redis ? "az keyvault secret set --vault-name ${module.spoke.key_vault_name} --name ${module.spoke.redis_connection_secret_name} --value ${module.spoke.redis_connection_string}" : null
+  value     = var.deployment_options.deploy_redis ? "az keyvault secret set --vault-name ${module.spoke.key_vault_name} --name ${module.spoke.redis_connection_secret_name} --value ${module.spoke.redis_connection_string}" : null
   sensitive = true
 }
