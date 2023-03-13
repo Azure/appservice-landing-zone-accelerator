@@ -41,6 +41,7 @@ var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/
 
 var webAppDnsZoneName = 'privatelink.azurewebsites.net'
 var appConfigurationDnsZoneName = 'privatelink.azconfig.io'
+var slotName = 'staging'
 
 module appInsights '../../../shared/bicep/app-insights.bicep' = {
   name: 'appInsights-Deployment'
@@ -79,7 +80,7 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     systemAssignedIdentity: true
     slots: [
       {
-        name: 'staging'
+        name: slotName
       }
     ]
     // TODO Idenity - assign to KeyVault as well
@@ -107,6 +108,28 @@ module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(sub
     privateLinkServiceId: webApp.outputs.resourceId
     snetId: subnetPrivateEndpointId
     subresource: 'sites'
+  }
+}
+
+// resource webAppExisting 'Microsoft.Web/sites@2022-03-01' existing = {
+//   name: webApp.outputs.name
+// }
+
+// resource webAppSlotExisting 'Microsoft.Web/sites/slots@2022-03-01' existing = {
+//   parent: webAppExisting
+//   name: slotName
+// }
+
+module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
+  name:  take('pe-${webAppName}-slot-${slotName}-Deployment', 64)
+  params: {
+    name: 'pe-${webAppName}-slot-${slotName}'
+    location: location
+    tags: tags
+    privateDnsZonesId: webAppPrivateDnsZone.outputs.privateDnsZonesId
+    privateLinkServiceId: webApp.outputs.resourceId //webApp.outputs.slotResourceIds[0]
+    snetId: subnetPrivateEndpointId
+    subresource: 'sites-${slotName}'
   }
 }
 

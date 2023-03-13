@@ -232,8 +232,8 @@ resource slot 'Microsoft.Web/sites/slots@2022-03-01' = {
   }
 }
 
-module slot_appsettings 'web-app.slots.appsettings.bicep' = if (!empty(appSettingsKeyValuePairs)) {
-  name: '${uniqueString(deployment().name, location)}-Slot-${name}-Config-AppSettings'
+module slot_appsettings 'web-app.slots.appsettings.bicep' = { //if (!empty(appSettingsKeyValuePairs)) {
+  name: take('Slot-${name}-Config-AppSettings-${uniqueString(deployment().name, location)}', 64)
   params: {
     slotName: slot.name
     appName: app.name

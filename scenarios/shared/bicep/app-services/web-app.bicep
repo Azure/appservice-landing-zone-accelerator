@@ -361,11 +361,11 @@ output resourceId string = app.id
 @description('The azure location of the site.')
 output location string = app.location
 
-// @description('The list of the slots.')
-// output slots array = [for (slot, index) in slots: app_slots[index].name]
+@description('The list of the slots (names).')
+output slots array = [for (slot, index) in slots: app_slots[index].outputs.name]
 
-// @description('The list of the slot resource ids.')
-// output slotResourceIds array = [for (slot, index) in slots: app_slots[index].outputs.resourceId]
+@description('The list of the slot resource ids.')
+output slotResourceIds array = [for (slot, index) in slots: app_slots[index].outputs.resourceId]
 
 @description('The principal ID of the system assigned identity.')
 output systemAssignedPrincipalId string = systemAssignedIdentity && contains(app.identity, 'principalId') ? app.identity.principalId : ''
