@@ -18,6 +18,10 @@
         "vnetHubResourceId": {
             "value": ""
         },
+        //If vnetHubResourceId empty, this value is irrelevant. If vnetHubResourceId has value and we need UDR, then the internal IP of the azFW needs to be set. Otherwise no UDR will be created
+        "firewallInternalIp": {
+            "value": ""
+        },
         "hubVnetAddressSpace": {
             "value": "10.242.0.0/20"
         },

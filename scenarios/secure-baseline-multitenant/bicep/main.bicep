@@ -49,6 +49,9 @@ param resourceTags object = {}
 @description('If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet')
 param vnetHubResourceId string
 
+@description('Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR')
+param firewallInternalIp string
+
 @description('Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.')
 param enableTelemetry bool = true
 
@@ -76,7 +79,6 @@ var tags = union({
 }, resourceTags)
 
 var resourceSuffix = '${applicationName}-${environment}-${location}'
-//TODO: Change name of hubResourceGroupName (tt 20230129)
 var hubResourceGroupName = 'rg-hub-${resourceSuffix}'
 var spokeResourceGroupName = 'rg-spoke-${resourceSuffix}'
 
@@ -95,7 +97,6 @@ var administrators = empty (sqlServerAdministrators) ? {} : union ({
                                                                     azureADOnlyAuthentication: true //TODO: not sure this should be default
                                                                   }, sqlServerAdministrators)
 
-//TODO: we need to consider if we do peering no matter waht (existing or new hub resources) - maybe rbac of end user is not enough
 // var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : split(hubVnet.id, '/')
 
 // ================ //
@@ -129,7 +130,7 @@ resource spokeResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
 
 module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
   scope: resourceGroup(hubResourceGroup.name)
-  name: 'hubDeployment'
+  name: take('hub-${deployment().name}-deployment', 64)
   params: {
     naming: naming.outputs.names
     location: location
@@ -137,6 +138,8 @@ module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
     tags: tags
     subnetHubBastionddressSpace: subnetHubBastionddressSpace
     subnetHubFirewallAddressSpace: subnetHubFirewallAddressSpace
+    spokeVnetAddressSpace: spokeVnetAddressSpace
+    subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
   }
 }
 
@@ -147,11 +150,12 @@ module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
 
 module spoke 'spoke.deployment.bicep' = {
   scope: resourceGroup(spokeResourceGroup.name)
-  name: 'spokeDeployment'
+  name: take('spoke-${deployment().name}-deployment', 64)
   params: {
     naming: naming.outputs.names
     location: location
     tags: tags
+    firewallInternalIp: empty(vnetHubResourceId) ? hub.outputs.firewallPrivateIp : firewallInternalIp
     spokeVnetAddressSpace: spokeVnetAddressSpace
     subnetSpokeAppSvcAddressSpace: subnetSpokeAppSvcAddressSpace
     subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
@@ -160,7 +164,7 @@ module spoke 'spoke.deployment.bicep' = {
     webAppBaseOs: webAppBaseOs
     adminPassword: adminPassword
     adminUsername: adminUsername
-    sqlServerAdministrators: administrators
+    sqlServerAdministrators: administrators    
   }
 }
 
@@ -168,7 +172,7 @@ module spoke 'spoke.deployment.bicep' = {
 //TODO: we might need not to peer at all (because of lack of RBAC)
 module peerings 'modules/peerings.deployment.bicep' = {
   scope: resourceGroup(spokeResourceGroup.name)
-  name: 'peerings-deployment'
+  name: take('peerings-${deployment().name}-deployment', 64)
   params: {
     rgSpokeName: spokeResourceGroup.name
     spokeName: spoke.outputs.vnetSpokeName

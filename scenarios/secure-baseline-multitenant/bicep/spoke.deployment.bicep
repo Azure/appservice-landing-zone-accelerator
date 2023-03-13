@@ -18,6 +18,9 @@ param subnetSpokeDevOpsAddressSpace string
 @description('CIDR of the subnet that will hold the private endpoints of the supporting services')
 param subnetSpokePrivateEndpointAddressSpace string
 
+@description('Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR')
+param firewallInternalIp string
+
 @description('if empty, private dns zone will be deployed in the current RG scope')
 param vnetHubResourceId string = ''
 
@@ -57,8 +60,20 @@ var resourceNames = {
   frontDoor: naming.frontDoor.name
   frontDoorEndPoint: 'webAppLza-${ take( uniqueString(resourceGroup().id, subscription().id), 6) }'  //globally unique
   frontDoorWaf: naming.frontDoorFirewallPolicy.name
+  routeTable: naming.routeTable.name
+  routeEgressLockdown: '${naming.route.name}-egress-lockdown'
 }
 
+var udrRoutes = [
+                  {
+                    name: 'defaultEgressLockdown'
+                    properties: {
+                      addressPrefix: '0.0.0.0/0'
+                      nextHopIpAddress: firewallInternalIp 
+                      nextHopType: 'VirtualAppliance'
+                    }
+                  }
+                ]
 
 var subnets = [ 
   {
@@ -77,6 +92,9 @@ var subnets = [
       // networkSecurityGroup: {
       //   id: nsgAca.outputs.nsgID
       // } 
+      routeTable: {
+        id: !empty(firewallInternalIp) ? routeTableToFirewall.outputs.resourceId : null
+      } 
     } 
   }
   {
@@ -131,7 +149,6 @@ var accessPolicies = [
 
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 
-// TODO: It seems I get a compiler errpr when assigning tokens[index] (with index > 0) to variables. Ugly but necessary
 resource vnetHub  'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
   name: vnetHubSplitTokens[8]
@@ -148,6 +165,17 @@ module vnetSpoke '../../shared/bicep/network/vnet.bicep' = {
   }
 }
 
+
+module routeTableToFirewall '../../shared/bicep/network/udr.bicep' = if (!empty(firewallInternalIp) ) {
+  name: 'routeTableToFirewall-Deployment'
+  params: {
+    name: resourceNames.routeTable
+    location: location
+    tags: tags
+    routes: udrRoutes
+  }
+}
+
 resource snetAppSvc 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
   name: '${vnetSpoke.outputs.vnetName}/${resourceNames.snetAppSvc}'
 }
@@ -161,7 +189,7 @@ resource snetPe 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing 
 }
 
 module appSvcUserAssignedManagedIdenity '../../shared/bicep/managed-identity.bicep' = {
-  name: 'appSvcUserAssignedManagedIdenityDeployment'
+  name: 'appSvcUserAssignedManagedIdenity-Deployment'
   params: {
     name: resourceNames.appSvcUserAssignedManagedIdentity
     location: location
@@ -170,7 +198,7 @@ module appSvcUserAssignedManagedIdenity '../../shared/bicep/managed-identity.bic
 }
 
 module logAnalyticsWs '../../shared/bicep/log-analytics-ws.bicep' = {
-  name: 'logAnalyticsWsDeployment'
+  name: 'logAnalyticsWs-Deployment'
   params: {
     name: resourceNames.logAnalyticsWs
     location: location
@@ -191,11 +219,11 @@ module keyvault 'modules/keyvault.module.bicep' = {
   }
 }
 
-// TODO: Add Slots
+// TODO: Add Slots, configure slots
 // TODO: Add Managed Identity and access to keyvaults\
 // TODO: Need to expose (bubble up) parameter for AZ - 
 module webApp 'modules/app-service.module.bicep' = {
-  name: 'webAppModuleDeployment'
+  name: 'webAppModule-Deployment'
   params: {
     appServicePlanName: resourceNames.aspName
     webAppName: resourceNames.webApp
@@ -237,7 +265,7 @@ module afd '../../shared/bicep/network/front-door.bicep' = {
 
 //TODO: Check with username/password AAD join and DevOps Agent
 module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = {
-  name: 'vmWindowsDeployment'
+  name: 'vmWindows-Deployment'
   params: {
     name:  resourceNames.vmWindowsJumpbox 
     location: location
@@ -265,7 +293,7 @@ module redisCache 'modules/redis.module.bicep' = {
 
 //TODO: conditional deployment of SQL
 module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = {
-  name: take('${resourceNames.sqlServer}-redisModule-Deployment', 64)
+  name: take('${resourceNames.sqlServer}-sqlServer-Deployment', 64)
   params: {
     name: resourceNames.sqlServer
     databaseName: resourceNames.sqlDb

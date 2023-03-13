@@ -273,8 +273,9 @@ resource app 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-resource webAppHostBinding 'Microsoft.Web/sites/hostNameBindings@2019-08-01' = if (hasPrivateLink == true) {
-  name: '${app.name}/${app.name}${webapp_dns_name}'
+resource webAppHostBinding 'Microsoft.Web/sites/hostNameBindings@2022-03-01' = if (hasPrivateLink == true) {
+  parent: app
+  name: '${app.name}${webapp_dns_name}'
   properties: {
     siteName: app.name
     hostNameType: 'Verified'
@@ -282,7 +283,7 @@ resource webAppHostBinding 'Microsoft.Web/sites/hostNameBindings@2019-08-01' = i
 }
 
 module app_appsettings 'web-app.appsettings.bicep' = { //if (!empty(appSettingsKeyValuePairs)) {
-  name: '${uniqueString(deployment().name, location)}-Site-Config-AppSettings'
+  name: 'Site-Config-AppSettings-${uniqueString(deployment().name, location)}'
   params: {
     appName: app.name
     kind: kind
@@ -295,7 +296,7 @@ module app_appsettings 'web-app.appsettings.bicep' = { //if (!empty(appSettingsK
 
 @batchSize(1)
 module app_slots 'web-app.slots.bicep' = [for (slot, index) in slots: {
-  name: '${uniqueString(deployment().name, location)}-Slot-${slot.name}'
+  name: 'Slot-${slot.name}-${uniqueString(deployment().name, location)}'
   params: {
     name: slot.name
     appName: app.name

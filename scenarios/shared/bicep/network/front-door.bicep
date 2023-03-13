@@ -292,6 +292,9 @@ resource originRoute 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' =  
     httpsRedirect: 'Enabled'
     enabledState: 'Enabled'
   }
+  dependsOn: [
+    afdOrigins
+  ]
 }
 
 resource afdWafSecurityPolicy 'Microsoft.Cdn/profiles/securitypolicies@2022-11-01-preview' =  if ( !empty(wafPolicyName) ) {

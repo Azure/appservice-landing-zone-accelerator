@@ -43,7 +43,7 @@ var webAppDnsZoneName = 'privatelink.azurewebsites.net'
 var appConfigurationDnsZoneName = 'privatelink.azconfig.io'
 
 module appInsights '../../../shared/bicep/app-insights.bicep' = {
-  name: 'appInsightsDeployment'
+  name: 'appInsights-Deployment'
   params: {
     name: 'appi-${webAppName}'
     location: location
@@ -65,7 +65,7 @@ module asp '../../../shared/bicep/app-services/app-service-plan.bicep' = {
 }
 
 module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
-  name: take('${webAppName}-Deployment', 64)
+  name: take('${webAppName}-webApp-Deployment', 64)
   params: {
     kind: 'app'
     name:  webAppName
@@ -77,6 +77,11 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     siteConfigSelection:  (webAppBaseOs =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
     hasPrivateLink: (!empty (subnetPrivateEndpointId))
     systemAssignedIdentity: true
+    slots: [
+      {
+        name: 'staging'
+      }
+    ]
     // TODO Idenity - assign to KeyVault as well
   }
 }
@@ -108,7 +113,7 @@ module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(sub
 //TODO: Conditional Deployment? 
 //TODO: Give Access to WebApp and WebAppSlot idenitities
 module appConfigStore '../../../shared/bicep/app-configuration.bicep' = {
-  name: take('${appConfigurationName}-Deployment', 64)
+  name: take('${appConfigurationName}-app-configuration-Deployment', 64)
   params: {   
     name: appConfigurationName
     location: location

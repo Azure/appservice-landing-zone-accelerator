@@ -845,12 +845,12 @@
    route: { 
      name: endsWith(take(replace(nt, ph, 'rt'), 80), d) ? take(replace(nt, ph, 'rt'), 80-1) : take(replace(nt, ph, 'rt'), 80)
      nameUnique: endsWith(take(replace(nut, ph, 'rt'), 80), d) ? take(replace(nut, ph, 'rt'), 80-1) : take(replace(nut, ph, 'rt'), 80)
-     slug: 'rt'
+     slug: 'udr'
    }
    routeTable: { 
      name: endsWith(take(replace(nt, ph, 'route'), 80), d) ? take(replace(nt, ph, 'route'), 80-1) : take(replace(nt, ph, 'route'), 80)
      nameUnique: endsWith(take(replace(nut, ph, 'route'), 80), d) ? take(replace(nut, ph, 'route'), 80-1) : take(replace(nut, ph, 'route'), 80)
-     slug: 'route'
+     slug: 'rt'
    }
    serviceFabricCluster: { 
      name: endsWith(take(replace(nt, ph, 'sf'), 23), d) ? take(replace(nt, ph, 'sf'), 23-1) : take(replace(nt, ph, 'sf'), 23)

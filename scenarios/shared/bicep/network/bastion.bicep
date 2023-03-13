@@ -10,6 +10,13 @@ param tags object = {}
 @description('The virtual network ID containing AzureBastionSubnet. ')
 param vnetId string = ''
 
+@description('Bastion sku, default is basic')
+@allowed([
+  'Basic'
+  'Standard'
+])
+param sku string = 'Basic'
+
 var bastionNameMaxLength = 80
 var bastionNameSantized = length(name) > bastionNameMaxLength ? substring(name, 0, bastionNameMaxLength) : name
 var snetBastion = {
@@ -32,6 +39,9 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-07-01' = {
   name: bastionNameSantized
   location: location
   tags: tags
+  sku: {
+    name: sku
+  }
   properties: {
     ipConfigurations: [
       {

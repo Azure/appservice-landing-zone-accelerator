@@ -106,7 +106,8 @@ resource jumphost 'Microsoft.Compute/virtualMachines@2022-08-01' = {
 }
 
 resource virtualMachineName_aadLoginExtensionName 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = if (enableAzureAdJoin) {
-  name: '${jumphost.name}/${aadLoginExtensionName}'
+  parent: jumphost
+  name: aadLoginExtensionName
   location: location
   properties: {
     publisher: 'Microsoft.Azure.ActiveDirectory'
