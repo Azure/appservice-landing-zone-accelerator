@@ -1,10 +1,17 @@
 param (
+    [Parameter(Mandatory = $false)]
     [string]$command
 )
 
-Start-Transcript (".\InstallPSScript.log")
-Write-Host "Received command: $command"
+$Downloaddir = "D:\ac-cli-runner"
+if ((Test-Path -Path $Downloaddir) -ne $true) {
+    mkdir $Downloaddir
+}
 
+$date = Get-Date -Format "yyyyMMdd-HHmmss"
+Start-Transcript ("D:\ac-cli-runner\InstallPSScript-" + $date + ".log")
+
+Write-Host "Executing command: $command"
 
 # Write-Host "Installing Azure CLI..."
 # # Install the Azure CLI
