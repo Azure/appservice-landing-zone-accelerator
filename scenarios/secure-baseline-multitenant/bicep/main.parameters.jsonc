@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        // suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<applicationName>
+        // max length: 10. Suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<applicationName>
         "applicationName" : {
            "value": "appSvc-LZA"         
         },
@@ -10,7 +10,7 @@
         "location": {
             "value": "northeurope"
         },
-        //Required. The environment for which the deployment is being executed ( 'dev', 'uat', 'prod','dr')
+        //Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
         "environment": {
             "value": "dev"
         },
@@ -25,15 +25,15 @@
         "hubVnetAddressSpace": {
             "value": "10.242.0.0/20"
         },
-        // CIDR of the subnet hosting the private endpoints of any desired servies (key vault, ACR, DBs etc)
+        // CIDR of the subnet that will host the azure Firewall
         "subnetHubFirewallAddressSpace": {
             "value": "10.242.0.0/26"
         },
-        // CIDR of the subnet hosting the application Gateway V2. needs to be big enough to accomdate scaling
+        // CIDR of the subnet that will host the Bastion Service
         "subnetHubBastionddressSpace": {
             "value": "10.242.0.64/26"
         },
-        //CIDRof the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)
+        //CIDR of the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)
         "spokeVnetAddressSpace": {
             "value": "10.240.0.0/20"
         },

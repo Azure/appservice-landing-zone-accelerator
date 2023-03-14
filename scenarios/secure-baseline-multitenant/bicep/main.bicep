@@ -4,19 +4,15 @@ targetScope = 'subscription'
 // Parameters       //
 // ================ //
 
+@maxLength(10)
 @description('suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<applicationName>')
 param applicationName string
 
 @description('Azure region where the resources will be deployed in')
 param location string
 
-@description('Required. The environment for which the deployment is being executed')
-@allowed([
-  'dev'
-  'uat'
-  'prod'
-  'dr'
-])
+@description('Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.')
+@maxLength(8)
 param environment string
 
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24')
@@ -56,7 +52,7 @@ param firewallInternalIp string
 param enableTelemetry bool = true
 
 @description('Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
-@allowed([ 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
+@allowed([ 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ])
 param webAppPlanSku string
 
 @description('Kind of server OS of the App Service Plan')
