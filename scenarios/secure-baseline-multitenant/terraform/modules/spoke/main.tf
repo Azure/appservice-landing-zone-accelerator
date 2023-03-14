@@ -227,7 +227,7 @@ locals {
 resource "azurerm_virtual_machine_extension" "az_cli_runner" {
   count = var.deployment_options.deploy_vm ? 1 : 0
 
-  name                 = "az_cli_runner_v2"
+  name                 = "az_cli_runner"
   virtual_machine_id   = module.devops_vm[0].id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
