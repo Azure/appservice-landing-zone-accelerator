@@ -128,7 +128,7 @@ resource spokeResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
 
 }
 
-module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
+module hub 'deploy.hub.bicep' =  if ( empty(vnetHubResourceId) ) {
   scope: resourceGroup(hubResourceGroup.name)
   name: take('hub-${deployment().name}-deployment', 64)
   params: {
@@ -148,7 +148,7 @@ module hub 'hub.deployment.bicep' =  if ( empty(vnetHubResourceId) ) {
 //   name: hub.outputs.vnetHubName
 // }
 
-module spoke 'spoke.deployment.bicep' = {
+module spoke 'deploy.spoke.bicep' = {
   scope: resourceGroup(spokeResourceGroup.name)
   name: take('spoke-${deployment().name}-deployment', 64)
   params: {
