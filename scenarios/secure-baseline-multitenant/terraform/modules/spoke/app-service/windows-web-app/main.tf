@@ -89,7 +89,7 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   log_analytics_destination_type = "Dedicated"
 
   enabled_log {
-    category_group = "allLogs"
+    category_group = "AllLogs"
 
     retention_policy {
       days    = 0
