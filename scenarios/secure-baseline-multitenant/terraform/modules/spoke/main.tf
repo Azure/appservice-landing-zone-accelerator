@@ -213,37 +213,37 @@ module "devops_vm_extension" {
   install_extensions   = false
 }
 
-# locals {
-#   sql_connstring = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "<NOT PROVISIONED>"
-#   redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_cache_connection_string : "<NOT PROVISIONED>"
+locals {
+  sql_connstring = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "<NOT PROVISIONED>"
+  redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_cache_connection_string : "<NOT PROVISIONED>"
 
-#   az_cli_commands = <<-EOT
-#     az login --identity --allow-no-subscriptions
-#     az keyvault secret set --vault-name ${module.key_vault.vault_name} --name redis_connstring --value ${local.redis_connstring}
-#     az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key sql_connstring --value ${local.sql_connstring} --label ${var.environment} -y
-#   EOT
-# }
+  az_cli_commands = <<-EOT
+    az login --identity --allow-no-subscriptions
+    az keyvault secret set --vault-name ${module.key_vault.vault_name} --name redis_connstring --value ${local.redis_connstring}
+    az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key sql_connstring --value ${local.sql_connstring} --label ${var.environment} -y
+  EOT
+}
 
-# resource "azurerm_virtual_machine_extension" "az_cli_runner" {
-#   count = var.deployment_options.deploy_vm ? 1 : 0
+resource "azurerm_virtual_machine_extension" "az_cli_runner" {
+  count = var.deployment_options.deploy_vm ? 1 : 0
 
-#   name                 = "az_cli_runner_v2"
-#   virtual_machine_id   = module.devops_vm[0].id
-#   publisher            = "Microsoft.Compute"
-#   type                 = "CustomScriptExtension"
-#   type_handler_version = "1.10"
+  name                 = "az_cli_runner_v2"
+  virtual_machine_id   = module.devops_vm[0].id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
 
-#   protected_settings = <<PROTECTED_SETTINGS
-#     {
-#         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File az-cli-runner.ps1 -command ${replace(local.az_cli_commands, "\r\n", ";")}",
-#         "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm-ext/az-cli-runner.ps1"]
-#     }
-#   PROTECTED_SETTINGS
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File az-cli-runner.ps1 -command ${replace(local.az_cli_commands, "\r\n", ";")}",
+        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm-ext/az-cli-runner.ps1"]
+    }
+  PROTECTED_SETTINGS
 
-#   timeouts {
-#     create = "30m"
-#   }
-# }
+  timeouts {
+    create = "30m"
+  }
+}
 
 module "front_door" {
   source = "./front-door"
