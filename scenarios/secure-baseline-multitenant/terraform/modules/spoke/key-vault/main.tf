@@ -43,6 +43,8 @@ resource "azurerm_role_assignment" "secrets_user" {
   principal_id         = var.secret_reader_identities[count.index]
 }
 
+// https://github.com/hashicorp/terraform-provider-azurerm/issues/9738
+
 resource "azurerm_role_assignment" "secrets_officer" {
   count = length(var.secret_officer_identities)
 

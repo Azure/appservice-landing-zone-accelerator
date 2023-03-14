@@ -15,6 +15,7 @@ variable "location" {
 variable "user_assigned_identity_id" {
   type        = string
   description = "value of the user assigned identity id"
+  default     = null
 }
 
 variable "admin_username" {

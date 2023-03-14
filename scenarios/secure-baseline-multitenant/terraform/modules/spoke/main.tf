@@ -188,40 +188,18 @@ resource "azurecaf_name" "devops_vm" {
   suffixes      = [random_integer.unique_id.result]
 }
 
-resource "azurecaf_name" "devops_vm_identity" {
-  name          = azurecaf_name.devops_vm.result
-  resource_type = "azurerm_user_assigned_identity"
-}
-
-resource "azurerm_user_assigned_identity" "devops_vm" {
-  name                = azurecaf_name.devops_vm_identity.result
-  location            = var.location
-  resource_group_name = azurerm_resource_group.spoke.name
-}
-
 module "devops_vm" {
   count = var.deployment_options.deploy_vm ? 1 : 0
 
   source = "../shared/windows-vm"
 
-  resource_group            = azurerm_resource_group.spoke.name
-  vm_name                   = azurecaf_name.devops_vm.result
-  location                  = var.location
-  user_assigned_identity_id = azurerm_user_assigned_identity.devops_vm.id
-  vm_subnet_id              = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.devops_subnet.result)].id
-  admin_username            = local.vm_admin_username
-  admin_password            = local.vm_admin_password
-  aad_admin_username        = var.vm_aad_admin_username
-
-  # enable_azure_ad_join = false
-  # install_extensions   = false
-
-  # remote_exec_commands = [
-  #   "powershell.exe -Command \"(New-Object System.Net.WebClient).DownloadFile('https://aka.ms/installazurecliwindows', 'C:\\Temp\\AzureCLI.msi')\"",
-  #   "msiexec.exe /i C:\\Temp\\AzureCLI.msi /quiet /qn /norestart",
-  #   "powershell.exe -Command \"az login --identity\"",
-  #   "powershell.exe -Command \"az keyvault secret set --vault-name ${module.key_vault.vault_name} --name sql_connstring --value ${module.sql_database[0].sql_db_connection_string}\""
-  # ]
+  resource_group     = azurerm_resource_group.spoke.name
+  vm_name            = azurecaf_name.devops_vm.result
+  location           = var.location
+  vm_subnet_id       = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.devops_subnet.result)].id
+  admin_username     = local.vm_admin_username
+  admin_password     = local.vm_admin_password
+  aad_admin_username = var.vm_aad_admin_username
 }
 
 module "devops_vm_extension" {
@@ -235,26 +213,37 @@ module "devops_vm_extension" {
   install_extensions   = false
 }
 
-resource "azurerm_virtual_machine_extension" "post_deploy_actions" {
-  count = var.deployment_options.deploy_vm ? 1 : 0
+# locals {
+#   sql_connstring = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "<NOT PROVISIONED>"
+#   redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_cache_connection_string : "<NOT PROVISIONED>"
 
-  name                 = "post-deployment-script"
-  virtual_machine_id   = module.devops_vm[0].id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
+#   az_cli_commands = <<-EOT
+#     az login --identity --allow-no-subscriptions
+#     az keyvault secret set --vault-name ${module.key_vault.vault_name} --name redis_connstring --value ${local.redis_connstring}
+#     az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key sql_connstring --value ${local.sql_connstring} --label ${var.environment} -y
+#   EOT
+# }
 
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File deploy-config.ps1",
-        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm-ext/deploy-config.ps1"]
-    }
-  PROTECTED_SETTINGS
+# resource "azurerm_virtual_machine_extension" "az_cli_runner" {
+#   count = var.deployment_options.deploy_vm ? 1 : 0
 
-  timeouts {
-    create = "30m"
-  }
-}
+#   name                 = "az_cli_runner_v2"
+#   virtual_machine_id   = module.devops_vm[0].id
+#   publisher            = "Microsoft.Compute"
+#   type                 = "CustomScriptExtension"
+#   type_handler_version = "1.10"
+
+#   protected_settings = <<PROTECTED_SETTINGS
+#     {
+#         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File az-cli-runner.ps1 -command ${replace(local.az_cli_commands, "\r\n", ";")}",
+#         "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm-ext/az-cli-runner.ps1"]
+#     }
+#   PROTECTED_SETTINGS
+
+#   timeouts {
+#     create = "30m"
+#   }
+# }
 
 module "front_door" {
   source = "./front-door"
@@ -340,7 +329,7 @@ module "app_configuration" {
   ]
 
   data_owner_identities = [
-    azurerm_user_assigned_identity.devops_vm.principal_id
+    module.devops_vm[0].principal_id
   ]
 
   private_dns_zone = {
@@ -370,7 +359,7 @@ module "key_vault" {
   ]
 
   secret_officer_identities = [
-    azurerm_user_assigned_identity.devops_vm.principal_id
+    module.devops_vm[0].principal_id
   ]
 
   private_dns_zone = {
