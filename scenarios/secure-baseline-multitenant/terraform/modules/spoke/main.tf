@@ -214,14 +214,16 @@ module "devops_vm_extension" {
 }
 
 locals {
-  sql_connstring = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "<NOT PROVISIONED>"
-  redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_cache_connection_string : "<NOT PROVISIONED>"
+  sql_connstring   = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "_NOT_PROVISIONED_"
+  redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_cache_connection_string : "_NOT_PROVISIONED_"
 
   az_cli_commands = <<-EOT
     az login --identity --allow-no-subscriptions
-    az keyvault secret set --vault-name ${module.key_vault.vault_name} --name redis_connstring --value ${local.redis_connstring}
-    az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key sql_connstring --value ${local.sql_connstring} --label ${var.environment} -y
+    az keyvault secret set --vault-name ${module.key_vault.vault_name} --name 'redis-connstring' --value '${local.redis_connstring}'
+    az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key 'sql-connstring' --value '${local.sql_connstring}' --label '${var.environment}' -y
   EOT
+
+  az_cli_commands_oneliner = replace(local.az_cli_commands, "\r\n", ";")
 }
 
 resource "azurerm_virtual_machine_extension" "az_cli_runner" {
@@ -235,7 +237,7 @@ resource "azurerm_virtual_machine_extension" "az_cli_runner" {
 
   protected_settings = <<PROTECTED_SETTINGS
     {
-        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File az-cli-runner.ps1 -command ${replace(local.az_cli_commands, "\r\n", ";")}",
+        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File az-cli-runner.ps1 -command \"${local.az_cli_commands_oneliner}\"",
         "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm-ext/az-cli-runner.ps1"]
     }
   PROTECTED_SETTINGS
