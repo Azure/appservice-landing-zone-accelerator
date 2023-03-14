@@ -55,6 +55,10 @@ param firewallInternalIp string
 @description('Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.')
 param enableTelemetry bool = true
 
+@description('Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
+@allowed([ 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
+param webAppPlanSku string
+
 @description('Kind of server OS of the App Service Plan')
 param webAppBaseOs string
 
@@ -164,7 +168,8 @@ module spoke 'deploy.spoke.bicep' = {
     webAppBaseOs: webAppBaseOs
     adminPassword: adminPassword
     adminUsername: adminUsername
-    sqlServerAdministrators: administrators    
+    sqlServerAdministrators: administrators   
+    webAppPlanSku: webAppPlanSku 
   }
 }
 

@@ -9,9 +9,9 @@ param location string
 @description('Optional. Tags of the resource.')
 param tags object = {}
 
-@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. EP* is only for functions')
-@allowed([ 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'PV1', 'PV2', 'PV3', 'EP1', 'EP2', 'EP3' ])
-param sku string = 'S1'
+@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
+@allowed([ 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
+param sku string
 
 @description('Optional, default is Windows. Kind of server OS.')
 @allowed([
@@ -32,8 +32,8 @@ param perSiteScaling bool = false
 @description('Optional, dafualt is 20. Maximum number of total workers allowed for this ElasticScaleEnabled App Service Plan.')
 param maximumElasticWorkerCount int = 20
 
-@description('Optional, default is false. If true, then starts with minimum 3 instances')
-param zoneRedundant bool = false
+// @description('Optional, default is false. If true, then starts with minimum 3 instances')
+// param zoneRedundant bool = false
 
 @description('Optional. Scaling worker count.')
 param targetWorkerCount int = 0
@@ -71,6 +71,8 @@ param diagnosticMetricsToEnable array = [
 
 // If sku is Elastic Premium - used for EP Function hosting. Default is true
 // param isElasticPremium bool = true
+// 'Optional, default is false. If true, then starts with minimum 3 instances')
+var zoneRedundant  = endsWith(sku, 'LZA') ? true : false
 var isElasticPremium = startsWith(sku, 'EP') ? true : false
 var aspKind = isElasticPremium ? 'elastic' : (serverOS == 'Windows' ? '' : 'linux')
 
@@ -156,6 +158,13 @@ var skuConfigurationMap = {
     family: 'Pv3'
     capacity: 1
   }
+  P1V3_AZ: {
+    name: 'P1V3'
+    tier: 'PremiumV2'
+    size: 'P1V3'
+    family: 'Pv3'
+    capacity: 3
+  }
   P2V3: {
     name: 'P2V3'
     tier: 'PremiumV2'
@@ -163,12 +172,26 @@ var skuConfigurationMap = {
     family: 'Pv3'
     capacity: 1
   }
+  P2V3_AZ: {
+    name: 'P2V3'
+    tier: 'PremiumV2'
+    size: 'P2V3'
+    family: 'Pv3'
+    capacity: 3
+  }
   P3V3: {
     name: 'P3V3'
     tier: 'PremiumV2'
     size: 'P3V3'
     family: 'Pv3'
     capacity: 1
+  }
+  P3V3_AZ: {
+    name: 'P3V3'
+    tier: 'PremiumV2'
+    size: 'P3V3'
+    family: 'Pv3'
+    capacity: 3
   }
 }
 
@@ -184,9 +207,9 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   sku: skuConfigurationMap[sku]
   properties: {
     perSiteScaling: perSiteScaling
-    maximumElasticWorkerCount: maximumElasticWorkerCount
+    maximumElasticWorkerCount: (maximumElasticWorkerCount < 3 && zoneRedundant) ? 3 : maximumElasticWorkerCount
     reserved: serverOS == 'Linux'
-    targetWorkerCount: targetWorkerCount
+    targetWorkerCount: (targetWorkerCount < 3 && zoneRedundant) ? 3 : targetWorkerCount
     targetWorkerSizeId: targetWorkerSize
     zoneRedundant: zoneRedundant
   }
