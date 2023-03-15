@@ -204,7 +204,7 @@ module "devops_vm" {
 
 locals {
   sql_connstring   = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "SQL_NOT_PROVISIONED"
-  redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_cache_connection_string : "REDIS_NOT_PROVISIONED"
+  redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_connection_string : "REDIS_NOT_PROVISIONED"
 
   az_cli_commands = <<-EOT
     az login --identity --allow-no-subscriptions
