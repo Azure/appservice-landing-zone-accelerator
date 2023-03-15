@@ -219,12 +219,11 @@ module "devops_vm_extension" {
 
   source = "../shared/windows-vm-ext"
 
-  vm_id = module.devops_vm[0].id
-
-  enable_azure_ad_join = true
-  install_extensions   = false
-
-  azure_cli_commands = replace(local.az_cli_commands, "\r\n", ";")
+  vm_id                   = module.devops_vm[0].id
+  enable_azure_ad_join    = true
+  install_extensions      = false
+  enable_azure_cli_runner = true
+  azure_cli_commands      = replace(local.az_cli_commands, "\r\n", ";")
 }
 
 module "front_door" {

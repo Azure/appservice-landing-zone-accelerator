@@ -26,6 +26,12 @@ variable "mdm_id" {
   description = "The default value is the MDM Id for Intune, but you can use your own MDM id if you want to use a different MDM service."
 }
 
+variable "enable_azure_cli_runner" {
+  type    = bool
+  default = false
+  description = "True to enable Azure CLI runner on the VM."
+}
+
 variable "azure_cli_commands" {
   type = string
   default = ""

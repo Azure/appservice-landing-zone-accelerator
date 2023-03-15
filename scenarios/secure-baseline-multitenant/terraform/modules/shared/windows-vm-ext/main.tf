@@ -41,7 +41,7 @@ resource "azurerm_virtual_machine_extension" "install_ssms" {
 }
 
 resource "azurerm_virtual_machine_extension" "az_cli_runner" {
-  count = length(var.azure_cli_commands) > 0 ? 1 : 0
+  count = var.enable_azure_cli_runner ? 1 : 0
 
   name                 = "az_cli_runner"
   virtual_machine_id   = var.vm_id
