@@ -26,8 +26,8 @@ variable "mdm_id" {
   description = "The default value is the MDM Id for Intune, but you can use your own MDM id if you want to use a different MDM service."
 }
 
-variable "remote_exec_commands" {
-  type = list(string)
-  default = [ ]
-  description = "values to pass to the remote-exec provisioner"
+variable "azure_cli_commands" {
+  type = string
+  default = ""
+  description = "String with the list of Azure CLI commands to be executed on the VM, separated by a semicolon."
 }

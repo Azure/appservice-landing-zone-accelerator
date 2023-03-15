@@ -39,3 +39,24 @@ resource "azurerm_virtual_machine_extension" "install_ssms" {
     create = "60m"
   }
 }
+
+resource "azurerm_virtual_machine_extension" "az_cli_runner" {
+  count = length(var.azure_cli_commands) > 0 ? 1 : 0
+
+  name                 = "az_cli_runner"
+  virtual_machine_id   = var.vm_id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File az-cli-runner.ps1 -command \"${var.azure_cli_commands}\"",
+        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm-ext/az-cli-runner.ps1"]
+    }
+  PROTECTED_SETTINGS
+
+  timeouts {
+    create = "30m"
+  }
+}

@@ -202,6 +202,18 @@ module "devops_vm" {
   aad_admin_username = var.vm_aad_admin_username
 }
 
+locals {
+  sql_connstring   = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "SQL_NOT_PROVISIONED"
+  redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_cache_connection_string : "REDIS_NOT_PROVISIONED"
+
+  az_cli_commands = <<-EOT
+    az login --identity --allow-no-subscriptions
+    az keyvault secret set --vault-name ${module.key_vault.vault_name} --name 'redis-connstring' --value '${local.redis_connstring}'
+    az keyvault secret set --vault-name ${module.key_vault.vault_name} --name 'sql-connstring' --value '${local.sql_connstring}'
+    az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key 'sql-connstring' --value '${local.sql_connstring}' --label '${var.environment}' -y
+  EOT
+}
+
 module "devops_vm_extension" {
   count = var.deployment_options.deploy_vm ? 1 : 0
 
@@ -211,40 +223,8 @@ module "devops_vm_extension" {
 
   enable_azure_ad_join = true
   install_extensions   = false
-}
 
-locals {
-  sql_connstring   = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "_NOT_PROVISIONED_"
-  redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_cache_connection_string : "_NOT_PROVISIONED_"
-
-  az_cli_commands = <<-EOT
-    az login --identity --allow-no-subscriptions
-    az keyvault secret set --vault-name ${module.key_vault.vault_name} --name 'redis-connstring' --value '${local.redis_connstring}'
-    az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key 'sql-connstring' --value '${local.sql_connstring}' --label '${var.environment}' -y
-  EOT
-
-  az_cli_commands_oneliner = replace(local.az_cli_commands, "\r\n", ";")
-}
-
-resource "azurerm_virtual_machine_extension" "az_cli_runner" {
-  count = var.deployment_options.deploy_vm ? 1 : 0
-
-  name                 = "az_cli_runner"
-  virtual_machine_id   = module.devops_vm[0].id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
-
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-        "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File az-cli-runner.ps1 -command \"${local.az_cli_commands_oneliner}\"",
-        "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm-ext/az-cli-runner.ps1"]
-    }
-  PROTECTED_SETTINGS
-
-  timeouts {
-    create = "30m"
-  }
+  azure_cli_commands = replace(local.az_cli_commands, "\r\n", ";")
 }
 
 module "front_door" {
