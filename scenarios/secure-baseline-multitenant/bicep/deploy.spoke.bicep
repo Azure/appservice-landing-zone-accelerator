@@ -223,7 +223,6 @@ module keyvault 'modules/keyvault.module.bicep' = {
   }
 }
 
-// TODO: Add Slots, configure slots
 // TODO: Add Managed Identity and access to keyvaults\
 // TODO: Need to expose (bubble up) parameter for AZ - 
 module webApp 'modules/app-service.module.bicep' = {
@@ -241,6 +240,10 @@ module webApp 'modules/app-service.module.bicep' = {
     virtualNetworkLinks: virtualNetworkLinks   
     appConfigurationName: resourceNames.appConfig
     sku: webAppPlanSku
+    keyvaultName: keyvault.outputs.keyvaultName
+    //docs for envintoment(): > https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
+    sqlDbConnectionString: 'Server=tcp:${sqlServerAndDefaultDb.outputs.sqlServerName}${environment().suffixes.sqlServerHostname};Authentication=Active Directory Default;Database=${resourceNames.sqlDb};'
+    redisConnectionStringSecretName: redisCache.outputs.redisConnectionStringSecretName
   }
 }
 
@@ -293,6 +296,7 @@ module redisCache 'modules/redis.module.bicep' = {
     vnetHubResourceId: vnetHubResourceId
     subnetPrivateEndpointId: snetPe.id
     virtualNetworkLinks: virtualNetworkLinks
+    keyvaultName: keyvault.outputs.keyvaultName
   }
 }
 

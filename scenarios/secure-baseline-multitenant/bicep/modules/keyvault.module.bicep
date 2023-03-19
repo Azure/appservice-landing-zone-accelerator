@@ -60,3 +60,6 @@ module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(s
   }
 }
 //output scopeRG string = resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]).id
+
+output keyvaultId string = keyvault.outputs.keyvaultId
+output keyvaultName string = keyvault.outputs.keyvaultName

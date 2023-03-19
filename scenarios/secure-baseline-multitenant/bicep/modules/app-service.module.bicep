@@ -37,6 +37,15 @@ param logAnalyticsWsId string
 @description('The subnet ID that is dedicated to Web Server, for Vnet Injection of the web app')
 param subnetIdForVnetInjection string
 
+@description('The name of an existing keyvault, that it will be used to store secrets (connection string)' )
+param keyvaultName string
+
+@description('The name of secret that stores the redis connection string' )
+param redisConnectionStringSecretName string
+
+@description('The connection string of the default SQL Database' )
+param sqlDbConnectionString string
+
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 
 var webAppDnsZoneName = 'privatelink.azurewebsites.net'
@@ -68,7 +77,7 @@ module asp '../../../shared/bicep/app-services/app-service-plan.bicep' = {
 module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
   name: take('${webAppName}-webApp-Deployment', 64)
   params: {
-    kind: 'app'
+    kind: (webAppBaseOs =~ 'linux') ? 'app,linux' : 'app'
     name:  webAppName
     location: location
     serverFarmResourceId: asp.outputs.resourceId
@@ -78,6 +87,10 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     siteConfigSelection:  (webAppBaseOs =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
     hasPrivateLink: (!empty (subnetPrivateEndpointId))
     systemAssignedIdentity: true
+    appSettingsKeyValuePairs: {
+      redisConnectionStringSecret: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${redisConnectionStringSecretName})'
+      sqlDefaultDbConnectionString: sqlDbConnectionString
+    }
     slots: [
       {
         name: slotName
@@ -98,6 +111,7 @@ module webAppPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if 
     tags: tags
   }
 }
+
 module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   name:  take('pe-${webAppName}-Deployment', 64)
   params: {
@@ -142,6 +156,19 @@ module appConfigStore '../../../shared/bicep/app-configuration.bicep' = {
     location: location
     tags: tags 
     hasPrivateEndpoint: (!empty (subnetPrivateEndpointId) )
+  }
+}
+
+resource appConfigStoreExisting 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' existing =  {
+  name: appConfigurationName
+}
+
+// TODO: check if this is correct
+resource configurationStoreSqlConnectionString 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  parent: appConfigStoreExisting
+  name: 'sqlDefaultDbConnectionString'
+  properties: {
+     value: sqlDbConnectionString
   }
 }
 

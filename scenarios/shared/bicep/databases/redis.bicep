@@ -9,6 +9,9 @@ param location string = resourceGroup().location
 @description('Optional. Tags of the resource.')
 param tags object = {}
 
+@description('The name of an existing keyvault, that it will be used to store secrets (connection string)' )
+param keyvaultName string
+
 // @description('Optional. Enables system assigned managed identity on the resource.')
 // param systemAssignedIdentity bool = false
 
@@ -124,6 +127,10 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
 //   userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
 // }
 
+resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
+  name: keyvaultName
+}
+
 resource redisCache 'Microsoft.Cache/redis@2021-06-01' = {
   name: name
   location: location
@@ -148,6 +155,13 @@ resource redisCache 'Microsoft.Cache/redis@2021-06-01' = {
   zones: skuName == 'Premium' ? pickZones('Microsoft.Cache', 'redis', location, 1) : null
 }
 
+resource redisConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2018-02-14' = {
+  name: 'redisConStrSecret'
+  parent: keyVault
+  properties: {
+    value: '${redisCache.properties.hostName},password=${redisCache.listKeys().primaryKey},ssl=True,abortConnect=False' //'${name}.redis.cache.windows.net,abortConnect=false,ssl=true,password=${listKeys(redis.id, redis.apiVersion).primaryKey}'
+  }
+} 
 
 resource redisCache_diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if ( !empty(diagnosticWorkspaceId) ) {
   name: diagnosticSettingsName
@@ -182,3 +196,6 @@ output subnetId string = !empty(subnetId) ? redisCache.properties.subnetId : ''
 
 @description('The location the resource was deployed into.')
 output location string = redisCache.location
+
+@description('The name of the secret in keyvault, holding the connection string to redis.')
+output redisConnectionStringSecretName string = redisConnectionStringSecret.name

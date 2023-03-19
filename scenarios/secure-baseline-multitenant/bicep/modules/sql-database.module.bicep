@@ -65,3 +65,5 @@ module peSqlServer '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(
     subresource: 'sqlServer'
   }
 }
+
+output sqlServerName string = sqlDbAndServer.outputs.sqlServerName

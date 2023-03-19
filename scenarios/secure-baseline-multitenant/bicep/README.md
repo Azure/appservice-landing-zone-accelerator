@@ -15,7 +15,7 @@ The table below summurizes the avaialble parameters and the possible values that
 
 | Name | Description | Example | 
 |------|-------------|---------|
-|applicationName|A suffix that will be used to name the resources in a pattern similar to <resourceAbbreviation>-<applicationName>. Must be up to 10 characters long, alphanumeric with dashes|app-svc-01|
+|applicationName|A suffix that will be used to name the resources in a pattern similar to ` <resourceAbbreviation>-<applicationName> ` . Must be up to 10 characters long, alphanumeric with dashes|app-svc-01|
 |location|Azure region where the resources will be deployed in||
 |environment|Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.||
 |vnetHubResourceId|If empty, then a new hub will be created. If you select not to deploy a new Hub resource group, set the resource id of the Hub Virtual Network that you want to peer to. In that case, no new hub will be created and a peering will be created between the new spoke and and existing hub vnet|/subscriptions/<subscription_id>/ resourceGroups/<rg_name>/providers/ Microsoft.Network/virtualNetworks/<vnet_name>|
@@ -32,7 +32,7 @@ The table below summurizes the avaialble parameters and the possible values that
 |resourceTags|Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)|"resourceTags": {<br>         "value": { <br>               "deployment": "bicep", <br>  "key1": "value1" <br>           } <br>         } |
 |sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group  must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
 
-After you the parameters have been initialized, you can deploy the Landing Zone Accelerator resources with the following az cli command:
+After the parameters have been initialized, you can deploy the Landing Zone Accelerator resources with the following `az cli` command:
 
 ### Bash shell (i.e. inside WSL2 for windows 11, or any linux-based OS)
 ``` bash
@@ -67,7 +67,7 @@ This is a manual step that is required to complete the private endpoint connecti
 ### Retrieve the Azure Front Door frontend endpoint URL and test the App Service
 
 ```bash
-az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>```  
+az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>  
 ```
 
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
