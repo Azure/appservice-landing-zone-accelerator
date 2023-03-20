@@ -34,6 +34,9 @@ param networkAcls object = {}
 ])
 param publicNetworkAccess string = ''
 
+@description('Use RBAC for keyvault access - and not accesspolicy (https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide?tabs=azure-cli)')
+param enableRbacAuthorization bool
+
 
 @description('Array of access policy configurations, schema ref: https://docs.microsoft.com/en-us/azure/templates/microsoft.keyvault/vaults/accesspolicies?tabs=json#microsoftkeyvaultvaultsaccesspolicies-object')
 param accessPolicies array = []
@@ -66,6 +69,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       ipRules: contains(networkAcls, 'ipRules') ? networkAcls.ipRules : []
     } : null
     publicNetworkAccess: !empty(publicNetworkAccess) ? any(publicNetworkAccess) : (hasPrivateEndpoint && empty(networkAcls) ? 'Disabled' : null)
+    enableRbacAuthorization: enableRbacAuthorization
   }
 }
 

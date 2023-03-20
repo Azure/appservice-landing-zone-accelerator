@@ -52,6 +52,10 @@ var webAppDnsZoneName = 'privatelink.azurewebsites.net'
 var appConfigurationDnsZoneName = 'privatelink.azconfig.io'
 var slotName = 'staging'
 
+resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
+  name: keyvaultName
+}
+
 module appInsights '../../../shared/bicep/app-insights.bicep' = {
   name: 'appInsights-Deployment'
   params: {
@@ -141,7 +145,7 @@ module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty
     location: location
     tags: tags
     privateDnsZonesId: webAppPrivateDnsZone.outputs.privateDnsZonesId
-    privateLinkServiceId: webApp.outputs.resourceId //webApp.outputs.slotResourceIds[0]
+    privateLinkServiceId: webApp.outputs.resourceId
     snetId: subnetPrivateEndpointId
     subresource: 'sites-${slotName}'
   }
@@ -196,13 +200,40 @@ module peAzConfig '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(s
   }
 }
 
-// TODO Add Role Assignment for WebAppSlot as well
+
 module webAppSystemIdenityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
   name: 'webAppSystemIdenityOnAppConfigDataReader-Deployment'
   params: {
     principalId: webApp.outputs.systemAssignedPrincipalId
     resourceId: appConfigStore.outputs.resourceId
-    roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader
+    roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
+  }
+}
+
+module webAppSystemIdenityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
+  name: 'webAppSystemIdenityOnKeyvaultSecretsUser-Deployment'
+  params: {
+    principalId: webApp.outputs.systemAssignedPrincipalId
+    resourceId: keyvault.id
+    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'  //Key Vault Secrets User  
+  }
+}
+
+module webAppStagingSlotSystemIdenityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
+  name: 'webAppStagingSlotSystemIdenityOnAppConfigDataReader-Deployment'
+  params: {
+    principalId: webApp.outputs.slotSystemAssignedPrincipalIds[0]
+    resourceId: appConfigStore.outputs.resourceId
+    roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
+  }
+}
+
+module webAppStagingSlotSystemIdenityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
+  name: 'webAppStagingSlotSystemIdenityOnKeyvaultSecretsUser-Deployment'
+  params: {
+    principalId: webApp.outputs.slotSystemAssignedPrincipalIds[0]
+    resourceId: keyvault.id
+    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'  //Key Vault Secrets User   
   }
 }
 

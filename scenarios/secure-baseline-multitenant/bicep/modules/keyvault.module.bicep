@@ -8,9 +8,6 @@ param location string
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param tags object
 
-@description('Array of access policy configurations, schema ref: https://docs.microsoft.com/en-us/azure/templates/microsoft.keyvault/vaults/accesspolicies?tabs=json#microsoftkeyvaultvaultsaccesspolicies-object')
-param accessPolicies array = []
-
 @description('Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled')
 param virtualNetworkLinks array = []
 
@@ -31,7 +28,7 @@ module keyvault '../../../shared/bicep/keyvault.bicep' = {
     location: location
     tags: tags
     hasPrivateEndpoint: !empty(subnetPrivateEndpointId) // hasPrivateEnpoint
-    accessPolicies: accessPolicies
+    enableRbacAuthorization: true
   }
 }
 

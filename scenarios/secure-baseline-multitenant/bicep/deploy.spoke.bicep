@@ -130,26 +130,26 @@ var virtualNetworkLinks = [
   }
 ]
 
-var accessPolicies = [
-      {
-        tenantId: appSvcUserAssignedManagedIdenity.outputs.tenantId
-        objectId: appSvcUserAssignedManagedIdenity.outputs.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]     
-          keys: [
-            'get'
-            'list'
-          ] 
-          certificates: [
-            'get'
-            'list'
-          ]      
-        }
-      }
-    ]
+// var accessPolicies = [
+//       {
+//         tenantId: appSvcUserAssignedManagedIdenity.outputs.tenantId
+//         objectId: appSvcUserAssignedManagedIdenity.outputs.principalId
+//         permissions: {
+//           secrets: [
+//             'get'
+//             'list'
+//           ]     
+//           keys: [
+//             'get'
+//             'list'
+//           ] 
+//           certificates: [
+//             'get'
+//             'list'
+//           ]      
+//         }
+//       }
+//     ]
 
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 
@@ -217,14 +217,11 @@ module keyvault 'modules/keyvault.module.bicep' = {
     location: location
     tags: tags   
     vnetHubResourceId: vnetHubResourceId    
-    accessPolicies: accessPolicies
     subnetPrivateEndpointId: snetPe.id
     virtualNetworkLinks: virtualNetworkLinks
   }
 }
 
-// TODO: Add Managed Identity and access to keyvaults\
-// TODO: Need to expose (bubble up) parameter for AZ - 
 module webApp 'modules/app-service.module.bicep' = {
   name: 'webAppModule-Deployment'
   params: {
