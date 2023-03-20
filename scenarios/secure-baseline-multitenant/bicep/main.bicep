@@ -103,7 +103,6 @@ var administrators = empty (sqlServerAdministrators) ? {} : union ({
 // Resources        //
 // ================ //
 
-// TODO: Must be shared among diferrent scenarios: Change in ASE (tt20230129)
 module naming '../../shared/bicep/naming.module.bicep' = {
   scope: resourceGroup(spokeResourceGroup.name)
   name: 'namingModule-Deployment'
@@ -114,7 +113,6 @@ module naming '../../shared/bicep/naming.module.bicep' = {
   }
 }
 
-//TODO: hub must be optional to create - might already exist and we need to attach to - might be in different subscription (tt20230129)
 resource hubResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = if ( empty(vnetHubResourceId) ) {
   name: hubResourceGroupName
   location: location
@@ -170,7 +168,6 @@ module spoke 'deploy.spoke.bicep' = {
 }
 
 // once the spoke is ready we need to peer either to the newly created hub vnet, or to an existing Hub vnet
-//TODO: we might need not to peer at all (because of lack of RBAC)
 module peerings 'modules/peerings.deployment.bicep' = {
   scope: resourceGroup(spokeResourceGroup.name)
   name: take('peerings-${deployment().name}-deployment', 64)

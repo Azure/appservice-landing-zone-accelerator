@@ -100,7 +100,6 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
         name: slotName
       }
     ]
-    // TODO Idenity - assign to KeyVault as well
   }
 }
 

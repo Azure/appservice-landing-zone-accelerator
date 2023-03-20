@@ -1087,7 +1087,6 @@
      nameUnique: endsWith(take(replace(nut, ph, 'vmss'), 15), d) ? take(replace(nut, ph, 'vmss'), 15-1) : take(replace(nut, ph, 'vmss'), 15)
      slug: 'vmss'
    }
-   // TODO: added extra - need to tell nianton
    userAssignedManagedIdentity: { 
      name: endsWith(take(replace(nt, ph, 'id'), 128), d) ? take(replace(nt, ph, 'id'), 128-1) : take(replace(nt, ph, 'id'), 128)
      nameUnique: endsWith(take(replace(nut, ph, 'id'), 128), d) ? take(replace(nut, ph, 'id'), 128-1) : take(replace(nut, ph, 'id'), 128)
