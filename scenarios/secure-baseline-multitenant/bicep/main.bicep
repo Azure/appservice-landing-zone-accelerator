@@ -16,7 +16,7 @@ param location string
 param environment string
 
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24')
-param hubVnetAddressSpace string
+param vnetHubAddressSpace string
 
 @description('CIDR of the subnet hosting the azure Firewall')
 param subnetHubFirewallAddressSpace string
@@ -25,7 +25,7 @@ param subnetHubFirewallAddressSpace string
 param subnetHubBastionddressSpace string
 
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
-param spokeVnetAddressSpace string
+param vnetSpokeAddressSpace string
 
 @description('CIDR of the subnet that will hold the app services plan')
 param subnetSpokeAppSvcAddressSpace string
@@ -132,11 +132,11 @@ module hub 'deploy.hub.bicep' =  if ( empty(vnetHubResourceId) ) {
   params: {
     naming: naming.outputs.names
     location: location
-    hubVnetAddressSpace: hubVnetAddressSpace
+    vnetHubAddressSpace: vnetHubAddressSpace
     tags: tags
     subnetHubBastionddressSpace: subnetHubBastionddressSpace
     subnetHubFirewallAddressSpace: subnetHubFirewallAddressSpace
-    spokeVnetAddressSpace: spokeVnetAddressSpace
+    vnetSpokeAddressSpace: vnetSpokeAddressSpace
     subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
   }
 }
@@ -154,7 +154,7 @@ module spoke 'deploy.spoke.bicep' = {
     location: location
     tags: tags
     firewallInternalIp: empty(vnetHubResourceId) ? hub.outputs.firewallPrivateIp : firewallInternalIp
-    spokeVnetAddressSpace: spokeVnetAddressSpace
+    vnetSpokeAddressSpace: vnetSpokeAddressSpace
     subnetSpokeAppSvcAddressSpace: subnetSpokeAppSvcAddressSpace
     subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
     subnetSpokePrivateEndpointAddressSpace: subnetSpokePrivateEndpointAddressSpace

@@ -22,7 +22,7 @@
         "firewallInternalIp": {
             "value": ""
         },
-        "hubVnetAddressSpace": {
+        "vnetHubAddressSpace": {
             "value": "10.242.0.0/20"
         },
         // CIDR of the subnet that will host the azure Firewall
@@ -34,7 +34,7 @@
             "value": "10.242.0.64/26"
         },
         //CIDR of the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)
-        "spokeVnetAddressSpace": {
+        "vnetSpokeAddressSpace": {
             "value": "10.240.0.0/20"
         },
         //CIDR of the subnet that will hold the app services plan 

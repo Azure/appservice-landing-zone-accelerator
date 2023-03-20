@@ -7,7 +7,7 @@ param naming object
 param location string = resourceGroup().location
 
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
-param spokeVnetAddressSpace string
+param vnetSpokeAddressSpace string
 
 @description('CIDR of the subnet that will hold the app services plan')
 param subnetSpokeAppSvcAddressSpace string
@@ -164,7 +164,7 @@ module vnetSpoke '../../shared/bicep/network/vnet.bicep' = {
     name: resourceNames.vnetSpoke
     location: location
     tags: tags    
-    vnetAddressSpace:  spokeVnetAddressSpace
+    vnetAddressSpace:  vnetSpokeAddressSpace
     subnetsInfo: subnets
   }
 }

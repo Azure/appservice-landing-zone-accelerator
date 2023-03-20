@@ -10,7 +10,7 @@ param location string = resourceGroup().location
 param tags object
 
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24')
-param hubVnetAddressSpace string
+param vnetHubAddressSpace string
 
 @description('CIDR of the subnet hosting the azure Firewall')
 param subnetHubFirewallAddressSpace string
@@ -19,7 +19,7 @@ param subnetHubFirewallAddressSpace string
 param subnetHubBastionddressSpace string
 
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
-param spokeVnetAddressSpace string
+param vnetSpokeAddressSpace string
 
 @description('CIDR of the subnet that will hold devOps agents etc ')
 param subnetSpokeDevOpsAddressSpace string
@@ -74,7 +74,7 @@ module vnetHub '../../shared/bicep/network/vnet.bicep' = {
     name: resourceNames.vnetHub
     subnetsInfo: subnets
     tags: tags
-    vnetAddressSpace:  hubVnetAddressSpace
+    vnetAddressSpace:  vnetHubAddressSpace
   }
 }
 
@@ -132,8 +132,8 @@ var applicationRules =  [
                 }
               ]
               sourceAddresses: [
-                hubVnetAddressSpace
-                spokeVnetAddressSpace
+                vnetHubAddressSpace
+                vnetSpokeAddressSpace
               ]
             }
             {
@@ -280,8 +280,8 @@ var applicationRules =  [
                 }
               ]
               sourceAddresses: [
-                spokeVnetAddressSpace
-                hubVnetAddressSpace
+                vnetSpokeAddressSpace
+                vnetHubAddressSpace
               ]
             }
             {
@@ -293,8 +293,8 @@ var applicationRules =  [
                 }
               ]
               sourceAddresses: [
-                spokeVnetAddressSpace
-                hubVnetAddressSpace
+                vnetSpokeAddressSpace
+                vnetHubAddressSpace
               ]
               targetFqdns: [
                 'github.com'
@@ -326,8 +326,8 @@ var applicationRules =  [
                 }
               ]
               sourceAddresses: [
-                spokeVnetAddressSpace
-                hubVnetAddressSpace
+                vnetSpokeAddressSpace
+                vnetHubAddressSpace
               ]
               targetFqdns: [
                 '*.delivery.mp.microsoft.com'
