@@ -22,7 +22,7 @@ The table below summurizes the avaialble parameters and the possible values that
 |firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewal so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
 |vnetHubAddressSpace|If you deploy a new hub, you need to set the appropriate CIDR of the newly created Hub virtual network|10.242.0.0/20|
 |subnetHubFirewallAddressSpace|CIDR of the subnet that will host the azure Firewall|10.242.0.0/26|
-|subnetHubBastionddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.64/26|
+|subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.64/26|
 |vnetSpokeAddressSpace|CIDR of the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)|10.240.0.0/20|
 |subnetSpokeAppSvcAddressSpace|CIDR of the subnet that will hold the app services plan|10.240.0.0/26|
 |subnetSpokeDevOpsAddressSpace|CIDR of the subnet that will hold devOps agents etc|10.240.10.128/26|
@@ -30,6 +30,7 @@ The table below summurizes the avaialble parameters and the possible values that
 |webAppPlanSku|Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. select one from: 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ||
 |webAppBaseOs|The OS for the App service plan. Two options available: Windows or Linux||
 |resourceTags|Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)|"resourceTags": {<br>         "value": { <br>               "deployment": "bicep", <br>  "key1": "value1" <br>           } <br>         } |
+|deploymentOptions|Several boolean feature flags. Control the deployment or not of auxiliary azure resources. Feature flags are descibed below <br> **enableWaf**: Enable or disable WAF policies for the deployed Azure Front Door <br> **enableEgressLockdown**: Create (or not) a UDR for the App Service Subnet, to route all egress traffic through Hub Azure Firewall <br> **deployRedis**: Deploy (or not) a redis cache <br> **deployAzureSql**: Deploy (or not) an Azure SQL with default database <br> **deployAppConfig**: Deploy (or not) an Azure app configuration <br> **deployJumpHost**: Deploy (or not) an Azure virtual machine (to be used as jumphost) ||
 |sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group  must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
 
 After the parameters have been initialized, you can deploy the Landing Zone Accelerator resources with the following `az cli` command:

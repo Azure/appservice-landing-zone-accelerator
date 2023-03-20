@@ -22,7 +22,7 @@ param vnetHubAddressSpace string
 param subnetHubFirewallAddressSpace string
 
 @description('CIDR of the subnet hosting the Bastion Service')
-param subnetHubBastionddressSpace string
+param subnetHubBastionAddressSpace string
 
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param vnetSpokeAddressSpace string
@@ -67,6 +67,9 @@ param adminPassword string
 
 @description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
 param sqlServerAdministrators object = {}
+
+@description('Several boolean feature flags that control the deployment or not of auxiliary azure resources')
+param deploymentOptions object
 
 
 // ================ //
@@ -134,7 +137,7 @@ module hub 'deploy.hub.bicep' =  if ( empty(vnetHubResourceId) ) {
     location: location
     vnetHubAddressSpace: vnetHubAddressSpace
     tags: tags
-    subnetHubBastionddressSpace: subnetHubBastionddressSpace
+    subnetHubBastionAddressSpace: subnetHubBastionAddressSpace
     subnetHubFirewallAddressSpace: subnetHubFirewallAddressSpace
     vnetSpokeAddressSpace: vnetSpokeAddressSpace
     subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
@@ -164,6 +167,12 @@ module spoke 'deploy.spoke.bicep' = {
     adminUsername: adminUsername
     sqlServerAdministrators: administrators   
     webAppPlanSku: webAppPlanSku 
+    enableEgressLockdown: deploymentOptions.enableEgressLockdown
+    enableWaf: deploymentOptions.enableWaf
+    deployJumpHost: deploymentOptions.deployJumpHost
+    deployRedis: deploymentOptions.deployRedis
+    deployAzureSql: deploymentOptions.deployAzureSql
+    deployAppConfig: deploymentOptions.deployAppConfig
   }
 }
 

@@ -46,11 +46,17 @@ param redisConnectionStringSecretName string
 @description('The connection string of the default SQL Database' )
 param sqlDbConnectionString string
 
+@description('Deploy an azure app configuration, or not')
+param deployAppConfig bool
+
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 
 var webAppDnsZoneName = 'privatelink.azurewebsites.net'
 var appConfigurationDnsZoneName = 'privatelink.azconfig.io'
 var slotName = 'staging'
+
+var redisConnStr = !empty(redisConnectionStringSecretName) ? {redisConnectionStringSecret: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${redisConnectionStringSecretName})'} : {}
+var sqlConnStr = !empty(sqlDbConnectionString) ? { sqlDefaultDbConnectionString: sqlDbConnectionString } : {}
 
 resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
   name: keyvaultName
@@ -91,10 +97,11 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     siteConfigSelection:  (webAppBaseOs =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
     hasPrivateLink: (!empty (subnetPrivateEndpointId))
     systemAssignedIdentity: true
-    appSettingsKeyValuePairs: {
-      redisConnectionStringSecret: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${redisConnectionStringSecretName})'
-      sqlDefaultDbConnectionString: sqlDbConnectionString
-    }
+    appSettingsKeyValuePairs: union(redisConnStr, sqlConnStr)
+    // appSettingsKeyValuePairs: {
+    //   redisConnectionStringSecret: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${redisConnectionStringSecretName})'
+    //   sqlDefaultDbConnectionString: sqlDbConnectionString
+    // }
     slots: [
       {
         name: slotName
@@ -128,15 +135,6 @@ module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(sub
   }
 }
 
-// resource webAppExisting 'Microsoft.Web/sites@2022-03-01' existing = {
-//   name: webApp.outputs.name
-// }
-
-// resource webAppSlotExisting 'Microsoft.Web/sites/slots@2022-03-01' existing = {
-//   parent: webAppExisting
-//   name: slotName
-// }
-
 module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   name:  take('pe-${webAppName}-slot-${slotName}-Deployment', 64)
   params: {
@@ -151,7 +149,7 @@ module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty
 }
 
 //TODO: Conditional Deployment? 
-module appConfigStore '../../../shared/bicep/app-configuration.bicep' = {
+module appConfigStore '../../../shared/bicep/app-configuration.bicep' = if (deployAppConfig) {
   name: take('${appConfigurationName}-app-configuration-Deployment', 64)
   params: {   
     name: appConfigurationName
@@ -179,7 +177,7 @@ module appConfigStore '../../../shared/bicep/app-configuration.bicep' = {
 //   ]
 // }
 
-module azConfigPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
+module azConfigPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) && deployAppConfig ) {
   // conditional scope is not working: https://github.com/Azure/bicep/issues/7367
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
@@ -190,31 +188,31 @@ module azConfigPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = i
     tags: tags
   }
 }
-module peAzConfig '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
+module peAzConfig '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId)  && deployAppConfig) {
   name: take('pe-${appConfigurationName}-Deployment', 64)
   params: {
-    name: 'pe-${appConfigStore.outputs.name}'
+    name: ( !empty(subnetPrivateEndpointId)  && deployAppConfig) ? 'pe-${appConfigStore.outputs.name}' : ''
     location: location
     tags: tags
     privateDnsZonesId: azConfigPrivateDnsZone.outputs.privateDnsZonesId
-    privateLinkServiceId: appConfigStore.outputs.resourceId
+    privateLinkServiceId: ( !empty(subnetPrivateEndpointId)  && deployAppConfig) ? appConfigStore.outputs.resourceId : ''
     snetId: subnetPrivateEndpointId
     subresource: 'configurationStores'
   }
 }
 
 
-module webAppSystemIdenityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
-  name: 'webAppSystemIdenityOnAppConfigDataReader-Deployment'
+module webAppSystemIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = if ( deployAppConfig ) {
+  name: 'webAppSystemIdentityOnAppConfigDataReader-Deployment'
   params: {
     principalId: webApp.outputs.systemAssignedPrincipalId
-    resourceId: appConfigStore.outputs.resourceId
+    resourceId: ( deployAppConfig ) ?  appConfigStore.outputs.resourceId : ''
     roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
   }
 }
 
-module webAppSystemIdenityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
-  name: 'webAppSystemIdenityOnKeyvaultSecretsUser-Deployment'
+module webAppSystemIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
+  name: 'webAppSystemIdentityOnKeyvaultSecretsUser-Deployment'
   params: {
     principalId: webApp.outputs.systemAssignedPrincipalId
     resourceId: keyvault.id
@@ -222,17 +220,17 @@ module webAppSystemIdenityOnKeyvaultSecretsUser '../../../shared/bicep/role-assi
   }
 }
 
-module webAppStagingSlotSystemIdenityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
-  name: 'webAppStagingSlotSystemIdenityOnAppConfigDataReader-Deployment'
+module webAppStagingSlotSystemIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = if ( deployAppConfig ) {
+  name: 'webAppStagingSlotSystemIdentityOnAppConfigDataReader-Deployment'
   params: {
     principalId: webApp.outputs.slotSystemAssignedPrincipalIds[0]
-    resourceId: appConfigStore.outputs.resourceId
+    resourceId: ( deployAppConfig ) ?  appConfigStore.outputs.resourceId : ''
     roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
   }
 }
 
-module webAppStagingSlotSystemIdenityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
-  name: 'webAppStagingSlotSystemIdenityOnKeyvaultSecretsUser-Deployment'
+module webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
+  name: 'webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser-Deployment'
   params: {
     principalId: webApp.outputs.slotSystemAssignedPrincipalIds[0]
     resourceId: keyvault.id
@@ -241,8 +239,8 @@ module webAppStagingSlotSystemIdenityOnKeyvaultSecretsUser '../../../shared/bice
 }
 
 
-output appConfigStoreName string = appConfigStore.outputs.name
-output appConfigStoreId string = appConfigStore.outputs.resourceId
+output appConfigStoreName string =  deployAppConfig ? appConfigStore.outputs.name : ''
+output appConfigStoreId string = deployAppConfig ? appConfigStore.outputs.resourceId : ''
 output webAppName string = webApp.outputs.name
 output webAppHostName string = webApp.outputs.defaultHostname
 output webAppResourceId string = webApp.outputs.resourceId

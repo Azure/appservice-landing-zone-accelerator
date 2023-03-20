@@ -16,7 +16,7 @@ param vnetHubAddressSpace string
 param subnetHubFirewallAddressSpace string
 
 @description('CIDR of the subnet hosting the Bastion Service')
-param subnetHubBastionddressSpace string
+param subnetHubBastionAddressSpace string
 
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param vnetSpokeAddressSpace string
@@ -60,7 +60,7 @@ var subnets = [
   {
     name: resourceNames.subnetBastion
     properties: {
-      addressPrefix: subnetHubBastionddressSpace
+      addressPrefix: subnetHubBastionAddressSpace
       privateEndpointNetworkPolicies: 'Disabled'    
     }
   }

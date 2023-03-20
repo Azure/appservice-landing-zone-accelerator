@@ -14,7 +14,7 @@
         "environment": {
             "value": "dev"
         },
-        //If empty, then a new hub will be created. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
+        //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
         "vnetHubResourceId": {
             "value": ""
         },
@@ -25,12 +25,23 @@
         "vnetHubAddressSpace": {
             "value": "10.242.0.0/20"
         },
+        // Feature Flags
+        "deploymentOptions": {
+            "value": {
+                "enableWaf": true,
+                "enableEgressLockdown": true,
+                "deployRedis": true,
+                "deployAzureSql": true,
+                "deployAppConfig": true,
+                "deployJumpHost": true
+            }
+        },
         // CIDR of the subnet that will host the azure Firewall
         "subnetHubFirewallAddressSpace": {
             "value": "10.242.0.0/26"
         },
         // CIDR of the subnet that will host the Bastion Service
-        "subnetHubBastionddressSpace": {
+        "subnetHubBastionAddressSpace": {
             "value": "10.242.0.64/26"
         },
         //CIDR of the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)

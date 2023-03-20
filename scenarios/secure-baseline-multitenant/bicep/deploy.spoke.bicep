@@ -27,6 +27,24 @@ param vnetHubResourceId string = ''
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param tags object
 
+@description('Create (or not) a UDR for the App Service Subnet, to route all egress traffic through Hub Azure Firewall')
+param enableEgressLockdown bool
+
+@description('Enable or disable WAF policies for the deployed Azure Front Door')
+param enableWaf bool
+
+@description('Deploy (or not) a redis cache')
+param deployRedis bool
+
+@description('Deploy (or not) an Azure SQL with default database ')
+param deployAzureSql bool
+
+@description('Deploy (or not) an Azure app configuration')
+param deployAppConfig bool
+
+@description('Deploy (or not) an Azure virtual machine (to be used as jumphost)')
+param deployJumpHost bool
+
 @description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
 @allowed([ 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
 param webAppPlanSku string
@@ -96,9 +114,12 @@ var subnets = [
       // networkSecurityGroup: {
       //   id: nsgAca.outputs.nsgID
       // } 
-      routeTable: {
-        id: !empty(firewallInternalIp) ? routeTableToFirewall.outputs.resourceId : null
-      } 
+      // routeTable: {
+      //   id: !empty(firewallInternalIp) && (enableEgressLockdown) ? routeTableToFirewall.outputs.resourceId : ''
+      // } 
+      routeTable: !empty(firewallInternalIp) && (enableEgressLockdown) ? {
+        id: routeTableToFirewall.outputs.resourceId 
+      } : null
     } 
   }
   {
@@ -130,27 +151,6 @@ var virtualNetworkLinks = [
   }
 ]
 
-// var accessPolicies = [
-//       {
-//         tenantId: appSvcUserAssignedManagedIdenity.outputs.tenantId
-//         objectId: appSvcUserAssignedManagedIdenity.outputs.principalId
-//         permissions: {
-//           secrets: [
-//             'get'
-//             'list'
-//           ]     
-//           keys: [
-//             'get'
-//             'list'
-//           ] 
-//           certificates: [
-//             'get'
-//             'list'
-//           ]      
-//         }
-//       }
-//     ]
-
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 
 resource vnetHub  'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
@@ -159,7 +159,7 @@ resource vnetHub  'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
 }
 
 module vnetSpoke '../../shared/bicep/network/vnet.bicep' = {
-  name: 'vnetHubDeployment'
+  name: 'vnetSpoke-Deployment'
   params: {    
     name: resourceNames.vnetSpoke
     location: location
@@ -170,7 +170,7 @@ module vnetSpoke '../../shared/bicep/network/vnet.bicep' = {
 }
 
 
-module routeTableToFirewall '../../shared/bicep/network/udr.bicep' = if (!empty(firewallInternalIp) ) {
+module routeTableToFirewall '../../shared/bicep/network/udr.bicep' = if (!empty(firewallInternalIp) &&  (enableEgressLockdown) ) {
   name: 'routeTableToFirewall-Deployment'
   params: {
     name: resourceNames.routeTable
@@ -239,8 +239,9 @@ module webApp 'modules/app-service.module.bicep' = {
     sku: webAppPlanSku
     keyvaultName: keyvault.outputs.keyvaultName
     //docs for envintoment(): > https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
-    sqlDbConnectionString: 'Server=tcp:${sqlServerAndDefaultDb.outputs.sqlServerName}${environment().suffixes.sqlServerHostname};Authentication=Active Directory Default;Database=${resourceNames.sqlDb};'
-    redisConnectionStringSecretName: redisCache.outputs.redisConnectionStringSecretName
+    sqlDbConnectionString: (deployAzureSql) ?  'Server=tcp:${sqlServerAndDefaultDb.outputs.sqlServerName}${environment().suffixes.sqlServerHostname};Authentication=Active Directory Default;Database=${resourceNames.sqlDb};' : ''
+    redisConnectionStringSecretName: (deployRedis) ? redisCache.outputs.redisConnectionStringSecretName : ''
+    deployAppConfig: deployAppConfig 
   }
 }
 
@@ -264,12 +265,12 @@ module afd '../../shared/bicep/network/front-door.bicep' = {
       }
     ]
     skuName:'Premium_AzureFrontDoor'
-    wafPolicyName: resourceNames.frontDoorWaf
+    wafPolicyName: (enableWaf) ?  resourceNames.frontDoorWaf : ''
   }
 }
 
 //TODO: Check with username/password AAD join and DevOps Agent
-module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = {
+module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = if (deployJumpHost) {
   name: 'vmWindows-Deployment'
   params: {
     name:  resourceNames.vmWindowsJumpbox 
@@ -283,7 +284,7 @@ module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = {
 }
 
 // TODO: We need feature flag to deploy or not Redis - should not be default
-module redisCache 'modules/redis.module.bicep' = {
+module redisCache 'modules/redis.module.bicep' = if (deployRedis) {
   name: take('${resourceNames.redisCache}-redisModule-Deployment', 64)
   params: {
     name: resourceNames.redisCache
@@ -298,7 +299,7 @@ module redisCache 'modules/redis.module.bicep' = {
 }
 
 //TODO: conditional deployment of SQL
-module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = {
+module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = if (deployAzureSql) {
   name: take('${resourceNames.sqlServer}-sqlServer-Deployment', 64)
   params: {
     name: resourceNames.sqlServer

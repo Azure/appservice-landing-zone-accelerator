@@ -4,7 +4,6 @@ param afdName string
 @description('Name of the endpoint under the profile which is unique globally.')
 param endpointName string 
 
-
 @allowed([
   'Enabled'
   'Disabled'
@@ -24,7 +23,6 @@ param skuName string
 
 // @description('Custom Domain List')
 // param customDomains array
-
 
 @description('The name of the Origin Group')
 param originGroupName string 
@@ -300,11 +298,11 @@ resource originRoute 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' =  
 resource afdWafSecurityPolicy 'Microsoft.Cdn/profiles/securitypolicies@2022-11-01-preview' =  if ( !empty(wafPolicyName) ) {
   parent: profile
   name: 'afdWafSecurityPolicy'
-  properties: {
+  properties: !empty(wafPolicyName) ? {
     parameters: {
-      wafPolicy: {
-        id:  empty(diagnosticWorkspaceId) ? '' : waf.id
-      }
+      wafPolicy: !empty(wafPolicyName) ? {
+        id:  waf.id
+      } : {}
       associations: [
         {
           domains: endPointIdsForWaf
@@ -315,7 +313,7 @@ resource afdWafSecurityPolicy 'Microsoft.Cdn/profiles/securitypolicies@2022-11-0
       ]
       type: 'WebApplicationFirewall'
     }
-  }
+  } : {}
 }
 
 resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if ( !empty(diagnosticWorkspaceId)) {
