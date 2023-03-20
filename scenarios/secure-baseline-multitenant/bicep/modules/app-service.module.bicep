@@ -151,7 +151,6 @@ module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty
 }
 
 //TODO: Conditional Deployment? 
-//TODO: Give Access to WebApp and WebAppSlot idenitities
 module appConfigStore '../../../shared/bicep/app-configuration.bicep' = {
   name: take('${appConfigurationName}-app-configuration-Deployment', 64)
   params: {   
@@ -159,21 +158,26 @@ module appConfigStore '../../../shared/bicep/app-configuration.bicep' = {
     location: location
     tags: tags 
     hasPrivateEndpoint: (!empty (subnetPrivateEndpointId) )
+    disableLocalAuth: false  // Currenlty (20-Mar-2023) there is a limitation - you need to enable Access Keys to add keyValues from ARM: https://learn.microsoft.com/en-us/azure/azure-app-configuration/howto-disable-access-key-authentication?tabs=portal#arm-template-access
   }
 }
 
-resource appConfigStoreExisting 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' existing =  {
-  name: appConfigurationName
-}
+// resource appConfigStoreExisting 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' existing =  {
+//   name: appConfigurationName
+// }
 
-// TODO: check if this is correct
-resource configurationStoreSqlConnectionString 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
-  parent: appConfigStoreExisting
-  name: 'sqlDefaultDbConnectionString'
-  properties: {
-     value: sqlDbConnectionString
-  }
-}
+// // Currenlty (20-Mar-2023) there is a limitation - you need to enable Access Keys to add keyValues from ARM: https://learn.microsoft.com/en-us/azure/azure-app-configuration/howto-disable-access-key-authentication?tabs=portal#arm-template-access
+// // needs disableLocalAuth: false, in Microsoft.AppConfiguration/configurationStores
+// resource configurationStoreSqlConnectionString 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+//   parent: appConfigStoreExisting
+//   name: 'sqlDefaultDbConnectionString'
+//   properties: {
+//      value: sqlDbConnectionString
+//   }
+//   dependsOn: [
+//     appConfigStore
+//   ]
+// }
 
 module azConfigPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   // conditional scope is not working: https://github.com/Azure/bicep/issues/7367

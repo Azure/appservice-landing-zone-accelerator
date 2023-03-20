@@ -42,8 +42,8 @@ param numericSuffix string = ''
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param resourceTags object = {}
 
-@description('If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet')
-param vnetHubResourceId string
+@description('Default is empty. If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet')
+param vnetHubResourceId string = ''
 
 @description('Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR')
 param firewallInternalIp string
