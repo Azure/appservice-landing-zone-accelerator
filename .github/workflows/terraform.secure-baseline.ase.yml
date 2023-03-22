@@ -70,10 +70,10 @@ jobs:
           -backend-config="container_name=${{ secrets.AZURE_TF_STATE_STORAGE_CONTAINER_NAME }}"     \
           -backend-config="key=${{ env.backend_key }}"
       env:
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         ARM_USE_OIDC: true
+        # ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        # ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+        # ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     - name: Terraform Validate
       id: validate
@@ -104,10 +104,10 @@ jobs:
             -var-file="${{ env.tfvarPath }}"
         fi
       env:  
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         ARM_USE_OIDC: true
+        # ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        # ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+        # ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     - name: Show TFPlan
       id: show
@@ -224,10 +224,10 @@ jobs:
             -backend-config="container_name=${{ secrets.AZURE_TF_STATE_STORAGE_CONTAINER_NAME }}"     \
             -backend-config="key=${{ env.backend_key }}"
         env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+          # ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          # ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+          # ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Terraform Apply
         id: apply
@@ -238,10 +238,10 @@ jobs:
             -no-color \
             tfplan
         env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+          # ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          # ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+          # ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
   # cleanup-deployment:
   #   environment: 'Production'

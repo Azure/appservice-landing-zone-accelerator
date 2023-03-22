@@ -3,22 +3,28 @@ name: 'Terraform Dependencies'
 on:
   workflow_dispatch:
     inputs:
+      location:
+        description: 'Azure Location'
+        type: string
+        required: true
+        default: 'westus2'
+      environment:
+        type: environment
+        description: 'Select the Environment'
       createStorageAccount:
         description: 'Create Storage Account'
         required: true
-        default: 'true'
-        options:
-          - 'true'
-          - 'false'
-
+        type: boolean
+        default: true
+        
 permissions:
   id-token: write
   contents: read
 
 env:
-  location: 'westus2'
+  location: ${{ github.event.inputs.location }}
+  environment: ${{ github.event.inputs.environment }}
   resource_prefix: "backend-appsrvc"
-  environment: "dev"
   suffix: "001"
   container_name: "tfstate"
 
