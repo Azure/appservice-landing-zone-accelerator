@@ -68,7 +68,7 @@ if (-not [string]::IsNullOrEmpty($ado_token) -and [string]::IsNullOrEmpty($ado_o
     throw "If ado_token is provided, then ado_organization must also be provided."
 }
 
-$basePath = "C:\temp"
+$basePath = "D:\"
 $logsFolder = "$($basePath)\post-deployment-extension\"
 if ((Test-Path -Path $logsFolder) -ne $true) {
     mkdir $logsFolder
@@ -87,10 +87,12 @@ if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
         url             = "https://aka.ms/installazurecliwindows"
         path            = "$($basePath)\ac-cli-runner\"
         file            = "AzureCLI.msi"
-        installCmd      = "msiexec.exe -Wait -ArgumentList '/I D:\ac-cli-runner\AzureCLI.msi /quiet; $env:Path += `";$($azCliInstallPath)`""
+        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/I D:\ac-cli-runner\AzureCLI.msi /quiet'"
         testInstallPath = "$($azCliInstallPath)\az.cmd"
         postInstallCmd  = $az_cli_commands 
     }
+
+    $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 }
 
 if ($install_ssms) {
@@ -119,7 +121,7 @@ if (-not [string]::isNullorEmpty($github_repository) -and -not [string]::isNullo
         installCmd      = "Add-Type -AssemblyName System.IO.Compression.FileSystem; " +
         "[System.IO.Compression.ZipFile]::ExtractToDirectory(`"$($ghZipPath)`", `"$($ghInstallPath)`");"
         testInstallPath = "$($ghInstallPath)\bin\Runner.Listener.exe"
-        postInstallCmd  = "$($ghInstallPath)/config.cmd --url $($github_repository) --token $($github_token) --unattended --replace --runasservice;"
+        postInstallCmd  = "$($ghInstallPath)\config.cmd --url $($github_repository) --token $($github_token) --unattended --replace --runasservice;"
     }
 }
 
