@@ -28,7 +28,6 @@
         // Feature Flags
         "deploymentOptions": {
             "value": {
-                "enableWaf": true,
                 "enableEgressLockdown": true,
                 "deployRedis": true,
                 "deployAzureSql": true,

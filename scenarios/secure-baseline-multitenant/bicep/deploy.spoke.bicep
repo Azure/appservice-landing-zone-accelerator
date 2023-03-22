@@ -31,7 +31,7 @@ param tags object
 param enableEgressLockdown bool
 
 @description('Enable or disable WAF policies for the deployed Azure Front Door')
-param enableWaf bool
+param enableWaf bool = true
 
 @description('Deploy (or not) a redis cache')
 param deployRedis bool
