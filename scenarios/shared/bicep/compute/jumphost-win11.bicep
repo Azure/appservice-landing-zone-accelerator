@@ -30,6 +30,12 @@ param enableAzureAdJoin bool = true
 @description('optional, default value is Standard_B2ms')
 param vmSize string = 'Standard_B2ms'
 
+@description('Optional. Enables system assigned managed identity on the resource.')
+param systemAssignedIdentity bool = false
+
+@description('Optional. The ID(s) to assign to the resource.')
+param userAssignedIdentities object = {}
+
 var aadLoginExtensionName = 'AADLoginForWindows'
 
 var vmNameMaxLength = 64
@@ -38,6 +44,13 @@ var vmName = length(name) > vmNameMaxLength ? substring(name, 0, vmNameMaxLength
 var computerNameLength = 15
 var computerNameValid = replace( replace(name, '-', ''), '_', '')
 var computerName = length(computerNameValid) > computerNameLength ? substring(computerNameValid, 0, computerNameLength) : computerNameValid
+
+var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
+
+var identity = identityType != 'None' ? {
+  type: identityType
+  userAssignedIdentities: !empty(userAssignedIdentities) ? userAssignedIdentities : null
+} : null
 
 module jumphostNic '../network/nic.private.dynamic.bicep' = {
   name: 'jumphostNicDeployment'
@@ -53,6 +66,7 @@ resource jumphost 'Microsoft.Compute/virtualMachines@2022-08-01' = {
   name: vmName
   location: location
   tags: tags
+  identity: identity
   properties: {
     hardwareProfile: {
       vmSize: vmSize

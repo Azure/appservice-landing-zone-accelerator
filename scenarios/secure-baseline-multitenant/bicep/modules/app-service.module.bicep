@@ -2,11 +2,14 @@
 param appServicePlanName string
 
 @description('Required. Name of the web app.')
-param webAppName string
+param webAppName string 
+
+@description('Required. Name of the managed Identity that will be assigned to the web app.')
+param managedIdentityName string
 
 @minLength(5)
 @maxLength(50)
-@description('Required. Name of the Azure App Configuration. Alphanumerics, underscores, and hyphens')
+@description('Required. Name of the Azure App Configuration. Alphanumerics, underscores, and hyphens. Must be unique')
 param appConfigurationName string
 
 @description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
@@ -96,17 +99,25 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     appInsightId: appInsights.outputs.appInsResourceId
     siteConfigSelection:  (webAppBaseOs =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
     hasPrivateLink: (!empty (subnetPrivateEndpointId))
-    systemAssignedIdentity: true
+    systemAssignedIdentity: false
+    userAssignedIdentities:  {
+      '${webAppUserAssignedManagedIdenity.outputs.id}': {}
+    }
     appSettingsKeyValuePairs: union(redisConnStr, sqlConnStr)
-    // appSettingsKeyValuePairs: {
-    //   redisConnectionStringSecret: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${redisConnectionStringSecretName})'
-    //   sqlDefaultDbConnectionString: sqlDbConnectionString
-    // }
     slots: [
       {
         name: slotName
       }
     ]
+  }
+}
+
+module webAppUserAssignedManagedIdenity '../../../shared/bicep/managed-identity.bicep' = {
+  name: 'appSvcUserAssignedManagedIdenity-Deployment'
+  params: {
+    name: managedIdentityName
+    location: location
+    tags: tags
   }
 }
 
@@ -148,7 +159,7 @@ module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty
   }
 }
 
-//TODO: Conditional Deployment? 
+
 module appConfigStore '../../../shared/bicep/app-configuration.bicep' = if (deployAppConfig) {
   name: take('${appConfigurationName}-app-configuration-Deployment', 64)
   params: {   
@@ -202,19 +213,19 @@ module peAzConfig '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(s
 }
 
 
-module webAppSystemIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = if ( deployAppConfig ) {
+module webAppIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = if ( deployAppConfig ) {
   name: 'webAppSystemIdentityOnAppConfigDataReader-Deployment'
   params: {
-    principalId: webApp.outputs.systemAssignedPrincipalId
+    principalId: webAppUserAssignedManagedIdenity.outputs.principalId
     resourceId: ( deployAppConfig ) ?  appConfigStore.outputs.resourceId : ''
     roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
   }
 }
 
-module webAppSystemIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
+module webAppIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
   name: 'webAppSystemIdentityOnKeyvaultSecretsUser-Deployment'
   params: {
-    principalId: webApp.outputs.systemAssignedPrincipalId
+    principalId: webAppUserAssignedManagedIdenity.outputs.principalId
     resourceId: keyvault.id
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'  //Key Vault Secrets User  
   }
@@ -223,7 +234,7 @@ module webAppSystemIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-ass
 module webAppStagingSlotSystemIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = if ( deployAppConfig ) {
   name: 'webAppStagingSlotSystemIdentityOnAppConfigDataReader-Deployment'
   params: {
-    principalId: webApp.outputs.slotSystemAssignedPrincipalIds[0]
+    principalId: webAppUserAssignedManagedIdenity.outputs.principalId //webApp.outputs.slotSystemAssignedPrincipalIds[0]
     resourceId: ( deployAppConfig ) ?  appConfigStore.outputs.resourceId : ''
     roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
   }
@@ -232,7 +243,7 @@ module webAppStagingSlotSystemIdentityOnAppConfigDataReader '../../../shared/bic
 module webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
   name: 'webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser-Deployment'
   params: {
-    principalId: webApp.outputs.slotSystemAssignedPrincipalIds[0]
+    principalId: webAppUserAssignedManagedIdenity.outputs.principalId // webApp.outputs.slotSystemAssignedPrincipalIds[0]
     resourceId: keyvault.id
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'  //Key Vault Secrets User   
   }

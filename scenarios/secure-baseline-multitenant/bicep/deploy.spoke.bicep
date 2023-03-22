@@ -69,6 +69,7 @@ var resourceNames = {
   snetDevOps: 'snet-devOps-${naming.virtualNetwork.name}-spoke'
   snetPe: 'snet-pe-${naming.virtualNetwork.name}-spoke'
   appSvcUserAssignedManagedIdentity: '${naming.userAssignedManagedIdentity.name}-appSvc'
+  vmJumpHostUserAssignedManagedIdentity: '${naming.userAssignedManagedIdentity.name}-vmJumpHost'
   keyvault: naming.keyVault.nameUnique
   logAnalyticsWs: naming.logAnalyticsWorkspace.name
   appInsights: naming.applicationInsights.name
@@ -78,7 +79,7 @@ var resourceNames = {
   redisCache: naming.redisCache.nameUnique
   sqlServer: naming.mssqlServer.nameUnique
   sqlDb:'sample-db'
-  appConfig: naming.appConfiguration.nameUnique
+  appConfig: '${naming.appConfiguration.nameUnique}-${ take( uniqueString(resourceGroup().id, subscription().id), 6) }'
   frontDoor: naming.frontDoor.name
   frontDoorEndPoint: 'webAppLza-${ take( uniqueString(resourceGroup().id, subscription().id), 6) }'  //globally unique
   frontDoorWaf: naming.frontDoorFirewallPolicy.name
@@ -192,15 +193,6 @@ resource snetPe 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing 
   name: '${vnetSpoke.outputs.vnetName}/${resourceNames.snetPe}'
 }
 
-module appSvcUserAssignedManagedIdenity '../../shared/bicep/managed-identity.bicep' = {
-  name: 'appSvcUserAssignedManagedIdenity-Deployment'
-  params: {
-    name: resourceNames.appSvcUserAssignedManagedIdentity
-    location: location
-    tags: tags
-  }
-}
-
 module logAnalyticsWs '../../shared/bicep/log-analytics-ws.bicep' = {
   name: 'logAnalyticsWs-Deployment'
   params: {
@@ -227,6 +219,7 @@ module webApp 'modules/app-service.module.bicep' = {
   params: {
     appServicePlanName: resourceNames.aspName
     webAppName: resourceNames.webApp
+    managedIdentityName: resourceNames.appSvcUserAssignedManagedIdentity
     location: location
     logAnalyticsWsId: logAnalyticsWs.outputs.logAnalyticsWsId
     subnetIdForVnetInjection: snetAppSvc.id
@@ -241,7 +234,7 @@ module webApp 'modules/app-service.module.bicep' = {
     //docs for envintoment(): > https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
     sqlDbConnectionString: (deployAzureSql) ?  'Server=tcp:${sqlServerAndDefaultDb.outputs.sqlServerName}${environment().suffixes.sqlServerHostname};Authentication=Active Directory Default;Database=${resourceNames.sqlDb};' : ''
     redisConnectionStringSecretName: (deployRedis) ? redisCache.outputs.redisConnectionStringSecretName : ''
-    deployAppConfig: deployAppConfig 
+    deployAppConfig: deployAppConfig     
   }
 }
 
@@ -269,19 +262,45 @@ module afd '../../shared/bicep/network/front-door.bicep' = {
   }
 }
 
-//TODO: Check with username/password AAD join and DevOps Agent
-module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = if (deployJumpHost) {
-  name: 'vmWindows-Deployment'
+
+module vmWindowsModule 'modules/vmJumphost.module.bicep' = if (deployJumpHost) {
+  name: 'vmWindowsModule-Deployment'
   params: {
-    name:  resourceNames.vmWindowsJumpbox 
-    location: location
-    tags: tags
     adminPassword: adminPassword
     adminUsername: adminUsername
-    subnetId: snetDevOps.id
-    enableAzureAdJoin: true
+    location: location
+    tags: tags
+    vmJumpHostUserAssignedManagedIdentityName: resourceNames.vmJumpHostUserAssignedManagedIdentity
+    vmWindowsJumpboxName: resourceNames.vmWindowsJumpbox
+    keyvaultName: keyvault.outputs.keyvaultName
+    appConfigStoreId: webApp.outputs.appConfigStoreId
+    subnetDevOpsId: snetDevOps.id
   }
 }
+// module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = if (deployJumpHost) {
+//   name: 'vmWindows-Deployment'
+//   params: {
+//     name:  resourceNames.vmWindowsJumpbox 
+//     location: location
+//     tags: tags
+//     adminPassword: adminPassword
+//     adminUsername: adminUsername
+//     subnetId: snetDevOps.id
+//     enableAzureAdJoin: true
+//     userAssignedIdentities: {
+//       '${vmJumpHostUserAssignedManagedIdenity.outputs.principalId}': {}
+//     }
+//   }
+// }
+
+// module vmJumpHostUserAssignedManagedIdenity '../../shared/bicep/managed-identity.bicep' = {
+//   name: 'vmJumpHostUserAssignedManagedIdenity-Deployment'
+//   params: {
+//     name: resourceNames.vmJumpHostUserAssignedManagedIdentity
+//     location: location
+//     tags: tags
+//   }
+// }
 
 // TODO: We need feature flag to deploy or not Redis - should not be default
 module redisCache 'modules/redis.module.bicep' = if (deployRedis) {

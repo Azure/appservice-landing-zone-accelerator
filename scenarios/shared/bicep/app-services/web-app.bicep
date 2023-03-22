@@ -370,6 +370,7 @@ output slotResourceIds array = [for (slot, index) in slots: app_slots[index].out
 @description('The principal ID of the system assigned identity.')
 output systemAssignedPrincipalId string = systemAssignedIdentity && contains(app.identity, 'principalId') ? app.identity.principalId : ''
 
+
 @description('The principal ID of the system assigned identity of slots.')
 output slotSystemAssignedPrincipalIds array = [for (slot, index) in slots: app_slots[index].outputs.systemAssignedPrincipalId]
 
