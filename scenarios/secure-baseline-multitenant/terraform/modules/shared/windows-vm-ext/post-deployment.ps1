@@ -68,7 +68,7 @@ if (-not [string]::IsNullOrEmpty($ado_token) -and [string]::IsNullOrEmpty($ado_o
     throw "If ado_token is provided, then ado_organization must also be provided."
 }
 
-$basePath = "D:\"
+$basePath = "D:"
 $logsFolder = "$($basePath)\post-deployment-extension\"
 if ((Test-Path -Path $logsFolder) -ne $true) {
     mkdir $logsFolder
@@ -110,7 +110,7 @@ if ($install_ssms) {
 }
 
 if (-not [string]::isNullorEmpty($github_repository) -and -not [string]::isNullorEmpty($github_token)) {
-    $ghInstallPath = "C:\github-actions\"
+    $ghInstallPath = "C:\github-actions"
     $ghZipPath = "$($basePath)\github-actions\actions-runner-win-x64-2.303.0.zip"
     
     $downloads += @{
@@ -126,7 +126,7 @@ if (-not [string]::isNullorEmpty($github_repository) -and -not [string]::isNullo
 }
 
 if (-not [string]::isNullorEmpty($ado_organization) -and -not [string]::isNullorEmpty($ado_token)) {
-    $adoInstallPath = "C:\azure-devops-agent\"
+    $adoInstallPath = "C:\azure-devops-agent"
     $adoZipPath = "$($basePath)\azure-devops-agent\vsts-agent-win-x64-2.218.1.zip"
     
     $downloads += @{
@@ -137,7 +137,7 @@ if (-not [string]::isNullorEmpty($ado_organization) -and -not [string]::isNullor
         installCmd      = "Add-Type -AssemblyName System.IO.Compression.FileSystem; " +
         "[System.IO.Compression.ZipFile]::ExtractToDirectory(`"$($adoZipPath)`", `"$($adoInstallPath)`");"
         testInstallPath = "$($adoInstallPath)\bin\Agent.Listener.exe"
-        postInstallCmd  = "$($adoInstallPath)/config.cmd --url $($ado_organization) --auth pat --token $($ado_token) --unattended --replace --runasservice;"
+        postInstallCmd  = "$($adoInstallPath)\config.cmd --url $($ado_organization) --auth pat --token $($ado_token) --unattended --replace --runasservice;"
     }
 }
 
@@ -193,12 +193,14 @@ foreach ($download in $downloads) {
     }
 
     Write-Host "Running install command: $($download.installCmd)"
-    Invoke-Expression $download.installCmd
+    Invoke-Expression $download.installCmd -OutVariable $output
+    Write-Host $output
 }
 
 foreach ($download in $downloads) {
     if (-not [string]::IsNullOrEmpty($download.postInstallCmd)) {
         Write-Host "Running post install command: $($download.postInstallCmd)"
-        Invoke-Expression $download.postInstallCmd
+        Invoke-Expression $download.postInstallCmd -OutVariable $output
+        Write-Host $output
     }
 }
