@@ -193,14 +193,14 @@ foreach ($download in $downloads) {
     }
 
     Write-Host "Running install command: $($download.installCmd)"
-    Invoke-Expression $download.installCmd -OutVariable $output
-    Write-Host $output
+    Invoke-Expression $downloads.installCmd | Out-String
+    Write-Host $out 
 }
 
 foreach ($download in $downloads) {
     if (-not [string]::IsNullOrEmpty($download.postInstallCmd)) {
         Write-Host "Running post install command: $($download.postInstallCmd)"
-        Invoke-Expression $download.postInstallCmd -OutVariable $output
-        Write-Host $output
+        Invoke-Expression $downloads.postInstallCmd -OutVariable $out | Out-String
+        Write-Host $out
     }
 }
