@@ -200,7 +200,16 @@ foreach ($download in $downloads) {
 foreach ($download in $downloads) {
     if (-not [string]::IsNullOrEmpty($download.postInstallCmd)) {
         Write-Host "Running post install command: $($download.postInstallCmd)"
-        Invoke-Expression $downloads.postInstallCmd -OutVariable $out | Out-String
-        Write-Host $out
+        Invoke-Expression $downloads.postInstallCmd
+        Write-Host "Post install command completed: $($download.postInstallCmd)"
     }
 }
+
+# # Run Azure CLI commands
+
+# if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
+#     Write-Host "Running Azure CLI commands: $($az_cli_commands)"
+#     Invoke-Expression $az_cli_commands
+# }
+
+# # Run Github Actions Runner commands
