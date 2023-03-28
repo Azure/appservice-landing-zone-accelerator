@@ -15,7 +15,7 @@ resource "null_resource" "service_plan" {
   }
 }
 
-resource "azurerm_linux_web_app" "this" {
+resource "azurerm_windows_web_app" "this" {
   name                      = var.web_app_name
   resource_group_name       = var.resource_group
   location                  = var.location
@@ -32,12 +32,11 @@ resource "azurerm_linux_web_app" "this" {
     use_32_bit_worker      = false
 
     application_stack {
-      docker_image     = var.webapp_options.application_stack.docker_image
-      docker_image_tag = var.webapp_options.application_stack.docker_image_tag
-      dotnet_version   = var.webapp_options.application_stack.dotnet_version
-      java_version     = var.webapp_options.application_stack.java_version
-      php_version      = var.webapp_options.application_stack.php_version
-      node_version     = var.webapp_options.application_stack.node_version
+      current_stack  = coalesce(var.webapp_options.application_stack.current_stack, "dotnet")
+      dotnet_version = coalesce(var.webapp_options.application_stack.dotnet_version, "v6.0")
+      java_version   = coalesce(var.webapp_options.application_stack.java_version, "17")
+      php_version    = coalesce(var.webapp_options.application_stack.php_version, "Off") #"Off" is the latest version available
+      node_version   = coalesce(var.webapp_options.application_stack.node_version, "~12")
     }
   }
 
@@ -59,12 +58,10 @@ resource "azurerm_linux_web_app" "this" {
     ]
   }
 
-  //ToDo: Check if this is really needed
-
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY"                  = "${var.webapp_options.instrumentation_key}"
-    # "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
-    # "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
+    "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0"
+    "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0"
     "APPLICATIONINSIGHTS_CONNECTION_STRING"           = "${var.webapp_options.ai_connection_string}"
     "ApplicationInsightsAgent_EXTENSION_VERSION"      = "~2"
     "DiagnosticServices_EXTENSION_VERSION"            = "~3"
@@ -86,14 +83,14 @@ resource "azurerm_linux_web_app" "this" {
 
 resource "azurerm_monitor_diagnostic_setting" "this" {
   count = var.enable_diagnostic_settings ? 1 : 0
-  
-  name                           = "${azurerm_linux_web_app.this.name}-diagnostic-settings}"
-  target_resource_id             = azurerm_linux_web_app.this.id
-  log_analytics_workspace_id     = var.log_analytics_workspace_id
-  log_analytics_destination_type = "Dedicated"
+
+  name                       = "${azurerm_windows_web_app.this.name}-diagnostic-settings}"
+  target_resource_id         = azurerm_windows_web_app.this.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+  # log_analytics_destination_type = "Dedicated"
 
   enabled_log {
-    category_group = "allLogs"
+    category_group = "AllLogs"
 
     retention_policy {
       days    = 0
@@ -118,27 +115,27 @@ resource "azurecaf_name" "webapp" {
 }
 
 module "private_endpoint" {
-  source = "../../../shared/private-endpoint"
+  source = "../../private-endpoint"
 
   name                           = azurecaf_name.webapp.result
   resource_group                 = var.resource_group
   location                       = var.location
   subnet_id                      = var.frontend_subnet_id
-  private_connection_resource_id = azurerm_linux_web_app.this.id
+  private_connection_resource_id = azurerm_windows_web_app.this.id
 
   subresource_names = ["sites"]
 
   private_dns_zone = var.private_dns_zone
 
   private_dns_records = [
-    lower("${azurerm_linux_web_app.this.name}"),
-    lower("${azurerm_linux_web_app.this.name}.scm")
+    lower("${azurerm_windows_web_app.this.name}"),
+    lower("${azurerm_windows_web_app.this.name}.scm")
   ]
 }
 
-resource "azurerm_linux_web_app_slot" "slot" {
+resource "azurerm_windows_web_app_slot" "slot" {
   name                      = var.webapp_options.slots[0]
-  app_service_id            = azurerm_linux_web_app.this.id
+  app_service_id            = azurerm_windows_web_app.this.id
   virtual_network_subnet_id = var.appsvc_subnet_id
   https_only                = true
 
@@ -151,12 +148,10 @@ resource "azurerm_linux_web_app_slot" "slot" {
     use_32_bit_worker      = false
 
     application_stack {
-      docker_image     = var.webapp_options.application_stack.docker_image
-      docker_image_tag = var.webapp_options.application_stack.docker_image_tag
-      dotnet_version   = var.webapp_options.application_stack.dotnet_version
-      java_version     = var.webapp_options.application_stack.java_version
-      php_version      = var.webapp_options.application_stack.php_version
-      node_version     = var.webapp_options.application_stack.node_version
+      current_stack  = coalesce(var.webapp_options.application_stack.current_stack, "dotnet")
+      dotnet_version = coalesce(var.webapp_options.application_stack.dotnet_version, "v6.0")
+      java_version   = coalesce(var.webapp_options.application_stack.java_version, "17")
+      php_version    = coalesce(var.webapp_options.application_stack.php_version, "Off") #"Off" is the latest version available
     }
   }
 }
@@ -167,24 +162,24 @@ resource "azurecaf_name" "slot" {
 }
 
 module "private_endpoint_slot" {
-  source = "../../../shared/private-endpoint"
+  source = "../../private-endpoint"
 
   name                           = azurecaf_name.slot.result
   resource_group                 = var.resource_group
   location                       = var.location
   subnet_id                      = var.frontend_subnet_id
-  private_connection_resource_id = azurerm_linux_web_app.this.id
+  private_connection_resource_id = azurerm_windows_web_app.this.id
 
   subresource_names = ["sites-${var.webapp_options.slots[0]}"]
 
   private_dns_zone = var.private_dns_zone
 
   private_dns_records = [
-    lower("${azurerm_linux_web_app.this.name}-${azurerm_linux_web_app_slot.slot.name}"),
-    lower("${azurerm_linux_web_app.this.name}-${azurerm_linux_web_app_slot.slot.name}.scm")
+    lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}"),
+    lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}.scm")
   ]
 
   depends_on = [
-    azurerm_linux_web_app_slot.slot
+    azurerm_windows_web_app_slot.slot
   ]
 }

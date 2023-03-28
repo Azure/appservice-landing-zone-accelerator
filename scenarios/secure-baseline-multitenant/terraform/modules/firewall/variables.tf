@@ -3,6 +3,11 @@ variable "resource_group" {
   description = "The name of the resource group where all resources in this example should be created."
 }
 
+variable "name" {
+  type        = string
+  description = "The name of the firewall."
+}
+
 variable "location" {
   type        = string
   description = "The Azure region where all resources in this example should be created"

@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    azurecaf = {
-      source  = "aztfmod/azurecaf"
-      version = ">=1.2.23"
-    }
-  }
-}
-
 resource "random_password" "vm_admin_username" {
   length  = 10
   special = false
@@ -20,6 +11,14 @@ resource "random_password" "vm_admin_password" {
 locals {
   vm_admin_username = var.vm_admin_username == null ? random_password.vm_admin_username.result : var.vm_admin_username
   vm_admin_password = var.vm_admin_password == null ? random_password.vm_admin_password.result : var.vm_admin_password
+}
+
+locals {
+  spoke_vnet_cidr          = var.spoke_vnet_cidr == null ? ["10.240.0.0/20"] : var.spoke_vnet_cidr
+  appsvc_subnet_cidr       = var.appsvc_subnet_cidr == null ? ["10.240.0.0/26"] : var.appsvc_subnet_cidr
+  front_door_subnet_cidr   = var.front_door_subnet_cidr == null ? ["10.240.0.64/26"] : var.front_door_subnet_cidr
+  devops_subnet_cidr       = var.devops_subnet_cidr == null ? ["10.240.10.128/26"] : var.devops_subnet_cidr
+  private_link_subnet_cidr = var.private_link_subnet_cidr == null ? ["10.240.11.0/24"] : var.private_link_subnet_cidr
 }
 
 resource "azurecaf_name" "resource_group" {
@@ -85,21 +84,20 @@ resource "azurecaf_name" "private_link_subnet" {
   resource_type = "azurerm_subnet"
 }
 
-//ToDo: Determine if it makes sense to have the ingress subnet or just use the private link subnet
 //ToDo: Revisit the default IP ranges to smaller (more realistic)
 
 module "network" {
-  source = "../shared/network"
+  source = "../../modules/network"
 
   resource_group = azurerm_resource_group.spoke.name
   location       = var.location
   name           = azurecaf_name.spoke_network.result
-  vnet_cidr      = var.vnet_cidr
+  vnet_cidr      = local.spoke_vnet_cidr
 
   subnets = [
     {
       name        = azurecaf_name.appsvc_subnet.result
-      subnet_cidr = var.appsvc_subnet_cidr
+      subnet_cidr = local.appsvc_subnet_cidr
       delegation = {
         name = "Microsoft.Web/serverFarms"
         service_delegation = {
@@ -110,26 +108,78 @@ module "network" {
     },
     {
       name        = azurecaf_name.ingress_subnet.result
-      subnet_cidr = var.front_door_subnet_cidr
+      subnet_cidr = local.front_door_subnet_cidr
       delegation  = null
     },
     {
       name        = azurecaf_name.devops_subnet.result
-      subnet_cidr = var.devops_subnet_cidr
+      subnet_cidr = local.devops_subnet_cidr
       delegation  = null
     },
     {
       name        = azurecaf_name.private_link_subnet.result
-      subnet_cidr = var.private_link_subnet_cidr
+      subnet_cidr = local.private_link_subnet_cidr
       delegation  = null
     }
   ]
 }
 
+data "azurerm_virtual_network" "hub" {
+  name                = var.hub_settings.vnet_name
+  resource_group_name = var.hub_settings.rg_name
+}
+
+module "private_dns_zones" {
+  source = "../../modules/private-dns-zone"
+
+  resource_group = var.hub_settings.rg_name
+
+  dns_zones = [
+    "privatelink.azurewebsites.net",
+    "privatelink.database.windows.net",
+    "privatelink.azconfig.io",
+    "privatelink.vaultcore.azure.net",
+    "privatelink.redis.cache.windows.net"
+  ]
+
+  vnet_links = [
+    {
+      vnet_id             = data.azurerm_virtual_network.hub.id
+      vnet_resource_group = var.hub_settings.rg_name
+    },
+    {
+      vnet_id             = module.network.vnet_id
+      vnet_resource_group = azurerm_resource_group.spoke.name
+    }
+  ]
+}
+
+resource "azurerm_virtual_network_peering" "hub_to_spoke" {
+  name                         = "hub-to-spoke-${var.application_name}"
+  resource_group_name          = var.hub_settings.rg_name
+  virtual_network_name         = var.hub_settings.vnet_name
+  remote_virtual_network_id    = module.network.vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+  name                         = "spoke-to-hub-${var.application_name}"
+  resource_group_name          = azurerm_resource_group.spoke.name
+  virtual_network_name         = module.network.vnet_name
+  remote_virtual_network_id    = data.azurerm_virtual_network.hub.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
 module "user_defined_routes" {
   count = var.deployment_options.enable_egress_lockdown ? 1 : 0
 
-  source = "../shared/user-defined-routes"
+  source = "../../modules/user-defined-routes"
 
   resource_group   = azurerm_resource_group.spoke.name
   location         = var.location
@@ -140,19 +190,15 @@ module "user_defined_routes" {
       name                   = "defaultRoute"
       address_prefix         = "0.0.0.0/0"
       next_hop_type          = "VirtualAppliance"
-      next_hop_in_ip_address = var.firewall_private_ip
+      next_hop_in_ip_address = var.hub_settings.firewall.private_ip
     }
   ]
 
   subnet_ids = module.network.subnets[*].id
 }
 
-//ToDo: System assigned identities vs user assigned identities
-//ToDo: Add Redis Cache connectiong string reference to app settings (Key Vault)
-//ToDo: Add SQL Server connectiong string reference to app settings (App Config)
-
 module "app_service" {
-  source = "./app-service"
+  source = "../../modules/app-service"
 
   resource_group             = azurerm_resource_group.spoke.name
   application_name           = var.application_name
@@ -174,10 +220,18 @@ module "app_service" {
   }
 
   private_dns_zone = {
-    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azurewebsites.net")].name
-    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azurewebsites.net")].id
-    resource_group = var.private_dns_zones_rg
+    name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azurewebsites.net")].name
+    id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azurewebsites.net")].id
+    resource_group = var.hub_settings.rg_name
   }
+
+  depends_on = [
+    module.network,
+    module.user_defined_routes,
+    module.private_dns_zones,
+    azurerm_virtual_network_peering.hub_to_spoke,
+    azurerm_virtual_network_peering.spoke_to_hub
+  ]
 }
 
 //ToDo: Enable extension to deploy DevOps agent
@@ -191,7 +245,7 @@ resource "azurecaf_name" "devops_vm" {
 module "devops_vm" {
   count = var.deployment_options.deploy_vm ? 1 : 0
 
-  source = "../shared/windows-vm"
+  source = "../../modules/windows-vm"
 
   resource_group     = azurerm_resource_group.spoke.name
   vm_name            = azurecaf_name.devops_vm.result
@@ -200,6 +254,11 @@ module "devops_vm" {
   admin_username     = local.vm_admin_username
   admin_password     = local.vm_admin_password
   aad_admin_username = var.vm_aad_admin_username
+
+  depends_on = [
+    module.network,
+    module.user_defined_routes
+  ]
 }
 
 locals {
@@ -209,7 +268,6 @@ locals {
   az_cli_commands = <<-EOT
     az login --identity --allow-no-subscriptions
     az keyvault secret set --vault-name ${module.key_vault.vault_name} --name 'redis-connstring' --value '${local.redis_connstring}'
-    az keyvault secret set --vault-name ${module.key_vault.vault_name} --name 'sql-connstring' --value '${local.sql_connstring}'
     az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key 'sql-connstring' --value '${local.sql_connstring}' --label '${var.environment}' -y
   EOT
 }
@@ -217,17 +275,17 @@ locals {
 module "devops_vm_extension" {
   count = var.deployment_options.deploy_vm ? 1 : 0
 
-  source = "../shared/windows-vm-ext"
+  source = "../../modules/windows-vm-ext"
 
-  vm_id                   = module.devops_vm[0].id
-  enable_azure_ad_join    = true
-  install_extensions      = false
-  enable_azure_cli_runner = true
-  azure_cli_commands      = replace(local.az_cli_commands, "\r\n", ";")
+  vm_id                = module.devops_vm[0].id
+  enable_azure_ad_join = true
+  install_ssms         = true
+  devops_settings      = var.devops_settings
+  azure_cli_commands   = replace(local.az_cli_commands, "\r\n", ";")
 }
 
 module "front_door" {
-  source = "./front-door"
+  source = "../../modules/front-door"
 
   resource_group             = azurerm_resource_group.spoke.name
   application_name           = var.application_name
@@ -263,7 +321,7 @@ module "front_door" {
 module "sql_database" {
   count = var.deployment_options.deploy_sql_database ? 1 : 0
 
-  source = "./sql-database"
+  source = "../../modules/sql-database"
 
   resource_group            = azurerm_resource_group.spoke.name
   application_name          = var.application_name
@@ -283,18 +341,20 @@ module "sql_database" {
   ]
 
   private_dns_zone = {
-    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.database.windows.net")].name
-    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.database.windows.net")].id
-    resource_group = var.private_dns_zones_rg
+    name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.database.windows.net")].name
+    id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.database.windows.net")].id
+    resource_group = var.hub_settings.rg_name
   }
-}
 
-//ToDo: Add SQL Database connectiong string (without secrets) 
+  depends_on = [
+    module.front_door
+  ]
+}
 
 module "app_configuration" {
   count = var.deployment_options.deploy_app_config ? 1 : 0
 
-  source = "./app-configuration"
+  source = "../../modules/app-configuration"
 
   resource_group         = azurerm_resource_group.spoke.name
   application_name       = var.application_name
@@ -314,16 +374,18 @@ module "app_configuration" {
   ]
 
   private_dns_zone = {
-    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azconfig.io")].name
-    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.azconfig.io")].id
-    resource_group = var.private_dns_zones_rg
+    name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].name
+    id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].id
+    resource_group = var.hub_settings.rg_name
   }
+
+  depends_on = [
+    module.front_door
+  ]
 }
 
-//ToDo: Add Redis Cache connectiong string (without secrets) 
-
 module "key_vault" {
-  source = "./key-vault"
+  source = "../../modules/key-vault"
 
   resource_group         = azurerm_resource_group.spoke.name
   application_name       = var.application_name
@@ -344,14 +406,18 @@ module "key_vault" {
   ]
 
   private_dns_zone = {
-    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.vaultcore.azure.net")].name
-    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.vaultcore.azure.net")].id
-    resource_group = var.private_dns_zones_rg
+    name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.vaultcore.azure.net")].name
+    id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.vaultcore.azure.net")].id
+    resource_group = var.hub_settings.rg_name
   }
+
+  depends_on = [
+    module.front_door
+  ]
 }
 
 module "app_insights" {
-  source = "./app-insights"
+  source = "../../modules/app-insights"
 
   resource_group             = azurerm_resource_group.spoke.name
   application_name           = var.application_name
@@ -364,7 +430,7 @@ module "app_insights" {
 module "redis_cache" {
   count = var.deployment_options.deploy_redis ? 1 : 0
 
-  source = "./redis-cache"
+  source = "../../modules/redis-cache"
 
   resource_group         = azurerm_resource_group.spoke.name
   application_name       = var.application_name
@@ -375,8 +441,12 @@ module "redis_cache" {
   private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
 
   private_dns_zone = {
-    name           = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.redis.cache.windows.net")].name
-    id             = var.private_dns_zones[index(var.private_dns_zones.*.name, "privatelink.redis.cache.windows.net")].id
-    resource_group = var.private_dns_zones_rg
+    name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.redis.cache.windows.net")].name
+    id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.redis.cache.windows.net")].id
+    resource_group = var.hub_settings.rg_name
   }
+
+  depends_on = [
+    module.front_door
+  ]
 }

@@ -6,14 +6,8 @@ terraform {
   }
 }
 
-resource "azurecaf_name" "bastion_host" {
-  name          = "hub"
-  resource_type = "azurerm_bastion_host"
-  suffixes      = [var.location]
-}
-
 resource "azurecaf_name" "bastion_pip" {
-  name          = azurecaf_name.bastion_host.result
+  name          = var.name
   resource_type = "azurerm_public_ip"
 }
 
@@ -26,7 +20,7 @@ resource "azurerm_public_ip" "bastion_pip" {
 }
 
 resource "azurerm_bastion_host" "bastion" {
-  name                = azurecaf_name.bastion_host.result
+  name                = var.name
   resource_group_name = var.resource_group
   location            = var.location
   sku                 = "Standard"

@@ -18,14 +18,8 @@ locals {
   }
 }
 
-resource "azurecaf_name" "firewall" {
-  name          = "hub"
-  resource_type = "azurerm_firewall"
-  suffixes      = [var.location]
-}
-
 resource "azurecaf_name" "firewall_pip" {
-  name          = azurecaf_name.firewall.result
+  name          = var.name
   resource_type = "azurerm_public_ip"
 }
 
@@ -38,7 +32,7 @@ resource "azurerm_public_ip" "firewall_pip" {
 }
 
 resource "azurerm_firewall" "firewall" {
-  name                = azurecaf_name.firewall.result
+  name                = var.name
   resource_group_name = var.resource_group
   location            = var.location
   sku_name            = "AZFW_VNet"
@@ -52,10 +46,10 @@ resource "azurerm_firewall" "firewall" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "this" {
-  name                           = "${azurerm_firewall.firewall.name}-diagnostic-settings}"
+  name                           = "${azurerm_firewall.firewall.name}-diagnostic-settings"
   target_resource_id             = azurerm_firewall.firewall.id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
-  log_analytics_destination_type = "Dedicated"
+  log_analytics_destination_type = "AzureDiagnostics"
 
   enabled_log {
     category_group = "allLogs"
@@ -75,6 +69,10 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
       enabled = false
     }
   }
+
+  depends_on = [
+    azurerm_firewall.firewall
+  ]
 }
 
 resource "azurerm_firewall_application_rule_collection" "core" {
@@ -95,7 +93,8 @@ resource "azurerm_firewall_application_rule_collection" "core" {
       "login.microsoftonline.com",
       "login.windows.net",
       "login.live.com",
-      "graph.windows.net"
+      "graph.windows.net",
+      "graph.microsoft.com"
     ]
 
     protocol {
@@ -117,14 +116,16 @@ resource "azurerm_firewall_application_rule_collection" "core" {
       "*.github.com",
       "*.nuget.org",
       "*.blob.core.windows.net",
-      "raw.githubusercontent.com",
+      "*.githubusercontent.com",
       "dev.azure.com",
+      "*.dev.azure.com",
       "portal.azure.com",
       "*.portal.azure.com",
       "*.portal.azure.net",
       "appservice.azureedge.net",
       "*.azurewebsites.net",
       "edge.management.azure.com",
+      "vstsagentpackage.azureedge.net"
     ]
 
     protocol {
@@ -141,6 +142,8 @@ resource "azurerm_firewall_application_rule_collection" "core" {
     target_fqdns = [
       "*.delivery.mp.microsoft.com",
       "ctldl.windowsupdate.com",
+      "download.windowsupdate.com",
+      "mscrl.microsoft.com",
       "ocsp.msocsp.com",
       "oneocsp.microsoft.com",
       "crl.microsoft.com",
@@ -216,6 +219,7 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
       "aadcdn.msauth.net",
       "aadcdn.msftauth.net",
       "aadcdn.msftauthimages.net",
+      "*.wns.windows.com",
       "*.sts.microsoft.com",
       "*.manage-beta.microsoft.com",
       "*.manage.microsoft.com",

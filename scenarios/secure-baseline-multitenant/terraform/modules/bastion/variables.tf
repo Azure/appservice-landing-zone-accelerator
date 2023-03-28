@@ -9,6 +9,12 @@ variable "location" {
   default     = "westeurope"
 }
 
+variable "name" {
+  type        = string
+  description = "The name of the bastion host."
+  default     = "bastion"
+}
+
 variable "subnet_id" {
   type        = string
   description = "The ID of the subnet where the bastion host should be deployed."

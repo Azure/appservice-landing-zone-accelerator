@@ -25,7 +25,7 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   name                           = "${azurerm_cdn_frontdoor_profile.frontdoor.name}-diagnostic-settings}"
   target_resource_id             = azurerm_cdn_frontdoor_profile.frontdoor.id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
-  log_analytics_destination_type = "Dedicated"
+  log_analytics_destination_type = "AzureDiagnostics"
 
   enabled_log {
     category_group = "allLogs"
