@@ -12,11 +12,11 @@
 # -----------------------------------------------------------------------
 output "aseName" {
   description = "Name of the App Service Environment."
-  value       = azurerm_app_service_environment_v3.ase.name
+  value       = local.ase.name
 }
 output "aseId" {
   description = "ID of the App Service Environment."
-  value       = azurerm_app_service_environment_v3.ase.id
+  value       = local.ase.id
 }
 output "appServicePlanName" {
   description = "Name of the App Service Plan."
