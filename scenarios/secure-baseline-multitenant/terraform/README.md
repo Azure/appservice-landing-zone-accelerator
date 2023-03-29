@@ -28,7 +28,7 @@ This section is organized using folders that match the steps outlined below. Mak
 
 ### Create terraform.tfvars file
 
-An Azure AD user for the DevOps VM admin account and an Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the *terraform.tfvars* file that can be created in the [solutions](/solutions) folder.:
+An Azure AD user for the DevOps VM admin account and an Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the `terraform.tfvars` file that can be created in the [solutions](./solutions) folder.:
 
 ```bash
 application_name = "secure-webapp"
@@ -98,12 +98,39 @@ appsvc_options = {
 }
 ```
 
-### Deploy the App Service Landing Zone Terraform code
+### Deploy the Hub (optional)
+In case you already have a pre-existing hub that you want to connect to, you can skip to the next step. 
 
 ```bash
+cd ./scenarios/secure-baseline-multitenant/terraform/solutions/hub
+
 terraform init --upgrade
-terraform plan
-terraform apply --auto-approve
+terraform plan --var-file="../terraform.tfvars"
+terraform apply --auto-approve --var-file="../terraform.tfvars"
+```
+
+### Deploy the Spoke
+Update the `hub_settings` section of the `terraform.tfvars` file with the appropriate values for your environemnt, e.g.: 
+
+```bash
+hub_settings = {
+  rg_name   = "rg-hub-swe"
+  vnet_name = "vnet-hub-swe"
+
+  firewall = {
+    private_ip = "10.242.0.4"
+  }
+}
+```
+
+Run the terraform deployment for the spoke: 
+
+```bash
+cd ./scenarios/secure-baseline-multitenant/terraform/solutions/spoke
+
+terraform init --upgrade
+terraform plan --var-file="../terraform.tfvars"
+terraform apply --auto-approve --var-file="../terraform.tfvars"
 ```
 
 Take note of the output values from the Terraform deployment. These will be used in the next steps.
