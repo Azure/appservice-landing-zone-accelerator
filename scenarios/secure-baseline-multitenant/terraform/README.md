@@ -114,7 +114,7 @@ terraform apply --auto-approve --var-file="../terraform.tfvars"
 ```
 
 > **Warning**
-> If using a pre-existing Hub or firewall, make sure all the necessary firewall rules are in place. Review the firewall rules created for the reference implementation: 
+> If using a pre-existing Hub or firewall, make sure all the necessary firewall rules are in place. Review the [firewall rules created for the reference implementation](./modules/firewall/main.tf).
 
 ### Deploy the Spoke
 Update the `hub_settings` section of the `terraform.tfvars` file with the appropriate values for your environemnt, e.g.: 
