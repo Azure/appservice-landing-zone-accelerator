@@ -300,10 +300,9 @@ module "devops_vm" {
 locals {
   sql_connstring   = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "SQL_NOT_PROVISIONED"
   redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_connection_string : "REDIS_NOT_PROVISIONED"
-  msi_client_id = azurerm_user_assigned_identity.contributor.principal_id
 
   az_cli_commands = <<-EOT
-    az login --identity --username ${msi_client_id} --allow-no-subscriptions
+    az login --identity --username ${azurerm_user_assigned_identity.contributor.principal_id} --allow-no-subscriptions
     az keyvault secret set --vault-name ${module.key_vault.vault_name} --name 'redis-connstring' --value '${local.redis_connstring}'
     az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key 'sql-connstring' --value '${local.sql_connstring}' --label '${var.environment}' -y
   EOT

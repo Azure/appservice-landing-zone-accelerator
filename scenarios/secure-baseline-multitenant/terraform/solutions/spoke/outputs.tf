@@ -40,6 +40,7 @@ output "redis_connection_secret_name" {
 
 output "redis_connection_string" {
     value = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_connection_string : null
+    sensitive = true
 }
 
 output "key_vault_name" {

@@ -21,10 +21,10 @@ resource "azurerm_virtual_machine_extension" "aad" {
 }
 
 locals {
-  gh_repo = coalesce(var.devops_settings.github_runner.repository_url, "")
-  gh_token = coalesce(var.devops_settings.github_runner.token, "")
-  ado_org = coalesce(var.devops_settings.devops_agent.organization_url, "")
-  ado_token = coalesce(var.devops_settings.devops_agent.token, "")
+  gh_repo = try(var.devops_settings.github_runner.repository_url, "")
+  gh_token = try(var.devops_settings.github_runner.token, "")
+  ado_org = try(var.devops_settings.devops_agent.organization_url, "")
+  ado_token = try(var.devops_settings.devops_agent.token, "")
 }
 
 resource "azurerm_virtual_machine_extension" "post_deployment" {
