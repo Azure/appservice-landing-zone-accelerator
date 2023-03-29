@@ -198,7 +198,7 @@ az network front-door frontend-endpoint show --front-door-name <front-door-name>
 ### Unable to connect to DevOps VM using AAD credentials
 The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
-Check if 
+Verify in the Azure Portal if the `aad-login-for-windows` VM extension was deployed successfully. 
 
 Connect to the VM using the local VM admin credentials and run `dsregcmd /status`. The output should look similar to this:
 
@@ -218,7 +218,7 @@ Connect to the VM using the local VM admin credentials and run `dsregcmd /status
 +----------------------------------------------------------------------+
 
                   DeviceId : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-                Thumbprint : 6C226302696DF326FA4EF3B40D73C74A31F47F4E
+                Thumbprint : 6C226302696DF************************
  DeviceCertificateValidity : [ 2023-03-29 11:03:56.000 UTC -- 2033-03-29 11:33:56.000 UTC ]
             KeyContainerId : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
                KeyProvider : Microsoft Software Key Storage Provider
@@ -244,19 +244,14 @@ Connect to the VM using the local VM admin credentials and run `dsregcmd /status
                  KeySrvUrl : https://enterpriseregistration.windows.net/EnrollmentServer/key/
                   KeySrvId : urn:ms-drs:enterpriseregistration.windows.net
         WebAuthNSrvVersion : 1.0
-            WebAuthNSrvUrl : https://enterpriseregistration.windows.net/webauthn/72f988bf-86f1-41af-91ab-2d7cd011db47/
+            WebAuthNSrvUrl : https://enterpriseregistration.windows.net/webauthn/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/
              WebAuthNSrvId : urn:ms-drs:enterpriseregistration.windows.net
     DeviceManagementSrvVer : 1.0
-    DeviceManagementSrvUrl : https://enterpriseregistration.windows.net/manage/72f988bf-86f1-41af-91ab-2d7cd011db47/
+    DeviceManagementSrvUrl : https://enterpriseregistration.windows.net/manage/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/
      DeviceManagementSrvId : urn:ms-drs:enterpriseregistration.windows.net
 ```
 
-If the output is similar to the above, try the login in with the AAD credentials again after a few minutes. If the output is different, attempt to re-run the VM extension or manually enroll the VM to AAD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
-
-
-
-### Traffic blocked by the firewall
-
+If the VM is AAD joined, try to login in with the Azure AD credentials again after a few minutes. If it's not AAD joined, attempt to re-install the VM extension or manually enroll the VM to AAD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
 
 
 ## Requirements
