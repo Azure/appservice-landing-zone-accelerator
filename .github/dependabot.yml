@@ -1,0 +1,42 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-ase/terraform"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-ase/terraform/modules"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-ase/terraform/modules/shared"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-ase/terraform/modules/winvm"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-multitenant/terraform"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-multitenant/terraform/modules"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-multitenant/terraform/modules/shared/windows-vm"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-multitenant/terraform/modules/hub"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/scenarios/secure-baseline-multitenant/terraform/modules/spoke"
+    schedule:
+      interval: "weekly"
