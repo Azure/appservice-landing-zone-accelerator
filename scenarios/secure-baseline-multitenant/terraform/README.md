@@ -41,6 +41,10 @@ aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 aad_admin_group_name      = "Azure AD SQL Admins"
 vm_aad_admin_username     = "bob@contoso.com"
 
+# Optionally provide non-AAD admin credentials for the VM
+# vm_admin_username         = "daniem"
+# vm_admin_password         = "**************"
+
 # These settings are used for peering the spoke to the hub. Fill in the appropriate settings for your environment
 hub_settings = {
   rg_name   = "_hub_rg_name_"
@@ -109,6 +113,9 @@ terraform plan --var-file="../terraform.tfvars"
 terraform apply --auto-approve --var-file="../terraform.tfvars"
 ```
 
+> **Warning**
+> If using a pre-existing Hub or firewall, make sure all the necessary firewall rules are in place. Review the firewall rules created for the reference implementation: 
+
 ### Deploy the Spoke
 Update the `hub_settings` section of the `terraform.tfvars` file with the appropriate values for your environemnt, e.g.: 
 
@@ -156,9 +163,7 @@ az upgrade
 az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
-The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
-
-If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"), enroll the Jumpbox to Azure AD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+If you experience issues connecting to the DevOps VM using your AAD credentials, see [Unable to connect to DevOps VM using AAD credentials](#unable-to-connect-to-devops-vm-using-aad-credentials)
 
 Once completed, you should be able to connect to the SQL Server using the Azure AD account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
 
@@ -188,12 +193,72 @@ az keyvault secret set --vault-name <keyvault-name> --name <kv-secret-name> --va
 az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>  
 ```
 
-## TBD: Deploying App Service into Existing Infrastructure
+## Troubleshooting
 
-The steps above assume that you will be creating the Hub and Spoke (Landing Zone) Network and supporting components using the code provided, where each step refers to state file information from the previous steps.
+### Unable to connect to DevOps VM using AAD credentials
+The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
-To deploy App Service into an existing network, use the [App Service for Existing Cluster](./07-App Service-cluster-existing-infra) folder.  Update the "existing-infra.variables.tf" file to reference the names and resource IDs of the pre-existing infrastructure.
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+Check if 
+
+Connect to the VM using the local VM admin credentials and run `dsregcmd /status`. The output should look similar to this:
+
+```bash
++----------------------------------------------------------------------+
+| Device State                                                         |
++----------------------------------------------------------------------+
+
+             AzureAdJoined : YES
+          EnterpriseJoined : NO
+              DomainJoined : NO
+           Virtual Desktop : NOT SET
+               Device Name : vm-devops-1953
+
++----------------------------------------------------------------------+
+| Device Details                                                       |
++----------------------------------------------------------------------+
+
+                  DeviceId : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+                Thumbprint : 6C226302696DF326FA4EF3B40D73C74A31F47F4E
+ DeviceCertificateValidity : [ 2023-03-29 11:03:56.000 UTC -- 2033-03-29 11:33:56.000 UTC ]
+            KeyContainerId : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+               KeyProvider : Microsoft Software Key Storage Provider
+              TpmProtected : NO
+          DeviceAuthStatus : SUCCESS
+
++----------------------------------------------------------------------+
+| Tenant Details                                                       |
++----------------------------------------------------------------------+
+
+                TenantName :
+                  TenantId : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+               AuthCodeUrl : https://login.microsoftonline.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/oauth2/authorize
+            AccessTokenUrl : https://login.microsoftonline.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/oauth2/token
+                    MdmUrl :
+                 MdmTouUrl :
+          MdmComplianceUrl :
+               SettingsUrl :
+            JoinSrvVersion : 2.0
+                JoinSrvUrl : https://enterpriseregistration.windows.net/EnrollmentServer/device/
+                 JoinSrvId : urn:ms-drs:enterpriseregistration.windows.net
+             KeySrvVersion : 1.0
+                 KeySrvUrl : https://enterpriseregistration.windows.net/EnrollmentServer/key/
+                  KeySrvId : urn:ms-drs:enterpriseregistration.windows.net
+        WebAuthNSrvVersion : 1.0
+            WebAuthNSrvUrl : https://enterpriseregistration.windows.net/webauthn/72f988bf-86f1-41af-91ab-2d7cd011db47/
+             WebAuthNSrvId : urn:ms-drs:enterpriseregistration.windows.net
+    DeviceManagementSrvVer : 1.0
+    DeviceManagementSrvUrl : https://enterpriseregistration.windows.net/manage/72f988bf-86f1-41af-91ab-2d7cd011db47/
+     DeviceManagementSrvId : urn:ms-drs:enterpriseregistration.windows.net
+```
+
+If the output is similar to the above, try the login in with the AAD credentials again after a few minutes. If the output is different, attempt to re-run the VM extension or manually enroll the VM to AAD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+
+
+
+### Traffic blocked by the firewall
+
+
+
 ## Requirements
 
 | Name | Version |
