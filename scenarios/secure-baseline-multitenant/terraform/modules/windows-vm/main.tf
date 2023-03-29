@@ -30,15 +30,9 @@ resource "azurerm_windows_virtual_machine" "vm" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type         = var.identity.type
+    identity_ids = var.identity.type == "SystemAssigned" ? [] : var.identity.identity_ids
   }
-
-  # identity {
-  #   type = "UserAssigned"
-  #   identity_ids = [
-  #     var.user_assigned_identity_id
-  #   ]
-  # }
 
   source_image_reference {
     publisher = var.vm_image_publisher

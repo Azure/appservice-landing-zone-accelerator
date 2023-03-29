@@ -38,6 +38,28 @@ resource "azurerm_resource_group" "spoke" {
   }
 }
 
+resource "azurecaf_name" "reader_identity" {
+  name          = "${var.application_name}-reader"
+  resource_type = "azurerm_user_assigned_identity"
+}
+
+resource "azurerm_user_assigned_identity" "reader" {
+  location            = azurerm_resource_group.spoke.location
+  name                = azurecaf_name.reader_identity.result
+  resource_group_name = azurerm_resource_group.spoke.name
+}
+
+resource "azurecaf_name" "contributor_identity" {
+  name          = "${var.application_name}-contributor"
+  resource_type = "azurerm_user_assigned_identity"
+}
+
+resource "azurerm_user_assigned_identity" "contributor" {
+  location            = azurerm_resource_group.spoke.location
+  name                = azurecaf_name.contributor_identity.result
+  resource_group_name = azurerm_resource_group.spoke.name
+}
+
 resource "azurecaf_name" "law" {
   name          = var.application_name
   resource_type = "azurerm_log_analytics_workspace"
@@ -212,6 +234,13 @@ module "app_service" {
   frontend_subnet_id   = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.ingress_subnet.result)].id
   service_plan_options = var.appsvc_options.service_plan
 
+  identity = {
+    type = "UserAssigned"
+    identity_ids = [
+      azurerm_user_assigned_identity.reader.id
+    ]
+  }
+
   webapp_options = {
     ai_connection_string = module.app_insights.connection_string
     instrumentation_key  = module.app_insights.instrumentation_key
@@ -254,6 +283,13 @@ module "devops_vm" {
   admin_username     = local.vm_admin_username
   admin_password     = local.vm_admin_password
   aad_admin_username = var.vm_aad_admin_username
+
+  identity = {
+    type = "UserAssigned"
+    identity_ids = [
+      azurerm_user_assigned_identity.contributor.id
+    ]
+  }
 
   depends_on = [
     module.network,
@@ -309,7 +345,7 @@ module "front_door" {
     #   endpoint_name            = "${var.application_name}-${var.environment}-${var.webapp_slot_name}"
     #   web_app_id               = module.app_service.web_app_id # Note: needs to be the resource id of the app, not the id of the slot
     #   web_app_hostname         = module.app_service.web_app_slot_hostname
-    #   private_link_target_type = "sites-${var.webapp_slot_name}"
+    #   private_link_target_type = "sites-${var.slots[0].name]}"
     # }
   ]
 
@@ -365,12 +401,11 @@ module "app_configuration" {
   private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
 
   data_reader_identities = [
-    module.app_service.web_app_principal_id,
-    module.app_service.web_app_slot_principal_id
+    azurerm_user_assigned_identity.reader.principal_id
   ]
 
   data_owner_identities = [
-    module.devops_vm[0].principal_id
+    azurerm_user_assigned_identity.contributor.principal_id
   ]
 
   private_dns_zone = {
@@ -397,12 +432,11 @@ module "key_vault" {
   private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
 
   secret_reader_identities = [
-    module.app_service.web_app_principal_id,
-    module.app_service.web_app_slot_principal_id
+    azurerm_user_assigned_identity.reader.principal_id
   ]
 
   secret_officer_identities = [
-    module.devops_vm[0].principal_id
+    azurerm_user_assigned_identity.contributor.principal_id
   ]
 
   private_dns_zone = {

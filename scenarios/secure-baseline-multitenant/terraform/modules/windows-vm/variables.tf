@@ -12,10 +12,23 @@ variable "location" {
   description = "The location (Azure region) where the resources should be created."
 }
 
-variable "user_assigned_identity_id" {
-  type        = string
-  description = "value of the user assigned identity id"
-  default     = null
+variable "identity" {
+  type = object({
+    type         = string
+    identity_ids = optional(list(string))
+  })
+
+  description = "The identity type and the list of identities ids"
+
+  default = {
+    type         = "SystemAssigned"
+    identity_ids = []
+  }
+
+  validation {
+    condition     = contains(["SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned"], var.identity.type)
+    error_message = "Please, choose among one of the following identity types: SystemAssigned, UserAssigned or SystemAssigned, UserAssigned."
+  }
 }
 
 variable "admin_username" {

@@ -28,17 +28,19 @@ module "windows_web_app" {
 
   source = "./windows-web-app"
 
-  resource_group             = var.resource_group
-  web_app_name               = local.web-app-name
-  environment                = var.environment
-  location                   = var.location
-  unique_id                  = var.unique_id
-  service_plan_id            = azurerm_service_plan.this.id
-  service_plan_resource      = azurerm_service_plan.this
-  appsvc_subnet_id           = var.appsvc_subnet_id
-  frontend_subnet_id         = var.frontend_subnet_id
-  webapp_options             = var.webapp_options
-  private_dns_zone           = var.private_dns_zone
+  resource_group        = var.resource_group
+  web_app_name          = local.web-app-name
+  environment           = var.environment
+  location              = var.location
+  unique_id             = var.unique_id
+  service_plan_id       = azurerm_service_plan.this.id
+  service_plan_resource = azurerm_service_plan.this
+  appsvc_subnet_id      = var.appsvc_subnet_id
+  frontend_subnet_id    = var.frontend_subnet_id
+  webapp_options        = var.webapp_options
+  private_dns_zone      = var.private_dns_zone
+  identity              = var.identity
+
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enable_diagnostic_settings = var.enable_diagnostic_settings
 }
@@ -48,17 +50,19 @@ module "linux_web_app" {
 
   source = "./linux-web-app"
 
-  resource_group             = var.resource_group
-  web_app_name               = local.web-app-name
-  environment                = var.environment
-  location                   = var.location
-  unique_id                  = var.unique_id
-  service_plan_id            = azurerm_service_plan.this.id
-  service_plan_resource      = azurerm_service_plan.this
-  appsvc_subnet_id           = var.appsvc_subnet_id
-  frontend_subnet_id         = var.frontend_subnet_id
-  webapp_options             = var.webapp_options
-  private_dns_zone           = var.private_dns_zone
+  resource_group        = var.resource_group
+  web_app_name          = local.web-app-name
+  environment           = var.environment
+  location              = var.location
+  unique_id             = var.unique_id
+  service_plan_id       = azurerm_service_plan.this.id
+  service_plan_resource = azurerm_service_plan.this
+  appsvc_subnet_id      = var.appsvc_subnet_id
+  frontend_subnet_id    = var.frontend_subnet_id
+  webapp_options        = var.webapp_options
+  private_dns_zone      = var.private_dns_zone
+  identity              = var.identity
+
   log_analytics_workspace_id = var.log_analytics_workspace_id
   enable_diagnostic_settings = var.enable_diagnostic_settings
 }

@@ -30,6 +30,25 @@ variable "location" {
   default     = "westeurope"
 }
 
+variable "identity" {
+  type = object({
+    type         = string
+    identity_ids = optional(list(string))
+  })
+
+  description = "The identity type and the list of identities ids"
+
+  default = {
+    type         = "SystemAssigned"
+    identity_ids = []
+  }
+
+  validation {
+    condition     = contains(["SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned"], var.identity.type)
+    error_message = "Please, choose among one of the following identity types: SystemAssigned, UserAssigned or SystemAssigned, UserAssigned."
+  }
+}
+
 variable "unique_id" {
   type        = string
   description = "A unique identifier"

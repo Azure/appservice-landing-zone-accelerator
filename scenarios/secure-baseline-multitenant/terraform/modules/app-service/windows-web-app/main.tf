@@ -24,7 +24,8 @@ resource "azurerm_windows_web_app" "this" {
   virtual_network_subnet_id = var.appsvc_subnet_id
 
   identity {
-    type = "SystemAssigned"
+    type         = var.identity.type
+    identity_ids = var.identity.type == "SystemAssigned" ? [] : var.identity.identity_ids
   }
 
   site_config {
@@ -36,7 +37,6 @@ resource "azurerm_windows_web_app" "this" {
       dotnet_version = coalesce(var.webapp_options.application_stack.dotnet_version, "v6.0")
       java_version   = coalesce(var.webapp_options.application_stack.java_version, "17")
       php_version    = coalesce(var.webapp_options.application_stack.php_version, "Off") #"Off" is the latest version available
-      node_version   = coalesce(var.webapp_options.application_stack.node_version, "~12")
     }
   }
 
@@ -140,7 +140,8 @@ resource "azurerm_windows_web_app_slot" "slot" {
   https_only                = true
 
   identity {
-    type = "SystemAssigned"
+    type         = var.identity.type
+    identity_ids = var.identity.type == "SystemAssigned" ? [] : var.identity.identity_ids
   }
 
   site_config {
