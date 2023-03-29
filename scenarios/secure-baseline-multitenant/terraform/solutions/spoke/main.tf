@@ -24,7 +24,7 @@ locals {
 resource "azurecaf_name" "resource_group" {
   name          = var.application_name
   resource_type = "azurerm_resource_group"
-  suffixes      = [var.environment]
+  suffixes      = [var.environment, var.location_short]
 }
 
 resource "azurerm_resource_group" "spoke" {
@@ -255,11 +255,8 @@ module "app_service" {
   }
 
   depends_on = [
-    module.network,
-    module.user_defined_routes,
-    module.private_dns_zones,
-    azurerm_virtual_network_peering.hub_to_spoke,
-    azurerm_virtual_network_peering.spoke_to_hub
+    module.app_configuration,
+    module.key_vault
   ]
 }
 
@@ -293,7 +290,10 @@ module "devops_vm" {
 
   depends_on = [
     module.network,
-    module.user_defined_routes
+    module.user_defined_routes,
+    module.private_dns_zones,
+    azurerm_virtual_network_peering.hub_to_spoke,
+    azurerm_virtual_network_peering.spoke_to_hub
   ]
 }
 
