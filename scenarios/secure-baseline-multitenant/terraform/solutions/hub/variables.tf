@@ -212,14 +212,17 @@ variable "devops_settings" {
   }
 }
 
-variable "placeholder" {
-  type        = string
-  description = "This is a placeholder variable to avoid the following error: Error: Missing required argument The argument \"placeholder\" is required, but no definition was found."
-  default     = "az version"
-}
+variable "hub_settings" {
+  type = object({
+    rg_name   = string
+    vnet_name = string
 
-variable "placeholder_bool" {
-  type        = bool
-  description = "This is a placeholder variable to avoid the following error: Error: Missing required argument The argument \"placeholder\" is required, but no definition was found."
-  default     = true
+    firewall = object({
+      private_ip = optional(string)
+    })
+  })
+
+  description = "The settings for the hub virtual network."
+
+  default = null
 }

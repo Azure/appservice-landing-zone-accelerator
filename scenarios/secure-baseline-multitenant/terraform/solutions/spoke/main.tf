@@ -255,8 +255,11 @@ module "app_service" {
   }
 
   depends_on = [
-    module.app_configuration,
-    module.key_vault
+    module.network,
+    module.user_defined_routes,
+    module.private_dns_zones,
+    azurerm_virtual_network_peering.hub_to_spoke,
+    azurerm_virtual_network_peering.spoke_to_hub
   ]
 }
 
@@ -289,11 +292,10 @@ module "devops_vm" {
   }
 
   depends_on = [
-    module.network,
-    module.user_defined_routes,
-    module.private_dns_zones,
-    azurerm_virtual_network_peering.hub_to_spoke,
-    azurerm_virtual_network_peering.spoke_to_hub
+    module.app_configuration,
+    module.key_vault,
+    module.redis_cache,
+    module.sql_database
   ]
 }
 
@@ -381,10 +383,6 @@ module "sql_database" {
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.database.windows.net")].id
     resource_group = var.hub_settings.rg_name
   }
-
-  depends_on = [
-    module.front_door
-  ]
 }
 
 module "app_configuration" {
@@ -413,10 +411,6 @@ module "app_configuration" {
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].id
     resource_group = var.hub_settings.rg_name
   }
-
-  depends_on = [
-    module.front_door
-  ]
 }
 
 module "key_vault" {
@@ -444,10 +438,6 @@ module "key_vault" {
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.vaultcore.azure.net")].id
     resource_group = var.hub_settings.rg_name
   }
-
-  depends_on = [
-    module.front_door
-  ]
 }
 
 module "app_insights" {
@@ -479,8 +469,4 @@ module "redis_cache" {
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.redis.cache.windows.net")].id
     resource_group = var.hub_settings.rg_name
   }
-
-  depends_on = [
-    module.front_door
-  ]
 }

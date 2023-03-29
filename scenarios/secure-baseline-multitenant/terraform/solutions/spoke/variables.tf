@@ -226,15 +226,3 @@ variable "devops_settings" {
     devops_agent  = null
   }
 }
-
-variable "placeholder" {
-  type        = string
-  description = "This is a placeholder variable to avoid the following error: Error: Missing required argument The argument \"placeholder\" is required, but no definition was found."
-  default     = "az version"
-}
-
-variable "placeholder_bool" {
-  type        = bool
-  description = "This is a placeholder variable to avoid the following error: Error: Missing required argument The argument \"placeholder\" is required, but no definition was found."
-  default     = true
-}
