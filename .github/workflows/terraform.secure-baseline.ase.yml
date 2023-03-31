@@ -70,7 +70,8 @@ jobs:
       terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
       backendStateKey: ${{ needs.prepare-environment.outputs.backendStateKey }}
       tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
-      destroy: ${{ github.event.inputs.destroy }}
+      # Ensure this value is a boolean
+      destroy: ${{ github.event.inputs.destroy == 'true' }}
     secrets: inherit
 
   # validate-plan:
