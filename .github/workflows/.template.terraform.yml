@@ -27,30 +27,6 @@ on:
         required: true
         default: false
 
-  # push:
-  #   branches:
-  #     - feature/106/tf-modularization
-  #   paths:
-  #     - '.github/actions/templates/tfValidatePlan/action.yml'
-  #     - '.github/workflows/tfmodule.test.yml'
-  #     - 'scenarios/secure-baseline-ase/terraform/**'
-  #     - '!scenarios/secure-baseline-ase/**.md'
-
-  # pull_request:
-  #   branches:
-  #     - main
-  #     - feature/*
-  #   paths:
-  #     - '.github/workflows/tfmodule.test.yml'
-  #     - 'scenarios/secure-baseline-ase/terraform/**'
-  #     - '!scenarios/secure-baseline-ase/**.md'
-
-env:
-  modulePath: 'scenarios/secure-baseline-ase/terraform'
-  terraformVersion: 1.3.9 # must be greater than or equal to 1.2 for OIDC
-  backendStateKey: secure-baseline-ase.tfstate
-  tfvarPath: 'Parameters/uat.tfvars'
-
 jobs:
   terraform-validate-and-plan:
     name: 'Validate and Plan'
@@ -76,10 +52,10 @@ jobs:
         id: validate-plan
         uses: ./.github/actions/templates/tfValidatePlan
         with:
-          terraformVersion: ${{ env.terraformVersion }}
-          modulePath: ${{ env.modulePath }}
-          tfvarPath: ${{ env.tfvarPath }}
-          backendStateKey: ${{ env.backendStateKey }}
+          terraformVersion: ${{ inputs.terraformVersion }}
+          modulePath: ${{ inputs.modulePath }}
+          tfvarPath: ${{ inputs.tfvarPath }}
+          backendStateKey: ${{ inputs.backendStateKey }}
           destroy: ${{ github.event.inputs.destroy }}
           backendResourceGroupName: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
           backendStorageAccountName: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
@@ -110,9 +86,9 @@ jobs:
         id: apply
         uses: ./.github/actions/templates/tfApply
         with:
-          terraformVersion: ${{ env.terraformVersion }}
-          modulePath: ${{ env.modulePath }}
-          backendStateKey: ${{ env.backendStateKey }}
+          terraformVersion: ${{ inputs.terraformVersion }}
+          modulePath: ${{ inputs.modulePath }}
+          backendStateKey: ${{ inputs.backendStateKey }}
           destroy: ${{ github.event.inputs.destroy }}
           backendResourceGroupName: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
           backendStorageAccountName: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
