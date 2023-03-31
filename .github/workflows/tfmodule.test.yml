@@ -14,6 +14,7 @@ on:
     branches:
       - feature/106/tf-modularization
     paths:
+      - '.github/actions/templates/tfValidatePlan/action.yml'
       - '.github/workflows/tfmodule.test.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
