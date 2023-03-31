@@ -48,9 +48,11 @@ jobs:
       terraformVersion: ${{ env.terraformVersion }}
       backendStateKey: ${{ env.backendStateKey }}
       tfvarPath: ${{ env.tfvarPath }}
+
   call-workflow-passing-data:
     name: 'Terraform CICD'
-    needs: prepare-environment
+    needs: 
+    - prepare-environment
     uses: ./.github/workflows/_template.terraform.yml
     with:
       modulePath: ${{ needs.prepare-environment.outputs.modulePath }}
