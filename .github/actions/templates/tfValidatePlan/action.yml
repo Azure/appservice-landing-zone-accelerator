@@ -51,6 +51,7 @@ runs:
   - name: Terraform Init
     id: init
     shell: ${{ inputs.shell }}
+    working-directory: ${{ inputs.modulePath }}
     run: |
       terraform init \
         -backend-config="resource_group_name=${{ inputs.backendResourceGroupName }}"   \
@@ -66,6 +67,7 @@ runs:
   - name: Terraform Validate
     id: validate
     shell: ${{ inputs.shell }}
+    working-directory: ${{ inputs.modulePath }}
     run: terraform validate -no-color
 
   - name: tfsec
@@ -77,6 +79,7 @@ runs:
   - name: Terraform Plan
     id: plan
     shell: ${{ inputs.shell }}
+    working-directory: ${{ inputs.modulePath }}
     continue-on-error: true
     run: |
       if [ "${{ github.event.inputs.destroy }}" = "true" ]; then
@@ -102,6 +105,7 @@ runs:
   - name: Show TFPlan
     id: show
     shell: ${{ inputs.shell }}
+    working-directory: ${{ inputs.modulePath }}
     if: steps.plan.outcome == 'success'
     run: terraform show -no-color tfplan
 
