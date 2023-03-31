@@ -46,7 +46,15 @@ jobs:
     steps:
     - name: Checkout the code
       uses: actions/checkout@main
+    - name: set-env
+      id: set-env
+      run: |
+        echo "modulePath=${{ env.modulePath }}" >> $GITHUB_ENV
+        echo "terraformVersion=${{ env.terraformVersion }}" >> $GITHUB_ENV
+        echo "backendStateKey=${{ env.backendStateKey }}" >> $GITHUB_ENV
+        echo "tfvarPath=${{ env.tfvarPath }}" >> $GITHUB_ENV
     outputs:
+      GITHUB_ENV: ${{ steps.set-env.outputs.GITHUB_ENV }}
       modulePath: ${{ env.modulePath }}
       terraformVersion: ${{ env.terraformVersion }}
       backendStateKey: ${{ env.backendStateKey }}
