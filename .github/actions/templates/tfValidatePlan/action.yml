@@ -57,7 +57,7 @@ runs:
         -backend-config="resource_group_name=${{ inputs.backendResourceGroupName }}"   \
         -backend-config="storage_account_name=${{ inputs.backendStorageAccountName }}" \
         -backend-config="container_name=${{ inputs.backendStorageContainerName }}"     \
-        -backend-config="key=${{ inputs.backend_key }}"
+        -backend-config="key=${{ inputs.backendStateKey }}"
     env:
       ARM_CLIENT_ID: ${{ inputs.ARM_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ inputs.ARM_SUBSCRIPTION_ID }}
