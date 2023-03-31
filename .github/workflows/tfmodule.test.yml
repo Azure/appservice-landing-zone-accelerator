@@ -14,7 +14,7 @@ on:
     branches:
       - feature/106/tf-modularization
     paths:
-      - '.github/workflows/terraform.secure-baseline.ase.yml'
+      - '.github/workflows/tfmodule.test.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
 
@@ -23,7 +23,7 @@ on:
       - main
       - feature/*
     paths:
-      - '.github/workflows/terraform.secure-baseline.ase.yml'
+      - '.github/workflows/tfmodule.test.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
 
@@ -48,6 +48,7 @@ jobs:
       tfvarPath: ${{ env.tfvarPath }}
       backendStateKey: ${{ env.backendStateKey }}
       destroy: ${{ github.event.inputs.destroy }}
+    secrets: inherit
 
   # deploy:
   #   if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
