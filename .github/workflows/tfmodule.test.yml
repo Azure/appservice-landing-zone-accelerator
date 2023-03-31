@@ -73,6 +73,10 @@ jobs:
           tfvarPath: ${{ env.tfvarPath }}
           backendStateKey: ${{ env.backendStateKey }}
           destroy: ${{ github.event.inputs.destroy }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          
         # secrets: inherit
 
   # deploy:
