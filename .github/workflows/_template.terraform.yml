@@ -13,6 +13,10 @@ on:
         description: 'Path to the Terraform module'
         required: true
         default: 'scenarios/secure-baseline-ase/terraform'
+      backendStateKey:
+        type: string
+        description: 'Name of the state file'
+        required: true
       tfvarPath:
         type: string
         description: 'Path to the Terraform variables'
