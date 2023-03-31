@@ -41,7 +41,7 @@ env:
 jobs:
   terraform-validate-and-plan:
     name: 'Module'
-    uses: ./.github/actions/templates/tfValidatePlan
+    uses: ./.github/actions/templates/tfValidatePlan/action.yml@feature/106/tf-modularization
     with:
       terraformVersion: ${{ env.terraformVersion }}
       modulePath: ${{ env.modulePath }}
