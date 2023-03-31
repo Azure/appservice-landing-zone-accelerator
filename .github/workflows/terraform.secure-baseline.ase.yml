@@ -12,7 +12,6 @@ on:
   push:
     branches:
       - main
-      - feature/106/tf-modularization
     paths:
       - '.github/workflows/terraform.secure-baseline.ase.yml'
       - '.github/workflows/_template.terraform.yml'
