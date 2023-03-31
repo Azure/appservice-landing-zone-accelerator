@@ -1,4 +1,4 @@
-name: 'Single-tenant ASEv3 Secure Baseline: Terraform Deploy'
+name: 'TFModule Test'
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ on:
       - '.github/workflows/tfmodule.test.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
-      
+
 permissions:
   id-token: write
   contents: read
