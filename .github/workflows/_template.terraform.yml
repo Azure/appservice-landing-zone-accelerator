@@ -1,32 +1,45 @@
-name: 'TFModule Test'
+name: 'Terraform Deployment Template'
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
+      terraformVersion:
+        type: string
+        description: 'Terraform version'
+        required: true
+        default: '1.3.9'
+      modulePath:
+        type: string
+        description: 'Path to the Terraform module'
+        required: true
+        default: 'scenarios/secure-baseline-ase/terraform'
+      tfvarPath:
+        type: string
+        description: 'Path to the Terraform variables'
+        required: true
       destroy:
+        type: boolean
         description: 'Destroy resources?'
         required: true
-        default: 'false'
-        options:
-          - 'true'
-          - 'false'
-  push:
-    branches:
-      - feature/106/tf-modularization
-    paths:
-      - '.github/actions/templates/tfValidatePlan/action.yml'
-      - '.github/workflows/tfmodule.test.yml'
-      - 'scenarios/secure-baseline-ase/terraform/**'
-      - '!scenarios/secure-baseline-ase/**.md'
+        default: false
 
-  pull_request:
-    branches:
-      - main
-      - feature/*
-    paths:
-      - '.github/workflows/tfmodule.test.yml'
-      - 'scenarios/secure-baseline-ase/terraform/**'
-      - '!scenarios/secure-baseline-ase/**.md'
+  # push:
+  #   branches:
+  #     - feature/106/tf-modularization
+  #   paths:
+  #     - '.github/actions/templates/tfValidatePlan/action.yml'
+  #     - '.github/workflows/tfmodule.test.yml'
+  #     - 'scenarios/secure-baseline-ase/terraform/**'
+  #     - '!scenarios/secure-baseline-ase/**.md'
+
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - feature/*
+  #   paths:
+  #     - '.github/workflows/tfmodule.test.yml'
+  #     - 'scenarios/secure-baseline-ase/terraform/**'
+  #     - '!scenarios/secure-baseline-ase/**.md'
 
 permissions:
   id-token: write
@@ -79,9 +92,10 @@ jobs:
 
         # secrets: inherit
 
-  deploy:
+  terraform-apply:
     # if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     # environment: 'Production'
+    name: 'Deploy'
     needs: terraform-validate-and-plan
     timeout-minutes: 360
     runs-on: ubuntu-latest
