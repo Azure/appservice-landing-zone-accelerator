@@ -43,16 +43,16 @@ env:
 jobs:
   prepare-environment:
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout the code
-      uses: actions/checkout@main
-    - name: set-env
-      id: set-env
-      run: |
-        echo "modulePath=${{ env.modulePath }}" >> $GITHUB_ENV
-        echo "terraformVersion=${{ env.terraformVersion }}" >> $GITHUB_ENV
-        echo "backendStateKey=${{ env.backendStateKey }}" >> $GITHUB_ENV
-        echo "tfvarPath=${{ env.tfvarPath }}" >> $GITHUB_ENV
+    # steps:
+    # - name: Checkout the code
+    #   uses: actions/checkout@main
+    # - name: set-env
+    #   id: set-env
+    #   run: |
+    #     echo "modulePath=${{ env.modulePath }}" >> $GITHUB_ENV
+    #     echo "terraformVersion=${{ env.terraformVersion }}" >> $GITHUB_ENV
+    #     echo "backendStateKey=${{ env.backendStateKey }}" >> $GITHUB_ENV
+    #     echo "tfvarPath=${{ env.tfvarPath }}" >> $GITHUB_ENV
     outputs:
       GITHUB_ENV: ${{ steps.set-env.outputs.GITHUB_ENV }}
       modulePath: ${{ env.modulePath }}
@@ -64,7 +64,7 @@ jobs:
     name: 'Terraform CICD'
     needs: 
     - prepare-environment
-    uses: ./.github/workflows/_template.terraform.yml
+    uses: ./.github/workflows/.template.terraform.yml
     with:
       modulePath: ${{ needs.prepare-environment.outputs.modulePath }}
       terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
