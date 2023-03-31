@@ -26,11 +26,12 @@ on:
       - '.github/workflows/tfmodule.test.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
-
+      
 permissions:
   id-token: write
   contents: read
   pull-requests: write
+
 
 env:
   modulePath: 'scenarios/secure-baseline-ase/terraform'
@@ -40,7 +41,7 @@ env:
 
 jobs:
   terraform-validate-and-plan:
-    name: 'Module'
+    name: 'Validate and Plan'
     timeout-minutes: 360
     runs-on: ubuntu-latest
     defaults:
