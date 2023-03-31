@@ -31,6 +31,10 @@ inputs:
   backendStorageContainerName:
     description: 'Storage container name for the backend state'
     required: true
+  shell:
+    description: 'Shell to use for the action'
+    required: false
+    default: 'bash'
   ARM_CLIENT_ID:
     description: 'Azure client ID'
     required: true
@@ -46,6 +50,7 @@ runs:
   steps:
   - name: Terraform Init
     id: init
+    shell: ${{ inputs.shell }}
     run: |
       terraform init \
         -backend-config="resource_group_name=${{ inputs.backendResourceGroupName }}"   \
@@ -60,6 +65,7 @@ runs:
 
   - name: Terraform Validate
     id: validate
+    shell: ${{ inputs.shell }}
     run: terraform validate -no-color
 
   - name: tfsec
@@ -70,6 +76,7 @@ runs:
 
   - name: Terraform Plan
     id: plan
+    shell: ${{ inputs.shell }}
     continue-on-error: true
     run: |
       if [ "${{ github.event.inputs.destroy }}" = "true" ]; then
@@ -94,6 +101,7 @@ runs:
 
   - name: Show TFPlan
     id: show
+    shell: ${{ inputs.shell }}
     if: steps.plan.outcome == 'success'
     run: terraform show -no-color tfplan
 
@@ -162,5 +170,6 @@ runs:
           body: output
         })
   - name: Exit if plan failed
+    shell: ${{ inputs.shell }}
     if: steps.plan.outcome == 'failure'
     run: exit 1
