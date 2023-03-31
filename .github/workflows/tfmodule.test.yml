@@ -45,9 +45,6 @@ jobs:
     name: 'Validate and Plan'
     timeout-minutes: 360
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ env.modulePath }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@main
@@ -82,25 +79,37 @@ jobs:
 
         # secrets: inherit
 
-  # deploy:
-  #   if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-  #   needs: validate-plan
-  #   environment: 'Production'
-  #   timeout-minutes: 360
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ${{ env.modulePath }}
-  #   steps:
-  #     - name: Checkout the code
-  #       uses: actions/checkout@main
+  deploy:
+    # if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    # environment: 'Production'
+    needs: terraform-validate-and-plan
+    timeout-minutes: 360
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@main
     
-  #     # Log into Azure via OIDC
-  #     - uses: azure/login@v1
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+      # Log into Azure via OIDC
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+      - name: 'ApplyTerraform'
+        id: apply
+        uses: ./.github/actions/templates/tfApply
+        with:
+          terraformVersion: ${{ env.terraformVersion }}
+          modulePath: ${{ env.modulePath }}
+          backendStateKey: ${{ env.backendStateKey }}
+          destroy: ${{ github.event.inputs.destroy }}
+          backendResourceGroupName: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+          backendStorageAccountName: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+          backendStorageContainerName: ${{ secrets.AZURE_TF_STATE_STORAGE_CONTAINER_NAME }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
   #     - name: Download a single artifact
   #       id: download
