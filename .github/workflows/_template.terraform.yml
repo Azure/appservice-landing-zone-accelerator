@@ -1,4 +1,4 @@
-name: 'Terraform Deployment Template'
+name: '.Template - Terraform Deployment'
 
 on:
   workflow_call:
