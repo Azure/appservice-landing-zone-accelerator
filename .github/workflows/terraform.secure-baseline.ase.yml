@@ -41,14 +41,22 @@ env:
   tfvarPath: 'Parameters/uat.tfvars'
 
 jobs:
-  call-workflow-passing-data:
-    name: 'Terraform CICD'
-    uses: ./.github/workflows/_template.terraform.yml
-    with:
+  prepare-environment:
+    runs-on: ubuntu-latest
+    outputs:
       modulePath: ${{ env.modulePath }}
       terraformVersion: ${{ env.terraformVersion }}
       backendStateKey: ${{ env.backendStateKey }}
       tfvarPath: ${{ env.tfvarPath }}
+  call-workflow-passing-data:
+    name: 'Terraform CICD'
+    needs: prepare-environment
+    uses: ./.github/workflows/_template.terraform.yml
+    with:
+      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}
+      terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
+      backendStateKey: ${{ needs.prepare-environment.outputs.backendStateKey }}
+      tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
       destroy: ${{ github.event.inputs.destroy }}
     secrets: inherit
 
