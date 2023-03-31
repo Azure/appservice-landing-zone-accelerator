@@ -43,6 +43,9 @@ env:
 jobs:
   prepare-environment:
     runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@main
     outputs:
       modulePath: ${{ env.modulePath }}
       terraformVersion: ${{ env.terraformVersion }}
