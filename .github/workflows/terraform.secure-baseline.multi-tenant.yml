@@ -1,7 +1,4 @@
-# WIP - Blocked on MultiTenant AAD Service Principal Config
-
 name: 'Multi-tenant Secure Baseline: Terraform Deploy'
-
 
 on:
   workflow_dispatch:
