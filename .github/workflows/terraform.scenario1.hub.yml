@@ -1,4 +1,4 @@
-name: 'Multi-tenant Secure Baseline: Terraform Deploy'
+name: 'Scenario 1: Terraform HUB Multi-tenant Secure Baseline'
 
 on:
   workflow_dispatch:
@@ -13,20 +13,20 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/terraform.secure-baseline.multi-tenant.yml'
+      - '.github/workflows/terraform.scenario1.hub.yml'
       - '.github/workflows/_template.terraform.yml'
-      - 'scenarios/secure-baseline-multitenant/terraform/**'
-      - '!scenarios/secure-baseline-multitenant/**.md'
+      - 'scenarios/secure-baseline-multitenant/terraform/solutions/hub/**'
+      - '!scenarios/secure-baseline-multitenant/terraform/solutions/hub/**.md'
 
   pull_request:
     branches:
       - main
       - feature/*
     paths:
-      - '.github/workflows/terraform.secure-baseline.multi-tenant.yml'
+      - '.github/workflows/terraform.scenario1.hub.yml'
       - '.github/workflows/_template.terraform.yml'
-      - 'scenarios/secure-baseline-multitenant/terraform/**'
-      - '!scenarios/secure-baseline-multitenant/**.md'
+      - 'scenarios/secure-baseline-multitenant/terraform/solutions/hub/**'
+      - '!scenarios/secure-baseline-multitenant/terraform/solutions/hub/**.md'
 
 permissions:
   id-token: write
@@ -34,7 +34,7 @@ permissions:
   pull-requests: write
 
 env:
-  modulePath: 'scenarios/secure-baseline-multitenant/terraform'
+  modulePath: 'scenarios/secure-baseline-multitenant/terraform/solutions/hub'
   terraformVersion: 1.3.9 # must be greater than or equal to 1.2 for OIDC
   backendStateKey: 'secure-baseline-multitenant.tfstate'
   tfvarPath: 'Parameters/uat.tfvars'

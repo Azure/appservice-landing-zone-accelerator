@@ -8,7 +8,10 @@ resource "random_password" "vm_admin_password" {
   special = true
 }
 
+data "azuread_client_config" "current" {}
+
 locals {
+  tenant_id         = var.tenant_id == null ? data.azuread_client_config.current.tenant_id : var.tenant_id
   vm_admin_username = var.vm_admin_username == null ? random_password.vm_admin_username.result : var.vm_admin_username
   vm_admin_password = var.vm_admin_password == null ? random_password.vm_admin_password.result : var.vm_admin_password
 }
@@ -366,7 +369,7 @@ module "sql_database" {
   environment               = var.environment
   location                  = var.location
   unique_id                 = random_integer.unique_id.result
-  tenant_id                 = var.tenant_id
+  tenant_id                 = local.tenant_id
   aad_admin_group_object_id = var.aad_admin_group_object_id
   aad_admin_group_name      = var.aad_admin_group_name
   private_link_subnet_id    = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
@@ -395,7 +398,7 @@ module "app_configuration" {
   environment            = var.environment
   location               = var.location
   unique_id              = random_integer.unique_id.result
-  tenant_id              = var.tenant_id
+  tenant_id              = local.tenant_id
   private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
 
   data_reader_identities = [
@@ -420,7 +423,7 @@ module "key_vault" {
   application_name       = var.application_name
   environment            = var.environment
   location               = var.location
-  tenant_id              = var.tenant_id
+  tenant_id              = local.tenant_id
   unique_id              = random_integer.unique_id.result
   sku_name               = "standard"
   private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
