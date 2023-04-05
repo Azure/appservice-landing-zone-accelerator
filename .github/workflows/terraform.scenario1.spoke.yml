@@ -34,7 +34,7 @@ permissions:
   pull-requests: write
 
 env:
-  modulePath: 'scenarios/secure-baseline-multitenant/terraform/solutions/hub'
+  modulePath: 'scenarios/secure-baseline-multitenant/terraform/solutions/spoke'
   terraformVersion: 1.3.9 # must be greater than or equal to 1.2 for OIDC
   backendStateKey: 'scenario1.spoke.tfstate'
   tfvarPath: 'Parameters/uat.tfvars'
