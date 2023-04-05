@@ -28,21 +28,116 @@ This section is organized using folders that match the steps outlined below. Mak
 
 ### Create terraform.tfvars file
 
-An Azure AD user for the DevOps VM admin account and an Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the *terraform.tfvars* file that needs to be created in this folder.:
+An Azure AD user for the DevOps VM admin account and an Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the `terraform.tfvars` file that can be created in the [solutions](./solutions) folder.:
 
 ```bash
+application_name = "secure-webapp"
+environment      = "prod"
+location         = "swedencentral"
+location_short   = "swe"
+
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 aad_admin_group_name      = "Azure AD SQL Admins"
 vm_aad_admin_username     = "bob@contoso.com"
+
+# Optionally provide non-AAD admin credentials for the VM
+# vm_admin_username         = "daniem"
+# vm_admin_password         = "**************"
+
+# These settings are used for peering the spoke to the hub. Fill in the appropriate settings for your environment
+hub_settings = {
+  rg_name   = "_hub_rg_name_"
+  vnet_name = "_hub_vnet_name_"
+
+  firewall = {
+    private_ip = "x.x.x.x"
+  }
+}
+
+# Toggle deployment of optional features and services for the Landing Zone
+deployment_options = {
+  enable_waf                 = true
+  enable_egress_lockdown     = true
+  enable_diagnostic_settings = true
+  deploy_bastion             = true
+  deploy_redis               = true
+  deploy_sql_database        = true
+  deploy_app_config          = true
+  deploy_vm                  = true
+}
+
+# Optionally deploy a Github runner, DevOps agent, or both to the VM. 
+# devops_settings = {
+#   github_runner = {
+#     repository_url = "https://github.com/{organization}/{repository}"
+#     token          = "runner_registration_token" # See: https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28
+#   }
+# 
+#   devops_agent = {
+#     organization_url = "https://dev.azure.com/{organization}/"
+#     token            = "pat_token"
+#   }
+# }
+
+appsvc_options = {
+  service_plan = {
+    os_type        = "Windows"
+    sku_name       = "S1"
+
+    # Optionally configure zone redundancy (requires a minimum of three workers and Premium SKU service plan) 
+    # worker_count   = 3
+    # zone_redundant = true
+  }
+
+  web_app = {
+
+    application_stack = {
+      current_stack  = "dotnet"
+      dotnet_version = "v6.0"
+    }
+
+    slots = ["staging"]
+  }
+}
 ```
 
-### Deploy the App Service Landing Zone Terraform code
+### Deploy the Hub (optional)
+In case you already have a pre-existing hub that you want to connect to, you can skip to the next step. 
 
 ```bash
+cd ./scenarios/secure-baseline-multitenant/terraform/solutions/hub
+
 terraform init --upgrade
-terraform plan
-terraform apply --auto-approve
+terraform plan --var-file="../terraform.tfvars"
+terraform apply --auto-approve --var-file="../terraform.tfvars"
+```
+
+> **Warning**
+> If using a pre-existing Hub or firewall, make sure all the necessary firewall rules are in place. Review the [firewall rules created for the reference implementation](./modules/firewall/main.tf).
+
+### Deploy the Spoke
+Update the `hub_settings` section of the `terraform.tfvars` file with the appropriate values for your environemnt, e.g.: 
+
+```bash
+hub_settings = {
+  rg_name   = "rg-hub-swe"
+  vnet_name = "vnet-hub-swe"
+
+  firewall = {
+    private_ip = "10.242.0.4"
+  }
+}
+```
+
+Run the terraform deployment for the spoke: 
+
+```bash
+cd ./scenarios/secure-baseline-multitenant/terraform/solutions/spoke
+
+terraform init --upgrade
+terraform plan --var-file="../terraform.tfvars"
+terraform apply --auto-approve --var-file="../terraform.tfvars"
 ```
 
 Take note of the output values from the Terraform deployment. These will be used in the next steps.
@@ -68,9 +163,7 @@ az upgrade
 az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
-The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
-
-If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"), enroll the Jumpbox to Azure AD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+If you experience issues connecting to the DevOps VM using your AAD credentials, see [Unable to connect to DevOps VM using AAD credentials](#unable-to-connect-to-devops-vm-using-aad-credentials)
 
 Once completed, you should be able to connect to the SQL Server using the Azure AD account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
 
@@ -100,12 +193,67 @@ az keyvault secret set --vault-name <keyvault-name> --name <kv-secret-name> --va
 az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>  
 ```
 
-## TBD: Deploying App Service into Existing Infrastructure
+## Troubleshooting
 
-The steps above assume that you will be creating the Hub and Spoke (Landing Zone) Network and supporting components using the code provided, where each step refers to state file information from the previous steps.
+### Unable to connect to DevOps VM using AAD credentials
+The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
-To deploy App Service into an existing network, use the [App Service for Existing Cluster](./07-App Service-cluster-existing-infra) folder.  Update the "existing-infra.variables.tf" file to reference the names and resource IDs of the pre-existing infrastructure.
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+Verify in the Azure Portal if the `aad-login-for-windows` VM extension was deployed successfully. 
+
+Connect to the VM using the local VM admin credentials and run `dsregcmd /status`. The output should look similar to this:
+
+```bash
++----------------------------------------------------------------------+
+| Device State                                                         |
++----------------------------------------------------------------------+
+
+             AzureAdJoined : YES
+          EnterpriseJoined : NO
+              DomainJoined : NO
+           Virtual Desktop : NOT SET
+               Device Name : vm-devops-1953
+
++----------------------------------------------------------------------+
+| Device Details                                                       |
++----------------------------------------------------------------------+
+
+                  DeviceId : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+                Thumbprint : 6C226302696DF************************
+ DeviceCertificateValidity : [ 2023-03-29 11:03:56.000 UTC -- 2033-03-29 11:33:56.000 UTC ]
+            KeyContainerId : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+               KeyProvider : Microsoft Software Key Storage Provider
+              TpmProtected : NO
+          DeviceAuthStatus : SUCCESS
+
++----------------------------------------------------------------------+
+| Tenant Details                                                       |
++----------------------------------------------------------------------+
+
+                TenantName :
+                  TenantId : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+               AuthCodeUrl : https://login.microsoftonline.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/oauth2/authorize
+            AccessTokenUrl : https://login.microsoftonline.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/oauth2/token
+                    MdmUrl :
+                 MdmTouUrl :
+          MdmComplianceUrl :
+               SettingsUrl :
+            JoinSrvVersion : 2.0
+                JoinSrvUrl : https://enterpriseregistration.windows.net/EnrollmentServer/device/
+                 JoinSrvId : urn:ms-drs:enterpriseregistration.windows.net
+             KeySrvVersion : 1.0
+                 KeySrvUrl : https://enterpriseregistration.windows.net/EnrollmentServer/key/
+                  KeySrvId : urn:ms-drs:enterpriseregistration.windows.net
+        WebAuthNSrvVersion : 1.0
+            WebAuthNSrvUrl : https://enterpriseregistration.windows.net/webauthn/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/
+             WebAuthNSrvId : urn:ms-drs:enterpriseregistration.windows.net
+    DeviceManagementSrvVer : 1.0
+    DeviceManagementSrvUrl : https://enterpriseregistration.windows.net/manage/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/
+     DeviceManagementSrvId : urn:ms-drs:enterpriseregistration.windows.net
+```
+
+If the VM is AAD joined, try to login in with the Azure AD credentials again after a few minutes. If it's not AAD joined, attempt to re-install the VM extension or manually enroll the VM to AAD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+
+
 ## Requirements
 
 | Name | Version |
