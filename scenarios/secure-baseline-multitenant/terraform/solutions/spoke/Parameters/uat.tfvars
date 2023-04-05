@@ -13,11 +13,11 @@ vm_aad_admin_username     = "bob@contoso.com"
 
 # These settings are used for peering the spoke to the hub. Fill in the appropriate settings for your environment
 hub_settings = {
-  rg_name   = "_hub_rg_name_"
-  vnet_name = "_hub_vnet_name_"
+  rg_name   = "rg-hub-wus2"
+  vnet_name = "vnet-hub-wus2"
 
   firewall = {
-    private_ip = "x.x.x.x"
+    private_ip = "10.242.0.4"
   }
 }
 

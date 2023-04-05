@@ -24,7 +24,6 @@ on:
       destroy:
         type: boolean
         description: 'Destroy resources?'
-        required: true
         default: false
 
 jobs:
