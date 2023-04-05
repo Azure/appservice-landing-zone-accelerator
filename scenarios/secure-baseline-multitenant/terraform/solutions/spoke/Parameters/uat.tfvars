@@ -1,11 +1,11 @@
 application_name = "secure-webapp"
 environment      = "prod"
-location         = "westus2"
-location_short   = "wus2"
+location         = "westus3"
+location_short   = "wus3"
 
 aad_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
 aad_admin_group_name      = "AppSvcLZA Azure AD SQL Admins"
-vm_aad_admin_username     = "bob@contoso.com"
+vm_aad_admin_username     = "jinle@microsoft.com"
 
 # Optionally provide non-AAD admin credentials for the VM
 # vm_admin_username         = "daniem"

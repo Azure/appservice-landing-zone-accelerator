@@ -1,6 +1,6 @@
 environment    = "prod"
-location       = "westus2"
-location_short = "wus2"
+location       = "westus3"
+location_short = "wus3"
 
 # Toggle deployment of optional features and services for the Landing Zone
 deployment_options = {
