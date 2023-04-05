@@ -36,7 +36,7 @@ permissions:
 env:
   modulePath: 'scenarios/secure-baseline-multitenant/terraform/solutions/hub'
   terraformVersion: 1.3.9 # must be greater than or equal to 1.2 for OIDC
-  backendStateKey: 'secure-baseline-multitenant.tfstate'
+  backendStateKey: 'scenario1.hub.tfstate'
   tfvarPath: 'Parameters/uat.tfvars'
 
 jobs:
