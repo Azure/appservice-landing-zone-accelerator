@@ -1,4 +1,4 @@
-name: 'Single-tenant ASEv3 Secure Baseline: Terraform Deploy'
+name: 'Scenario 2: Terraform Single-tenant ASEv3 Secure Baseline'
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/terraform.secure-baseline.ase.yml'
+      - '.github/workflows/terraform.scenario2.yml'
       - '.github/workflows/_template.terraform.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'
@@ -23,7 +23,7 @@ on:
       - main
       - feature/*
     paths:
-      - '.github/workflows/terraform.secure-baseline.ase.yml'
+      - '.github/workflows/terraform.scenario2.yml'
       - '.github/workflows/_template.terraform.yml'
       - 'scenarios/secure-baseline-ase/terraform/**'
       - '!scenarios/secure-baseline-ase/**.md'

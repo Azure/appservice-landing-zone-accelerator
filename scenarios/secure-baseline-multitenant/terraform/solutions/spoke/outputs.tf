@@ -27,7 +27,7 @@ output "web_app_slot_name" {
 }
 
 output "key_vault_uri" {
-    value = module.key_vault.vault_uri
+  value = module.key_vault.vault_uri
 }
 
 output "web_app_uri" {
@@ -35,14 +35,14 @@ output "web_app_uri" {
 }
 
 output "redis_connection_secret_name" {
-    value = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_kv_secret_name : null
+  value = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_kv_secret_name : null
 }
 
 output "redis_connection_string" {
-    value = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_connection_string : null
-    sensitive = true
+  value     = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_connection_string : null
+  sensitive = true
 }
 
 output "key_vault_name" {
-    value = module.key_vault.vault_name
+  value = module.key_vault.vault_name
 }

@@ -24,7 +24,8 @@ variable "location_short" {
 
 variable "tenant_id" {
   type        = string
-  description = "The Azure AD tenant ID for the identities"
+  description = "The Azure AD tenant ID for the identities. If no value provided, will use current deployment environment tenant."
+  default     = null
 }
 
 variable "aad_admin_group_object_id" {
