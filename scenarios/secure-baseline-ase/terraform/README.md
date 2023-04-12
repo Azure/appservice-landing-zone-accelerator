@@ -138,7 +138,7 @@ As you configured the backend remote state with your live Azure infrastructure r
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.7.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.44.1 |
 
 ## Modules
 
@@ -167,6 +167,7 @@ As you configured the backend remote state with your live Azure infrastructure r
 | [azurerm_virtual_network.vnetSpoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) | resource |
 | [azurerm_virtual_network_peering.peerhubtospoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering) | resource |
 | [azurerm_virtual_network_peering.peerspoketohub](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering) | resource |
+| [azurerm_app_service_environment_v3.existing](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/app_service_environment_v3) | data source |
 | [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
 
 ## Inputs
@@ -174,6 +175,8 @@ As you configured the backend remote state with your live Azure infrastructure r
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_CICDAgentNameAddressPrefix"></a> [CICDAgentNameAddressPrefix](#input\_CICDAgentNameAddressPrefix) | CIDR prefix to use for Spoke VNet | `string` | `"10.0.2.0/24"` | no |
+| <a name="input_app_service_environment_name"></a> [app\_service\_environment\_name](#input\_app\_service\_environment\_name) | [Optional] The NAME of an already existing App Service Environment to deploy the App Service Plan to. Will create a new ASE v3 if not provided. | `string` | `null` | no |
+| <a name="input_app_service_environment_resource_group_name"></a> [app\_service\_environment\_resource\_group\_name](#input\_app\_service\_environment\_resource\_group\_name) | [Optional] The Resource Group NAME of an already existing App Service Environment to deploy the App Service Plan to. Will create a new ASE v3 if not provided. | `string` | `null` | no |
 | <a name="input_aseAddressPrefix"></a> [aseAddressPrefix](#input\_aseAddressPrefix) | CIDR prefix to use for ASE | `string` | `"10.1.1.0/24"` | no |
 | <a name="input_bastionAddressPrefix"></a> [bastionAddressPrefix](#input\_bastionAddressPrefix) | CIDR prefix to use for Hub VNet | `string` | `"10.0.1.0/24"` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment for which the deployment is being executed | `string` | `"dev"` | no |
