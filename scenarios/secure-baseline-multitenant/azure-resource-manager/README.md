@@ -1,11 +1,9 @@
 # Multitenant App Service Secure Baseline - ARM Implementation
 You can deploy the current LZA directly in your azure subscription by hitting the button below. 
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fappservice-landing-zone-accelerator%2Fmain%2Fscenarios%2Fsecure-baseline-multitenant%2Fazure-resource-manager%2Fmain.Json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fappservice-landing-zone-accelerator%2Ffeat%2Fbicep-refactor-multitenant-secure-baseline%2Fscenarios%2Fsecure-baseline-multitenant%2Fazure-resource-manager%2Fmain.json)
 
 Alternatively, you can clone the repo and follow the instractions below
-
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fazure-quickstart-templates%2Fmaster%2Fquickstarts%2Fmicrosoft.storage%2Fstorage-account-create%2Fazuredeploy.json)
 
 ## Prerequisites 
 - Clone this repo
