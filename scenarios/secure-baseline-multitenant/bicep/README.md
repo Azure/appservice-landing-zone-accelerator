@@ -112,14 +112,3 @@ ALTER ROLE db_ddladmin ADD MEMBER [web-app-name/slots/slot-name];
 GO
 ```
 
-From a PowerShell terminal in your DevOps VM, you'll need to add a Key Vault secret for Redis Cache connection string by executing `az keyvault secret set`. The exact command will be provided in the output of the Terraform deployment (terraform output -raw cmd_redis_connection_kvsecret).
-
-```powershell
-az keyvault secret set --vault-name <keyvault-name> --name <kv-secret-name> --value <redis-cache-connection-string>
-```
-
-### Retrieve the Azure Front Door frontend endpoint URL and test the App Service
-
-```bash
-az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>  
-```
