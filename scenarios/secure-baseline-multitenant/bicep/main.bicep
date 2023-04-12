@@ -73,6 +73,7 @@ param sqlServerAdministrators object = {}
 param sqlAdminLogin string = ''
 
 @description('Conditional. If sqlServerAdministrators is given, this is not required')
+@secure()
 param sqlAdminPassword string = ''
 
 @description('Several boolean feature flags that control the deployment or not of auxiliary azure resources')

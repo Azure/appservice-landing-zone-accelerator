@@ -67,6 +67,7 @@ param sqlServerAdministrators object = {}
 param sqlAdminLogin string = ''
 
 @description('Conditional. If sqlServerAdministrators is given, this is not required')
+@secure()
 param sqlAdminPassword string = ''
 
 var resourceNames = {

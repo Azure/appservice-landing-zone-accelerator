@@ -21,6 +21,7 @@ param administrators object = {}
 param sqlAdminLogin string = ''
 
 @description('Conditional. If sqlServerAdministrators is given, this is not required')
+@secure()
 param sqlAdminPassword string = ''
 
 @description('Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled')
