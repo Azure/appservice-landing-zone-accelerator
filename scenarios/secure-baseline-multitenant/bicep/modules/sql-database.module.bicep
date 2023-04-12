@@ -14,8 +14,14 @@ param location string
 @description('Optional. Tags of the resource.')
 param tags object = {}
 
-@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
+@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.')
 param administrators object = {}
+
+@description('Conditional. If sqlServerAdministrators is given, this is not required')
+param sqlAdminLogin string = ''
+
+@description('Conditional. If sqlServerAdministrators is given, this is not required')
+param sqlAdminPassword string = ''
 
 @description('Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled')
 param virtualNetworkLinks array = []
@@ -38,11 +44,13 @@ module sqlDbAndServer '../../../shared/bicep/databases/sql.bicep' = {
     tags: tags
     hasPrivateLinks: !empty(subnetPrivateEndpointId)
     administrators: administrators
+    administratorLogin: sqlAdminLogin
+    administratorLoginPassword: sqlAdminPassword
   }
 }
 
 module sqlServerPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
-  // condiotional scope is not working: https://github.com/Azure/bicep/issues/7367
+  // conditional scope is not working: https://github.com/Azure/bicep/issues/7367
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
   name: take('${replace(sqlDnsZoneName, '.', '-')}-PrivateDnsZoneDeployment', 64)

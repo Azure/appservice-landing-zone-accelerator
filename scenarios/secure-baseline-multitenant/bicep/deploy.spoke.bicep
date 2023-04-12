@@ -60,8 +60,14 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
+@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.')
 param sqlServerAdministrators object = {}
+
+@description('Conditional. If sqlServerAdministrators is given, this is not required')
+param sqlAdminLogin string = ''
+
+@description('Conditional. If sqlServerAdministrators is given, this is not required')
+param sqlAdminPassword string = ''
 
 var resourceNames = {
   storageAccount: naming.storageAccount.nameUnique
@@ -330,6 +336,8 @@ module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = if (deployAzu
     subnetPrivateEndpointId: snetPe.id
     virtualNetworkLinks: virtualNetworkLinks
     administrators: sqlServerAdministrators
+    sqlAdminLogin: sqlAdminLogin
+    sqlAdminPassword: sqlAdminPassword
   }
 }
 

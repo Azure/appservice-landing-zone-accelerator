@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.1.55165",
-      "templateHash": "13187189641360796369"
+      "templateHash": "5207092687693224225"
     }
   },
   "parameters": {
@@ -152,7 +152,21 @@
       "type": "object",
       "defaultValue": {},
       "metadata": {
-        "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided."
+        "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
+      }
+    },
+    "sqlAdminLogin": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Conditional. If sqlServerAdministrators is given, this is not required"
+      }
+    },
+    "sqlAdminPassword": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Conditional. If sqlServerAdministrators is given, this is not required"
       }
     },
     "deploymentOptions": {
@@ -2976,6 +2990,12 @@
           "sqlServerAdministrators": {
             "value": "[variables('administrators')]"
           },
+          "sqlAdminLogin": {
+            "value": "[parameters('sqlAdminLogin')]"
+          },
+          "sqlAdminPassword": {
+            "value": "[parameters('sqlAdminPassword')]"
+          },
           "webAppPlanSku": {
             "value": "[parameters('webAppPlanSku')]"
           },
@@ -3005,7 +3025,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.16.1.55165",
-              "templateHash": "15371858227520114645"
+              "templateHash": "1365162964294805249"
             }
           },
           "parameters": {
@@ -3149,7 +3169,21 @@
               "type": "object",
               "defaultValue": {},
               "metadata": {
-                "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided."
+                "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
+              }
+            },
+            "sqlAdminLogin": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Conditional. If sqlServerAdministrators is given, this is not required"
+              }
+            },
+            "sqlAdminPassword": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Conditional. If sqlServerAdministrators is given, this is not required"
               }
             }
           },
@@ -9870,6 +9904,12 @@
                   },
                   "administrators": {
                     "value": "[parameters('sqlServerAdministrators')]"
+                  },
+                  "sqlAdminLogin": {
+                    "value": "[parameters('sqlAdminLogin')]"
+                  },
+                  "sqlAdminPassword": {
+                    "value": "[parameters('sqlAdminPassword')]"
                   }
                 },
                 "template": {
@@ -9879,7 +9919,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.16.1.55165",
-                      "templateHash": "8832546505624542118"
+                      "templateHash": "12285175209311968478"
                     }
                   },
                   "parameters": {
@@ -9916,7 +9956,21 @@
                       "type": "object",
                       "defaultValue": {},
                       "metadata": {
-                        "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided."
+                        "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
+                      }
+                    },
+                    "sqlAdminLogin": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Conditional. If sqlServerAdministrators is given, this is not required"
+                      }
+                    },
+                    "sqlAdminPassword": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Conditional. If sqlServerAdministrators is given, this is not required"
                       }
                     },
                     "virtualNetworkLinks": {
@@ -9972,6 +10026,12 @@
                           },
                           "administrators": {
                             "value": "[parameters('administrators')]"
+                          },
+                          "administratorLogin": {
+                            "value": "[parameters('sqlAdminLogin')]"
+                          },
+                          "administratorLoginPassword": {
+                            "value": "[parameters('sqlAdminPassword')]"
                           }
                         },
                         "template": {

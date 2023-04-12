@@ -66,8 +66,14 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
+@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.')
 param sqlServerAdministrators object = {}
+
+@description('Conditional. If sqlServerAdministrators is given, this is not required')
+param sqlAdminLogin string = ''
+
+@description('Conditional. If sqlServerAdministrators is given, this is not required')
+param sqlAdminPassword string = ''
 
 @description('Several boolean feature flags that control the deployment or not of auxiliary azure resources')
 param deploymentOptions object = {
@@ -173,7 +179,9 @@ module spoke 'deploy.spoke.bicep' = {
     webAppBaseOs: webAppBaseOs
     adminPassword: adminPassword
     adminUsername: adminUsername
-    sqlServerAdministrators: administrators   
+    sqlServerAdministrators: administrators 
+    sqlAdminLogin: sqlAdminLogin
+    sqlAdminPassword: sqlAdminPassword  
     webAppPlanSku: webAppPlanSku 
     enableEgressLockdown: deploymentOptions.enableEgressLockdown
     enableWaf: deploymentOptions.enableWaf
