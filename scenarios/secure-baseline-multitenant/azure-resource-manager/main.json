@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.1.55165",
-      "templateHash": "13368988029031737582"
+      "templateHash": "13187189641360796369"
     }
   },
   "parameters": {
@@ -94,6 +94,7 @@
     },
     "firewallInternalIp": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR"
       }
@@ -127,6 +128,10 @@
     },
     "webAppBaseOs": {
       "type": "string",
+      "allowedValues": [
+        "Windows",
+        "Linux"
+      ],
       "metadata": {
         "description": "Kind of server OS of the App Service Plan"
       }
@@ -152,6 +157,14 @@
     },
     "deploymentOptions": {
       "type": "object",
+      "defaultValue": {
+        "enableEgressLockdown": true,
+        "enableWaf": true,
+        "deployRedis": true,
+        "deployAzureSql": true,
+        "deployAppConfig": true,
+        "deployJumpHost": true
+      },
       "metadata": {
         "description": "Several boolean feature flags that control the deployment or not of auxiliary azure resources"
       }
@@ -2992,7 +3005,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.16.1.55165",
-              "templateHash": "847864794506373651"
+              "templateHash": "15371858227520114645"
             }
           },
           "parameters": {
@@ -3032,6 +3045,7 @@
             },
             "firewallInternalIp": {
               "type": "string",
+              "defaultValue": "",
               "metadata": {
                 "description": "Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR"
               }
@@ -3111,6 +3125,10 @@
             },
             "webAppBaseOs": {
               "type": "string",
+              "allowedValues": [
+                "Windows",
+                "Linux"
+              ],
               "metadata": {
                 "description": "Kind of server OS of the App Service Plan"
               }
@@ -4218,7 +4236,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.16.1.55165",
-                      "templateHash": "9889060486895993345"
+                      "templateHash": "2582846303789013461"
                     }
                   },
                   "parameters": {
@@ -4305,6 +4323,10 @@
                     },
                     "webAppBaseOs": {
                       "type": "string",
+                      "allowedValues": [
+                        "Windows",
+                        "Linux"
+                      ],
                       "metadata": {
                         "description": "Kind of server OS of the App Service Plan"
                       }

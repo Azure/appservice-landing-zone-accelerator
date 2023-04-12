@@ -32,6 +32,7 @@ param virtualNetworkLinks array = []
 param vnetHubResourceId string
 
 @description('Kind of server OS of the App Service Plan')
+@allowed([ 'Windows', 'Linux'])
 param webAppBaseOs string
 
 @description('An existing Log Analytics WS Id for creating app Insights, diagnostics etc.')

@@ -46,7 +46,7 @@ param resourceTags object = {}
 param vnetHubResourceId string = ''
 
 @description('Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR')
-param firewallInternalIp string
+param firewallInternalIp string = ''
 
 @description('Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.')
 param enableTelemetry bool = true
@@ -56,6 +56,7 @@ param enableTelemetry bool = true
 param webAppPlanSku string
 
 @description('Kind of server OS of the App Service Plan')
+@allowed([ 'Windows', 'Linux'])
 param webAppBaseOs string
 
 @description('mandatory, the username of the admin user')
@@ -69,7 +70,14 @@ param adminPassword string
 param sqlServerAdministrators object = {}
 
 @description('Several boolean feature flags that control the deployment or not of auxiliary azure resources')
-param deploymentOptions object
+param deploymentOptions object = {
+  enableEgressLockdown: true
+  enableWaf: true
+  deployRedis: true
+  deployAzureSql: true
+  deployAppConfig: true
+  deployJumpHost: true
+}
 
 
 // ================ //

@@ -19,7 +19,7 @@ param subnetSpokeDevOpsAddressSpace string
 param subnetSpokePrivateEndpointAddressSpace string
 
 @description('Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR')
-param firewallInternalIp string
+param firewallInternalIp string = ''
 
 @description('if empty, private dns zone will be deployed in the current RG scope')
 param vnetHubResourceId string = ''
@@ -50,6 +50,7 @@ param deployJumpHost bool
 param webAppPlanSku string
 
 @description('Kind of server OS of the App Service Plan')
+@allowed([ 'Windows', 'Linux'])
 param webAppBaseOs string
 
 @description('optional, default value is azureuser')
