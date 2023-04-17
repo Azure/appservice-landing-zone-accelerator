@@ -17,6 +17,7 @@
 | <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.24 |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.50.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
+| <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Modules
 
@@ -60,6 +61,7 @@
 | [random_password.vm_admin_username](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [azuread_client_config.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/client_config) | data source |
 | [azurerm_virtual_network.hub](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/virtual_network) | data source |
+| [terraform_remote_state.hub](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state) | data source |
 
 ## Inputs
 
@@ -77,7 +79,10 @@
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment (dev, qa, staging, prod) | `string` | `"dev"` | no |
 | <a name="input_firewall_subnet_cidr"></a> [firewall\_subnet\_cidr](#input\_firewall\_subnet\_cidr) | The CIDR block for the firewall subnet. | `list(string)` | `null` | no |
 | <a name="input_front_door_subnet_cidr"></a> [front\_door\_subnet\_cidr](#input\_front\_door\_subnet\_cidr) | The CIDR block for the subnet. | `list(string)` | `null` | no |
-| <a name="input_hub_settings"></a> [hub\_settings](#input\_hub\_settings) | The settings for the hub virtual network. | <pre>object({<br>    rg_name   = string<br>    vnet_name = string<br><br>    firewall = object({<br>      private_ip = optional(string)<br>    })<br>  })</pre> | `null` | no |
+| <a name="input_hub_state_container_name"></a> [hub\_state\_container\_name](#input\_hub\_state\_container\_name) | The name of the container that holds the Terraform state for the hub | `string` | n/a | yes |
+| <a name="input_hub_state_key"></a> [hub\_state\_key](#input\_hub\_state\_key) | The key of the Terraform state for the hub | `string` | n/a | yes |
+| <a name="input_hub_state_resource_group_name"></a> [hub\_state\_resource\_group\_name](#input\_hub\_state\_resource\_group\_name) | The name of the resource group that holds the Terraform state for the hub | `string` | n/a | yes |
+| <a name="input_hub_state_storage_account_name"></a> [hub\_state\_storage\_account\_name](#input\_hub\_state\_storage\_account\_name) | The name of the storage account that holds the Terraform state for the hub | `string` | n/a | yes |
 | <a name="input_hub_vnet_cidr"></a> [hub\_vnet\_cidr](#input\_hub\_vnet\_cidr) | The CIDR block for the hub virtual network. | `list(string)` | `null` | no |
 | <a name="input_location"></a> [location](#input\_location) | The Azure region where all resources in this example should be created | `string` | `"westeurope"` | no |
 | <a name="input_location_short"></a> [location\_short](#input\_location\_short) | The short name for the Azure region where all resources in this example should be created | `string` | `"weu"` | no |
@@ -93,6 +98,7 @@
 | Name | Description |
 |------|-------------|
 | <a name="output_devops_vm_id"></a> [devops\_vm\_id](#output\_devops\_vm\_id) | n/a |
+| <a name="output_hub"></a> [hub](#output\_hub) | n/a |
 | <a name="output_key_vault_name"></a> [key\_vault\_name](#output\_key\_vault\_name) | n/a |
 | <a name="output_key_vault_uri"></a> [key\_vault\_uri](#output\_key\_vault\_uri) | n/a |
 | <a name="output_redis_connection_secret_name"></a> [redis\_connection\_secret\_name](#output\_redis\_connection\_secret\_name) | n/a |
