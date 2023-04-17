@@ -1,5 +1,5 @@
 resource "azurecaf_name" "resource_group" {
-  name          = "hub"
+  name          = "hub-${var.application_name}"
   resource_type = "azurerm_resource_group"
   suffixes      = [var.location_short]
 }
@@ -14,7 +14,7 @@ resource "azurerm_resource_group" "hub" {
 }
 
 resource "azurecaf_name" "law" {
-  name          = "hub"
+  name          = "hub-${var.application_name}"
   resource_type = "azurerm_log_analytics_workspace"
   suffixes      = [var.location_short]
 }
@@ -28,7 +28,7 @@ resource "azurerm_log_analytics_workspace" "law" {
 }
 
 resource "azurecaf_name" "vnet" {
-  name          = "hub"
+  name          = "hub-${var.application_name}"
   resource_type = "azurerm_virtual_network"
   suffixes      = [var.location_short]
 }
@@ -67,7 +67,7 @@ module "network" {
 }
 
 resource "azurecaf_name" "bastion_host" {
-  name          = "hub"
+  name          = "hub-${var.application_name}"
   resource_type = "azurerm_bastion_host"
   suffixes      = [var.location_short]
 }
@@ -86,7 +86,7 @@ module "bastion" {
 }
 
 resource "azurecaf_name" "firewall" {
-  name          = "hub"
+  name          = "hub-${var.application_name}"
   resource_type = "azurerm_firewall"
   suffixes      = [var.location_short]
 }

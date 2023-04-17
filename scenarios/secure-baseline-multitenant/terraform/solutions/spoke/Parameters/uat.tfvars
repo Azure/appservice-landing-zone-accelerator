@@ -1,4 +1,4 @@
-application_name = "secure-webapp"
+application_name = "scenario1"
 environment      = "prod"
 location         = "westus3"
 location_short   = "wus3"

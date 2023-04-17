@@ -1,6 +1,7 @@
-environment    = "prod"
-location       = "westus3"
-location_short = "wus3"
+application_name = "scenario1"
+environment      = "prod"
+location         = "westus3"
+location_short   = "wus3"
 
 # Toggle deployment of optional features and services for the Landing Zone
 deployment_options = {
