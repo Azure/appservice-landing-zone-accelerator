@@ -3,6 +3,11 @@ environment      = "prod"
 location         = "westus3"
 location_short   = "wus3"
 
+hub_state_resource_group_name  = "backend-appsrvc-dev-westus2-001"
+hub_state_storage_account_name = "stbackendappsrwestus2001"
+hub_state_container_name       = "tfstate"
+hub_state_key                  = "scenario1.hub.tfstate"
+
 aad_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
 aad_admin_group_name      = "AppSvcLZA Azure AD SQL Admins"
 vm_aad_admin_username     = "jinle@microsoft.com"
@@ -12,14 +17,14 @@ vm_aad_admin_username     = "jinle@microsoft.com"
 # vm_admin_password         = "**************"
 
 # These settings are used for peering the spoke to the hub. Fill in the appropriate settings for your environment
-hub_settings = {
-  rg_name   = "rg-hub-wus2"
-  vnet_name = "vnet-hub-wus2"
+# hub_settings = {
+#   rg_name   = "rg-hub-scenario1-wus3"
+#   vnet_name = "vnet-hub-scenario1-wus3"
 
-  firewall = {
-    private_ip = "10.242.0.4"
-  }
-}
+#   firewall = {
+#     private_ip = "10.242.0.4"
+#   }
+# }
 
 # Toggle deployment of optional features and services for the Landing Zone
 deployment_options = {
