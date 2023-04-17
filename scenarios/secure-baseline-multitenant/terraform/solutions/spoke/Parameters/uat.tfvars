@@ -10,7 +10,7 @@ hub_state_key                  = "scenario1.hub.tfstate"
 
 aad_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
 aad_admin_group_name      = "AppSvcLZA Azure AD SQL Admins"
-vm_aad_admin_username     = "jinle@microsoft.com"
+vm_aad_admin_username     = "jinle_microsoft.com#EXT#@customersuccessunit.onmicrosoft.com"
 
 # Optionally provide non-AAD admin credentials for the VM
 # vm_admin_username         = "daniem"
@@ -35,7 +35,7 @@ deployment_options = {
   deploy_redis               = true
   deploy_sql_database        = true
   deploy_app_config          = true
-  deploy_vm                  = true
+  deploy_vm                  = false
 }
 
 # Optionally deploy a Github runner, DevOps agent, or both to the VM. 
