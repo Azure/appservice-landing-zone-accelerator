@@ -1,3 +1,9 @@
+variable "application_name" {
+  type        = string
+  description = "The name of your application"
+  default     = "secure-baseline"
+}
+
 variable "location" {
   type        = string
   description = "The Azure region where all resources in this example should be created"

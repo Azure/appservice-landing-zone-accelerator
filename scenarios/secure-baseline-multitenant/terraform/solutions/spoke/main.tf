@@ -25,7 +25,7 @@ locals {
 }
 
 resource "azurecaf_name" "resource_group" {
-  name          = var.application_name
+  name          = "spoke-${var.application_name}"
   resource_type = "azurerm_resource_group"
   suffixes      = [var.environment, var.location_short]
 }
@@ -42,7 +42,7 @@ resource "azurerm_resource_group" "spoke" {
 }
 
 resource "azurecaf_name" "reader_identity" {
-  name          = "${var.application_name}-reader"
+  name          = "spoke-${var.application_name}-reader"
   resource_type = "azurerm_user_assigned_identity"
 }
 
@@ -53,7 +53,7 @@ resource "azurerm_user_assigned_identity" "reader" {
 }
 
 resource "azurecaf_name" "contributor_identity" {
-  name          = "${var.application_name}-contributor"
+  name          = "spoke-${var.application_name}-contributor"
   resource_type = "azurerm_user_assigned_identity"
 }
 
@@ -84,7 +84,7 @@ resource "random_integer" "unique_id" {
 }
 
 resource "azurecaf_name" "spoke_network" {
-  name          = var.application_name
+  name          = "spoke-${var.application_name}"
   resource_type = "azurerm_virtual_network"
   suffixes      = [var.environment]
 }
@@ -269,7 +269,7 @@ module "app_service" {
 //ToDo: Enable extension to deploy DevOps agent
 
 resource "azurecaf_name" "devops_vm" {
-  name          = "devops"
+  name          = "spoke-${var.application_name}-devops"
   resource_type = "azurerm_windows_virtual_machine"
   suffixes      = [random_integer.unique_id.result]
 }
