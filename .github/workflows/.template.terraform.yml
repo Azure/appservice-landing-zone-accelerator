@@ -64,7 +64,7 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
   terraform-apply:
-    # if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     environment: 'Production'
     name: 'Deploy'
     needs: terraform-validate-and-plan
