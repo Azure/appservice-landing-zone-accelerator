@@ -19,7 +19,7 @@ The table below summurizes the avaialble parameters and the possible values that
 
 | Name | Description | Example | 
 |------|-------------|---------|
-|applicationName|A suffix that will be used to name the resources in a pattern similar to ` <resourceAbbreviation>-<applicationName> ` . Must be up to 10 characters long, alphanumeric with dashes|app-svc-01|
+|workloadName|A suffix that will be used to name the resources in a pattern similar to ` <resourceAbbreviation>-<workloadName> ` . Must be up to 10 characters long, alphanumeric with dashes|app-svc-01|
 |location|Azure region where the resources will be deployed in||
 |environment|Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.||
 |vnetHubResourceId|If empty, then a new hub will be created. If you select not to deploy a new Hub resource group, set the resource id of the Hub Virtual Network that you want to peer to. In that case, no new hub will be created and a peering will be created between the new spoke and and existing hub vnet|/subscriptions/<subscription_id>/ resourceGroups/<rg_name>/providers/ Microsoft.Network/virtualNetworks/<vnet_name>|

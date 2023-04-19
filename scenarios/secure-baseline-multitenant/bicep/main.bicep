@@ -5,8 +5,8 @@ targetScope = 'subscription'
 // ================ //
 
 @maxLength(10)
-@description('suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<applicationName>')
-param applicationName string
+@description('suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>')
+param workloadName string
 
 @description('Azure region where the resources will be deployed in')
 param location string
@@ -92,16 +92,16 @@ param deploymentOptions object = {
 // ================ //
 
 var tags = union({
-  applicationName: applicationName
+  workloadName: workloadName
   environment: environment
 }, resourceTags)
 
-var resourceSuffix = '${applicationName}-${environment}-${location}'
+var resourceSuffix = '${workloadName}-${environment}-${location}'
 var hubResourceGroupName = 'rg-hub-${resourceSuffix}'
 var spokeResourceGroupName = 'rg-spoke-${resourceSuffix}'
 
 var defaultSuffixes = [
-  applicationName
+  workloadName
   environment
   '**location**'
 ]

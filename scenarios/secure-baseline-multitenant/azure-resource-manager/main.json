@@ -9,10 +9,10 @@
     }
   },
   "parameters": {
-    "applicationName": {
+    "workloadName": {
       "type": "string",
       "metadata": {
-        "description": "suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<applicationName>"
+        "description": "suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>"
       },
       "maxLength": 10
     },
@@ -185,12 +185,12 @@
     }
   },
   "variables": {
-    "tags": "[union(createObject('applicationName', parameters('applicationName'), 'environment', parameters('environment')), parameters('resourceTags'))]",
-    "resourceSuffix": "[format('{0}-{1}-{2}', parameters('applicationName'), parameters('environment'), parameters('location'))]",
+    "tags": "[union(createObject('workloadName', parameters('workloadName'), 'environment', parameters('environment')), parameters('resourceTags'))]",
+    "resourceSuffix": "[format('{0}-{1}-{2}', parameters('workloadName'), parameters('environment'), parameters('location'))]",
     "hubResourceGroupName": "[format('rg-hub-{0}', variables('resourceSuffix'))]",
     "spokeResourceGroupName": "[format('rg-spoke-{0}', variables('resourceSuffix'))]",
     "defaultSuffixes": [
-      "[parameters('applicationName')]",
+      "[parameters('workloadName')]",
       "[parameters('environment')]",
       "**location**"
     ],

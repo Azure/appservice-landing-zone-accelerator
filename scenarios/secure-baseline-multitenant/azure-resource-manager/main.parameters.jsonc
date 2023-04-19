@@ -2,8 +2,8 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        // max length: 10. Suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<applicationName>
-        "applicationName" : {
+        // max length: 10. Suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>
+        "workloadName" : {
            "value": "appSvc-LZA"         
         },
         // Azure region where the resources will be deployed in
