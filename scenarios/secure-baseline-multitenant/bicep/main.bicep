@@ -9,7 +9,7 @@ targetScope = 'subscription'
 param workloadName string
 
 @description('Azure region where the resources will be deployed in')
-param location string
+param location string = deployment().location
 
 @description('Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.')
 @maxLength(8)

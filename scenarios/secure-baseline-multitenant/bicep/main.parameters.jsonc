@@ -6,10 +6,6 @@
         "workloadName" : {
            "value": "appSvc-LZA"         
         },
-        // Azure region where the resources will be deployed in
-        "location": {
-            "value": "northeurope"
-        },
         //Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
         "environment": {
             "value": "dev"
