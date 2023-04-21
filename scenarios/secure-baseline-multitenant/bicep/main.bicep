@@ -5,36 +5,36 @@ targetScope = 'subscription'
 // ================ //
 
 @maxLength(10)
-@description('suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>')
-param workloadName string
+@description('suffix (max 10 characters long) that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>')
+param workloadName string =  'appsvc${ take( uniqueString( subscription().id), 4) }'
 
 @description('Azure region where the resources will be deployed in')
 param location string = deployment().location
 
 @description('Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.')
 @maxLength(8)
-param environment string
+param environment string = 'test'
 
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24')
-param vnetHubAddressSpace string
+param vnetHubAddressSpace string = '10.242.0.0/20'
 
 @description('CIDR of the subnet hosting the azure Firewall')
-param subnetHubFirewallAddressSpace string
+param subnetHubFirewallAddressSpace string = '10.242.0.0/26'
 
 @description('CIDR of the subnet hosting the Bastion Service')
-param subnetHubBastionAddressSpace string
+param subnetHubBastionAddressSpace string = '10.242.0.64/26'
 
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
-param vnetSpokeAddressSpace string
+param vnetSpokeAddressSpace string = '10.240.0.0/20'
 
 @description('CIDR of the subnet that will hold the app services plan')
-param subnetSpokeAppSvcAddressSpace string
+param subnetSpokeAppSvcAddressSpace string = '10.240.0.0/26'
 
 @description('CIDR of the subnet that will hold devOps agents etc ')
-param subnetSpokeDevOpsAddressSpace string
+param subnetSpokeDevOpsAddressSpace string = '10.240.10.128/26'
 
 @description('CIDR of the subnet that will hold the private endpoints of the supporting services')
-param subnetSpokePrivateEndpointAddressSpace string
+param subnetSpokePrivateEndpointAddressSpace string = '10.240.11.0/24'
 
 @description('Optional. A numeric suffix (e.g. "001") to be appended on the naming generated for the resources. Defaults to empty.')
 param numericSuffix string = ''
@@ -52,17 +52,17 @@ param firewallInternalIp string = ''
 param enableTelemetry bool = true
 
 @description('Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
-@allowed([ 'B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ])
-param webAppPlanSku string
+@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ])
+param webAppPlanSku string = 'S1'
 
 @description('Kind of server OS of the App Service Plan')
 @allowed([ 'Windows', 'Linux'])
-param webAppBaseOs string
+param webAppBaseOs string = 'Windows'
 
-@description('mandatory, the username of the admin user')
-param adminUsername string
+@description('mandatory, the username of the admin user of the jumpbox VM')
+param adminUsername string = 'azureuser'
 
-@description('mandatory, the password of the admin user')
+@description('mandatory, the password of the admin user of the jumpbox VM')
 @secure()
 param adminPassword string
 

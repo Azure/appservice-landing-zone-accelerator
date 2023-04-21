@@ -5,14 +5,15 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.1.55165",
-      "templateHash": "8360969219756695594"
+      "templateHash": "6617272231858148158"
     }
   },
   "parameters": {
     "workloadName": {
       "type": "string",
+      "defaultValue": "[format('appsvc{0}', take(uniqueString(subscription().id), 4))]",
       "metadata": {
-        "description": "suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>"
+        "description": "suffix (max 10 characters long) that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>"
       },
       "maxLength": 10
     },
@@ -25,6 +26,7 @@
     },
     "environment": {
       "type": "string",
+      "defaultValue": "test",
       "maxLength": 8,
       "metadata": {
         "description": "Required. The name of the environment (e.g. \"dev\", \"test\", \"prod\", \"preprod\", \"staging\", \"uat\", \"dr\", \"qa\"). Up to 8 characters long."
@@ -32,42 +34,49 @@
     },
     "vnetHubAddressSpace": {
       "type": "string",
+      "defaultValue": "10.242.0.0/20",
       "metadata": {
         "description": "CIDR of the HUB vnet i.e. 192.168.0.0/24"
       }
     },
     "subnetHubFirewallAddressSpace": {
       "type": "string",
+      "defaultValue": "10.242.0.0/26",
       "metadata": {
         "description": "CIDR of the subnet hosting the azure Firewall"
       }
     },
     "subnetHubBastionAddressSpace": {
       "type": "string",
+      "defaultValue": "10.242.0.64/26",
       "metadata": {
         "description": "CIDR of the subnet hosting the Bastion Service"
       }
     },
     "vnetSpokeAddressSpace": {
       "type": "string",
+      "defaultValue": "10.240.0.0/20",
       "metadata": {
         "description": "CIDR of the SPOKE vnet i.e. 192.168.0.0/24"
       }
     },
     "subnetSpokeAppSvcAddressSpace": {
       "type": "string",
+      "defaultValue": "10.240.0.0/26",
       "metadata": {
         "description": "CIDR of the subnet that will hold the app services plan"
       }
     },
     "subnetSpokeDevOpsAddressSpace": {
       "type": "string",
+      "defaultValue": "10.240.10.128/26",
       "metadata": {
         "description": "CIDR of the subnet that will hold devOps agents etc "
       }
     },
     "subnetSpokePrivateEndpointAddressSpace": {
       "type": "string",
+      "defaultValue": "10.240.11.0/24",
       "metadata": {
         "description": "CIDR of the subnet that will hold the private endpoints of the supporting services"
       }
@@ -109,10 +118,8 @@
     },
     "webAppPlanSku": {
       "type": "string",
+      "defaultValue": "S1",
       "allowedValues": [
-        "B1",
-        "B2",
-        "B3",
         "S1",
         "S2",
         "S3",
@@ -129,6 +136,7 @@
     },
     "webAppBaseOs": {
       "type": "string",
+      "defaultValue": "Windows",
       "allowedValues": [
         "Windows",
         "Linux"
@@ -139,14 +147,15 @@
     },
     "adminUsername": {
       "type": "string",
+      "defaultValue": "azureuser",
       "metadata": {
-        "description": "mandatory, the username of the admin user"
+        "description": "mandatory, the username of the admin user of the jumpbox VM"
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "mandatory, the password of the admin user"
+        "description": "mandatory, the password of the admin user of the jumpbox VM"
       }
     },
     "sqlServerAdministrators": {
