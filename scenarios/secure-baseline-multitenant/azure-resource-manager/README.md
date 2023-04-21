@@ -64,17 +64,6 @@ az deployment sub create `
 ```
 
    
-
-### Approve the App Service private endpoint connection from Front Door in the Azure Portal
-
-This is a manual step that is required to complete the private endpoint connection.
-
-### Retrieve the Azure Front Door frontend endpoint URL and test the App Service
-
-```bash
-az network front-door frontend-endpoint show --front-door-name <front-door-name> --name <front-door-frontend-endpoint-name> --resource-group <front-door-resource-group>  
-```
-
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
 
 This is a manual step that is required to complete the private endpoint connection.

@@ -15,13 +15,13 @@ param location string = deployment().location
 @maxLength(8)
 param environment string = 'test'
 
-@description('CIDR of the HUB vnet i.e. 192.168.0.0/24')
+@description('CIDR of the HUB vnet i.e. 192.168.0.0/24 - optional if you want to use an existing hub vnet (vnetHubResourceId)')
 param vnetHubAddressSpace string = '10.242.0.0/20'
 
-@description('CIDR of the subnet hosting the azure Firewall')
+@description('CIDR of the subnet hosting the azure Firewall - optional if you want to use an existing hub vnet (vnetHubResourceId)')
 param subnetHubFirewallAddressSpace string = '10.242.0.0/26'
 
-@description('CIDR of the subnet hosting the Bastion Service')
+@description('CIDR of the subnet hosting the Bastion Service - optional if you want to use an existing hub vnet (vnetHubResourceId)')
 param subnetHubBastionAddressSpace string = '10.242.0.64/26'
 
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
@@ -62,7 +62,7 @@ param webAppBaseOs string = 'Windows'
 @description('mandatory, the username of the admin user of the jumpbox VM')
 param adminUsername string = 'azureuser'
 
-@description('mandatory, the password of the admin user of the jumpbox VM')
+@description('mandatory, the password of the admin user of the jumpbox VM -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current')
 @secure()
 param adminPassword string
 
