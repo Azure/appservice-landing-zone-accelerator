@@ -62,19 +62,19 @@ param webAppBaseOs string = 'Windows'
 @description('mandatory, the username of the admin user of the jumpbox VM')
 param adminUsername string = 'azureuser'
 
-@description('mandatory, the password of the admin user of the jumpbox VM -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current')
+@description('mandatory, the password of the admin user of the jumpbox VM ')
 @secure()
 param adminPassword string
 
 @description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.')
 param sqlServerAdministrators object = {}
 
-@description('Conditional. If sqlServerAdministrators is given, this is not required')
-param sqlAdminLogin string = ''
+@description('Conditional. If sqlServerAdministrators is given, this is not required. ')
+param sqlAdminLogin string = 'sqluser'
 
-@description('Conditional. If sqlServerAdministrators is given, this is not required')
+@description('Conditional. If sqlServerAdministrators is given, this is not required -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current')
 @secure()
-param sqlAdminPassword string = ''
+param sqlAdminPassword string = 'Pass@word1'
 
 @description('Several boolean feature flags that control the deployment or not of auxiliary azure resources')
 param deploymentOptions object = {

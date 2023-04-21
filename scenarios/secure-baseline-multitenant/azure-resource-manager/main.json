@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.1.55165",
-      "templateHash": "6617272231858148158"
+      "templateHash": "12953498083180677493"
     }
   },
   "parameters": {
@@ -36,21 +36,21 @@
       "type": "string",
       "defaultValue": "10.242.0.0/20",
       "metadata": {
-        "description": "CIDR of the HUB vnet i.e. 192.168.0.0/24"
+        "description": "CIDR of the HUB vnet i.e. 192.168.0.0/24 - optional if you want to use an existing hub vnet (vnetHubResourceId)"
       }
     },
     "subnetHubFirewallAddressSpace": {
       "type": "string",
       "defaultValue": "10.242.0.0/26",
       "metadata": {
-        "description": "CIDR of the subnet hosting the azure Firewall"
+        "description": "CIDR of the subnet hosting the azure Firewall - optional if you want to use an existing hub vnet (vnetHubResourceId)"
       }
     },
     "subnetHubBastionAddressSpace": {
       "type": "string",
       "defaultValue": "10.242.0.64/26",
       "metadata": {
-        "description": "CIDR of the subnet hosting the Bastion Service"
+        "description": "CIDR of the subnet hosting the Bastion Service - optional if you want to use an existing hub vnet (vnetHubResourceId)"
       }
     },
     "vnetSpokeAddressSpace": {
@@ -155,7 +155,7 @@
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "mandatory, the password of the admin user of the jumpbox VM"
+        "description": "mandatory, the password of the admin user of the jumpbox VM "
       }
     },
     "sqlServerAdministrators": {
@@ -167,16 +167,16 @@
     },
     "sqlAdminLogin": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "sqluser",
       "metadata": {
-        "description": "Conditional. If sqlServerAdministrators is given, this is not required"
+        "description": "Conditional. If sqlServerAdministrators is given, this is not required. "
       }
     },
     "sqlAdminPassword": {
       "type": "securestring",
-      "defaultValue": "",
+      "defaultValue": "Pass@word1",
       "metadata": {
-        "description": "Conditional. If sqlServerAdministrators is given, this is not required"
+        "description": "Conditional. If sqlServerAdministrators is given, this is not required -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current"
       }
     },
     "deploymentOptions": {
