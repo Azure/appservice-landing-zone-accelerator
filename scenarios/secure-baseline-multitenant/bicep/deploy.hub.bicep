@@ -39,9 +39,9 @@ param subnetSpokeDevOpsAddressSpace string
 
 var resourceNames = {
   bastionService: naming.bastionHost.name
-  laws: '${naming.logAnalyticsWorkspace.name}-hub'
+  laws: take ('${naming.logAnalyticsWorkspace.name}-hub', 63)
   azFw: naming.firewall.name
-  vnetHub: '${naming.virtualNetwork.name}-hub'
+  vnetHub: take('${naming.virtualNetwork.name}-hub', 80)
   subnetFirewall: 'AzureFirewallSubnet'
   subnetBastion: 'AzureBastionSubnet'
 }

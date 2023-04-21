@@ -72,22 +72,22 @@ param sqlAdminPassword string = ''
 
 var resourceNames = {
   storageAccount: naming.storageAccount.nameUnique
-  vnetSpoke: '${naming.virtualNetwork.name}-spoke'
+  vnetSpoke: take('${naming.virtualNetwork.name}-spoke', 80)
   snetAppSvc: 'snet-appSvc-${naming.virtualNetwork.name}-spoke'
   snetDevOps: 'snet-devOps-${naming.virtualNetwork.name}-spoke'
   snetPe: 'snet-pe-${naming.virtualNetwork.name}-spoke'
-  appSvcUserAssignedManagedIdentity: '${naming.userAssignedManagedIdentity.name}-appSvc'
-  vmJumpHostUserAssignedManagedIdentity: '${naming.userAssignedManagedIdentity.name}-vmJumpHost'
+  appSvcUserAssignedManagedIdentity: take('${naming.userAssignedManagedIdentity.name}-appSvc', 128)
+  vmJumpHostUserAssignedManagedIdentity: take('${naming.userAssignedManagedIdentity.name}-vmJumpHost', 128)
   keyvault: naming.keyVault.nameUnique
   logAnalyticsWs: naming.logAnalyticsWorkspace.name
   appInsights: naming.applicationInsights.name
   aspName: naming.appServicePlan.name
   webApp: naming.appService.nameUnique
-  vmWindowsJumpbox: '${naming.windowsVirtualMachine.name}-win-jumpbox'
+  vmWindowsJumpbox: take('${naming.windowsVirtualMachine.name}-win-jumpbox', 64)
   redisCache: naming.redisCache.nameUnique
   sqlServer: naming.mssqlServer.nameUnique
   sqlDb:'sample-db'
-  appConfig: '${naming.appConfiguration.nameUnique}-${ take( uniqueString(resourceGroup().id, subscription().id), 6) }'
+  appConfig: take ('${naming.appConfiguration.nameUnique}-${ take( uniqueString(resourceGroup().id, subscription().id), 6) }', 50)
   frontDoor: naming.frontDoor.name
   frontDoorEndPoint: 'webAppLza-${ take( uniqueString(resourceGroup().id, subscription().id), 6) }'  //globally unique
   frontDoorWaf: naming.frontDoorFirewallPolicy.name

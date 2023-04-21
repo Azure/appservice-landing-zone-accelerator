@@ -74,7 +74,7 @@ param sqlAdminLogin string = 'sqluser'
 
 @description('Conditional. If sqlServerAdministrators is given, this is not required -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current')
 @secure()
-param sqlAdminPassword string = 'Pass@word1'
+param sqlAdminPassword string = ''
 
 @description('Several boolean feature flags that control the deployment or not of auxiliary azure resources')
 param deploymentOptions object = {

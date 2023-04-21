@@ -1,15 +1,20 @@
 @description('Required. Name of the App Service Plan.')
+@minLength(1)
+@maxLength(40)
 param appServicePlanName string
 
 @description('Required. Name of the web app.')
+@maxLength(60)
 param webAppName string 
 
 @description('Required. Name of the managed Identity that will be assigned to the web app.')
+@minLength(3)
+@maxLength(128)
 param managedIdentityName string
 
+@description('Required. Name of the Azure App Configuration. Alphanumerics, underscores, and hyphens. Must be unique')
 @minLength(5)
 @maxLength(50)
-@description('Required. Name of the Azure App Configuration. Alphanumerics, underscores, and hyphens. Must be unique')
 param appConfigurationName string
 
 @description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
@@ -137,7 +142,7 @@ module webAppPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if 
 module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   name:  take('pe-${webAppName}-Deployment', 64)
   params: {
-    name: 'pe-${webApp.outputs.name}'
+    name: take('pe-${webApp.outputs.name}', 64)
     location: location
     tags: tags
     privateDnsZonesId: webAppPrivateDnsZone.outputs.privateDnsZonesId
@@ -150,7 +155,7 @@ module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(sub
 module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   name:  take('pe-${webAppName}-slot-${slotName}-Deployment', 64)
   params: {
-    name: 'pe-${webAppName}-slot-${slotName}'
+    name: take('pe-${webAppName}-slot-${slotName}', 64)
     location: location
     tags: tags
     privateDnsZonesId: webAppPrivateDnsZone.outputs.privateDnsZonesId

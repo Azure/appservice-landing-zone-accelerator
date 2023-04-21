@@ -1,6 +1,10 @@
 @description('Required. Name of windows VM.')
+@minLength(2)
+@maxLength(64)
 param vmWindowsJumpboxName string
 
+@minLength(3)
+@maxLength(128)
 @description('Required. Name of the vmJumpHostUserAssignedManagedIdenity.')
 param vmJumpHostUserAssignedManagedIdentityName string
 

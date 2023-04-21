@@ -65,7 +65,7 @@ module sqlServerPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = 
 module peSqlServer '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   name: take('pe-${name}-Deployment', 64)
   params: {
-    name: 'pe-${sqlDbAndServer.outputs.sqlServerName}'
+    name: take('pe-${sqlDbAndServer.outputs.sqlServerName}', 64)
     location: location
     tags: tags
     privateDnsZonesId: sqlServerPrivateDnsZone.outputs.privateDnsZonesId

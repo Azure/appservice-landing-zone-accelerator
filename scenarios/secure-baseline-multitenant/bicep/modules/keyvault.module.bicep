@@ -47,7 +47,7 @@ module keyvaultPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = i
 module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   name: 'peKeyvaultDeployment'
   params: {
-    name: 'pe-${keyvault.outputs.keyvaultName}'
+    name: take('pe-${keyvault.outputs.keyvaultName}', 64)
     location: location
     tags: tags
     privateDnsZonesId: keyvaultPrivateDnsZone.outputs.privateDnsZonesId

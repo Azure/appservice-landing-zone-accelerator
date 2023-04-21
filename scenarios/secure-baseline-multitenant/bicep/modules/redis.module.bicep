@@ -56,7 +56,7 @@ module redisPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if (
 module peRedis '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   name: take('pe-${name}-Deployment', 64)
   params: {
-    name: 'pe-${redis.outputs.name}'
+    name: take('pe-${redis.outputs.name}', 64)
     location: location
     tags: tags
     privateDnsZonesId: redisPrivateDnsZone.outputs.privateDnsZonesId
