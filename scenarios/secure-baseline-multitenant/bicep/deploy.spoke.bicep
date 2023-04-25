@@ -285,32 +285,8 @@ module vmWindowsModule 'modules/vmJumphost.module.bicep' = if (deployJumpHost) {
     subnetDevOpsId: snetDevOps.id
   }
 }
-// module vmWindows '../../shared/bicep/compute/jumphost-win11.bicep' = if (deployJumpHost) {
-//   name: 'vmWindows-Deployment'
-//   params: {
-//     name:  resourceNames.vmWindowsJumpbox 
-//     location: location
-//     tags: tags
-//     adminPassword: adminPassword
-//     adminUsername: adminUsername
-//     subnetId: snetDevOps.id
-//     enableAzureAdJoin: true
-//     userAssignedIdentities: {
-//       '${vmJumpHostUserAssignedManagedIdenity.outputs.principalId}': {}
-//     }
-//   }
-// }
 
-// module vmJumpHostUserAssignedManagedIdenity '../../shared/bicep/managed-identity.bicep' = {
-//   name: 'vmJumpHostUserAssignedManagedIdenity-Deployment'
-//   params: {
-//     name: resourceNames.vmJumpHostUserAssignedManagedIdentity
-//     location: location
-//     tags: tags
-//   }
-// }
 
-// TODO: We need feature flag to deploy or not Redis - should not be default
 module redisCache 'modules/redis.module.bicep' = if (deployRedis) {
   name: take('${resourceNames.redisCache}-redisModule-Deployment', 64)
   params: {
