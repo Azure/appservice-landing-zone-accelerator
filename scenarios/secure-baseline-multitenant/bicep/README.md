@@ -72,20 +72,36 @@ fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query
 az network private-endpoint-connection approve --id $fd_conn_id --description "Approved"
 ```
 
-### Connect to the DevOps VM
+### Connect to the Jumpbox VM (deployed in the spoke resource group)
 
-From a PowerShell terminal, connect to the DevOps VM using your Azure AD credentials (or Windows Hello). The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
+You can connect to the jumpbox win 11 VM only through bastion. The default parameters deploy a Bastion in Standard SKU, with native client support enabled. The jumpbox VM is AADJoined by default. This means that you can connect to the jumpbox, either with the local user/password compination (azureuser is the default username) or with a valid AAD account. In certain circumastances your organization may not allow the device to be enrolled. If the jumpbox VM is AAD joined and properly intune enrolled, you can use native rdp client to connect by running the below Az CLI commands 
+
+From a PowerShell terminal, connect to the DevOps VM using your Azure AD credentials (or Windows Hello). 
 
 ```powershell
 az upgrade
+
+az login
+az account list
+az account set --subscription "<subscription ID>"
+
 az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
+More  details on how to [connect to a windows VM with native rdp client, can be found here](https://learn.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-windows)
+
 The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
-If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"), enroll the Jumpbox to Azure AD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"),login to the VM with local user (i.e. azureuser) and enroll the Jumpbox to Azure AD by following the steps in Edge: 
+- open Edge and click "Sign in to sync data", 
+- select "Work or school account", 
+- and then press OK on "Allow my organization to manage my device". 
 
-Once completed, you should be able to connect to the SQL Server using the Azure AD account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
+It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+
+If you experience issues connecting to the DevOps VM using your AAD credentials, see [Unable to connect to DevOps VM using AAD credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-aad-credentials)
+
+Once completed, and if you provided a valid (AAD) administrator group used for SQL Server authentication (and not only local SQL user administrator), you should be able to connect to the SQL Server using the Azure AD account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions:
 
 ```sql
 CREATE USER [web-app-name] FROM EXTERNAL PROVIDER;
