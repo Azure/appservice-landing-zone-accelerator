@@ -30,7 +30,11 @@ The table below summurizes the avaialble parameters and the possible values that
 |webAppPlanSku|Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. select one from: 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ||
 |webAppBaseOs|The OS for the App service plan. Two options available: Windows or Linux||
 |resourceTags|Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)|"resourceTags": {<br>         "value": { <br>               "deployment": "bicep", <br>  "key1": "value1" <br>           } <br>         } |
-|deploymentOptions|Several boolean feature flags. Control the deployment or not of auxiliary azure resources. Feature flags are descibed below <br> **enableEgressLockdown**: Create (or not) a UDR for the App Service Subnet, to route all egress traffic through Hub Azure Firewall <br> **deployRedis**: Deploy (or not) a redis cache <br> **deployAzureSql**: Deploy (or not) an Azure SQL with default database <br> **deployAppConfig**: Deploy (or not) an Azure app configuration <br> **deployJumpHost**: Deploy (or not) an Azure virtual machine (to be used as jumphost) ||
+|enableEgressLockdown|Feature Flag: te (or not) a UDR for the App Service Subnet, to route all egress traffic through Hub Azure Firewall|
+|deployRedis|Feature Flag: Deploy (or not) a redis cache |
+|deployAzureSql|Feature Flag: Deploy (or not) an Azure SQL with default database|
+|deployAppConfig|Feature Flag: Deploy (or not) an Azure app configuration|
+|deployJumpHost|Feature Flag: Deploy (or not) an Azure virtual machine (to be used as jumphost)|
 |sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group  must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
 
 After the parameters have been initialized, you can deploy the Landing Zone Accelerator resources with the following `az cli` command:
