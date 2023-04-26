@@ -22,15 +22,29 @@
             "value": "10.242.0.0/20"
         },
         // Feature Flags
-        "deploymentOptions": {
-            "value": {
-                "enableEgressLockdown": true,
-                "enableWaf": true,
-                "deployRedis": true,
-                "deployAzureSql": true,
-                "deployAppConfig": true,
-                "deployJumpHost": true
-            }
+        // set to true if you want to intercept all outbound traffic with azure firewall
+        "enableEgressLockdown" : {
+            "value": "true"
+        },
+        // set to true if you want to deploy a WAF in front of the app service
+        "enableWaf": {
+            "value": "true"
+        },
+        // set to true if you want to a redis cache
+        "deployRedis": {
+            "value": "true"
+        },
+        // set to true if you want to deploy a azure SQL server and default database
+        "deployAzureSql": {
+            "value": "true"
+        },
+        // set to true if you want to deploy application configuration
+        "deployAppConfig": {
+            "value": "true"
+        },
+        // set to true if you want to deploy a jumpbox/devops VM
+        "deployJumpHost": {
+            "value": "true"
         },
         // CIDR of the subnet that will host the azure Firewall
         "subnetHubFirewallAddressSpace": {

@@ -222,6 +222,7 @@ module peAzConfig '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(s
 module webAppIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = if ( deployAppConfig ) {
   name: 'webAppSystemIdentityOnAppConfigDataReader-Deployment'
   params: {
+    name: 'ra-webAppSystemIdentityOnAppConfigDataReader'
     principalId: webAppUserAssignedManagedIdenity.outputs.principalId
     resourceId: ( deployAppConfig ) ?  appConfigStore.outputs.resourceId : ''
     roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
@@ -231,6 +232,7 @@ module webAppIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignmen
 module webAppIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
   name: 'webAppSystemIdentityOnKeyvaultSecretsUser-Deployment'
   params: {
+    name: 'ra-webAppSystemIdentityOnKeyvaultSecretsUser'
     principalId: webAppUserAssignedManagedIdenity.outputs.principalId
     resourceId: keyvault.id
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'  //Key Vault Secrets User  
@@ -240,6 +242,7 @@ module webAppIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignmen
 module webAppStagingSlotSystemIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignments/role-assignment.bicep' = if ( deployAppConfig ) {
   name: 'webAppStagingSlotSystemIdentityOnAppConfigDataReader-Deployment'
   params: {
+    name: 'ra-webAppStagingSlotSystemIdentityOnAppConfigDataReader'
     principalId: webAppUserAssignedManagedIdenity.outputs.principalId //webApp.outputs.slotSystemAssignedPrincipalIds[0]
     resourceId: ( deployAppConfig ) ?  appConfigStore.outputs.resourceId : ''
     roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
@@ -249,6 +252,7 @@ module webAppStagingSlotSystemIdentityOnAppConfigDataReader '../../../shared/bic
 module webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
   name: 'webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser-Deployment'
   params: {
+    name: 'ra-webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser'
     principalId: webAppUserAssignedManagedIdenity.outputs.principalId // webApp.outputs.slotSystemAssignedPrincipalIds[0]
     resourceId: keyvault.id
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'  //Key Vault Secrets User   

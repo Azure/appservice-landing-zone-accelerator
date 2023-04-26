@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "13322534872172044569"
+      "templateHash": "13674677836285162148"
     }
   },
   "parameters": {
@@ -109,13 +109,6 @@
         "description": "Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR"
       }
     },
-    "enableTelemetry": {
-      "type": "bool",
-      "defaultValue": true,
-      "metadata": {
-        "description": "Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services."
-      }
-    },
     "webAppPlanSku": {
       "type": "string",
       "defaultValue": "S1",
@@ -179,18 +172,46 @@
         "description": "Conditional. If sqlServerAdministrators is given, this is not required -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current"
       }
     },
-    "deploymentOptions": {
-      "type": "object",
-      "defaultValue": {
-        "enableEgressLockdown": true,
-        "enableWaf": true,
-        "deployRedis": true,
-        "deployAzureSql": true,
-        "deployAppConfig": true,
-        "deployJumpHost": true
-      },
+    "enableEgressLockdown": {
+      "type": "bool",
+      "defaultValue": true,
       "metadata": {
-        "description": "Several boolean feature flags that control the deployment or not of auxiliary azure resources"
+        "description": "set to true if you want to intercept all outbound traffic with azure firewall"
+      }
+    },
+    "enableWaf": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "set to true if you want to deploy a WAF in front of the app service"
+      }
+    },
+    "deployRedis": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "set to true if you want to a redis cache"
+      }
+    },
+    "deployAzureSql": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "set to true if you want to deploy a azure SQL server and default database"
+      }
+    },
+    "deployAppConfig": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "set to true if you want to deploy application configuration"
+      }
+    },
+    "deployJumpHost": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "set to true if you want to deploy a jumpbox/devops VM"
       }
     }
   },
@@ -206,6 +227,7 @@
     ],
     "namingSuffixes": "[if(empty(parameters('numericSuffix')), variables('defaultSuffixes'), concat(variables('defaultSuffixes'), createArray(parameters('numericSuffix'))))]",
     "administrators": "[if(empty(parameters('sqlServerAdministrators')), createObject(), union(createObject('administratorType', 'ActiveDirectory', 'principalType', 'Group', 'azureADOnlyAuthentication', true()), parameters('sqlServerAdministrators')))]",
+    "enableTelemetry": true,
     "telemetryId": "[format('cf7e9f0a-f872-49db-b72f-f2e318189a6d-{0}-msb', parameters('location'))]"
   },
   "resources": [
@@ -225,7 +247,7 @@
       "tags": "[variables('tags')]"
     },
     {
-      "condition": "[parameters('enableTelemetry')]",
+      "condition": "[variables('enableTelemetry')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
       "name": "[variables('telemetryId')]",
@@ -1440,7 +1462,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.16.2.56959",
-              "templateHash": "6068267523263527275"
+              "templateHash": "11184193868083752560"
             }
           },
           "parameters": {
@@ -1972,7 +1994,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.16.2.56959",
-                      "templateHash": "7934538108689960343"
+                      "templateHash": "2972889301818770629"
                     }
                   },
                   "parameters": {
@@ -2032,6 +2054,7 @@
                         "name": "[parameters('sku')]"
                       },
                       "properties": {
+                        "enableTunneling": "[if(equals(parameters('sku'), 'Standard'), true(), false())]",
                         "ipConfigurations": [
                           {
                             "name": "IpConf",
@@ -3010,22 +3033,22 @@
             "value": "[parameters('webAppPlanSku')]"
           },
           "enableEgressLockdown": {
-            "value": "[parameters('deploymentOptions').enableEgressLockdown]"
+            "value": "[parameters('enableEgressLockdown')]"
           },
           "enableWaf": {
-            "value": "[parameters('deploymentOptions').enableWaf]"
+            "value": "[parameters('enableWaf')]"
           },
           "deployJumpHost": {
-            "value": "[parameters('deploymentOptions').deployJumpHost]"
+            "value": "[parameters('deployJumpHost')]"
           },
           "deployRedis": {
-            "value": "[parameters('deploymentOptions').deployRedis]"
+            "value": "[parameters('deployRedis')]"
           },
           "deployAzureSql": {
-            "value": "[parameters('deploymentOptions').deployAzureSql]"
+            "value": "[parameters('deployAzureSql')]"
           },
           "deployAppConfig": {
-            "value": "[parameters('deploymentOptions').deployAppConfig]"
+            "value": "[parameters('deployAppConfig')]"
           }
         },
         "template": {
@@ -3035,7 +3058,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.16.2.56959",
-              "templateHash": "1502698336615272969"
+              "templateHash": "2989242971228964026"
             }
           },
           "parameters": {
@@ -3133,9 +3156,6 @@
             "webAppPlanSku": {
               "type": "string",
               "allowedValues": [
-                "B1",
-                "B2",
-                "B3",
                 "S1",
                 "S2",
                 "S3",
@@ -4280,7 +4300,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.16.2.56959",
-                      "templateHash": "17122130687944283234"
+                      "templateHash": "11990347735305558759"
                     }
                   },
                   "parameters": {
@@ -4318,9 +4338,6 @@
                     "sku": {
                       "type": "string",
                       "allowedValues": [
-                        "B1",
-                        "B2",
-                        "B3",
                         "S1",
                         "S2",
                         "S3",
@@ -4646,7 +4663,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.16.2.56959",
-                              "templateHash": "17962744567350344266"
+                              "templateHash": "2591205770313272324"
                             }
                           },
                           "parameters": {
@@ -4674,9 +4691,6 @@
                             "sku": {
                               "type": "string",
                               "allowedValues": [
-                                "B1",
-                                "B2",
-                                "B3",
                                 "S1",
                                 "S2",
                                 "S3",
@@ -7201,6 +7215,9 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
+                          "name": {
+                            "value": "ra-webAppSystemIdentityOnAppConfigDataReader"
+                          },
                           "principalId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'appSvcUserAssignedManagedIdenity-Deployment'), '2022-09-01').outputs.principalId.value]"
                           },
@@ -7216,12 +7233,22 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.16.2.56959",
-                              "templateHash": "8802366217208157988"
+                              "templateHash": "11864612487936299852"
                             }
                           },
                           "parameters": {
+                            "name": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "metadata": {
+                                "description": "The name of the RoleAssignment. Can be found by running: az role assignment list --output json"
+                              }
+                            },
                             "resourceId": {
-                              "type": "string"
+                              "type": "string",
+                              "metadata": {
+                                "description": "The type of resource you wish to assign the role to. Can be found by running: az resource list --output json"
+                              }
                             },
                             "roleDefinitionId": {
                               "type": "string",
@@ -7258,7 +7285,7 @@
                             {
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2021-04-01",
-                              "name": "[take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)]",
+                              "name": "[parameters('name')]",
                               "properties": {
                                 "mode": "Incremental",
                                 "expressionEvaluationOptions": {
@@ -7292,7 +7319,7 @@
                             },
                             "roleAssignmentId": {
                               "type": "string",
-                              "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)), '2021-04-01').outputs.roleAssignmentId.value]"
+                              "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('name')), '2021-04-01').outputs.roleAssignmentId.value]"
                             }
                           }
                         }
@@ -7312,6 +7339,9 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
+                          "name": {
+                            "value": "ra-webAppSystemIdentityOnKeyvaultSecretsUser"
+                          },
                           "principalId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'appSvcUserAssignedManagedIdenity-Deployment'), '2022-09-01').outputs.principalId.value]"
                           },
@@ -7329,12 +7359,22 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.16.2.56959",
-                              "templateHash": "8802366217208157988"
+                              "templateHash": "11864612487936299852"
                             }
                           },
                           "parameters": {
+                            "name": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "metadata": {
+                                "description": "The name of the RoleAssignment. Can be found by running: az role assignment list --output json"
+                              }
+                            },
                             "resourceId": {
-                              "type": "string"
+                              "type": "string",
+                              "metadata": {
+                                "description": "The type of resource you wish to assign the role to. Can be found by running: az resource list --output json"
+                              }
                             },
                             "roleDefinitionId": {
                               "type": "string",
@@ -7371,7 +7411,7 @@
                             {
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2021-04-01",
-                              "name": "[take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)]",
+                              "name": "[parameters('name')]",
                               "properties": {
                                 "mode": "Incremental",
                                 "expressionEvaluationOptions": {
@@ -7405,7 +7445,7 @@
                             },
                             "roleAssignmentId": {
                               "type": "string",
-                              "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)), '2021-04-01').outputs.roleAssignmentId.value]"
+                              "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('name')), '2021-04-01').outputs.roleAssignmentId.value]"
                             }
                           }
                         }
@@ -7425,6 +7465,9 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
+                          "name": {
+                            "value": "ra-webAppStagingSlotSystemIdentityOnAppConfigDataReader"
+                          },
                           "principalId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'appSvcUserAssignedManagedIdenity-Deployment'), '2022-09-01').outputs.principalId.value]"
                           },
@@ -7440,12 +7483,22 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.16.2.56959",
-                              "templateHash": "8802366217208157988"
+                              "templateHash": "11864612487936299852"
                             }
                           },
                           "parameters": {
+                            "name": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "metadata": {
+                                "description": "The name of the RoleAssignment. Can be found by running: az role assignment list --output json"
+                              }
+                            },
                             "resourceId": {
-                              "type": "string"
+                              "type": "string",
+                              "metadata": {
+                                "description": "The type of resource you wish to assign the role to. Can be found by running: az resource list --output json"
+                              }
                             },
                             "roleDefinitionId": {
                               "type": "string",
@@ -7482,7 +7535,7 @@
                             {
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2021-04-01",
-                              "name": "[take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)]",
+                              "name": "[parameters('name')]",
                               "properties": {
                                 "mode": "Incremental",
                                 "expressionEvaluationOptions": {
@@ -7516,7 +7569,7 @@
                             },
                             "roleAssignmentId": {
                               "type": "string",
-                              "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)), '2021-04-01').outputs.roleAssignmentId.value]"
+                              "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('name')), '2021-04-01').outputs.roleAssignmentId.value]"
                             }
                           }
                         }
@@ -7536,6 +7589,9 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
+                          "name": {
+                            "value": "ra-webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser"
+                          },
                           "principalId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'appSvcUserAssignedManagedIdenity-Deployment'), '2022-09-01').outputs.principalId.value]"
                           },
@@ -7553,12 +7609,22 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.16.2.56959",
-                              "templateHash": "8802366217208157988"
+                              "templateHash": "11864612487936299852"
                             }
                           },
                           "parameters": {
+                            "name": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "metadata": {
+                                "description": "The name of the RoleAssignment. Can be found by running: az role assignment list --output json"
+                              }
+                            },
                             "resourceId": {
-                              "type": "string"
+                              "type": "string",
+                              "metadata": {
+                                "description": "The type of resource you wish to assign the role to. Can be found by running: az resource list --output json"
+                              }
                             },
                             "roleDefinitionId": {
                               "type": "string",
@@ -7595,7 +7661,7 @@
                             {
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2021-04-01",
-                              "name": "[take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)]",
+                              "name": "[parameters('name')]",
                               "properties": {
                                 "mode": "Incremental",
                                 "expressionEvaluationOptions": {
@@ -7629,7 +7695,7 @@
                             },
                             "roleAssignmentId": {
                               "type": "string",
-                              "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)), '2021-04-01').outputs.roleAssignmentId.value]"
+                              "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('name')), '2021-04-01').outputs.roleAssignmentId.value]"
                             }
                           }
                         }
@@ -8236,7 +8302,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.16.2.56959",
-                      "templateHash": "9370333775627001221"
+                      "templateHash": "1629132559186839816"
                     }
                   },
                   "parameters": {
@@ -8770,6 +8836,9 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
+                          "name": {
+                            "value": "ra-vmJumpHostIdentityOnKeyvaultSecretsOfficer"
+                          },
                           "principalId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'vmJumpHostUserAssignedManagedIdenity-Deployment'), '2022-09-01').outputs.principalId.value]"
                           },
@@ -8787,12 +8856,22 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.16.2.56959",
-                              "templateHash": "8802366217208157988"
+                              "templateHash": "11864612487936299852"
                             }
                           },
                           "parameters": {
+                            "name": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "metadata": {
+                                "description": "The name of the RoleAssignment. Can be found by running: az role assignment list --output json"
+                              }
+                            },
                             "resourceId": {
-                              "type": "string"
+                              "type": "string",
+                              "metadata": {
+                                "description": "The type of resource you wish to assign the role to. Can be found by running: az resource list --output json"
+                              }
                             },
                             "roleDefinitionId": {
                               "type": "string",
@@ -8829,7 +8908,7 @@
                             {
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2021-04-01",
-                              "name": "[take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)]",
+                              "name": "[parameters('name')]",
                               "properties": {
                                 "mode": "Incremental",
                                 "expressionEvaluationOptions": {
@@ -8863,7 +8942,7 @@
                             },
                             "roleAssignmentId": {
                               "type": "string",
-                              "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)), '2021-04-01').outputs.roleAssignmentId.value]"
+                              "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('name')), '2021-04-01').outputs.roleAssignmentId.value]"
                             }
                           }
                         }
@@ -8882,6 +8961,9 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
+                          "name": {
+                            "value": "ra-vmJumpHostIdentityOnKeyvaultCertificateOfficer"
+                          },
                           "principalId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'vmJumpHostUserAssignedManagedIdenity-Deployment'), '2022-09-01').outputs.principalId.value]"
                           },
@@ -8899,12 +8981,22 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.16.2.56959",
-                              "templateHash": "8802366217208157988"
+                              "templateHash": "11864612487936299852"
                             }
                           },
                           "parameters": {
+                            "name": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "metadata": {
+                                "description": "The name of the RoleAssignment. Can be found by running: az role assignment list --output json"
+                              }
+                            },
                             "resourceId": {
-                              "type": "string"
+                              "type": "string",
+                              "metadata": {
+                                "description": "The type of resource you wish to assign the role to. Can be found by running: az resource list --output json"
+                              }
                             },
                             "roleDefinitionId": {
                               "type": "string",
@@ -8941,7 +9033,7 @@
                             {
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2021-04-01",
-                              "name": "[take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)]",
+                              "name": "[parameters('name')]",
                               "properties": {
                                 "mode": "Incremental",
                                 "expressionEvaluationOptions": {
@@ -8975,7 +9067,7 @@
                             },
                             "roleAssignmentId": {
                               "type": "string",
-                              "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)), '2021-04-01').outputs.roleAssignmentId.value]"
+                              "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('name')), '2021-04-01').outputs.roleAssignmentId.value]"
                             }
                           }
                         }
@@ -8995,6 +9087,9 @@
                         },
                         "mode": "Incremental",
                         "parameters": {
+                          "name": {
+                            "value": "ra-vmJumpHostIdentityOnAppConfigDataOwner"
+                          },
                           "principalId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'vmJumpHostUserAssignedManagedIdenity-Deployment'), '2022-09-01').outputs.principalId.value]"
                           },
@@ -9012,12 +9107,22 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.16.2.56959",
-                              "templateHash": "8802366217208157988"
+                              "templateHash": "11864612487936299852"
                             }
                           },
                           "parameters": {
+                            "name": {
+                              "type": "string",
+                              "maxLength": 64,
+                              "metadata": {
+                                "description": "The name of the RoleAssignment. Can be found by running: az role assignment list --output json"
+                              }
+                            },
                             "resourceId": {
-                              "type": "string"
+                              "type": "string",
+                              "metadata": {
+                                "description": "The type of resource you wish to assign the role to. Can be found by running: az resource list --output json"
+                              }
                             },
                             "roleDefinitionId": {
                               "type": "string",
@@ -9054,7 +9159,7 @@
                             {
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2021-04-01",
-                              "name": "[take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)]",
+                              "name": "[parameters('name')]",
                               "properties": {
                                 "mode": "Incremental",
                                 "expressionEvaluationOptions": {
@@ -9088,7 +9193,7 @@
                             },
                             "roleAssignmentId": {
                               "type": "string",
-                              "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('RA-{0}-{1}-{2}', parameters('principalId'), parameters('roleDefinitionId'), last(split(parameters('resourceId'), '/'))), 64)), '2021-04-01').outputs.roleAssignmentId.value]"
+                              "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('name')), '2021-04-01').outputs.roleAssignmentId.value]"
                             }
                           }
                         }

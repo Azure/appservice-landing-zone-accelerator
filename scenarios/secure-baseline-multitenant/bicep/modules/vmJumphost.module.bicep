@@ -62,6 +62,7 @@ module vmJumpHostUserAssignedManagedIdentity '../../../shared/bicep/managed-iden
 module vmJumpHostIdentityOnKeyvaultSecretsOfficer '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
   name: 'vmJumpHostIdentityOnKeyvaultSecretsOfficer-Deployment'
   params: {
+    name: 'ra-vmJumpHostIdentityOnKeyvaultSecretsOfficer'
     principalId: vmJumpHostUserAssignedManagedIdentity.outputs.principalId
     resourceId: keyvault.id
     roleDefinitionId: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'  //Key Vault Secrets Officer  
@@ -71,6 +72,7 @@ module vmJumpHostIdentityOnKeyvaultSecretsOfficer '../../../shared/bicep/role-as
 module vmJumpHostIdentityOnKeyvaultCertificateOfficer '../../../shared/bicep/role-assignments/role-assignment.bicep' = {
   name: 'vmJumpHostIdentityOnKeyvaultCertificateOfficer-Deployment'
   params: {
+    name: 'ra-vmJumpHostIdentityOnKeyvaultCertificateOfficer'
     principalId: vmJumpHostUserAssignedManagedIdentity.outputs.principalId
     resourceId: keyvault.id
     roleDefinitionId: 'a4417e6f-fecd-4de8-b567-7b0420556985'  //Key Vault Certificates Officer  
@@ -80,6 +82,7 @@ module vmJumpHostIdentityOnKeyvaultCertificateOfficer '../../../shared/bicep/rol
 module vmJumpHostIdentityOnAppConfigDataOwner '../../../shared/bicep/role-assignments/role-assignment.bicep' = if ( !empty(appConfigStoreId) ) {
   name: 'vmJumpHostIdentityOnAppConfigDataOwner-Deployment'
   params: {
+    name: 'ra-vmJumpHostIdentityOnAppConfigDataOwner'
     principalId: vmJumpHostUserAssignedManagedIdentity.outputs.principalId
     resourceId: appConfigStoreId
     roleDefinitionId: '5ae67dd6-50cb-40e7-96ff-dc2bfa4b606b'  //App Configuration Data Owner  

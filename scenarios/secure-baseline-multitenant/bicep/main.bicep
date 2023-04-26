@@ -48,9 +48,6 @@ param vnetHubResourceId string = ''
 @description('Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR')
 param firewallInternalIp string = ''
 
-@description('Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.')
-param enableTelemetry bool = true
-
 @description('Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
 @allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ])
 param webAppPlanSku string = 'S1'
@@ -76,15 +73,24 @@ param sqlAdminLogin string = 'sqluser'
 @secure()
 param sqlAdminPassword string = ''
 
-@description('Several boolean feature flags that control the deployment or not of auxiliary azure resources')
-param deploymentOptions object = {
-  enableEgressLockdown: true
-  enableWaf: true
-  deployRedis: true
-  deployAzureSql: true
-  deployAppConfig: true
-  deployJumpHost: true
-}
+@description('set to true if you want to intercept all outbound traffic with azure firewall')
+param enableEgressLockdown bool =  true
+
+@description('set to true if you want to deploy a WAF in front of the app service')
+param enableWaf bool = true
+
+@description('set to true if you want to a redis cache')
+param deployRedis bool =  true
+
+@description('set to true if you want to deploy a azure SQL server and default database')
+param deployAzureSql bool =  true
+
+@description('set to true if you want to deploy application configuration')
+param deployAppConfig bool =  true
+
+@description('set to true if you want to deploy a jumpbox/devops VM')
+param deployJumpHost bool =  true
+
 
 
 // ================ //
@@ -114,6 +120,9 @@ var administrators = empty (sqlServerAdministrators) ? {} : union ({
                                                                     principalType: 'Group'
                                                                     azureADOnlyAuthentication: true //TODO: not sure this should be default
                                                                   }, sqlServerAdministrators)
+
+// 'Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.
+var enableTelemetry = true                                                                  
 
 // var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : split(hubVnet.id, '/')
 
@@ -184,12 +193,12 @@ module spoke 'deploy.spoke.bicep' = {
     sqlAdminLogin: sqlAdminLogin
     sqlAdminPassword: sqlAdminPassword  
     webAppPlanSku: webAppPlanSku 
-    enableEgressLockdown: deploymentOptions.enableEgressLockdown
-    enableWaf: deploymentOptions.enableWaf
-    deployJumpHost: deploymentOptions.deployJumpHost
-    deployRedis: deploymentOptions.deployRedis
-    deployAzureSql: deploymentOptions.deployAzureSql
-    deployAppConfig: deploymentOptions.deployAppConfig
+    enableEgressLockdown: enableEgressLockdown
+    enableWaf: enableWaf
+    deployJumpHost: deployJumpHost
+    deployRedis: deployRedis
+    deployAzureSql: deployAzureSql
+    deployAppConfig: deployAppConfig
   }
 }
 
