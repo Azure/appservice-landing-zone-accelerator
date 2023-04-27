@@ -1,0 +1,97 @@
+name: '.Template - Terraform Deployment'
+
+on:
+  workflow_call:
+    inputs:
+      terraformVersion:
+        type: string
+        description: 'Terraform version'
+        required: true
+        default: '1.3.9'
+      modulePath:
+        type: string
+        description: 'Path to the Terraform module'
+        required: true
+        default: 'scenarios/secure-baseline-ase/terraform'
+      backendStateKey:
+        type: string
+        description: 'Name of the state file'
+        required: true
+      tfvarPath:
+        type: string
+        description: 'Path to the Terraform variables'
+        required: true
+      destroy:
+        type: boolean
+        description: 'Destroy resources?'
+        default: false
+
+jobs:
+  terraform-validate-and-plan:
+    name: 'Validate and Plan'
+    timeout-minutes: 360
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@main
+    
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ inputs.terraform_version }}
+  
+      # Log into Azure via OIDC
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+      - name: 'ValidateAndPlan'
+        id: validate-plan
+        uses: ./.github/actions/templates/tfValidatePlan
+        with:
+          terraformVersion: ${{ inputs.terraformVersion }}
+          modulePath: ${{ inputs.modulePath }}
+          tfvarPath: ${{ inputs.tfvarPath }}
+          backendStateKey: ${{ inputs.backendStateKey }}
+          destroy: ${{ github.event.inputs.destroy }}
+          backendResourceGroupName: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+          backendStorageAccountName: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+          backendStorageContainerName: ${{ secrets.AZURE_TF_STATE_STORAGE_CONTAINER_NAME }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  terraform-apply:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: 'Production'
+    name: 'Deploy'
+    needs: terraform-validate-and-plan
+    timeout-minutes: 360
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@main
+    
+      # Log into Azure via OIDC
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+      - name: 'ApplyTerraform'
+        id: apply
+        uses: ./.github/actions/templates/tfApply
+        with:
+          terraformVersion: ${{ inputs.terraformVersion }}
+          modulePath: ${{ inputs.modulePath }}
+          backendStateKey: ${{ inputs.backendStateKey }}
+          destroy: ${{ github.event.inputs.destroy }}
+          backendResourceGroupName: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+          backendStorageAccountName: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+          backendStorageContainerName: ${{ secrets.AZURE_TF_STATE_STORAGE_CONTAINER_NAME }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

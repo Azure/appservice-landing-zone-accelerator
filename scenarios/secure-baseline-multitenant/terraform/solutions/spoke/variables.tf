@@ -4,6 +4,26 @@ variable "global_settings" {
   default = {}
 }
 
+variable "hub_state_resource_group_name" {
+  type        = string
+  description = "The name of the resource group that holds the Terraform state for the hub"
+}
+
+variable "hub_state_storage_account_name" {
+  type        = string
+  description = "The name of the storage account that holds the Terraform state for the hub"
+}
+
+variable "hub_state_container_name" {
+  type        = string
+  description = "The name of the container that holds the Terraform state for the hub"
+}
+
+variable "hub_state_key" {
+  type        = string
+  description = "The key of the Terraform state for the hub"
+}
+
 variable "application_name" {
   type        = string
   description = "The name of your application"
@@ -30,7 +50,8 @@ variable "location_short" {
 
 variable "tenant_id" {
   type        = string
-  description = "The Azure AD tenant ID for the identities"
+  description = "The Azure AD tenant ID for the identities. If no value provided, will use current deployment environment tenant."
+  default     = null
 }
 
 variable "tags" {
@@ -112,20 +133,20 @@ variable "private_link_subnet_cidr" {
   default     = ["10.240.11.0/24"] 
 }
 
-variable "hub_settings" {
-  type = object({
-    rg_name   = string
-    vnet_name = string
+# variable "hub_settings" {
+#   type = object({
+#     rg_name   = string
+#     vnet_name = string
 
-    firewall = object({
-      private_ip = optional(string)
-    })
-  })
+#     firewall = object({
+#       private_ip = optional(string)
+#     })
+#   })
 
-  description = "The settings for the hub virtual network."
+#   description = "The settings for the hub virtual network."
 
-  default = null
-}
+#   default = null
+# }
 
 variable "vm_admin_username" {
   type        = string

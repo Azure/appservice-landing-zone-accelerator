@@ -1,0 +1,74 @@
+name: '[Platform] Deploy Terraform Dependencies'
+
+on:
+  workflow_dispatch:
+    inputs:
+      location:
+        description: 'Azure Location'
+        type: string
+        required: true
+        default: 'westus2'
+      environment:
+        type: environment
+        description: 'Select the Environment'
+      createStorageAccount:
+        description: 'Create Storage Account'
+        required: true
+        type: boolean
+        default: true
+        
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  location: ${{ github.event.inputs.location }}
+  environment: ${{ github.event.inputs.environment }}
+  resource_prefix: "backend-appsrvc"
+  suffix: "001"
+  container_name: "tfstate"
+
+jobs:
+  provision-infrastructure-dependencies:
+    name: "Create storage account and container for Terraform state"
+    runs-on: ubuntu-latest
+    steps:
+      # Login to Azure via OIDC
+      - name: Log in to Azure using OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+      
+      - name: Create Resource Group
+        id: rg
+        run: |
+          rg_name=${{ env.resource_prefix }}-${{ env.environment }}-${{env.location}}-${{ env.suffix }}
+          if [ $(az group exists --name $rg_name) = false ]; then
+            az group create \
+              --name $rg_name \
+              --location ${{ env.location }} 
+          fi
+          echo ::set-output name=rg_name::$rg_name
+      
+      - name: Create Storage Account
+        if: ${{ github.event.inputs.createStorageAccount == 'true' }}
+        run: |
+          # Format name to 24 char limit, lowercase, and remove dashes
+          st_name_prefix="$(echo st${{ env.resource_prefix }}${{ env.environment }} | cut -c1-15)"
+          st_name_suffix="$(echo ${{ env.location }}${{ env.suffix }} | cut -c1-11)"
+          formatted_st_name="$(echo ${st_name_prefix//-/}${st_name_suffix} | tr '[:upper:]' '[:lower:]')"
+
+          if [ $(az storage account check-name --name $formatted_st_name --query nameAvailable) ]; then
+            az storage account create \
+              --name $formatted_st_name \
+              --resource-group ${{ steps.rg.outputs.rg_name }} \
+              --location ${{ env.location }} \
+              --subscription ${{ secrets.AZURE_SUBSCRIPTION }} \
+              --sku Standard_LRS
+
+            az storage container create \
+              --name ${{ env.container_name }} \
+              --account-name $formatted_st_name
+          fi

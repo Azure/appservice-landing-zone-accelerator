@@ -1,0 +1,179 @@
+name: 'ValidateAndPlanTerraform'
+description: 'Validate and Plan Terraform'
+
+inputs:
+  destroy:
+    description: 'Destroy the infrastructure'
+    required: false
+    default: 'false'
+  modulePath:
+    description: 'Path to the Terraform module'
+    required: false
+    default: '.'
+  tfvarPath:
+    description: 'Path to the Terraform variables file with respect to the modulePath'
+    required: false
+    default: 'terraform.tfvars'
+  backendStateKey:
+    description: 'Key to the backend state file'
+    required: false
+    default: 'terraform.tfstate'
+  terraformVersion:
+    description: 'Terraform version to use'
+    required: false
+    default: '1.3.9'
+  backendResourceGroupName:
+    description: 'Resource group name for the backend state'
+    required: true
+  backendStorageAccountName:
+    description: 'Storage account name for the backend state'
+    required: true
+  backendStorageContainerName:
+    description: 'Storage container name for the backend state'
+    required: true
+  shell:
+    description: 'Shell to use for the action'
+    required: false
+    default: 'bash'
+  ARM_CLIENT_ID:
+    description: 'Azure client ID'
+    required: true
+  ARM_SUBSCRIPTION_ID:
+    description: 'Azure subscription ID'
+    required: true
+  ARM_TENANT_ID:
+    description: 'Azure tenant ID'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+  - name: Terraform Init
+    id: init
+    shell: ${{ inputs.shell }}
+    working-directory: ${{ inputs.modulePath }}
+    run: |
+      terraform init \
+        -backend-config="resource_group_name=${{ inputs.backendResourceGroupName }}"   \
+        -backend-config="storage_account_name=${{ inputs.backendStorageAccountName }}" \
+        -backend-config="container_name=${{ inputs.backendStorageContainerName }}"     \
+        -backend-config="key=${{ inputs.backendStateKey }}"
+    env:
+      ARM_CLIENT_ID: ${{ inputs.ARM_CLIENT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ inputs.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ inputs.ARM_TENANT_ID }}
+      ARM_USE_OIDC: true
+
+  - name: Terraform Validate
+    id: validate
+    shell: ${{ inputs.shell }}
+    working-directory: ${{ inputs.modulePath }}
+    run: terraform validate -no-color
+
+  - name: tfsec
+    uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
+    with:
+      tfsec_args: --soft-fail
+      github_token: ${{ github.token }}
+
+  - name: Terraform Plan
+    id: plan
+    shell: ${{ inputs.shell }}
+    working-directory: ${{ inputs.modulePath }}
+    continue-on-error: true
+    run: |
+      if [ "${{ github.event.inputs.destroy }}" = "true" ]; then
+        terraform plan \
+          -destroy \
+          -input=false \
+          -out=tfplan \
+          -no-color \
+          -var-file="${{ inputs.tfvarPath }}"
+      else
+        terraform plan \
+          -input=false \
+          -out=tfplan \
+          -no-color \
+          -var-file="${{ inputs.tfvarPath }}"
+      fi
+    env:  
+      ARM_CLIENT_ID: ${{ inputs.ARM_CLIENT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ inputs.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ inputs.ARM_TENANT_ID }}
+      ARM_USE_OIDC: true
+
+  - name: Show TFPlan
+    id: show
+    shell: ${{ inputs.shell }}
+    working-directory: ${{ inputs.modulePath }}
+    if: steps.plan.outcome == 'success'
+    run: terraform show -no-color tfplan
+
+  - name: 'Upload TFPlan Artifact'
+    if: steps.plan.outcome == 'success'
+    uses: actions/upload-artifact@v3
+    with:
+      name: ${{ github.run_id }}.tfplan
+      path: ${{ inputs.modulePath }}/tfplan
+      retention-days: 5
+
+  - name: Post Plan to GitHub PR
+    uses: actions/github-script@v6
+    if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
+    env:
+      PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
+    with:
+      script: |
+        const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+        #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+        #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+        <details><summary>Validation Output</summary>
+
+        \`\`\`\n
+        ${{ steps.validate.outputs.stdout }}
+        \`\`\`
+
+        </details>
+
+        #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+        <details><summary>Show Plan</summary>
+
+        \`\`\`\n
+        ${{ steps.show.outputs.stdout }}
+        \`\`\`
+
+        </details>
+
+        *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
+        
+        await github.rest.issues.createComment({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: output
+        })
+
+  - name: Post Plan Failure
+    if: github.event_name == 'pull_request' && steps.plan.outcome == 'failure'
+    uses: actions/github-script@v6
+    with:
+      script: |
+        const output = `#### Terraform Plan failed
+        <details><summary>Plan Error Output</summary>
+
+        \`\`\`\n
+        ${{ steps.plan.outputs.stderr }}
+        \`\`\`
+
+        *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
+        await github.rest.issues.createComment({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: output
+        })
+  - name: Exit if plan failed
+    shell: ${{ inputs.shell }}
+    if: steps.plan.outcome == 'failure'
+    run: exit 1
