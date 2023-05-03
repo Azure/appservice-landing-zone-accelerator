@@ -2,6 +2,12 @@
 
 This reference architecture shows how to run a web-app workload on Azure App Services in a secure configuration. This secure baseline follow [Defence in Depth](https://learn.microsoft.com/en-us/shows/azure-videos/defense-in-depth-security-in-azure) approach to protect AppService workload against cloud vulnerabilities along with additional [Well-Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/) pillars to enable a resilient solution.
 
+## Quick deployment to Azure
+You can deploy the current LZA directly in your azure subscription by hitting the button below. 
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fappservice-landing-zone-accelerator%2Ffeat%2Fbicep-refactor-multitenant-secure-baseline%2Fscenarios%2Fsecure-baseline-multitenant%2Fazure-resource-manager%2Fmain.json)
+
+
 # Architecture
 ![image](/docs/Images/Multitenant/AppServiceLandingZoneArchitecture-multitenant.png)
 
@@ -107,3 +113,5 @@ Pick one of the IaC options below and follow the instructions to deploy the App 
 :arrow_forward: [Terraform](./terraform/README.md)
 
 :arrow_forward: [Bicep](./bicep/README.md)
+
+:arrow_forward: [ARM](./azure-resource-manager/README.md)

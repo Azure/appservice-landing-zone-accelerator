@@ -191,8 +191,8 @@ A guide outlining the coding conventions and style guidelines that should be fol
   // Parameters       //
   // ================ //
 
-  @description('suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<applicationName>')
-  param applicationName string
+  @description('suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>')
+  param workloadName string
 
   @description('Required. The environment for which the deployment is being executed')
   @allowed([
@@ -209,7 +209,7 @@ A guide outlining the coding conventions and style guidelines that should be fol
   // Variables        //
   // ================ //
   var tags = union({
-    applicationName: applicationName
+    workloadName: workloadName
     environment: environment
   }, resourceTags)
 
