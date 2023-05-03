@@ -8,7 +8,10 @@ resource "random_password" "vm_admin_password" {
   special = true
 }
 
+data "azuread_client_config" "current" {}
+
 locals {
+  tenant_id         = var.tenant_id == null ? data.azuread_client_config.current.tenant_id : var.tenant_id
   vm_admin_username = var.vm_admin_username == null ? random_password.vm_admin_username.result : var.vm_admin_username
   vm_admin_password = var.vm_admin_password == null ? random_password.vm_admin_password.result : var.vm_admin_password
 }
@@ -22,7 +25,7 @@ locals {
 }
 
 resource "azurecaf_name" "resource_group" {
-  name          = var.application_name
+  name          = "spoke-${var.application_name}"
   resource_type = "azurerm_resource_group"
   suffixes      = [var.environment, var.location_short]
 }
@@ -39,7 +42,7 @@ resource "azurerm_resource_group" "spoke" {
 }
 
 resource "azurecaf_name" "reader_identity" {
-  name          = "${var.application_name}-reader"
+  name          = "spoke-${var.application_name}-reader"
   resource_type = "azurerm_user_assigned_identity"
 }
 
@@ -50,7 +53,7 @@ resource "azurerm_user_assigned_identity" "reader" {
 }
 
 resource "azurecaf_name" "contributor_identity" {
-  name          = "${var.application_name}-contributor"
+  name          = "spoke-${var.application_name}-contributor"
   resource_type = "azurerm_user_assigned_identity"
 }
 
@@ -81,7 +84,7 @@ resource "random_integer" "unique_id" {
 }
 
 resource "azurecaf_name" "spoke_network" {
-  name          = var.application_name
+  name          = "spoke-${var.application_name}"
   resource_type = "azurerm_virtual_network"
   suffixes      = [var.environment]
 }
@@ -147,14 +150,14 @@ module "network" {
 }
 
 data "azurerm_virtual_network" "hub" {
-  name                = var.hub_settings.vnet_name
-  resource_group_name = var.hub_settings.rg_name
+  name                = data.terraform_remote_state.hub.outputs.vnet_name
+  resource_group_name = data.terraform_remote_state.hub.outputs.rg_name
 }
 
 module "private_dns_zones" {
   source = "../../modules/private-dns-zone"
 
-  resource_group = var.hub_settings.rg_name
+  resource_group = data.terraform_remote_state.hub.outputs.rg_name
 
   dns_zones = [
     "privatelink.azurewebsites.net",
@@ -167,7 +170,7 @@ module "private_dns_zones" {
   vnet_links = [
     {
       vnet_id             = data.azurerm_virtual_network.hub.id
-      vnet_resource_group = var.hub_settings.rg_name
+      vnet_resource_group = data.terraform_remote_state.hub.outputs.rg_name
     },
     {
       vnet_id             = module.network.vnet_id
@@ -178,8 +181,8 @@ module "private_dns_zones" {
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   name                         = "hub-to-spoke-${var.application_name}"
-  resource_group_name          = var.hub_settings.rg_name
-  virtual_network_name         = var.hub_settings.vnet_name
+  resource_group_name          = data.terraform_remote_state.hub.outputs.rg_name
+  virtual_network_name         = data.terraform_remote_state.hub.outputs.vnet_name
   remote_virtual_network_id    = module.network.vnet_id
   allow_virtual_network_access = true
   allow_forwarded_traffic      = false
@@ -212,7 +215,7 @@ module "user_defined_routes" {
       name                   = "defaultRoute"
       address_prefix         = "0.0.0.0/0"
       next_hop_type          = "VirtualAppliance"
-      next_hop_in_ip_address = var.hub_settings.firewall.private_ip
+      next_hop_in_ip_address = data.terraform_remote_state.hub.outputs.firewall_private_ip
     }
   ]
 
@@ -251,7 +254,7 @@ module "app_service" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azurewebsites.net")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azurewebsites.net")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 
   depends_on = [
@@ -266,7 +269,7 @@ module "app_service" {
 //ToDo: Enable extension to deploy DevOps agent
 
 resource "azurecaf_name" "devops_vm" {
-  name          = "devops"
+  name          = "spoke-${var.application_name}-devops"
   resource_type = "azurerm_windows_virtual_machine"
   suffixes      = [random_integer.unique_id.result]
 }
@@ -366,7 +369,7 @@ module "sql_database" {
   environment               = var.environment
   location                  = var.location
   unique_id                 = random_integer.unique_id.result
-  tenant_id                 = var.tenant_id
+  tenant_id                 = local.tenant_id
   aad_admin_group_object_id = var.aad_admin_group_object_id
   aad_admin_group_name      = var.aad_admin_group_name
   private_link_subnet_id    = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
@@ -381,7 +384,7 @@ module "sql_database" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.database.windows.net")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.database.windows.net")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 }
 
@@ -395,7 +398,7 @@ module "app_configuration" {
   environment            = var.environment
   location               = var.location
   unique_id              = random_integer.unique_id.result
-  tenant_id              = var.tenant_id
+  tenant_id              = local.tenant_id
   private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
 
   data_reader_identities = [
@@ -409,7 +412,7 @@ module "app_configuration" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 }
 
@@ -420,7 +423,7 @@ module "key_vault" {
   application_name       = var.application_name
   environment            = var.environment
   location               = var.location
-  tenant_id              = var.tenant_id
+  tenant_id              = local.tenant_id
   unique_id              = random_integer.unique_id.result
   sku_name               = "standard"
   private_link_subnet_id = module.network.subnets[index(module.network.subnets.*.name, azurecaf_name.private_link_subnet.result)].id
@@ -436,7 +439,7 @@ module "key_vault" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.vaultcore.azure.net")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.vaultcore.azure.net")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 }
 
@@ -467,6 +470,6 @@ module "redis_cache" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.redis.cache.windows.net")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.redis.cache.windows.net")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 }

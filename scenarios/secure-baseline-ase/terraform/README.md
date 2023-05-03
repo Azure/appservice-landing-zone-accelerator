@@ -144,7 +144,7 @@ As you configured the backend remote state with your live Azure infrastructure r
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_shared-vms"></a> [shared-vms](#module\_shared-vms) | ./modules/shared | n/a |
+| <a name="module_shared-vms"></a> [shared-vms](#module\_shared-vms) | ./modules/terraform/shared | n/a |
 
 ## Resources
 
