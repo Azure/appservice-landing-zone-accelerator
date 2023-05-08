@@ -1,8 +1,8 @@
-application_name = "scenario1"
+application_name = "appsvclza-scenario1"
 environment      = "prod"
 location         = "westus3"
-location_short   = "wus3"
-owner            = "cloudops@contoso.com"
+# location_short   = "wus3"
+owner = "cloudops@contoso.com"
 
 # Toggle deployment of optional features and services for the Landing Zone
 deployment_options = {

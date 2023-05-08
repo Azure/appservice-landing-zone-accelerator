@@ -6,10 +6,7 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3 |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3 |
 | <a name="requirement_azurecaf"></a> [azurecaf](#requirement\_azurecaf) | >=1.2.23 |
-| <a name="requirement_azurecaf"></a> [azurecaf](#requirement\_azurecaf) | >=1.2.23 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.49.0 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.49.0 |
 
 ## Providers
@@ -46,7 +43,7 @@
 | <a name="input_environment"></a> [environment](#input\_environment) | [Required] The environment (dev, qa, staging, prod) | `string` | n/a | yes |
 | <a name="input_firewall_subnet_cidr"></a> [firewall\_subnet\_cidr](#input\_firewall\_subnet\_cidr) | [Optional] The CIDR block(s) for the firewall subnet. Defaults to 10.242.0.0/26 | `list(string)` | <pre>[<br>  "10.242.0.0/26"<br>]</pre> | no |
 | <a name="input_firewall_subnet_name"></a> [firewall\_subnet\_name](#input\_firewall\_subnet\_name) | [Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet' | `string` | `"AzureFirewallSubnet"` | no |
-| <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | [Optional] Global settings to configure each module with the appropriate naming standards. | `map(any)` | `{}` | no |
+| <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | [Optional] Global settings to configure each module with the appropriate naming standards. | `map` | `{}` | no |
 | <a name="input_hub_vnet_cidr"></a> [hub\_vnet\_cidr](#input\_hub\_vnet\_cidr) | [Optional] The CIDR block(s) for the hub virtual network. Defaults to 10.242.0.0/20 | `list(string)` | <pre>[<br>  "10.242.0.0/20"<br>]</pre> | no |
 | <a name="input_location"></a> [location](#input\_location) | [Required] The Azure region where all resources in this example should be created | `string` | n/a | yes |
 | <a name="input_owner"></a> [owner](#input\_owner) | [Required] Email or unique ID of the owner(s) for this deployment | `string` | n/a | yes |

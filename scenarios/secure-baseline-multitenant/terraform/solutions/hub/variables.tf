@@ -1,8 +1,3 @@
-variable "global_settings" {
-  type        = map(any)
-  description = "[Optional] Global settings to configure each module with the appropriate naming standards."
-  default     = {}
-}
 
 variable "application_name" {
   type        = string
@@ -35,6 +30,11 @@ variable "tags" {
   default     = {}
 }
 
+variable "global_settings" {
+  description = "[Optional] Global settings to configure each module with the appropriate naming standards."
+  default     = {}
+}
+
 #####################################
 # Hub Network Configuration Variables
 #####################################
@@ -42,12 +42,6 @@ variable "bastion_subnet_name" {
   type        = string
   description = "[Optional] Name of the subnet to deploy bastion resource to. Defaults to 'AzureBastionSubnet'"
   default     = "AzureBastionSubnet"
-}
-
-variable "firewall_subnet_name" {
-  type        = string
-  description = "[Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet'"
-  default     = "AzureFirewallSubnet"
 }
 
 variable "firewall_subnet_name" {
