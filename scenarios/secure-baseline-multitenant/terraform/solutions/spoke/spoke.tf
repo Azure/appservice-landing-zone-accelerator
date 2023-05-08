@@ -6,7 +6,7 @@ resource "azurecaf_name" "caf_name_spoke_rg" {
   clean_input   = true
   passthrough   = local.global_settings.passthrough
 
-  use_slug      = var.global_settings.use_slug
+  use_slug = var.global_settings.use_slug
 }
 
 resource "azurerm_resource_group" "spoke" {

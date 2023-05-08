@@ -1,7 +1,7 @@
 variable "global_settings" {
-  type = map
+  type        = map(any)
   description = "[Optional] Global settings to configure each module with the appropriate naming standards."
-  default = {}
+  default     = {}
 }
 
 variable "application_name" {
@@ -20,34 +20,40 @@ variable "location" {
 }
 
 variable "owner" {
-  type = string
+  type        = string
   description = "[Required] Email or unique ID of the owner(s) for this deployment"
 }
 
-variable "tenant_id" {
-  type        = string
-  description = "[Required] The Azure AD tenant ID for the identities"
-}
+# variable "tenant_id" {
+#   type        = string
+#   description = "[Required] The Azure AD tenant ID for the identities"
+# }
 
 variable "tags" {
-  type = map(string)
+  type        = map(string)
   description = "[Optional] Additional tags to assign to your resources"
-  default = {}  
+  default     = {}
 }
 
 #####################################
 # Hub Network Configuration Variables
 #####################################
 variable "bastion_subnet_name" {
-  type = string
+  type        = string
   description = "[Optional] Name of the subnet to deploy bastion resource to. Defaults to 'AzureBastionSubnet'"
-  default = "AzureBastionSubnet"
+  default     = "AzureBastionSubnet"
 }
 
 variable "firewall_subnet_name" {
-  type = string
-  description = "[Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet'"  
-  default = "AzureFirewallSubnet"
+  type        = string
+  description = "[Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet'"
+  default     = "AzureFirewallSubnet"
+}
+
+variable "firewall_subnet_name" {
+  type        = string
+  description = "[Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet'"
+  default     = "AzureFirewallSubnet"
 }
 variable "hub_vnet_cidr" {
   type        = list(string)
@@ -58,13 +64,13 @@ variable "hub_vnet_cidr" {
 variable "firewall_subnet_cidr" {
   type        = list(string)
   description = "[Optional] The CIDR block(s) for the firewall subnet. Defaults to 10.242.0.0/26"
-  default     = ["10.242.0.0/26"] 
+  default     = ["10.242.0.0/26"]
 }
 
 variable "bastion_subnet_cidr" {
   type        = list(string)
   description = "[Optional] The CIDR block(s) for the bastion subnet. Defaults to 10.242.0.64/26"
-  default     =  ["10.242.0.64/26"]
+  default     = ["10.242.0.64/26"]
 }
 
 variable "spoke_vnet_cidr" {

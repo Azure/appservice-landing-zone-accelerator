@@ -6,7 +6,7 @@ resource "azurecaf_name" "caf_name_hub_rg" {
   clean_input   = true
   passthrough   = local.global_settings.passthrough
 
-  use_slug      = var.global_settings.use_slug
+  use_slug = var.global_settings.use_slug
 }
 
 resource "azurerm_resource_group" "hub" {
@@ -20,10 +20,10 @@ module "network" {
   source = "../../../../../shared/terraform-modules/network"
 
   global_settings = local.global_settings
-  name           = "hub-${var.application_name}"
-  resource_group = azurerm_resource_group.hub.name
-  location       = azurerm_resource_group.hub.location
-  vnet_cidr      = local.hub_vnet_cidr
+  name            = "hub-${var.application_name}"
+  resource_group  = azurerm_resource_group.hub.name
+  location        = azurerm_resource_group.hub.location
+  vnet_cidr       = local.hub_vnet_cidr
 
   subnets = [
     {
@@ -36,7 +36,7 @@ module "network" {
       subnet_cidr = local.bastion_subnet_cidr
       delegation  = null
   }]
-  
+
   tags = local.base_tags
 }
 
@@ -46,13 +46,13 @@ module "bastion" {
   source = "../../../../../shared/terraform-modules/bastion"
 
   global_settings = local.global_settings
-  name = var.application_name
+  name            = var.application_name
 
   # Retrieve the subnet id by a lookup on subnet name from the list of subnets in the module output
   subnet_id      = module.network.subnets[index(module.network.subnets.*.name, local.bastion_subnet_name)].id
   resource_group = azurerm_resource_group.hub.name
   location       = azurerm_resource_group.hub.location
-  
+
   tags = local.base_tags
 }
 
@@ -63,15 +63,15 @@ module "firewall" {
   source = "../../../../../shared/terraform-modules/firewall"
 
   global_settings = local.global_settings
-  name = var.application_name
+  name            = var.application_name
 
   # Retrieve the subnet id by a lookup on subnet name from the list of subnets in the module output
-  subnet_id                  = module.network.subnets[index(module.network.subnets.*.name, local.firewall_subnet_name)].id
-  resource_group             = azurerm_resource_group.hub.name
-  location                   = azurerm_resource_group.hub.location
+  subnet_id      = module.network.subnets[index(module.network.subnets.*.name, local.firewall_subnet_name)].id
+  resource_group = azurerm_resource_group.hub.name
+  location       = azurerm_resource_group.hub.location
 
   firewall_rules_source_addresses = merge(var.hub_vnet_cidr, var.spoke_vnet_cidr)
 
   devops_subnet_cidr = var.devops_subnet_cidr
-  tags = local.base_tags
+  tags               = local.base_tags
 }

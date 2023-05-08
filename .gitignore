@@ -4,6 +4,9 @@ deployment/bicep/localtestscript.ps1
 deployment/bicep/main.json
 *.local.*
 
+# local .vscode folder
+**/.vscode/*
+
 # Local .terraform directories
 **/.terraform/*
 *.lock.hcl
