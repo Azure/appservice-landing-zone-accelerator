@@ -6,8 +6,8 @@
         "workloadName" : {
            "value": "appSvc-LZA"         
         },
-        //Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
-        "environment": {
+        //Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
+        "environmentName": {
             "value": "dev"
         },
         //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet

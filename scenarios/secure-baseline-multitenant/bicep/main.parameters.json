@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workloadName" : {
-           "value": "appsvclza1"         
+           "value": "appsvclza2"         
         },
         "environmentName": {
             "value": "${AZURE_ENV_NAME}"
@@ -18,7 +18,7 @@
             "value": "10.242.0.0/20"
         },
         "enableEgressLockdown" : {
-            "value": "true"
+            "value": "false"
         },
         "enableWaf": {
             "value": "true"

@@ -27,7 +27,7 @@ param location string
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param tags object
 
-@description('Default is empty. If empty no Private endpoint will be created fro the resoure. Otherwise, the subnet where the private endpoint will be attached to')
+@description('Default is empty. If empty no Private Endpoint will be created for the resoure. Otherwise, the subnet where the private endpoint will be attached to')
 param subnetPrivateEndpointId string = ''
 
 @description('Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled')
@@ -65,7 +65,7 @@ var appConfigurationDnsZoneName = 'privatelink.azconfig.io'
 var slotName = 'staging'
 
 var redisConnStr = !empty(redisConnectionStringSecretName) ? {redisConnectionStringSecret: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=${redisConnectionStringSecretName})'} : {}
-var sqlConnStr = !empty(sqlDbConnectionString) ? { sqlDefaultDbConnectionString: sqlDbConnectionString } : {}
+// var sqlConnStr = !empty(sqlDbConnectionString) ? { sqlDefaultDbConnectionString: sqlDbConnectionString } : {}
 
 resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
   name: keyvaultName
@@ -109,13 +109,35 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     userAssignedIdentities:  {
       '${webAppUserAssignedManagedIdenity.outputs.id}': {}
     }
-    appSettingsKeyValuePairs: union(redisConnStr, sqlConnStr)
+    appSettingsKeyValuePairs: redisConnStr // union(redisConnStr, sqlConnStr)
     slots: [
       {
         name: slotName
       }
     ]
   }
+}
+
+resource webAppExisting 'Microsoft.Web/sites@2022-03-01' existing =  {
+  name: webAppName
+}
+
+resource webappConnectionstring 'Microsoft.Web/sites/config@2019-08-01' = if ( !empty(sqlDbConnectionString) ) {
+  parent: webAppExisting
+  name: 'connectionstrings'
+  properties: {
+    sqlDbConnectionString: {
+      value: sqlDbConnectionString
+      type: 'SQLAzure'
+    }
+    // MS_NotificationHubConnectionString: {
+    //   value: listkeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', notificationHubNamespace_var, notificationHubName, 'DefaultFullSharedAccessSignature'), '2017-04-01').primaryConnectionString
+    //   type: 'Custom'
+    // }
+  }
+  dependsOn: [
+    webApp
+  ]
 }
 
 module webAppUserAssignedManagedIdenity '../../../shared/bicep/managed-identity.bicep' = {
@@ -211,7 +233,7 @@ module peAzConfig '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(s
     name: ( !empty(subnetPrivateEndpointId)  && deployAppConfig) ? 'pe-${appConfigStore.outputs.name}' : ''
     location: location
     tags: tags
-    privateDnsZonesId: azConfigPrivateDnsZone.outputs.privateDnsZonesId
+    privateDnsZonesId:  ( !empty(subnetPrivateEndpointId)  && deployAppConfig) ? azConfigPrivateDnsZone.outputs.privateDnsZonesId : ''
     privateLinkServiceId: ( !empty(subnetPrivateEndpointId)  && deployAppConfig) ? appConfigStore.outputs.resourceId : ''
     snetId: subnetPrivateEndpointId
     subresource: 'configurationStores'

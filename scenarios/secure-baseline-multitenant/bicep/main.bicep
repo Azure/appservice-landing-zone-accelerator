@@ -118,7 +118,7 @@ var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuff
 var administrators = empty (sqlServerAdministrators) || (sqlServerAdministrators.sid =='xxx-xxxx-xxxx-xxxx') ? {} : union ({
                                                                     administratorType: 'ActiveDirectory'
                                                                     principalType: 'Group'
-                                                                    azureADOnlyAuthentication: true //TODO: not sure this should be default
+                                                                    azureADOnlyAuthentication: false //TODO: not sure this should be default
                                                                   }, sqlServerAdministrators)
 
 // 'Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.
