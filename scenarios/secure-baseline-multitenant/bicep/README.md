@@ -10,7 +10,8 @@
 ## Deploy the App Service Landing Zone Bicep code
 Before deploying the Bicep IaC artifacts, you need to review and customize the values of the parameters in the [main.parameters.jsonc](main.parameters.jsonc) file. 
 
-> **NOTE**  Azure Developer CLI (azd) is also supported as a deployment method. Since azd CLI does not support parameter files with *jsonc* extension, we provide a simple json parameter file (which does not containe inline comments)
+> **Note**  
+  Azure Developer CLI (azd) is also supported as a deployment method. Since azd CLI does not support parameter files with *jsonc* extension, we provide a simple json parameter file (which does not containe inline comments)
 
 The table below summurizes the avaialble parameters and the possible values that can be set. 
 
