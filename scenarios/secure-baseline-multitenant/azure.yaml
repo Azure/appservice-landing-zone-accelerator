@@ -3,7 +3,5 @@
 name: secure-baseline-multitenant
 infra:
     provider: "bicep"
-    path: "infra"
+    path: "bicep"
     module: "main"
-pipeline:
-    provider: ""
