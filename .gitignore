@@ -48,3 +48,6 @@ shared/agentsetup.ps1
 .vscode/launch.json
 .vscode/launch.json
 .vscode/tasks.json
+
+#Azure Dev CLI env variables 
+.azure
