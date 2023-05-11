@@ -9,7 +9,7 @@ You can deploy the current LZA directly in your azure subscription by hitting th
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fappservice-landing-zone-accelerator%2Fmain%2Fscenarios%2Fsecure-baseline-multitenant%2Fazure-resource-manager%2Fmain.json)
 
-### Using Code Spaces via Azure Dev CLI 
+### Using Codespaces via Azure Dev CLI 
 
 - Visit [github.com/Azure/appservice-landing-zone-accelerator](https://github.com/Azure/appservice-landing-zone-accelerator)
 - Click on the `Green Code` button.
