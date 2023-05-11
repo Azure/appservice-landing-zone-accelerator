@@ -115,7 +115,7 @@ var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuff
   numericSuffix
 ])
 
-var administrators = empty (sqlServerAdministrators) || (sqlServerAdministrators.sid =='xxx-xxxx-xxxx-xxxx') ? {} : union ({
+var administrators = empty (sqlServerAdministrators) || (sqlServerAdministrators.sid =='xxxx-xxxx-xxxx-xxxx-xxxx') ? {} : union ({
                                                                     administratorType: 'ActiveDirectory'
                                                                     principalType: 'Group'
                                                                     azureADOnlyAuthentication: false //TODO: not sure this should be default
