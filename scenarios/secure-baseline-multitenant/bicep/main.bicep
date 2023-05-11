@@ -11,9 +11,9 @@ param workloadName string =  'appsvc${ take( uniqueString( subscription().id), 4
 @description('Azure region where the resources will be deployed in')
 param location string = deployment().location
 
-@description('Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.')
+@description('Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.')
 @maxLength(8)
-param environment string = 'test'
+param environmentName string = 'test'
 
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24 - optional if you want to use an existing hub vnet (vnetHubResourceId)')
 param vnetHubAddressSpace string = '10.242.0.0/20'
@@ -71,25 +71,25 @@ param sqlAdminLogin string = 'sqluser'
 
 @description('Conditional. If sqlServerAdministrators is given, this is not required -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current')
 @secure()
-param sqlAdminPassword string = ''
+param sqlAdminPassword string = newGuid()
 
 @description('set to true if you want to intercept all outbound traffic with azure firewall')
-param enableEgressLockdown bool =  true
+param enableEgressLockdown bool = false
 
 @description('set to true if you want to deploy a WAF in front of the app service')
 param enableWaf bool = true
 
 @description('set to true if you want to a redis cache')
-param deployRedis bool =  true
+param deployRedis bool = false
 
 @description('set to true if you want to deploy a azure SQL server and default database')
-param deployAzureSql bool =  true
+param deployAzureSql bool = false
 
 @description('set to true if you want to deploy application configuration')
-param deployAppConfig bool =  true
+param deployAppConfig bool = false
 
 @description('set to true if you want to deploy a jumpbox/devops VM')
-param deployJumpHost bool =  true
+param deployJumpHost bool = true
 
 
 
@@ -99,32 +99,30 @@ param deployJumpHost bool =  true
 
 var tags = union({
   workloadName: workloadName
-  environment: environment
+  environment: environmentName
 }, resourceTags)
 
-var resourceSuffix = '${workloadName}-${environment}-${location}'
+var resourceSuffix = '${workloadName}-${environmentName}-${location}'
 var hubResourceGroupName = 'rg-hub-${resourceSuffix}'
 var spokeResourceGroupName = 'rg-spoke-${resourceSuffix}'
 
 var defaultSuffixes = [
   workloadName
-  environment
+  environmentName
   '**location**'
 ]
 var namingSuffixes = empty(numericSuffix) ? defaultSuffixes : concat(defaultSuffixes, [
   numericSuffix
 ])
 
-var administrators = empty (sqlServerAdministrators) ? {} : union ({
+var administrators = empty (sqlServerAdministrators) || (sqlServerAdministrators.sid =='xxx-xxxx-xxxx-xxxx') ? {} : union ({
                                                                     administratorType: 'ActiveDirectory'
                                                                     principalType: 'Group'
-                                                                    azureADOnlyAuthentication: true //TODO: not sure this should be default
+                                                                    azureADOnlyAuthentication: false //TODO: not sure this should be default
                                                                   }, sqlServerAdministrators)
 
 // 'Telemetry is by default enabled. The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services.
 var enableTelemetry = true                                                                  
-
-// var vnetHubResourceIdSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : split(hubVnet.id, '/')
 
 // ================ //
 // Resources        //
@@ -168,11 +166,6 @@ module hub 'deploy.hub.bicep' =  if ( empty(vnetHubResourceId) ) {
   }
 }
 
-// resource hubVnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
-//   scope: resourceGroup(hubResourceGroup.name)
-//   name: hub.outputs.vnetHubName
-// }
-
 module spoke 'deploy.spoke.bicep' = {
   scope: resourceGroup(spokeResourceGroup.name)
   name: take('spoke-${deployment().name}-deployment', 64)
@@ -209,7 +202,7 @@ module peerings 'modules/peerings.deployment.bicep' = {
   params: {
     rgSpokeName: spokeResourceGroup.name
     spokeName: spoke.outputs.vnetSpokeName
-    vnetHubResourceId:  !empty(vnetHubResourceId) ? vnetHubResourceId :  hub.outputs.vnetHubId //hubVnet.id
+    vnetHubResourceId:  !empty(vnetHubResourceId) ? vnetHubResourceId :  hub.outputs.vnetHubId 
   }
 }
 

@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workloadName" : {
-           "value": "appSvc-LZA"         
+           "value": "appsvclza2"         
         },
         "environmentName": {
             "value": "${AZURE_ENV_NAME}"
@@ -18,7 +18,7 @@
             "value": "10.242.0.0/20"
         },
         "enableEgressLockdown" : {
-            "value": "true"
+            "value": "false"
         },
         "enableWaf": {
             "value": "true"
@@ -64,7 +64,7 @@
             "value": "azureuser"
         },
         "adminPassword": {
-            "value": "SuperStrong@Password42!"
+            "value": "zxNMasKL12()"
         },
         "resourceTags": {
             "value": {
@@ -74,8 +74,8 @@
         "sqlServerAdministrators": {
             "value": {
                 "login": "Azure AD SQL Admins",
-                "sid": "xxx-xxxx-xxxx-xxxx",
-                "tenantId": "xxxx-xxxxxx-xxxxx-xxxxx-xxx"
+                "sid": "xxxx-xxxx-xxxx-xxxx-xxxx",
+                "tenantId": "xxxx-xxxx-xxxx-xxxx-xxxx"
             }
         }
     }
