@@ -10,6 +10,9 @@
 ## Deploy the App Service Landing Zone Bicep code
 Before deploying the Bicep IaC artifacts, you need to review and customize the values of the parameters in the [main.parameters.jsonc](main.parameters.jsonc) file. 
 
+> **Note**  
+  Azure Developer CLI (azd) is also supported as a deployment method. Since azd CLI does not support parameter files with *jsonc* extension, we provide a simple json parameter file (which does not contain inline comments)
+
 The table below summurizes the avaialble parameters and the possible values that can be set. 
 
 
@@ -62,6 +65,12 @@ az deployment sub create `
     --name $deploymentName `
     --parameters ./main.parameters.local.jsonc
 ```
+### Azure Devloper CLI (azd)
+1. [Install the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=localinstall%2Cwindows%2Cbrew%2Cdeb)
+2. Login to azure from your terminal. You can do this by running `azd auth login`. If no web browser is available or the web browser fails to open, you may force device code flow with  `azd auth login --use-device-code` 
+3. Run `azd up` in the correct folder (/scenarios/secure-baseline-multitenant). This will start the Azure infrastructure provisioning process. The first time you run it, you will be asked to give some information, i.e. environmentName, subscription ID etc
+
+
 
    
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
@@ -119,4 +128,13 @@ ALTER ROLE db_datareader ADD MEMBER [web-app-name/slots/slot-name];
 ALTER ROLE db_datawriter ADD MEMBER [web-app-name/slots/slot-name];
 ALTER ROLE db_ddladmin ADD MEMBER [web-app-name/slots/slot-name];
 GO
+```
+#### :broom: Clean up resources
+
+If you used Azure Developer CLI to provision the LZA you can clean up everything by executing ` azd down`. 
+Otherwise  use the following commands to remove the resources you created.
+
+```bash
+az group delete -n <your-spoke-resource-group>
+az group delete -n <your-hub-resource-group>
 ```
