@@ -3,10 +3,21 @@
 This reference architecture shows how to run a web-app workload on Azure App Services in a secure configuration. This secure baseline follow [Defence in Depth](https://learn.microsoft.com/en-us/shows/azure-videos/defense-in-depth-security-in-azure) approach to protect AppService workload against cloud vulnerabilities along with additional [Well-Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/) pillars to enable a resilient solution.
 
 ## Quick deployment to Azure
-You can deploy the current LZA directly in your azure subscription by hitting the button below. 
+You can deploy the current LZA directly in your azure subscription by hitting the button below or using Azure Dev CLI. 
+
+### Deploy to Azure via Portal
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fappservice-landing-zone-accelerator%2Fmain%2Fscenarios%2Fsecure-baseline-multitenant%2Fazure-resource-manager%2Fmain.json)
 
+### Using Code Spaces via Azure Dev CLI 
+
+- Click on the `Green Code` button.
+- Navigate to the `CodeSpaces` tab and create a new code space.
+- Open the terminal by pressing <code>Ctrl + `</code>.
+- Navigate to the scenario folder using the command `cd /workspaces/appservice-landing-zone-accelerator/scenarios/secure-baseline-multitenant`.
+- Login to Azure using the command `azd auth login`.
+- Use the command `azd up` to deploy, provide environment name and subscription to deploy to.
+- Finally, use the command `azd down` to clean up resources deployed.
 
 # Architecture
 ![image](/docs/Images/Multitenant/AppServiceLandingZoneArchitecture-multitenant.png)

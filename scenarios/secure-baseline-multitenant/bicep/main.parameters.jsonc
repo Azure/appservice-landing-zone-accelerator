@@ -6,8 +6,8 @@
         "workloadName" : {
            "value": "appSvc-LZA"         
         },
-        //Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
-        "environment": {
+        //Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
+        "environmentName": {
             "value": "dev"
         },
         //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
@@ -101,8 +101,11 @@
         // The Azure Active Directory (AAD) administrator group used for SQL Server authentication
         "sqlServerAdministrators": {
             "value": {
+                // Azure AD group where your Azure administrators are members
                 "login": "Azure AD SQL Admins",
+                // Azure AD object ID of the group
                 "sid": "xxx-xxxx-xxxx-xxxx",
+                // Azure AD tenant ID where the group is located
                 "tenantId": "xxxx-xxxxxx-xxxxx-xxxxx-xxx"
             }
         }

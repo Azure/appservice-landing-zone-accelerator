@@ -81,7 +81,7 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
     administratorLoginPassword: !empty(administratorLoginPassword) ? administratorLoginPassword : null
     administrators: !empty(administrators) ? {
       administratorType: 'ActiveDirectory'
-      azureADOnlyAuthentication: administrators.azureADOnlyAuthentication //true
+      azureADOnlyAuthentication: administrators.azureADOnlyAuthentication //false
       login: administrators.login
       principalType: administrators.principalType //Group
       sid: administrators.sid
