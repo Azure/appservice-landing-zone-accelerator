@@ -67,6 +67,9 @@ param sqlAdminLogin string = ''
 @secure()
 param sqlAdminPassword string = ''
 
+@description('set to true if you want to auto approve the Private Endpoint of the AFD')
+param autoApproveAfdPrivateEndpoint bool = true
+
 var resourceNames = {
   storageAccount: naming.storageAccount.nameUnique
   vnetSpoke: take('${naming.virtualNetwork.name}-spoke', 80)
@@ -90,6 +93,7 @@ var resourceNames = {
   frontDoorWaf: naming.frontDoorFirewallPolicy.name
   routeTable: naming.routeTable.name
   routeEgressLockdown: '${naming.route.name}-egress-lockdown'
+  idAfdApprovePeAutoApprover: take('${naming.userAssignedManagedIdentity.name}-AfdApprovePe', 128)
 }
 
 var udrRoutes = [
@@ -265,6 +269,17 @@ module afd '../../shared/bicep/network/front-door.bicep' = {
     skuName:'Premium_AzureFrontDoor'
     wafPolicyName: resourceNames.frontDoorWaf 
   }
+}
+
+module autoApproveAfdPe 'modules/approve-afd-pe.module.bicep' = if (autoApproveAfdPrivateEndpoint) {
+  name: take ('autoApproveAfdPe-${resourceNames.frontDoor}-deployment', 64)
+  params: { 
+    location: location
+    idAfdPeAutoApproverName: resourceNames.idAfdApprovePeAutoApprover
+  }
+  dependsOn: [
+    afd
+  ]
 }
 
 

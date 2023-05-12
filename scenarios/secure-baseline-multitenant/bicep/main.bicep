@@ -88,6 +88,9 @@ param deployAppConfig bool = false
 @description('set to true if you want to deploy a jumpbox/devops VM')
 param deployJumpHost bool = true
 
+@description('set to true if you want to auto approve the Private Endpoint of the AFD')
+param autoApproveAfdPrivateEndpoint bool = true
+
 
 
 // ================ //
@@ -188,6 +191,7 @@ module spoke 'deploy.spoke.bicep' = {
     deployRedis: deployRedis
     deployAzureSql: deployAzureSql
     deployAppConfig: deployAppConfig
+    autoApproveAfdPrivateEndpoint: autoApproveAfdPrivateEndpoint
   }
 }
 

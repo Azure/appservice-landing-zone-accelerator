@@ -42,6 +42,10 @@
         "deployJumpHost": {
             "value": "true"
         },
+        // set to true if you want to auto approve the Private Endpoint of the AFD Premium
+        "autoApproveAfdPrivateEndpoint": {
+            "value": "true"
+        },
         // CIDR of the subnet that will host the azure Firewall
         "subnetHubFirewallAddressSpace": {
             "value": "10.242.0.0/26"
