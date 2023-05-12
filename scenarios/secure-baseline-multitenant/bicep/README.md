@@ -38,7 +38,8 @@ The table below summurizes the avaialble parameters and the possible values that
 |deployAzureSql|Feature Flag: Deploy (or not) an Azure SQL with default database|
 |deployAppConfig|Feature Flag: Deploy (or not) an Azure app configuration|
 |deployJumpHost|Feature Flag: Deploy (or not) an Azure virtual machine (to be used as jumphost)|
-|sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group  must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
+|autoApproveAfdPrivateEndpoint|Default value: true. Set to true if you want to auto approve the Private Endpoint of the AFD Premium. See details [regarding approving the App Service private endpoint connection from Front Door](#approve-the-app-service-private-endpoint-connection-from-front-door-in-the-azure-portal) | false
+|sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
 
 After the parameters have been initialized, you can deploy the Landing Zone Accelerator resources with the following `az cli` command:
 
@@ -75,7 +76,12 @@ az deployment sub create `
    
 ### Approve the App Service private endpoint connection from Front Door in the Azure Portal
 
-This is a manual step that is required to complete the private endpoint connection.
+The approval of the App Service private endpoint connection from Azure Front Door can be automated with the deployment, if you set the param `autoApproveAfdPrivateEndpoint` to `true`. If you do so then you need to know:
+- The automatic deployment uses the [deploymentScripts Resource](https://learn.microsoft.com/en-us/azure/templates/microsoft.resources/deploymentscripts?pivots=deployment-language-bicep). The deployment script service requires two supporting resources for script execution and troubleshooting: a storage account and a container instance. The two automatically-created supporting resources are usually deleted by the script service when the deployment script execution gets in a terminal state. You are billed for the supporting resources until they are deleted.
+- The deployment script resource is only available in the regions where Azure Container Instance is available, see [Azure Container Instances Availabiility by Region](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=container-instances&regions=asia-pacific-east,asia-pacific-southeast,australia-central,australia-central-2,australia-east,australia-southeast,brazil-south,brazil-southeast,canada-central,canada-east,central-india,china-east,china-east-2,china-east-3,china-non-regional,china-north,china-north-2,china-north-3,europe-north,europe-west,france-central,france-south,germany-north,germany-west-central,japan-east,japan-west,korea-central,korea-south,norway-east,norway-west,qatar-central,south-africa-north,south-africa-west,south-india,sweden-central,sweden-south,switzerland-north,switzerland-west,uae-north,uae-central,united-kingdom-south,united-kingdom-west,us-central,us-dod-central,us-dod-east,us-east,us-east-2,us-north-central,us-south-central,us-west,us-west-2,us-west-3,us-west-central,usgov-arizona,usgov-non-regional,usgov-texas,usgov-virginia,west-india,poland-central)
+- A User Assigned Managed Identity will be created (with name *id-WORKLOADNAME-ENVIRONMENT-REGION-AfdApprovePe*) that it will be given Contributor role on the spoke resource group. This identity will be used to approve the Private Endpoint connection
+
+If before deployment you set the param `autoApproveAfdPrivateEndpoint` to `false` (because you want to manually approve the Private Endpoint) then you need to complete the next manual step to approve the private endpoint connection.
 
 ```bash
 # Update the resource group name to match the one used in the deployment of the webapp
@@ -84,6 +90,9 @@ webapp_id=$(az webapp list -g $rg_name --query "[].id" -o tsv)
 fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].{id:id}" -o tsv)
 az network private-endpoint-connection approve --id $fd_conn_id --description "Approved"
 ```
+
+### Verify Deployment and Approval of Azure Front Door Private Endpoint Connection approval
+Go to the portal, find the spoke resource group you have just deployed, and identify the Azure Front Door resource (names starts with *afd-*). In the Overview page, find the URL named *Endpoint hostname*, copy it, and try it on a browser. If everything is successful then you should see a sample web app page with title *"Your web app is running and waiting for your content"*. If you get any errors verify that you have approved the private endpoint connection between Azure Front Door and the Web App. 
 
 ### Connect to the Jumpbox VM (deployed in the spoke resource group)
 

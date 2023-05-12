@@ -26,10 +26,6 @@
         "enableEgressLockdown" : {
             "value": "true"
         },
-        // set to true if you want to deploy a WAF in front of the app service
-        "enableWaf": {
-            "value": "true"
-        },
         // set to true if you want to a redis cache
         "deployRedis": {
             "value": "true"
@@ -44,6 +40,10 @@
         },
         // set to true if you want to deploy a jumpbox/devops VM
         "deployJumpHost": {
+            "value": "true"
+        },
+        // set to true if you want to auto approve the Private Endpoint of the AFD Premium
+        "autoApproveAfdPrivateEndpoint": {
             "value": "true"
         },
         // CIDR of the subnet that will host the azure Firewall

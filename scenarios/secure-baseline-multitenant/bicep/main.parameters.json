@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workloadName" : {
-           "value": "appsvclza2"         
+           "value": "appsvclza3"         
         },
         "environmentName": {
             "value": "${AZURE_ENV_NAME}"
@@ -20,9 +20,6 @@
         "enableEgressLockdown" : {
             "value": "false"
         },
-        "enableWaf": {
-            "value": "true"
-        },
         "deployRedis": {
             "value": "false"
         },
@@ -33,6 +30,9 @@
             "value": "true"
         },
         "deployJumpHost": {
+            "value": "true"
+        },
+        "autoApproveAfdPrivateEndpoint": {
             "value": "true"
         },
         "subnetHubFirewallAddressSpace": {
