@@ -76,9 +76,6 @@ param sqlAdminPassword string = newGuid()
 @description('set to true if you want to intercept all outbound traffic with azure firewall')
 param enableEgressLockdown bool = false
 
-@description('set to true if you want to deploy a WAF in front of the app service')
-param enableWaf bool = true
-
 @description('set to true if you want to a redis cache')
 param deployRedis bool = false
 
@@ -187,7 +184,6 @@ module spoke 'deploy.spoke.bicep' = {
     sqlAdminPassword: sqlAdminPassword  
     webAppPlanSku: webAppPlanSku 
     enableEgressLockdown: enableEgressLockdown
-    enableWaf: enableWaf
     deployJumpHost: deployJumpHost
     deployRedis: deployRedis
     deployAzureSql: deployAzureSql

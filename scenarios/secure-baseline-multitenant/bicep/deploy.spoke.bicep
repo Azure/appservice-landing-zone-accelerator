@@ -30,9 +30,6 @@ param tags object
 @description('Create (or not) a UDR for the App Service Subnet, to route all egress traffic through Hub Azure Firewall')
 param enableEgressLockdown bool
 
-@description('Enable or disable WAF policies for the deployed Azure Front Door')
-param enableWaf bool = true
-
 @description('Deploy (or not) a redis cache')
 param deployRedis bool
 
@@ -266,7 +263,7 @@ module afd '../../shared/bicep/network/front-door.bicep' = {
       }
     ]
     skuName:'Premium_AzureFrontDoor'
-    wafPolicyName: (enableWaf) ?  resourceNames.frontDoorWaf : ''
+    wafPolicyName: resourceNames.frontDoorWaf 
   }
 }
 

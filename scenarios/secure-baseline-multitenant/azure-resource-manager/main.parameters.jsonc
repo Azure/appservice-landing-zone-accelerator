@@ -20,9 +20,6 @@
         "enableEgressLockdown" : {
             "value": "true"
         },
-        "enableWaf": {
-            "value": "true"
-        },
         "deployRedis": {
             "value": "false"
         },
