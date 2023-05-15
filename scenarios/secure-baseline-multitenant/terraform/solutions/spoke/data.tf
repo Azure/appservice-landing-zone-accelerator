@@ -8,6 +8,12 @@ data "terraform_remote_state" "hub" {
   }
 }
 
+data "azurerm_virtual_network" "hub" {
+  name                = data.terraform_remote_state.hub.outputs.vnet_name
+  resource_group_name = data.terraform_remote_state.hub.outputs.rg_name
+}
+
+
 output "hub" {
   value = jsonencode(data.terraform_remote_state.hub.outputs)
 }

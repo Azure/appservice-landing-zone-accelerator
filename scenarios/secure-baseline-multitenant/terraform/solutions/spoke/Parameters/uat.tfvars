@@ -2,6 +2,7 @@ application_name = "scenario1"
 environment      = "prod"
 location         = "westus3"
 location_short   = "wus3"
+owner            = "cloudops@contoso.com"
 
 hub_state_resource_group_name  = "backend-appsrvc-dev-westus2-001"
 hub_state_storage_account_name = "stbackendappsrwestus2001"

@@ -1,12 +1,11 @@
 resource "azurecaf_name" "caf_name_hub_rg" {
-  name          = "hub-${var.application_name}"
+  name          = var.application_name
   resource_type = "azurerm_resource_group"
   prefixes      = local.global_settings.prefixes
   random_length = local.global_settings.random_length
   clean_input   = true
   passthrough   = local.global_settings.passthrough
-
-  use_slug = local.global_settings.use_slug
+  use_slug      = local.global_settings.use_slug
 }
 
 resource "azurerm_resource_group" "hub" {
@@ -20,7 +19,7 @@ module "network" {
   source = "../../../../../shared/terraform-modules/network"
 
   global_settings = local.global_settings
-  name            = "hub-${var.application_name}"
+  name            = var.application_name
   resource_group  = azurerm_resource_group.hub.name
   location        = azurerm_resource_group.hub.location
   vnet_cidr       = var.hub_vnet_cidr

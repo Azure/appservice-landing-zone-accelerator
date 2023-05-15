@@ -32,8 +32,8 @@
 | <a name="module_devops_vm_extension"></a> [devops\_vm\_extension](#module\_devops\_vm\_extension) | ../../modules/windows-vm-ext | n/a |
 | <a name="module_front_door"></a> [front\_door](#module\_front\_door) | ../../modules/front-door | n/a |
 | <a name="module_key_vault"></a> [key\_vault](#module\_key\_vault) | ../../modules/key-vault | n/a |
-| <a name="module_network"></a> [network](#module\_network) | ../../modules/network | n/a |
-| <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones) | ../../modules/private-dns-zone | n/a |
+| <a name="module_network"></a> [network](#module\_network) | ../../../../../shared/terraform-modules/network | n/a |
+| <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones) | ../../../../../shared/terraform-modules/private-dns-zone | n/a |
 | <a name="module_redis_cache"></a> [redis\_cache](#module\_redis\_cache) | ../../modules/redis-cache | n/a |
 | <a name="module_sql_database"></a> [sql\_database](#module\_sql\_database) | ../../modules/sql-database | n/a |
 | <a name="module_user_defined_routes"></a> [user\_defined\_routes](#module\_user\_defined\_routes) | ../../modules/user-defined-routes | n/a |
@@ -42,16 +42,12 @@
 
 | Name | Type |
 |------|------|
-| [azurecaf_name.appsvc_subnet](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.caf_name_id_contributor](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.caf_name_id_reader](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurecaf_name.caf_name_law](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.caf_name_spoke_rg](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurecaf_name.contributor_identity](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurecaf_name.devops_subnet](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.devops_vm](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurecaf_name.ingress_subnet](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.law](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurecaf_name.private_link_subnet](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurecaf_name.reader_identity](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurecaf_name.spoke_network](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurerm_log_analytics_workspace.law](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) | resource |
 | [azurerm_resource_group.spoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_user_assigned_identity.contributor](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |

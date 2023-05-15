@@ -1,12 +1,11 @@
 resource "azurecaf_name" "caf_name_spoke_rg" {
-  name          = "spoke-${var.application_name}"
+  name          = var.application_name
   resource_type = "azurerm_resource_group"
-  prefixes      = local.global_settings.prefixes
+  prefixes      = concat(["spoke"], local.global_settings.prefixes)
   random_length = local.global_settings.random_length
   clean_input   = true
   passthrough   = local.global_settings.passthrough
-
-  use_slug = var.global_settings.use_slug
+  use_slug      = var.global_settings.use_slug
 }
 
 resource "azurerm_resource_group" "spoke" {
@@ -16,83 +15,47 @@ resource "azurerm_resource_group" "spoke" {
   tags = local.base_tags
 }
 
-resource "azurecaf_name" "reader_identity" {
-  name          = "${var.application_name}-reader"
-  resource_type = "azurerm_user_assigned_identity"
-}
-
-resource "azurerm_user_assigned_identity" "reader" {
-  location            = azurerm_resource_group.spoke.location
-  name                = azurecaf_name.reader_identity.result
-  resource_group_name = azurerm_resource_group.spoke.name
-}
-
-resource "azurecaf_name" "contributor_identity" {
-  name          = "${var.application_name}-contributor"
-  resource_type = "azurerm_user_assigned_identity"
-}
-
-resource "azurerm_user_assigned_identity" "contributor" {
-  location            = azurerm_resource_group.spoke.location
-  name                = azurecaf_name.contributor_identity.result
-  resource_group_name = azurerm_resource_group.spoke.name
-}
-
-resource "azurecaf_name" "law" {
-  name          = var.application_name
-  resource_type = "azurerm_log_analytics_workspace"
-  suffixes      = [var.environment]
-}
-
-resource "azurerm_log_analytics_workspace" "law" {
-  name                = azurecaf_name.law.result
-  location            = var.location
-  resource_group_name = azurerm_resource_group.spoke.name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
-  # internet_ingestion_enabled = false
-}
-
 resource "random_integer" "unique_id" {
   min = 1
   max = 9999
 }
 
-resource "azurecaf_name" "spoke_network" {
-  name          = var.application_name
-  resource_type = "azurerm_virtual_network"
-  suffixes      = [var.environment]
-}
+# resource "azurecaf_name" "spoke_network" {
+#   name          = var.application_name
+#   resource_type = "azurerm_virtual_network"
+#   suffixes      = [var.environment]
+# }
 
-resource "azurecaf_name" "appsvc_subnet" {
-  name          = "appsvc"
-  resource_type = "azurerm_subnet"
-}
+# resource "azurecaf_name" "appsvc_subnet" {
+#   name          = "appsvc"
+#   resource_type = "azurerm_subnet"
+# }
 
-resource "azurecaf_name" "ingress_subnet" {
-  name          = "ingress"
-  resource_type = "azurerm_subnet"
-}
+# resource "azurecaf_name" "ingress_subnet" {
+#   name          = "ingress"
+#   resource_type = "azurerm_subnet"
+# }
 
-resource "azurecaf_name" "devops_subnet" {
-  name          = "devops"
-  resource_type = "azurerm_subnet"
-}
+# resource "azurecaf_name" "devops_subnet" {
+#   name          = "devops"
+#   resource_type = "azurerm_subnet"
+# }
 
-resource "azurecaf_name" "private_link_subnet" {
-  name          = "private-link"
-  resource_type = "azurerm_subnet"
-}
+# resource "azurecaf_name" "private_link_subnet" {
+#   name          = "private-link"
+#   resource_type = "azurerm_subnet"
+# }
 
 //ToDo: Revisit the default IP ranges to smaller (more realistic)
 
 module "network" {
-  source = "../../modules/network"
+  source = "../../../../../shared/terraform-modules/network"
 
-  resource_group = azurerm_resource_group.spoke.name
-  location       = var.location
-  name           = azurecaf_name.spoke_network.result
-  vnet_cidr      = local.spoke_vnet_cidr
+  global_settings = local.global_settings
+  resource_group  = azurerm_resource_group.spoke.name
+  location        = var.location
+  name            = azurecaf_name.spoke_network.result
+  vnet_cidr       = local.spoke_vnet_cidr
 
   subnets = [
     {
@@ -122,17 +85,15 @@ module "network" {
       delegation  = null
     }
   ]
-}
 
-data "azurerm_virtual_network" "hub" {
-  name                = var.hub_settings.vnet_name
-  resource_group_name = var.hub_settings.rg_name
+  tags = local.base_tags
 }
 
 module "private_dns_zones" {
-  source = "../../modules/private-dns-zone"
+  source = "../../../../../shared/terraform-modules/private-dns-zone"
 
-  resource_group = var.hub_settings.rg_name
+  resource_group  = data.terraform_remote_state.hub.outputs.rg_name
+  global_settings = local.global_settings
 
   dns_zones = [
     "privatelink.azurewebsites.net",
@@ -145,19 +106,21 @@ module "private_dns_zones" {
   vnet_links = [
     {
       vnet_id             = data.azurerm_virtual_network.hub.id
-      vnet_resource_group = var.hub_settings.rg_name
+      vnet_resource_group = data.terraform_remote_state.hub.outputs.rg_name
     },
     {
       vnet_id             = module.network.vnet_id
       vnet_resource_group = azurerm_resource_group.spoke.name
     }
   ]
+
+  tags = local.base_tags
 }
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   name                         = "hub-to-spoke-${var.application_name}"
-  resource_group_name          = var.hub_settings.rg_name
-  virtual_network_name         = var.hub_settings.vnet_name
+  resource_group_name          = data.terraform_remote_state.hub.outputs.rg_name
+  virtual_network_name         = data.terraform_remote_state.hub.outputs.vnet_name
   remote_virtual_network_id    = module.network.vnet_id
   allow_virtual_network_access = true
   allow_forwarded_traffic      = false
@@ -190,7 +153,7 @@ module "user_defined_routes" {
       name                   = "defaultRoute"
       address_prefix         = "0.0.0.0/0"
       next_hop_type          = "VirtualAppliance"
-      next_hop_in_ip_address = var.hub_settings.firewall.private_ip
+      next_hop_in_ip_address = data.terraform_remote_state.hub.outputs.firewall.private_ip
     }
   ]
 
@@ -229,7 +192,7 @@ module "app_service" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azurewebsites.net")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azurewebsites.net")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 
   depends_on = [
@@ -359,7 +322,7 @@ module "sql_database" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.database.windows.net")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.database.windows.net")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 }
 
@@ -387,7 +350,7 @@ module "app_configuration" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 }
 
@@ -414,7 +377,7 @@ module "key_vault" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.vaultcore.azure.net")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.vaultcore.azure.net")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 }
 
@@ -445,6 +408,6 @@ module "redis_cache" {
   private_dns_zone = {
     name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.redis.cache.windows.net")].name
     id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.redis.cache.windows.net")].id
-    resource_group = var.hub_settings.rg_name
+    resource_group = data.terraform_remote_state.hub.outputs.rg_name
   }
 }
