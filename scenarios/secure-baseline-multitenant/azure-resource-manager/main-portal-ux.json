@@ -8,52 +8,7 @@
                 {
                     "name": "basics",
                     "label": "Deployment settings",
-                    "elements": [
-                        {
-                            "name": "cloudEnvironment",
-                            "type": "Microsoft.Common.Section",
-                            "label": "Select cloud environment",
-                            "elements": [
-                                {
-                                    "name": "selection",
-                                    "type": "Microsoft.Common.DropDown",
-                                    "visible": true,
-                                    "label": "Azure cloud environment",
-                                    "defaultValue": "[if(contains(steps('basics').resourceScope.location.name, 'china'), 'Azure China Cloud', if(contains(steps('basics').resourceScope.location.name, 'usgov'), 'Azure US Government', if(contains(steps('basics').resourceScope.location.name, 'usdod'), 'Azure US Government', 'Azure Cloud')))]",
-                                    "multiselect": false,
-                                    "selectAll": false,
-                                    "filter": false,
-                                    "multiLine": true,
-                                    "toolTip": "Select your target Azure cloud environment.",
-                                    "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "Azure Cloud",
-                                                "value": "AzureCloud"
-                                            },
-                                            {
-                                                "label": "Azure China Cloud",
-                                                "value": "AzureChinaCloud"
-                                            },
-                                            {
-                                                "label": "Azure US Government",
-                                                "value": "AzureUSGovernment"
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "name": "warning",
-                                    "type": "Microsoft.Common.InfoBox",
-                                    "visible": true,
-                                    "options": {
-                                        "icon": "Warning",
-                                        "text": "This value should be automatically set based on the list of available locations. Only change this if you believe the value to be incorrect.",
-                                        "uri": "https://docs.microsoft.com/en-us/cli/azure/manage-clouds-azure-cli"
-                                    }
-                                }
-                            ]
-                        },
+                    "elements": [                        
                         {
                             "name": "resourceScope",
                             "type": "Microsoft.Common.ResourceScope"
@@ -82,10 +37,10 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "Workload Name",
                             "subLabel": "",
-                            "defaultValue": "[[format('appsvc{0}', take(uniqueString(subscription().id), 4))]",
+                            "defaultValue": "",
                             "toolTip": "suffix (max 10 characters long) that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>",
                             "constraints": {
-                                "required": false,
+                                "required": true,
                                 "regex": "",
                                 "validationMessage": "",
                                 "validations": [
@@ -94,6 +49,228 @@
                                         "message": "The value must have a length of at most 10."
                                     }
                                 ]
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "environmentName",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Environment Name",
+                            "subLabel": "",
+                            "defaultValue": "test",
+                            "toolTip": "Required. The name of the Environment Name (e.g. \"dev\", \"test\", \"prod\", \"preprod\", \"staging\", \"uat\", \"dr\", \"qa\"). Up to 8 characters long.",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "dev",
+                                        "value": "dev"
+                                    },
+                                    {
+                                        "label": "dr",
+                                        "value": "dr"
+                                    },
+                                    {
+                                        "label": "preprod",
+                                        "value": "preprod"
+                                    },
+                                    {
+                                        "label": "prod",
+                                        "value": "prod"
+                                    },
+                                    {
+                                        "label": "qa",
+                                        "value": "qa"
+                                    },
+                                    {
+                                        "label": "staging",
+                                        "value": "staging"
+                                    },
+                                    {
+                                        "label": "test",
+                                        "value": "test"
+                                    },
+                                    {
+                                        "label": "uat",
+                                        "value": "uat"
+                                    }
+                                ],
+                                "required": true,
+                                "validations": [
+                                    {
+                                        "isValid": "[or(or(empty(steps('basics').environmentName),and(not(startsWith(steps('basics').environmentName,'[[')),startsWith(steps('basics').environmentName,'['),endsWith(steps('basics').environmentName,']'),greater(indexOf(steps('basics').environmentName,'('),-1),greater(indexOf(steps('basics').environmentName,')'),-1))),lessOrEquals(length(steps('basics').environmentName),8))]",
+                                        "message": "The value must have a length of at most 8."
+                                    }
+                                ]
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        }
+                    ]
+                },
+                {
+                    "name": "networking",
+                    "label": "Network settings",
+                    "elements": [
+                        {
+                            "name": "deployHub",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "visible": true,
+                            "label": "Do you want to deploy a new Hub Network, or we will use an existing one? Needs to be in the same region, and have Azure Firewall, and Azure Bastion deployed in it.",
+                            "defaultValue": "New",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "New",
+                                        "value": "deployNew"
+                                    },
+                                    {
+                                        "label": "Existing",
+                                        "value": "useExisting"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "vnetHubAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Hub Virtual Network Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.242.0.0/20",
+                            "toolTip": "CIDR of the HUB vnet i.e. 192.168.0.0/24 - optional if you want to use an existing hub vnet (vnetHubResourceId)",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
+                        },
+                        {
+                            "name": "subnetHubFirewallAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Hub Subnet CIDR for Azure Firewall",
+                            "subLabel": "",
+                            "defaultValue": "10.242.0.0/26",
+                            "toolTip": "CIDR of the subnet hosting the azure Firewall - optional if you want to use an existing hub vnet (vnetHubResourceId)",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
+                        },
+                        {
+                            "name": "subnetHubBastionAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Hub Subnet CIDR for Bastion Service",
+                            "subLabel": "",
+                            "defaultValue": "10.242.0.64/26",
+                            "toolTip": "CIDR of the subnet hosting the Bastion Service - optional if you want to use an existing hub vnet (vnetHubResourceId)",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
+                        },
+                        {
+                            "name": "vnetHubResourceId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Hub Vnet Resource Id",
+                            "subLabel": "",
+                            "defaultValue": "",
+                            "toolTip": "Default is empty. If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": "[equals(steps('networking').deployHub, 'useExisting')]"
+                        },
+                        {
+                            "name": "firewallInternalIp",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Firewall Internal IP",
+                            "subLabel": "",
+                            "defaultValue": "",
+                            "toolTip": "Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": "[equals(steps('networking').deployHub, 'useExisting')]"
+                        },
+                        {
+                            "name": "vnetSpokeAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Spoke Virtual Network Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.240.0.0/20",
+                            "toolTip": "CIDR of the SPOKE vnet i.e. 192.168.0.0/24",
+                            "constraints": {
+                                "required": true,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "subnetSpokeAppSvcAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Spoke Subnet CIDR for Azure App Service",
+                            "subLabel": "",
+                            "defaultValue": "10.240.0.0/26",
+                            "toolTip": "CIDR of the subnet that will hold the app services plan",
+                            "constraints": {
+                                "required": true,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "subnetSpokeDevOpsAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Spoke Subnet CIDR for Dev Ops agent (VM)",
+                            "subLabel": "",
+                            "defaultValue": "10.240.10.128/26",
+                            "toolTip": "CIDR of the subnet that will hold devOps agents etc ",
+                            "constraints": {
+                                "required": true,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "subnetSpokePrivateEndpointAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Spoke Subnet CIDR for Azure Private Endpoints",
+                            "subLabel": "",
+                            "defaultValue": "10.240.11.0/24",
+                            "toolTip": "CIDR of the subnet that will hold the private endpoints of the supporting services",
+                            "constraints": {
+                                "required": true,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
                             },
                             "infoMessages": [],
                             "visible": true
@@ -109,7 +286,7 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "Location",
                             "subLabel": "",
-                            "defaultValue": "[[deployment().location]",
+                            "defaultValue": "[steps('basics').resourceScope.location.displayName]",
                             "toolTip": "Azure region where the resources will be deployed in",
                             "constraints": {
                                 "required": false,
@@ -118,141 +295,8 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "environmentName",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Environment Name",
-                            "subLabel": "",
-                            "defaultValue": "test",
-                            "toolTip": "Required. The name of the environmentName (e.g. \"dev\", \"test\", \"prod\", \"preprod\", \"staging\", \"uat\", \"dr\", \"qa\"). Up to 8 characters long.",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": [
-                                    {
-                                        "isValid": "[or(or(empty(steps('extra').environmentName),and(not(startsWith(steps('extra').environmentName,'[[')),startsWith(steps('extra').environmentName,'['),endsWith(steps('extra').environmentName,']'),greater(indexOf(steps('extra').environmentName,'('),-1),greater(indexOf(steps('extra').environmentName,')'),-1))),lessOrEquals(length(steps('extra').environmentName),8))]",
-                                        "message": "The value must have a length of at most 8."
-                                    }
-                                ]
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "vnetHubAddressSpace",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Vnet Hub Address Space",
-                            "subLabel": "",
-                            "defaultValue": "10.242.0.0/20",
-                            "toolTip": "CIDR of the HUB vnet i.e. 192.168.0.0/24 - optional if you want to use an existing hub vnet (vnetHubResourceId)",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "subnetHubFirewallAddressSpace",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Subnet Hub Firewall Address Space",
-                            "subLabel": "",
-                            "defaultValue": "10.242.0.0/26",
-                            "toolTip": "CIDR of the subnet hosting the azure Firewall - optional if you want to use an existing hub vnet (vnetHubResourceId)",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "subnetHubBastionAddressSpace",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Subnet Hub Bastion Address Space",
-                            "subLabel": "",
-                            "defaultValue": "10.242.0.64/26",
-                            "toolTip": "CIDR of the subnet hosting the Bastion Service - optional if you want to use an existing hub vnet (vnetHubResourceId)",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "vnetSpokeAddressSpace",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Vnet Spoke Address Space",
-                            "subLabel": "",
-                            "defaultValue": "10.240.0.0/20",
-                            "toolTip": "CIDR of the SPOKE vnet i.e. 192.168.0.0/24",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "subnetSpokeAppSvcAddressSpace",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Subnet Spoke App Svc Address Space",
-                            "subLabel": "",
-                            "defaultValue": "10.240.0.0/26",
-                            "toolTip": "CIDR of the subnet that will hold the app services plan",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "subnetSpokeDevOpsAddressSpace",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Subnet Spoke Dev Ops Address Space",
-                            "subLabel": "",
-                            "defaultValue": "10.240.10.128/26",
-                            "toolTip": "CIDR of the subnet that will hold devOps agents etc ",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "subnetSpokePrivateEndpointAddressSpace",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Subnet Spoke Private Endpoint Address Space",
-                            "subLabel": "",
-                            "defaultValue": "10.240.11.0/24",
-                            "toolTip": "CIDR of the subnet that will hold the private endpoints of the supporting services",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
+                            "visible": false
+                        },  
                         {
                             "name": "numericSuffix",
                             "type": "Microsoft.Common.TextBox",
@@ -267,56 +311,8 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "resourceTags",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Resource Tags",
-                            "subLabel": "",
-                            "defaultValue": "{}",
-                            "toolTip": "Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "vnetHubResourceId",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Vnet Hub Resource Id",
-                            "subLabel": "",
-                            "defaultValue": "",
-                            "toolTip": "Default is empty. If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "firewallInternalIp",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Firewall Internal Ip",
-                            "subLabel": "",
-                            "defaultValue": "",
-                            "toolTip": "Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
+                            "visible": false
+                        },                        
                         {
                             "name": "webAppPlanSku",
                             "type": "Microsoft.Common.DropDown",
@@ -626,6 +622,39 @@
                             "visible": true
                         }
                     ]
+                },
+                {
+                    "name": "tags",
+                    "label": "Tags",
+                    "elements": [
+                        {
+                            "name": "tagsByResource",
+                            "type": "Microsoft.Common.TagsByResource",
+                            "resources": [
+                                "Microsoft.AppConfiguration/configurationStores",
+                                "Microsoft.Storage/storageAccounts",
+                                "Microsoft.Compute/virtualMachines",
+                                "Microsoft.Network/networkSecurityGroups",
+                                "Microsoft.Web/serverfarms",
+                                "Microsoft.Web/sites",
+                                "Microsoft.Web/sites/config",
+                                "microsoft.insights/components",   
+                                "Microsoft.Network/privateEndpoints",
+                                "Microsoft.Network/privateDnsZones",
+                                "Microsoft.KeyVault/vaults",
+                                "Microsoft.Sql/servers",
+                                "Microsoft.Sql/servers/databases",
+                                "Microsoft.Cache/Redis",
+                                "Microsoft.OperationalInsights/workspaces",
+                                "Microsoft.Network/virtualNetworks",
+                                "Microsoft.Network/azureFirewalls",
+                                "Microsoft.Network/routeTables",
+                                "Microsoft.Network/bastionHosts"
+                            
+
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -633,18 +662,18 @@
             "parameters": {
                 "workloadName": "[steps('basics').workloadName]",
                 "location": "[steps('extra').location]",
-                "environmentName": "[steps('extra').environmentName]",
-                "vnetHubAddressSpace": "[steps('extra').vnetHubAddressSpace]",
-                "subnetHubFirewallAddressSpace": "[steps('extra').subnetHubFirewallAddressSpace]",
-                "subnetHubBastionAddressSpace": "[steps('extra').subnetHubBastionAddressSpace]",
-                "vnetSpokeAddressSpace": "[steps('extra').vnetSpokeAddressSpace]",
-                "subnetSpokeAppSvcAddressSpace": "[steps('extra').subnetSpokeAppSvcAddressSpace]",
-                "subnetSpokeDevOpsAddressSpace": "[steps('extra').subnetSpokeDevOpsAddressSpace]",
-                "subnetSpokePrivateEndpointAddressSpace": "[steps('extra').subnetSpokePrivateEndpointAddressSpace]",
+                "environmentName": "[steps('basics').environmentName]",
+                "vnetHubAddressSpace": "[steps('networking').vnetHubAddressSpace]",
+                "subnetHubFirewallAddressSpace": "[steps('networking').subnetHubFirewallAddressSpace]",
+                "subnetHubBastionAddressSpace": "[steps('networking').subnetHubBastionAddressSpace]",
+                "vnetSpokeAddressSpace": "[steps('networking').vnetSpokeAddressSpace]",
+                "subnetSpokeAppSvcAddressSpace": "[steps('networking').subnetSpokeAppSvcAddressSpace]",
+                "subnetSpokeDevOpsAddressSpace": "[steps('networking').subnetSpokeDevOpsAddressSpace]",
+                "subnetSpokePrivateEndpointAddressSpace": "[steps('networking').subnetSpokePrivateEndpointAddressSpace]",
                 "numericSuffix": "[steps('extra').numericSuffix]",
-                "resourceTags": "[steps('extra').resourceTags]",
-                "vnetHubResourceId": "[steps('extra').vnetHubResourceId]",
-                "firewallInternalIp": "[steps('extra').firewallInternalIp]",
+                "resourceTags": "[steps('tags').tagsByResource]",
+                "vnetHubResourceId": "[steps('networking').vnetHubResourceId]",
+                "firewallInternalIp": "[steps('networking').firewallInternalIp]",
                 "webAppPlanSku": "[steps('extra').webAppPlanSku]",
                 "webAppBaseOs": "[steps('extra').webAppBaseOs]",
                 "adminUsername": "[steps('extra').adminUsername]",
