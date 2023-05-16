@@ -33,7 +33,7 @@ Pick one of the scenarios below to get started on a reference implementation.
 
 ---
 ### App Patterns
-Looking for developer-focused reference implementation? Check out Reliable Web Patterns for App Service 
+Looking for developer-focused reference implementation? Check out Reliable Web Patterns for App Service. 
 
 :arrow_forward: [Reliable web app pattern for .NET](https://github.com/Azure/reliable-web-app-pattern-dotnet)
 
