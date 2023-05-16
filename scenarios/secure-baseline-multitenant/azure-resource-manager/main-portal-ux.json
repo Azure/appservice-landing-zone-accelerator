@@ -1,0 +1,667 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "App Service LZA - Secure Baseline multitenant ",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Deployment settings",
+                    "elements": [
+                        {
+                            "name": "cloudEnvironment",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Select cloud environment",
+                            "elements": [
+                                {
+                                    "name": "selection",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "visible": true,
+                                    "label": "Azure cloud environment",
+                                    "defaultValue": "[if(contains(steps('basics').resourceScope.location.name, 'china'), 'Azure China Cloud', if(contains(steps('basics').resourceScope.location.name, 'usgov'), 'Azure US Government', if(contains(steps('basics').resourceScope.location.name, 'usdod'), 'Azure US Government', 'Azure Cloud')))]",
+                                    "multiselect": false,
+                                    "selectAll": false,
+                                    "filter": false,
+                                    "multiLine": true,
+                                    "toolTip": "Select your target Azure cloud environment.",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "Azure Cloud",
+                                                "value": "AzureCloud"
+                                            },
+                                            {
+                                                "label": "Azure China Cloud",
+                                                "value": "AzureChinaCloud"
+                                            },
+                                            {
+                                                "label": "Azure US Government",
+                                                "value": "AzureUSGovernment"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "warning",
+                                    "type": "Microsoft.Common.InfoBox",
+                                    "visible": true,
+                                    "options": {
+                                        "icon": "Warning",
+                                        "text": "This value should be automatically set based on the list of available locations. Only change this if you believe the value to be incorrect.",
+                                        "uri": "https://docs.microsoft.com/en-us/cli/azure/manage-clouds-azure-cli"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope"
+                        },
+                        {
+                            "name": "getSubscriptions",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "POST",
+                                "path": "providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01",
+                                "body": {
+                                    "query": "ResourceContainers | where type =~ 'microsoft.resources/subscriptions' | where properties.state =~ 'enabled' | project label=tostring(name), description=subscriptionId, value=subscriptionId | order by label asc"
+                                }
+                            }
+                        },
+                        {
+                            "name": "getLocations",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "GET",
+                                "path": "locations?api-version=2019-11-01"
+                            }
+                        },
+                        {
+                            "name": "workloadName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Workload Name",
+                            "subLabel": "",
+                            "defaultValue": "[[format('appsvc{0}', take(uniqueString(subscription().id), 4))]",
+                            "toolTip": "suffix (max 10 characters long) that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": [
+                                    {
+                                        "isValid": "[or(or(empty(steps('basics').workloadName),and(not(startsWith(steps('basics').workloadName,'[[')),startsWith(steps('basics').workloadName,'['),endsWith(steps('basics').workloadName,']'),greater(indexOf(steps('basics').workloadName,'('),-1),greater(indexOf(steps('basics').workloadName,')'),-1))),lessOrEquals(length(steps('basics').workloadName),10))]",
+                                        "message": "The value must have a length of at most 10."
+                                    }
+                                ]
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        }
+                    ]
+                },
+                {
+                    "name": "extra",
+                    "label": "Extra settings",
+                    "elements": [
+                        {
+                            "name": "location",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Location",
+                            "subLabel": "",
+                            "defaultValue": "[[deployment().location]",
+                            "toolTip": "Azure region where the resources will be deployed in",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "environmentName",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Environment Name",
+                            "subLabel": "",
+                            "defaultValue": "test",
+                            "toolTip": "Required. The name of the environmentName (e.g. \"dev\", \"test\", \"prod\", \"preprod\", \"staging\", \"uat\", \"dr\", \"qa\"). Up to 8 characters long.",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": [
+                                    {
+                                        "isValid": "[or(or(empty(steps('extra').environmentName),and(not(startsWith(steps('extra').environmentName,'[[')),startsWith(steps('extra').environmentName,'['),endsWith(steps('extra').environmentName,']'),greater(indexOf(steps('extra').environmentName,'('),-1),greater(indexOf(steps('extra').environmentName,')'),-1))),lessOrEquals(length(steps('extra').environmentName),8))]",
+                                        "message": "The value must have a length of at most 8."
+                                    }
+                                ]
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "vnetHubAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Vnet Hub Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.242.0.0/20",
+                            "toolTip": "CIDR of the HUB vnet i.e. 192.168.0.0/24 - optional if you want to use an existing hub vnet (vnetHubResourceId)",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "subnetHubFirewallAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Subnet Hub Firewall Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.242.0.0/26",
+                            "toolTip": "CIDR of the subnet hosting the azure Firewall - optional if you want to use an existing hub vnet (vnetHubResourceId)",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "subnetHubBastionAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Subnet Hub Bastion Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.242.0.64/26",
+                            "toolTip": "CIDR of the subnet hosting the Bastion Service - optional if you want to use an existing hub vnet (vnetHubResourceId)",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "vnetSpokeAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Vnet Spoke Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.240.0.0/20",
+                            "toolTip": "CIDR of the SPOKE vnet i.e. 192.168.0.0/24",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "subnetSpokeAppSvcAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Subnet Spoke App Svc Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.240.0.0/26",
+                            "toolTip": "CIDR of the subnet that will hold the app services plan",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "subnetSpokeDevOpsAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Subnet Spoke Dev Ops Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.240.10.128/26",
+                            "toolTip": "CIDR of the subnet that will hold devOps agents etc ",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "subnetSpokePrivateEndpointAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Subnet Spoke Private Endpoint Address Space",
+                            "subLabel": "",
+                            "defaultValue": "10.240.11.0/24",
+                            "toolTip": "CIDR of the subnet that will hold the private endpoints of the supporting services",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "numericSuffix",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Numeric Suffix",
+                            "subLabel": "",
+                            "defaultValue": "",
+                            "toolTip": "Optional. A numeric suffix (e.g. \"001\") to be appended on the naming generated for the resources. Defaults to empty.",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "resourceTags",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Resource Tags",
+                            "subLabel": "",
+                            "defaultValue": "{}",
+                            "toolTip": "Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "vnetHubResourceId",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Vnet Hub Resource Id",
+                            "subLabel": "",
+                            "defaultValue": "",
+                            "toolTip": "Default is empty. If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "firewallInternalIp",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Firewall Internal Ip",
+                            "subLabel": "",
+                            "defaultValue": "",
+                            "toolTip": "Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "webAppPlanSku",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Web App Plan Sku",
+                            "subLabel": "",
+                            "defaultValue": "S1",
+                            "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "S1",
+                                        "value": "S1"
+                                    },
+                                    {
+                                        "label": "S2",
+                                        "value": "S2"
+                                    },
+                                    {
+                                        "label": "S3",
+                                        "value": "S3"
+                                    },
+                                    {
+                                        "label": "P1V3",
+                                        "value": "P1V3"
+                                    },
+                                    {
+                                        "label": "P2V3",
+                                        "value": "P2V3"
+                                    },
+                                    {
+                                        "label": "P3V3",
+                                        "value": "P3V3"
+                                    },
+                                    {
+                                        "label": "P1V3_AZ",
+                                        "value": "P1V3_AZ"
+                                    },
+                                    {
+                                        "label": "P2V3_AZ",
+                                        "value": "P2V3_AZ"
+                                    },
+                                    {
+                                        "label": "P3V3_AZ",
+                                        "value": "P3V3_AZ"
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "webAppBaseOs",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Web App Base Os",
+                            "subLabel": "",
+                            "defaultValue": "Windows",
+                            "toolTip": "Kind of server OS of the App Service Plan",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "Windows",
+                                        "value": "Windows"
+                                    },
+                                    {
+                                        "label": "Linux",
+                                        "value": "Linux"
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "adminUsername",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Admin Username",
+                            "subLabel": "",
+                            "defaultValue": "azureuser",
+                            "toolTip": "mandatory, the username of the admin user of the jumpbox VM",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "adminPassword",
+                            "type": "Microsoft.Common.PasswordBox",
+                            "label": {
+                                "password": "Admin Password",
+                                "confirmPassword": "Confirm password"
+                            },
+                            "defaultValue": "",
+                            "toolTip": "mandatory, the password of the admin user of the jumpbox VM ",
+                            "constraints": {
+                                "required": true,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "options": {
+                                "hideConfirmation": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "sqlServerAdministrators",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Sql Server Administrators",
+                            "subLabel": "",
+                            "defaultValue": "{}",
+                            "toolTip": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "sqlAdminLogin",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Sql Admin Login",
+                            "subLabel": "",
+                            "defaultValue": "sqluser",
+                            "toolTip": "Conditional. If sqlServerAdministrators is given, this is not required. ",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "sqlAdminPassword",
+                            "type": "Microsoft.Common.PasswordBox",
+                            "label": {
+                                "password": "Sql Admin Password",
+                                "confirmPassword": "Confirm password"
+                            },
+                            "defaultValue": "[newGuid()]",
+                            "toolTip": "Conditional. If sqlServerAdministrators is given, this is not required -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current",
+                            "constraints": {
+                                "required": false,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": []
+                            },
+                            "options": {
+                                "hideConfirmation": true
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "enableEgressLockdown",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Enable Egress Lockdown",
+                            "subLabel": "",
+                            "defaultValue": "false",
+                            "toolTip": "set to true if you want to intercept all outbound traffic with azure firewall",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "true",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "false",
+                                        "value": false
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "deployRedis",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Deploy Redis",
+                            "subLabel": "",
+                            "defaultValue": "false",
+                            "toolTip": "set to true if you want to a redis cache",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "true",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "false",
+                                        "value": false
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "deployAzureSql",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Deploy Azure Sql",
+                            "subLabel": "",
+                            "defaultValue": "false",
+                            "toolTip": "set to true if you want to deploy a azure SQL server and default database",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "true",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "false",
+                                        "value": false
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "deployAppConfig",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Deploy App Config",
+                            "subLabel": "",
+                            "defaultValue": "false",
+                            "toolTip": "set to true if you want to deploy application configuration",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "true",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "false",
+                                        "value": false
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "deployJumpHost",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Deploy Jump Host",
+                            "subLabel": "",
+                            "defaultValue": "true",
+                            "toolTip": "set to true if you want to deploy a jumpbox/devops VM",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "true",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "false",
+                                        "value": false
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        },
+                        {
+                            "name": "autoApproveAfdPrivateEndpoint",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Auto Approve Afd Private Endpoint",
+                            "subLabel": "",
+                            "defaultValue": "true",
+                            "toolTip": "set to true if you want to auto approve the Private Endpoint of the AFD",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "true",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "false",
+                                        "value": false
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "parameters": {
+                "workloadName": "[steps('basics').workloadName]",
+                "location": "[steps('extra').location]",
+                "environmentName": "[steps('extra').environmentName]",
+                "vnetHubAddressSpace": "[steps('extra').vnetHubAddressSpace]",
+                "subnetHubFirewallAddressSpace": "[steps('extra').subnetHubFirewallAddressSpace]",
+                "subnetHubBastionAddressSpace": "[steps('extra').subnetHubBastionAddressSpace]",
+                "vnetSpokeAddressSpace": "[steps('extra').vnetSpokeAddressSpace]",
+                "subnetSpokeAppSvcAddressSpace": "[steps('extra').subnetSpokeAppSvcAddressSpace]",
+                "subnetSpokeDevOpsAddressSpace": "[steps('extra').subnetSpokeDevOpsAddressSpace]",
+                "subnetSpokePrivateEndpointAddressSpace": "[steps('extra').subnetSpokePrivateEndpointAddressSpace]",
+                "numericSuffix": "[steps('extra').numericSuffix]",
+                "resourceTags": "[steps('extra').resourceTags]",
+                "vnetHubResourceId": "[steps('extra').vnetHubResourceId]",
+                "firewallInternalIp": "[steps('extra').firewallInternalIp]",
+                "webAppPlanSku": "[steps('extra').webAppPlanSku]",
+                "webAppBaseOs": "[steps('extra').webAppBaseOs]",
+                "adminUsername": "[steps('extra').adminUsername]",
+                "adminPassword": "[steps('extra').adminPassword]",
+                "sqlServerAdministrators": "[steps('extra').sqlServerAdministrators]",
+                "sqlAdminLogin": "[steps('extra').sqlAdminLogin]",
+                "sqlAdminPassword": "[steps('extra').sqlAdminPassword]",
+                "enableEgressLockdown": "[steps('extra').enableEgressLockdown]",
+                "deployRedis": "[steps('extra').deployRedis]",
+                "deployAzureSql": "[steps('extra').deployAzureSql]",
+                "deployAppConfig": "[steps('extra').deployAppConfig]",
+                "deployJumpHost": "[steps('extra').deployJumpHost]",
+                "autoApproveAfdPrivateEndpoint": "[steps('extra').autoApproveAfdPrivateEndpoint]"
+            },
+            "kind": "Tenant",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "subscriptionId": "[steps('basics').resourceScope.subscription.id]"
+        }
+    }
+}
