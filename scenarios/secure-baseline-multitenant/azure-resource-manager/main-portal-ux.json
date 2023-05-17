@@ -810,7 +810,7 @@
                 "webAppPlanSku": "[steps('basics').appSvcPlanSection.webAppPlanSku]",
                 "webAppBaseOs": "[steps('basics').appSvcPlanSection.webAppBaseOs]",
                 "adminUsername": "[steps('extra').jumpBoxSection.adminUsername]",
-                "adminPassword": "[if(equals(steps('extra').jumpBoxSection.deployJumpHost, true)), steps('extra').jumpBoxSection.vmCredentials.password, concat(newGuid(),'@Aa')]",
+                "adminPassword": "[if( equals ( steps('extra').jumpBoxSection.deployJumpHost, true), steps('extra').jumpBoxSection.vmCredentials.password , 'Pass@word123$' )]",
                 "sqlServerAdministrators": "[steps('extra').sqlServerDeploySection.sqlServerAdministrators]",
                 "sqlAdminLogin": "[steps('extra').sqlServerDeploySection.sqlAdminLogin]",
                 "sqlAdminPassword": "[steps('extra').sqlServerDeploySection.sqlAdminPassword]",
