@@ -8,7 +8,7 @@
                 {
                     "name": "basics",
                     "label": "Deployment settings",
-                    "elements": [                        
+                    "elements": [
                         {
                             "name": "resourceScope",
                             "type": "Microsoft.Common.ResourceScope"
@@ -201,7 +201,6 @@
                                 }
                             ]
                         }
-                        
                     ]
                 },
                 {
@@ -427,7 +426,7 @@
                             },
                             "infoMessages": [],
                             "visible": false
-                        },  
+                        },
                         {
                             "name": "numericSuffix",
                             "type": "Microsoft.Common.TextBox",
@@ -443,7 +442,7 @@
                             },
                             "infoMessages": [],
                             "visible": false
-                        },  
+                        },
                         {
                             "name": "jumpBoxSection",
                             "type": "Microsoft.Common.Section",
@@ -522,7 +521,6 @@
                                 }
                             ]
                         },
-
                         {
                             "name": "sqlServerIntroSection",
                             "type": "Microsoft.Common.Section",
@@ -600,16 +598,15 @@
                                     "infoMessages": [],
                                     "visible": true
                                 },
-
-
-
                                 {
-                                    "name": "sqlAadAdminGroup",
+                                    "name": "sqlServerAdministrators",
                                     "type": "Microsoft.Common.TextBox",
-                                    "label": "Azure AD Group name for SQL Adminstrators",
+                                    "label": "Sql Server Administrators",
                                     "subLabel": "",
-                                    "defaultValue": "",
-                                    "toolTip": "Azure AD group where your Azure administrators are members",
+                                    "defaultValue": "{\n\t\"value\": {\n\t\t\"login\": \"Azure AD SQL Admins\",\n\t\t\"sid\": \"5f8d07e6-7571-4608-9a7a-025e6f7a7083\",\n\t\t\"tenantId\": \"d6455890-05df-4021-8842-973ebc62aaeb\"\n\t}\n}",
+                                    "placeholder": "This is a multi-line text box:\nLine 1.\nLine 2.\nLine 3.",
+                                    "multiLine": true,
+                                    "toolTip": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.",
                                     "constraints": {
                                         "required": false,
                                         "regex": "",
@@ -619,40 +616,6 @@
                                     "infoMessages": [],
                                     "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
                                 },
-                                {
-                                    "name": "sqlAadAdminGroupObjectId",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "Azure AD object ID of the group",
-                                    "subLabel": "",
-                                    "defaultValue": "",
-                                    "toolTip": "Azure AD object ID of the group",
-                                    "constraints": {
-                                        "required": false,
-                                        "regex": "",
-                                        "validationMessage": "",
-                                        "validations": []
-                                    },
-                                    "infoMessages": [],
-                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
-                                },
-                                {
-                                    "name": "sqlAadAdminGroupTenantId",
-                                    "type": "Microsoft.Common.TextBox",
-                                    "label": "AAD Tenant ID",
-                                    "subLabel": "",
-                                    "defaultValue": "",
-                                    "toolTip": "Azure AD tenant ID where the group is located",
-                                    "constraints": {
-                                        "required": false,
-                                        "regex": "",
-                                        "validationMessage": "",
-                                        "validations": []
-                                    },
-                                    "infoMessages": [],
-                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
-                                },
-
-                                
                                 {
                                     "name": "sqlAdminLogin",
                                     "type": "Microsoft.Common.TextBox",
@@ -691,7 +654,6 @@
                                 }
                             ]
                         }
-                        
                     ]
                 },
                 {
@@ -811,7 +773,7 @@
                                 "Microsoft.Web/serverfarms",
                                 "Microsoft.Web/sites",
                                 "Microsoft.Web/sites/config",
-                                "microsoft.insights/components",   
+                                "microsoft.insights/components",
                                 "Microsoft.Network/privateEndpoints",
                                 "Microsoft.Network/privateDnsZones",
                                 "Microsoft.KeyVault/vaults",
@@ -823,8 +785,6 @@
                                 "Microsoft.Network/azureFirewalls",
                                 "Microsoft.Network/routeTables",
                                 "Microsoft.Network/bastionHosts"
-                            
-
                             ]
                         }
                     ]
@@ -851,10 +811,10 @@
                 "webAppBaseOs": "[steps('basics').appSvcPlanSection.webAppBaseOs]",
                 "adminUsername": "[steps('extra').jumpBoxSection.adminUsername]",
                 "adminPassword": "[steps('extra').jumpBoxSection.vmCredentials.password]",
-                "sqlServerAdministrators": "[concat('{\"login\":  \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroup, '\",\"sid\": \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroupObjectId, '\",\"tenantId\": \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroupTenantId, '\"}}')]",
+                "sqlServerAdministrators": "[steps('extra').sqlServerDeploySection.sqlServerAdministrators]",
                 "sqlAdminLogin": "[steps('extra').sqlServerDeploySection.sqlAdminLogin]",
-                "sqlAdminPassword": "[steps('extra').sqlServerDeploySection.sqlAdminPassword]",                
-                "deployAzureSql": "[steps('extra').sqlServerIntroSection.deployAzureSql]",                
+                "sqlAdminPassword": "[steps('extra').sqlServerDeploySection.sqlAdminPassword]",
+                "deployAzureSql": "[steps('extra').sqlServerIntroSection.deployAzureSql]",
                 "deployJumpHost": "[steps('extra').jumpBoxSection.deployJumpHost]",
                 "enableEgressLockdown": "[steps('flags').enableEgressLockdown]",
                 "deployRedis": "[steps('flags').deployRedis]",
