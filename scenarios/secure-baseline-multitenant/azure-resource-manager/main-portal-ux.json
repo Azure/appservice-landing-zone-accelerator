@@ -652,7 +652,7 @@
                                     "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
                                 },
 
-                           
+                                
                                 {
                                     "name": "sqlAdminLogin",
                                     "type": "Microsoft.Common.TextBox",
@@ -851,7 +851,7 @@
                 "webAppBaseOs": "[steps('basics').appSvcPlanSection.webAppBaseOs]",
                 "adminUsername": "[steps('extra').jumpBoxSection.adminUsername]",
                 "adminPassword": "[steps('extra').jumpBoxSection.vmCredentials.password]",
-                "sqlServerAdministrators": "[concat('{\"value\": {\"login\":  \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroup, '\",\"sid\": \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroupObjectId, '\",\"tenantId\": \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroupTenantId, '\"}}')]",
+                "sqlServerAdministrators": "[concat('{\"login\":  \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroup, '\",\"sid\": \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroupObjectId, '\",\"tenantId\": \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroupTenantId, '\"}}')]",
                 "sqlAdminLogin": "[steps('extra').sqlServerDeploySection.sqlAdminLogin]",
                 "sqlAdminPassword": "[steps('extra').sqlServerDeploySection.sqlAdminPassword]",                
                 "deployAzureSql": "[steps('extra').sqlServerIntroSection.deployAzureSql]",                
