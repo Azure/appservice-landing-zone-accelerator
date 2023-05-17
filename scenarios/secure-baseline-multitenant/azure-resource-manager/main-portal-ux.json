@@ -105,7 +105,103 @@
                             },
                             "infoMessages": [],
                             "visible": true
+                        },
+                        {
+                            "name": "appSvcPlanSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "App Service Plan settings",
+                            "elements": [
+                                {
+                                    "name": "appSvcPlanSettings",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "Select one of the predefined SKUs for your App Service Plan, and the desired underlying OS (Linux or Windows). If you wish to deploy a Zone Redundant App Service, select one of the SKUs with the suffix _AZ.",
+                                        "link": {
+                                            "label": "Learn more for Availability Zones",
+                                            "uri": "https://azure.github.io/AppService/2021/08/25/App-service-support-for-availability-zones.html"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "webAppPlanSku",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Web App Plan Sku",
+                                    "subLabel": "",
+                                    "defaultValue": "S1",
+                                    "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "S1",
+                                                "value": "S1"
+                                            },
+                                            {
+                                                "label": "S2",
+                                                "value": "S2"
+                                            },
+                                            {
+                                                "label": "S3",
+                                                "value": "S3"
+                                            },
+                                            {
+                                                "label": "P1V3",
+                                                "value": "P1V3"
+                                            },
+                                            {
+                                                "label": "P2V3",
+                                                "value": "P2V3"
+                                            },
+                                            {
+                                                "label": "P3V3",
+                                                "value": "P3V3"
+                                            },
+                                            {
+                                                "label": "P1V3_AZ",
+                                                "value": "P1V3_AZ"
+                                            },
+                                            {
+                                                "label": "P2V3_AZ",
+                                                "value": "P2V3_AZ"
+                                            },
+                                            {
+                                                "label": "P3V3_AZ",
+                                                "value": "P3V3_AZ"
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": true
+                                },
+                                {
+                                    "name": "webAppBaseOs",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Web App Base Os",
+                                    "subLabel": "",
+                                    "defaultValue": "Windows",
+                                    "toolTip": "Kind of server OS of the App Service Plan",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "Windows",
+                                                "value": "Windows"
+                                            },
+                                            {
+                                                "label": "Linux",
+                                                "value": "Linux"
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": true
+                                }
+                            ]
                         }
+                        
                     ]
                 },
                 {
@@ -347,118 +443,90 @@
                             },
                             "infoMessages": [],
                             "visible": false
-                        },                        
+                        },  
                         {
-                            "name": "webAppPlanSku",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Web App Plan Sku",
-                            "subLabel": "",
-                            "defaultValue": "S1",
-                            "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
-                            "constraints": {
-                                "required": false,
-                                "allowedValues": [
-                                    {
-                                        "label": "S1",
-                                        "value": "S1"
+                            "name": "jumpBoxSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Jump-box Virtual Machine/DevOps agent settings",
+                            "elements": [
+                                {
+                                    "name": "deployJumpHost",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Deploy Jump Box",
+                                    "subLabel": "",
+                                    "defaultValue": "true",
+                                    "toolTip": "set to true if you want to deploy a jumpbox/devops VM",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "true",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "false",
+                                                "value": false
+                                            }
+                                        ],
+                                        "validations": []
                                     },
-                                    {
-                                        "label": "S2",
-                                        "value": "S2"
-                                    },
-                                    {
-                                        "label": "S3",
-                                        "value": "S3"
-                                    },
-                                    {
-                                        "label": "P1V3",
-                                        "value": "P1V3"
-                                    },
-                                    {
-                                        "label": "P2V3",
-                                        "value": "P2V3"
-                                    },
-                                    {
-                                        "label": "P3V3",
-                                        "value": "P3V3"
-                                    },
-                                    {
-                                        "label": "P1V3_AZ",
-                                        "value": "P1V3_AZ"
-                                    },
-                                    {
-                                        "label": "P2V3_AZ",
-                                        "value": "P2V3_AZ"
-                                    },
-                                    {
-                                        "label": "P3V3_AZ",
-                                        "value": "P3V3_AZ"
+                                    "infoMessages": [],
+                                    "visible": true
+                                },
+                                {
+                                    "name": "windowsVmCredentials",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]",
+                                    "options": {
+                                        "text": "Give the CredentialsCombo for your windows Jump-box. The VM will be AAD Joined, so you can use your AAD credentials to login. The password must contain at least 12 characters, with at least 1 uppercase, 1 lowercase and 1 number.",
+                                        "link": {
+                                            "label": "Learn more for Windows VM Password Policy",
+                                            "uri": "https://learn.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm-"
+                                        }
                                     }
-                                ],
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "webAppBaseOs",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Web App Base Os",
-                            "subLabel": "",
-                            "defaultValue": "Windows",
-                            "toolTip": "Kind of server OS of the App Service Plan",
-                            "constraints": {
-                                "required": false,
-                                "allowedValues": [
-                                    {
-                                        "label": "Windows",
-                                        "value": "Windows"
+                                },
+                                {
+                                    "name": "adminUsername",
+                                    "type": "Microsoft.Compute.UserNameTextBox",
+                                    "label": "Admin Username",
+                                    "defaultValue": "azureuser",
+                                    "toolTip": "",
+                                    "constraints": {
+                                        "required": true,
+                                        "regex": "^[a-z0-9A-Z]{8,15}$",
+                                        "validationMessage": "Only alphanumeric characters are allowed, and the value must be 8-15 characters long."
                                     },
-                                    {
-                                        "label": "Linux",
-                                        "value": "Linux"
-                                    }
-                                ],
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
+                                    "osPlatform": "Windows",
+                                    "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]"
+                                },
+                                {
+                                    "name": "vmCredentials",
+                                    "type": "Microsoft.Compute.CredentialsCombo",
+                                    "label": {
+                                        "password": "Password",
+                                        "confirmPassword": "Confirm password"
+                                    },
+                                    "toolTip": {
+                                        "password": ""
+                                    },
+                                    "constraints": {
+                                        "required": true,
+                                        "customPasswordRegex": "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[\\w~@#$%^&*+=|{}:;!.?\\()\\[\\]-]{12,}$",
+                                        "customValidationMessage": "The password must contain at least 12 characters, with at least 1 uppercase, 1 lowercase and 1 number."
+                                    },
+                                    "options": {
+                                        "hideConfirmation": false
+                                    },
+                                    "osPlatform": "Windows",
+                                    "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]"
+                                }
+                            ]
                         },
                         {
-                            "name": "adminUsername",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Admin Username",
-                            "subLabel": "",
-                            "defaultValue": "azureuser",
-                            "toolTip": "mandatory, the username of the admin user of the jumpbox VM",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "adminPassword",
-                            "type": "Microsoft.Common.PasswordBox",
-                            "label": {
-                                "password": "Admin Password",
-                                "confirmPassword": "Confirm password"
-                            },
-                            "defaultValue": "",
-                            "toolTip": "mandatory, the password of the admin user of the jumpbox VM ",
-                            "constraints": {
-                                "required": true,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "options": {
-                                "hideConfirmation": true
-                            },
-                            "visible": true
+                            "name": "sqlSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "SQL Server settings",
+                            "elements": []
                         },
                         {
                             "name": "sqlServerAdministrators",
@@ -491,7 +559,7 @@
                             },
                             "infoMessages": [],
                             "visible": true
-                        },
+                        },  
                         {
                             "name": "sqlAdminPassword",
                             "type": "Microsoft.Common.PasswordBox",
@@ -511,7 +579,38 @@
                                 "hideConfirmation": true
                             },
                             "visible": true
-                        },
+                        },                    
+                        {
+                            "name": "deployAzureSql",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Deploy Azure Sql",
+                            "subLabel": "",
+                            "defaultValue": "false",
+                            "toolTip": "set to true if you want to deploy a azure SQL server and default database",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "true",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "false",
+                                        "value": false
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
+                        }
+                        
+                    ]
+                },
+                {
+                    "name": "flags",
+                    "label": "Deployment feature flags",
+                    "elements": [
                         {
                             "name": "enableEgressLockdown",
                             "type": "Microsoft.Common.DropDown",
@@ -561,60 +660,12 @@
                             "visible": true
                         },
                         {
-                            "name": "deployAzureSql",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Deploy Azure Sql",
-                            "subLabel": "",
-                            "defaultValue": "false",
-                            "toolTip": "set to true if you want to deploy a azure SQL server and default database",
-                            "constraints": {
-                                "required": false,
-                                "allowedValues": [
-                                    {
-                                        "label": "true",
-                                        "value": true
-                                    },
-                                    {
-                                        "label": "false",
-                                        "value": false
-                                    }
-                                ],
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
                             "name": "deployAppConfig",
                             "type": "Microsoft.Common.DropDown",
                             "label": "Deploy App Config",
                             "subLabel": "",
                             "defaultValue": "false",
                             "toolTip": "set to true if you want to deploy application configuration",
-                            "constraints": {
-                                "required": false,
-                                "allowedValues": [
-                                    {
-                                        "label": "true",
-                                        "value": true
-                                    },
-                                    {
-                                        "label": "false",
-                                        "value": false
-                                    }
-                                ],
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "deployJumpHost",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Deploy Jump Host",
-                            "subLabel": "",
-                            "defaultValue": "true",
-                            "toolTip": "set to true if you want to deploy a jumpbox/devops VM",
                             "constraints": {
                                 "required": false,
                                 "allowedValues": [
@@ -709,23 +760,24 @@
                 "resourceTags": "[steps('tags').tagsByResource]",
                 "vnetHubResourceId": "[steps('networking').vnetHubResourceId]",
                 "firewallInternalIp": "[steps('networking').firewallInternalIp]",
-                "webAppPlanSku": "[steps('extra').webAppPlanSku]",
-                "webAppBaseOs": "[steps('extra').webAppBaseOs]",
-                "adminUsername": "[steps('extra').adminUsername]",
-                "adminPassword": "[steps('extra').adminPassword]",
+                "webAppPlanSku": "[steps('basics').appSvcPlanSection.webAppPlanSku]",
+                "webAppBaseOs": "[steps('basics').appSvcPlanSection.webAppBaseOs]",
+                "adminUsername": "[steps('extra').jumpBoxSection.adminUsername]",
+                "adminPassword": "[steps('extra').jumpBoxSection.vmCredentials.password]",
                 "sqlServerAdministrators": "[steps('extra').sqlServerAdministrators]",
                 "sqlAdminLogin": "[steps('extra').sqlAdminLogin]",
-                "sqlAdminPassword": "[steps('extra').sqlAdminPassword]",
-                "enableEgressLockdown": "[steps('extra').enableEgressLockdown]",
-                "deployRedis": "[steps('extra').deployRedis]",
-                "deployAzureSql": "[steps('extra').deployAzureSql]",
-                "deployAppConfig": "[steps('extra').deployAppConfig]",
-                "deployJumpHost": "[steps('extra').deployJumpHost]",
-                "autoApproveAfdPrivateEndpoint": "[steps('extra').autoApproveAfdPrivateEndpoint]"
+                "sqlAdminPassword": "[steps('extra').sqlAdminPassword]",                
+                "deployAzureSql": "[steps('extra').deployAzureSql]",                
+                "deployJumpHost": "[steps('extra').jumpBoxSection.deployJumpHost]",
+                "enableEgressLockdown": "[steps('flags').enableEgressLockdown]",
+                "deployRedis": "[steps('flags').deployRedis]",
+                "deployAppConfig": "[steps('flags').deployAppConfig]",
+                "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]"
             },
             "kind": "Tenant",
             "location": "[steps('basics').resourceScope.location.name]",
-            "subscriptionId": "[steps('basics').resourceScope.subscription.id]"
+            "subscriptionId": "[steps('basics').resourceScope.subscription.id]",
+            "tenantId": "[steps('basics').resourceScope.tenant.id]"
         }
     }
 }
