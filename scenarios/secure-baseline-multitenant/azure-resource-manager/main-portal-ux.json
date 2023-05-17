@@ -599,14 +599,21 @@
                                     "visible": true
                                 },
                                 {
+                                    "name": "sqlServerAdministratorsExplanation",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]",
+                                    "options": {
+                                        "text": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value (xxxx-xxxx-xxxx-xxxx-xxxx) with Azure AD object ID of that group and tenantId value (yyyy-yyyy-yyyy-yyyy-yyyy) with Azure AD tenant ID where the group is located"
+                                    }
+                                },
+                                {
                                     "name": "sqlServerAdministrators",
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Sql Server Administrators",
                                     "subLabel": "",
-                                    "defaultValue": "{\n\t\"login\": \"Azure AD SQL Admins\",\n\t\"sid\": \"5f8d07e6-7571-4608-9a7a-025e6f7a7083\",\n\t\"tenantId\": \"d6455890-05df-4021-8842-973ebc62aaeb\"\n}",
-                                    "placeholder": "This is a multi-line text box:\nLine 1.\nLine 2.\nLine 3.",
+                                    "defaultValue": "{\n\t\"login\": \"AAD_SQL_ADMIN_GROUP\",\n\t\"sid\": \"xxxx-xxxx-xxxx-xxxx-xxxx\",\n\t\"tenantId\": \"yyyy-yyyy-yyyy-yyyy-yyyy\"\n}",
                                     "multiLine": true,
-                                    "toolTip": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.",
+                                    "toolTip": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value with Azure AD object ID of that group and tenantId value with Azure AD tenant ID where the group is located",
                                     "constraints": {
                                         "required": false,
                                         "regex": "",
