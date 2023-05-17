@@ -452,19 +452,19 @@
                                 {
                                     "name": "deployJumpHost",
                                     "type": "Microsoft.Common.DropDown",
-                                    "label": "Deploy Jump Box",
+                                    "label": "Deploy Jump Box?",
                                     "subLabel": "",
-                                    "defaultValue": "true",
+                                    "defaultValue": "Yes",
                                     "toolTip": "set to true if you want to deploy a jumpbox/devops VM",
                                     "constraints": {
                                         "required": false,
                                         "allowedValues": [
                                             {
-                                                "label": "true",
+                                                "label": "Yes",
                                                 "value": true
                                             },
                                             {
-                                                "label": "false",
+                                                "label": "No",
                                                 "value": false
                                             }
                                         ],
@@ -522,87 +522,174 @@
                                 }
                             ]
                         },
+
                         {
-                            "name": "sqlSection",
+                            "name": "sqlServerIntroSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure SQL Server deployment feature flag",
+                            "elements": [
+                                {
+                                    "name": "sqlServerIntro",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "Select if you wish to deploy an Azure SQL Server with a default database. This will require more time in the deployment."
+                                    }
+                                },
+                                {
+                                    "name": "deployAzureSql",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Deploy Azure Sql Server?",
+                                    "subLabel": "",
+                                    "defaultValue": "No",
+                                    "toolTip": "Set to true if you want to deploy a azure SQL server and default database",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "Yes",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "No",
+                                                "value": false
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": true
+                                }
+                            ]
+                        },
+                        {
+                            "name": "sqlServerDeploySection",
                             "type": "Microsoft.Common.Section",
                             "label": "SQL Server settings",
-                            "elements": []
-                        },
-                        {
-                            "name": "sqlServerAdministrators",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Sql Server Administrators",
-                            "subLabel": "",
-                            "defaultValue": "{}",
-                            "toolTip": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },
-                        {
-                            "name": "sqlAdminLogin",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "Sql Admin Login",
-                            "subLabel": "",
-                            "defaultValue": "sqluser",
-                            "toolTip": "Conditional. If sqlServerAdministrators is given, this is not required. ",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
-                        },  
-                        {
-                            "name": "sqlAdminPassword",
-                            "type": "Microsoft.Common.PasswordBox",
-                            "label": {
-                                "password": "Sql Admin Password",
-                                "confirmPassword": "Confirm password"
-                            },
-                            "defaultValue": "[newGuid()]",
-                            "toolTip": "Conditional. If sqlServerAdministrators is given, this is not required -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current",
-                            "constraints": {
-                                "required": false,
-                                "regex": "",
-                                "validationMessage": "",
-                                "validations": []
-                            },
-                            "options": {
-                                "hideConfirmation": true
-                            },
-                            "visible": true
-                        },                    
-                        {
-                            "name": "deployAzureSql",
-                            "type": "Microsoft.Common.DropDown",
-                            "label": "Deploy Azure Sql",
-                            "subLabel": "",
-                            "defaultValue": "false",
-                            "toolTip": "set to true if you want to deploy a azure SQL server and default database",
-                            "constraints": {
-                                "required": false,
-                                "allowedValues": [
-                                    {
-                                        "label": "true",
-                                        "value": true
-                                    },
-                                    {
-                                        "label": "false",
-                                        "value": false
+                            "visible": "[equals(steps('extra').sqlServerIntroSection.deployAzureSql, true)]",
+                            "elements": [
+                                {
+                                    "name": "sqlServerAuthentication",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "Select the authentication method for the SQL Server administrator. Azure AD for SQL Server administrator authentication is suggested."
                                     }
-                                ],
-                                "validations": []
-                            },
-                            "infoMessages": [],
-                            "visible": true
+                                },
+                                {
+                                    "name": "azureSqlAuthentication",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Azure Sql Server Authentication",
+                                    "subLabel": "",
+                                    "defaultValue": "Azure AD",
+                                    "toolTip": "Select Azure AD for SQL Server administrator authentication for better security and passwordless access. If you select SQL Server local user, you will need to provide a password for the SQL Server administrator.",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "Azure AD",
+                                                "value": "AAD"
+                                            },
+                                            {
+                                                "label": "SQL Server local user",
+                                                "value": "local"
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": true
+                                },
+
+
+
+                                {
+                                    "name": "sqlAadAdminGroup",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Azure AD Group name for SQL Adminstrators",
+                                    "subLabel": "",
+                                    "defaultValue": "",
+                                    "toolTip": "Azure AD group where your Azure administrators are members",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
+                                },
+                                {
+                                    "name": "sqlAadAdminGroupObjectId",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Azure AD object ID of the group",
+                                    "subLabel": "",
+                                    "defaultValue": "",
+                                    "toolTip": "Azure AD object ID of the group",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
+                                },
+                                {
+                                    "name": "sqlAadAdminGroupTenantId",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "AAD Tenant ID",
+                                    "subLabel": "",
+                                    "defaultValue": "",
+                                    "toolTip": "Azure AD tenant ID where the group is located",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
+                                },
+
+                           
+                                {
+                                    "name": "sqlAdminLogin",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Sql Admin Login",
+                                    "subLabel": "",
+                                    "defaultValue": "sqluser",
+                                    "toolTip": "Conditional. If sqlServerAdministrators is given, this is not required. ",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'local')]"
+                                },
+                                {
+                                    "name": "sqlAdminPassword",
+                                    "type": "Microsoft.Common.PasswordBox",
+                                    "label": {
+                                        "password": "Sql Admin Password",
+                                        "confirmPassword": "Confirm password"
+                                    },
+                                    "defaultValue": "[newGuid()]",
+                                    "toolTip": "Conditional. If sqlServerAdministrators is given, this is not required -check password policy: https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "options": {
+                                        "hideConfirmation": true
+                                    },
+                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'local')]"
+                                }
+                            ]
                         }
                         
                     ]
@@ -764,20 +851,19 @@
                 "webAppBaseOs": "[steps('basics').appSvcPlanSection.webAppBaseOs]",
                 "adminUsername": "[steps('extra').jumpBoxSection.adminUsername]",
                 "adminPassword": "[steps('extra').jumpBoxSection.vmCredentials.password]",
-                "sqlServerAdministrators": "[steps('extra').sqlServerAdministrators]",
-                "sqlAdminLogin": "[steps('extra').sqlAdminLogin]",
-                "sqlAdminPassword": "[steps('extra').sqlAdminPassword]",                
-                "deployAzureSql": "[steps('extra').deployAzureSql]",                
+                "sqlServerAdministrators": "[concat('{\"value\": {\"login\":  \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroup, '\",\"sid\": \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroupObjectId, '\",\"tenantId\": \"', steps('extra').sqlServerDeploySection.sqlAadAdminGroupTenantId, '\"}}')]",
+                "sqlAdminLogin": "[steps('extra').sqlServerDeploySection.sqlAdminLogin]",
+                "sqlAdminPassword": "[steps('extra').sqlServerDeploySection.sqlAdminPassword]",                
+                "deployAzureSql": "[steps('extra').sqlServerIntroSection.deployAzureSql]",                
                 "deployJumpHost": "[steps('extra').jumpBoxSection.deployJumpHost]",
                 "enableEgressLockdown": "[steps('flags').enableEgressLockdown]",
                 "deployRedis": "[steps('flags').deployRedis]",
                 "deployAppConfig": "[steps('flags').deployAppConfig]",
                 "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]"
             },
-            "kind": "Tenant",
+            "kind": "Subscription",
             "location": "[steps('basics').resourceScope.location.name]",
-            "subscriptionId": "[steps('basics').resourceScope.subscription.id]",
-            "tenantId": "[steps('basics').resourceScope.tenant.id]"
+            "subscriptionId": "[steps('basics').resourceScope.subscription.id]"
         }
     }
 }
