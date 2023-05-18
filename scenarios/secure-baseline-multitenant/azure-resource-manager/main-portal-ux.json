@@ -772,26 +772,8 @@
                         {
                             "name": "tagsByResource",
                             "type": "Microsoft.Common.TagsByResource",
-                            "resources": [
-                                "Microsoft.AppConfiguration/configurationStores",
-                                "Microsoft.Storage/storageAccounts",
-                                "Microsoft.Compute/virtualMachines",
-                                "Microsoft.Network/networkSecurityGroups",
-                                "Microsoft.Web/serverfarms",
-                                "Microsoft.Web/sites",
-                                "Microsoft.Web/sites/config",
-                                "microsoft.insights/components",
-                                "Microsoft.Network/privateEndpoints",
-                                "Microsoft.Network/privateDnsZones",
-                                "Microsoft.KeyVault/vaults",
-                                "Microsoft.Sql/servers",
-                                "Microsoft.Sql/servers/databases",
-                                "Microsoft.Cache/Redis",
-                                "Microsoft.OperationalInsights/workspaces",
-                                "Microsoft.Network/virtualNetworks",
-                                "Microsoft.Network/azureFirewalls",
-                                "Microsoft.Network/routeTables",
-                                "Microsoft.Network/bastionHosts"
+                            "resources": [                                
+                                "Microsoft.Compute/virtualMachines"
                             ]
                         }
                     ]
@@ -811,7 +793,7 @@
                 "subnetSpokeDevOpsAddressSpace": "[steps('networking').subnetSpokeDevOpsAddressSpace]",
                 "subnetSpokePrivateEndpointAddressSpace": "[steps('networking').subnetSpokePrivateEndpointAddressSpace]",
                 "numericSuffix": "[steps('extra').numericSuffix]",
-                "resourceTags": "[steps('tags').tagsByResource]",
+                "resourceTags": "[ if(contains(steps('tags').tagsByResource, 'Microsoft.Compute/virtualMachines'), steps('tags').tagsByResource['Microsoft.Compute/virtualMachines'], json('{}')) ]",
                 "vnetHubResourceId": "[steps('networking').vnetHubResourceId]",
                 "firewallInternalIp": "[steps('networking').firewallInternalIp]",
                 "webAppPlanSku": "[steps('basics').appSvcPlanSection.webAppPlanSku]",
