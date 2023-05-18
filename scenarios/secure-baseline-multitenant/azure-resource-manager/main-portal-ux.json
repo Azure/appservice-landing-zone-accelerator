@@ -493,7 +493,7 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": false
+                            "visible": true
                         },
                         {
                             "name": "numericSuffix",
@@ -866,6 +866,7 @@
                 "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]"
             },
             "kind": "Subscription",
+            "location": "[steps('basics').resourceScope.location.name]",
             "subscriptionId": "[steps('basics').resourceScope.subscription.subscriptionId]"
         }
     }
