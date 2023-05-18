@@ -478,7 +478,7 @@
                     "label": "Extra settings",
                     "elements": [
                         {
-                            "name": "deploymentLocation",
+                            "name": "location",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Location",
                             "subLabel": "",
@@ -491,7 +491,7 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": true
+                            "visible": false
                         },
                         {
                             "name": "numericSuffix",
@@ -836,7 +836,7 @@
         "outputs": {
             "parameters": {
                 "workloadName": "[steps('basics').workloadName]",
-                "location": "[steps('extra').deploymentLocation]",
+                "location": "[steps('extra').location]",
                 "environmentName": "[steps('basics').environmentName]",
                 "vnetHubAddressSpace": "[steps('networking').vnetHubAddressSpace]",
                 "subnetHubFirewallAddressSpace": "[steps('networking').subnetHubFirewallAddressSpace]",
