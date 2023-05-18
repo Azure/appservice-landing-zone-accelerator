@@ -264,7 +264,7 @@
                                 ]
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
+                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
                         },
                         {
                             "name": "subnetHubFirewallAddressSpace",
@@ -285,7 +285,7 @@
                                 ]
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
+                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
                         },
                         {
                             "name": "subnetHubBastionAddressSpace",
@@ -306,7 +306,7 @@
                                 ]
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
+                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
                         },
                         {
                             "name": "vnetHubResourceId",
@@ -322,7 +322,7 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').deployHub, 'useExisting')]"
+                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'useExisting')]"
                         },
                         {
                             "name": "firewallInternalIp",
@@ -338,7 +338,7 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').deployHub, 'useExisting')]"
+                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'useExisting')]"
                         },
                         {
                             "name": "vnetSpokeAddressSpace",
