@@ -208,62 +208,23 @@
                     "label": "Network settings",
                     "elements": [
                         {
-                            "name": "sectionHubSelector",
-                            "type": "Microsoft.Common.Section",
-                            "label": "Create a new Hub or use an existing one?",
-                            "elements": [
-                                {
-                                    "name": "textHubSelector",
-                                    "type": "Microsoft.Common.TextBlock",
-                                    "visible": true,
-                                    "options": {
-                                        "text": "Do you want to deploy a new Hub (with all the necessary resources, i.e. Virtual Network, Azure Firewall, Azure Bastion etc), or do you prefer use an existing one? The existing hub must be in the same region, and have Azure Firewall, and Azure Bastion deployed in it.",
-                                        "link": {
-                                            "label": "More info for the Hub resources, at the Architecture Diagram",
-                                            "uri": "https://github.com/thotheod/appservice-landing-zone-accelerator/tree/main/scenarios/secure-baseline-multitenant#architecture"
-                                        }
+                            "name": "deployHub",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "visible": true,
+                            "label": "Do you want to deploy a new Hub Network, or we will use an existing one? Needs to be in the same region, and have Azure Firewall, and Azure Bastion deployed in it.",
+                            "defaultValue": "New",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "New",
+                                        "value": "deployNew"
+                                    },
+                                    {
+                                        "label": "Existing",
+                                        "value": "useExisting"
                                     }
-                                },
-                                {
-                                    "name": "deployHub",
-                                    "type": "Microsoft.Common.OptionsGroup",
-                                    "visible": true,
-                                    "label": "Deploy a new Hub, or use an existing one?",
-                                    "defaultValue": "New",
-                                    "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "New",
-                                                "value": "deployNew"
-                                            },
-                                            {
-                                                "label": "Existing",
-                                                "value": "useExisting"
-                                            }
-                                        ]
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "name": "sectionHubNew",
-                            "type": "Microsoft.Common.Section",
-                            "label": "CIDR Settings for new Hub network and subnets",
-                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]",
-                            "elements": [
-                                {
-                                    "name": "textHubNew",
-                                    "type": "Microsoft.Common.TextBlock",
-                                    "visible": true,
-                                    "options": {
-                                        "text": "You can accept the default address spaces, as shown below, or you can use your own.",
-                                        "link": {
-                                            "label": "What address ranges can I use in my Virtual Networks?",
-                                            "uri": "https://learn.microsoft.com/azure/virtual-network/virtual-networks-faq#what-address-ranges-can-i-use-in-my-vnets"
-                                        }
-                                    }
-                                }
-                            ]
+                                ]
+                            }
                         },
                         {
                             "name": "vnetHubAddressSpace",
@@ -284,7 +245,7 @@
                                 ]
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
+                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
                         },
                         {
                             "name": "subnetHubFirewallAddressSpace",
@@ -305,7 +266,7 @@
                                 ]
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
+                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
                         },
                         {
                             "name": "subnetHubBastionAddressSpace",
@@ -326,16 +287,7 @@
                                 ]
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
-                        },
-                        {
-                            "name": "sectionHubExisting",
-                            "type": "Microsoft.Common.Section",
-                            "label": "Information for the existing Hub resources",
-                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'useExisting')]",
-                            "elements": [
-                                
-                            ]
+                            "visible": "[equals(steps('networking').deployHub, 'deployNew')]"
                         },
                         {
                             "name": "vnetHubResourceId",
@@ -343,7 +295,7 @@
                             "label": "Hub Vnet Resource Id",
                             "subLabel": "",
                             "defaultValue": "",
-                            "toolTip": "required for peering between spoke and and existing hub vnet",
+                            "toolTip": "Default is empty. If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet",
                             "constraints": {
                                 "required": false,
                                 "regex": "",
@@ -351,7 +303,7 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'useExisting')]"
+                            "visible": "[equals(steps('networking').deployHub, 'useExisting')]"
                         },
                         {
                             "name": "firewallInternalIp",
@@ -359,7 +311,7 @@
                             "label": "Firewall Internal IP",
                             "subLabel": "",
                             "defaultValue": "",
-                            "toolTip": "Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR",
+                            "toolTip": "Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR",
                             "constraints": {
                                 "required": false,
                                 "regex": "",
@@ -367,27 +319,7 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'useExisting')]"
-                        },
-                        {
-                            "name": "sectionSpoke",
-                            "type": "Microsoft.Common.Section",
-                            "label": "CIDR Settings for the Spoke network and subnets",
-                            "visible": true,
-                            "elements": [
-                                {
-                                    "name": "textSpoke",
-                                    "type": "Microsoft.Common.TextBlock",
-                                    "visible": true,
-                                    "options": {
-                                        "text": "You can accept the default address spaces, as shown below, or you can use your own.",
-                                        "link": {
-                                            "label": "What address ranges can I use in my Virtual Networks?",
-                                            "uri": "https://learn.microsoft.com/azure/virtual-network/virtual-networks-faq#what-address-ranges-can-i-use-in-my-vnets"
-                                        }
-                                    }
-                                }
-                            ]
+                            "visible": "[equals(steps('networking').deployHub, 'useExisting')]"
                         },
                         {
                             "name": "vnetSpokeAddressSpace",
@@ -480,7 +412,7 @@
                     "label": "Extra settings",
                     "elements": [
                         {
-                            "name": "deploymentLocation",
+                            "name": "location",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Location",
                             "subLabel": "",
@@ -493,7 +425,7 @@
                                 "validations": []
                             },
                             "infoMessages": [],
-                            "visible": true
+                            "visible": false
                         },
                         {
                             "name": "numericSuffix",
@@ -671,7 +603,7 @@
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]",
                                     "options": {
-                                        "text": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value (xxxx-xxxx-xxxx-xxxx-xxxx) with Azure AD object ID of that group. The current tenantId value is already filled in."
+                                        "text": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value (xxxx-xxxx-xxxx-xxxx-xxxx) with Azure AD object ID of that group and tenantId value (yyyy-yyyy-yyyy-yyyy-yyyy) with Azure AD tenant ID where the group is located"
                                     }
                                 },
                                 {
@@ -679,7 +611,7 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Sql Server Administrators",
                                     "subLabel": "",
-                                    "defaultValue": "[concat('{\n\t\"login\": \"AAD_SQL_ADMIN_GROUP\",\n\t\"sid\": \"xxxx-xxxx-xxxx-xxxx-xxxx\",\n\t\"tenantId\": \"', steps('basics').resourceScope.subscription.tenantId, '\"\n}')]",
+                                    "defaultValue": "{\n\t\"login\": \"AAD_SQL_ADMIN_GROUP\",\n\t\"sid\": \"xxxx-xxxx-xxxx-xxxx-xxxx\",\n\t\"tenantId\": \"yyyy-yyyy-yyyy-yyyy-yyyy\"\n}",
                                     "multiLine": true,
                                     "toolTip": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value with Azure AD object ID of that group and tenantId value with Azure AD tenant ID where the group is located",
                                     "constraints": {
@@ -690,7 +622,7 @@
                                     },
                                     "infoMessages": [],
                                     "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
-                                },                                
+                                },
                                 {
                                     "name": "sqlAdminLogin",
                                     "type": "Microsoft.Common.TextBox",
@@ -740,17 +672,17 @@
                             "type": "Microsoft.Common.DropDown",
                             "label": "Enable Egress Lockdown",
                             "subLabel": "",
-                            "defaultValue": "No",
+                            "defaultValue": "false",
                             "toolTip": "set to true if you want to intercept all outbound traffic with azure firewall",
                             "constraints": {
                                 "required": false,
                                 "allowedValues": [
                                     {
-                                        "label": "Yes",
+                                        "label": "true",
                                         "value": true
                                     },
                                     {
-                                        "label": "No",
+                                        "label": "false",
                                         "value": false
                                     }
                                 ],
@@ -764,17 +696,17 @@
                             "type": "Microsoft.Common.DropDown",
                             "label": "Deploy Redis",
                             "subLabel": "",
-                            "defaultValue": "No",
+                            "defaultValue": "false",
                             "toolTip": "set to true if you want to a redis cache",
                             "constraints": {
                                 "required": false,
                                 "allowedValues": [
                                     {
-                                        "label": "Yes",
+                                        "label": "true",
                                         "value": true
                                     },
                                     {
-                                        "label": "No",
+                                        "label": "false",
                                         "value": false
                                     }
                                 ],
@@ -788,17 +720,17 @@
                             "type": "Microsoft.Common.DropDown",
                             "label": "Deploy App Config",
                             "subLabel": "",
-                            "defaultValue": "No",
+                            "defaultValue": "false",
                             "toolTip": "set to true if you want to deploy application configuration",
                             "constraints": {
                                 "required": false,
                                 "allowedValues": [
                                     {
-                                        "label": "Yes",
+                                        "label": "true",
                                         "value": true
                                     },
                                     {
-                                        "label": "No",
+                                        "label": "false",
                                         "value": false
                                     }
                                 ],
@@ -810,19 +742,19 @@
                         {
                             "name": "autoApproveAfdPrivateEndpoint",
                             "type": "Microsoft.Common.DropDown",
-                            "label": "Auto Approve Front Door Private Endpoint",
+                            "label": "Auto Approve Afd Private Endpoint",
                             "subLabel": "",
-                            "defaultValue": "Yes",
-                            "toolTip": "set to true if you want to auto approve the Private Endpoint of the Azure Front Door",
+                            "defaultValue": "true",
+                            "toolTip": "set to true if you want to auto approve the Private Endpoint of the AFD",
                             "constraints": {
                                 "required": false,
                                 "allowedValues": [
                                     {
-                                        "label": "Yes",
+                                        "label": "true",
                                         "value": true
                                     },
                                     {
-                                        "label": "No",
+                                        "label": "false",
                                         "value": false
                                     }
                                 ],
@@ -832,13 +764,26 @@
                             "visible": true
                         }
                     ]
+                },
+                {
+                    "name": "tags",
+                    "label": "Tags",
+                    "elements": [
+                        {
+                            "name": "tagsByResource",
+                            "type": "Microsoft.Common.TagsByResource",
+                            "resources": [
+                                "Microsoft.Compute/virtualMachines"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
         "outputs": {
             "parameters": {
                 "workloadName": "[steps('basics').workloadName]",
-                "location": "[steps('extra').deploymentLocation]",
+                "location": "[steps('extra').location]",
                 "environmentName": "[steps('basics').environmentName]",
                 "vnetHubAddressSpace": "[steps('networking').vnetHubAddressSpace]",
                 "subnetHubFirewallAddressSpace": "[steps('networking').subnetHubFirewallAddressSpace]",
@@ -867,7 +812,7 @@
             },
             "kind": "Subscription",
             "location": "[steps('basics').resourceScope.location.name]",
-            "subscriptionId": "[steps('basics').resourceScope.subscription.subscriptionId]"
+            "subscriptionId": "[steps('basics').resourceScope.subscription.id]"
         }
     }
 }
