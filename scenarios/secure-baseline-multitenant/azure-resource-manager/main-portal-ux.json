@@ -764,19 +764,6 @@
                             "visible": true
                         }
                     ]
-                },
-                {
-                    "name": "tags",
-                    "label": "Tags",
-                    "elements": [
-                        {
-                            "name": "tagsByResource",
-                            "type": "Microsoft.Common.TagsByResource",
-                            "resources": [
-                                "Microsoft.Compute/virtualMachines"
-                            ]
-                        }
-                    ]
                 }
             ]
         },
@@ -793,7 +780,6 @@
                 "subnetSpokeDevOpsAddressSpace": "[steps('networking').subnetSpokeDevOpsAddressSpace]",
                 "subnetSpokePrivateEndpointAddressSpace": "[steps('networking').subnetSpokePrivateEndpointAddressSpace]",
                 "numericSuffix": "[steps('extra').numericSuffix]",
-                "resourceTags": "[steps('tags').tagsByResource]",
                 "vnetHubResourceId": "[steps('networking').vnetHubResourceId]",
                 "firewallInternalIp": "[steps('networking').firewallInternalIp]",
                 "webAppPlanSku": "[steps('basics').appSvcPlanSection.webAppPlanSku]",
