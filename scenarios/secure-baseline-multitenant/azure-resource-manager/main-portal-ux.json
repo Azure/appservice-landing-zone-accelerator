@@ -329,6 +329,13 @@
                             "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
                         },
                         {
+                            "name": "sectionHubExisting",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Information for the existing Hub resources",
+                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'useExisting')]",
+                            "elements": []
+                        },
+                        {
                             "name": "vnetHubResourceId",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Hub Vnet Resource Id",
