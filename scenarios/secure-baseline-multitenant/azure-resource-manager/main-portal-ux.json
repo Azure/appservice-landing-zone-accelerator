@@ -246,6 +246,26 @@
                             ]
                         },
                         {
+                            "name": "sectionHubNew",
+                            "type": "Microsoft.Common.Section",
+                            "label": "CIDR Settings for new Hub network and subnets",
+                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]",
+                            "elements": [
+                                {
+                                    "name": "textHubNew",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "You can accept the default address spaces, as shown below, or you can use your own.",
+                                        "link": {
+                                            "label": "What address ranges can I use in my Virtual Networks?",
+                                            "uri": "https://learn.microsoft.com/azure/virtual-network/virtual-networks-faq#what-address-ranges-can-i-use-in-my-vnets"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
                             "name": "vnetHubAddressSpace",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Hub Virtual Network Address Space",
