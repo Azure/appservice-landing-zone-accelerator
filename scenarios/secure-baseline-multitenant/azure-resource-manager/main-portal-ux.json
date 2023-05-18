@@ -480,7 +480,7 @@
                     "label": "Extra settings",
                     "elements": [
                         {
-                            "name": "location",
+                            "name": "deploymentLocation",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Location",
                             "subLabel": "",
@@ -838,7 +838,7 @@
         "outputs": {
             "parameters": {
                 "workloadName": "[steps('basics').workloadName]",
-                "location": "[steps('extra').location]",
+                "location": "[steps('extra').deploymentLocation]",
                 "environmentName": "[steps('basics').environmentName]",
                 "vnetHubAddressSpace": "[steps('networking').vnetHubAddressSpace]",
                 "subnetHubFirewallAddressSpace": "[steps('networking').subnetHubFirewallAddressSpace]",
@@ -866,7 +866,6 @@
                 "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]"
             },
             "kind": "Subscription",
-            "location": "[steps('basics').resourceScope.location.name]",
             "subscriptionId": "[steps('basics').resourceScope.subscription.subscriptionId]"
         }
     }
