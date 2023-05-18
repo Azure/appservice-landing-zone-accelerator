@@ -669,7 +669,7 @@
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]",
                                     "options": {
-                                        "text": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value (xxxx-xxxx-xxxx-xxxx-xxxx) with Azure AD object ID of that group and tenantId value (yyyy-yyyy-yyyy-yyyy-yyyy) with Azure AD tenant ID where the group is located"
+                                        "text": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value (xxxx-xxxx-xxxx-xxxx-xxxx) with Azure AD object ID of that group. The current tenantId value is already filled in."
                                     }
                                 },
                                 {
