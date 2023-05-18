@@ -677,7 +677,7 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Sql Server Administrators",
                                     "subLabel": "",
-                                    "defaultValue": "{\n\t\"login\": \"AAD_SQL_ADMIN_GROUP\",\n\t\"sid\": \"xxxx-xxxx-xxxx-xxxx-xxxx\",\n\t\"tenantId\": \"yyyy-yyyy-yyyy-yyyy-yyyy\"\n}",
+                                    "defaultValue": "[concat('{\n\t\"login\": \"AAD_SQL_ADMIN_GROUP\",\n\t\"sid\": \"xxxx-xxxx-xxxx-xxxx-xxxx\",\n\t\"tenantId\": \"', steps('basics').resourceScope.subscription.tenantId, '\"\n}')]",
                                     "multiLine": true,
                                     "toolTip": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value with Azure AD object ID of that group and tenantId value with Azure AD tenant ID where the group is located",
                                     "constraints": {
