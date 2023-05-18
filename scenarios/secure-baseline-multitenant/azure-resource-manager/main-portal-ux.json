@@ -368,6 +368,26 @@
                             "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'useExisting')]"
                         },
                         {
+                            "name": "sectionSpoke",
+                            "type": "Microsoft.Common.Section",
+                            "label": "CIDR Settings for the Spoke network and subnets",
+                            "visible": true,
+                            "elements": [
+                                {
+                                    "name": "textSpoke",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "You can accept the default address spaces, as shown below, or you can use your own.",
+                                        "link": {
+                                            "label": "What address ranges can I use in my Virtual Networks?",
+                                            "uri": "https://learn.microsoft.com/azure/virtual-network/virtual-networks-faq#what-address-ranges-can-i-use-in-my-vnets"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
                             "name": "vnetSpokeAddressSpace",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Spoke Virtual Network Address Space",
