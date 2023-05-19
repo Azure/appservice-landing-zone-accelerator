@@ -20,7 +20,7 @@ The enterprise architecture is broken down into six different design areas, wher
 
 ## Enterprise-Scale Reference Implementation
 
-In this repo you will find reference implementations with supporting Infrastructure as Code templates. More reference implementations will be added as they become available. [User guide](/docs/README.md) goes into details on how to deploy each reference implementations to your subscription. 
+In this repo you will find reference implementations with supporting Infrastructure as Code templates. More reference implementations will be added as they become available. 
 
 ## Next Steps to implement the Azure App Service Landing Zone Accelerator
 > Reference implementations
