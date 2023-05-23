@@ -212,3 +212,52 @@ foreach ($download in $downloads) {
 # }
 
 # # Run Github Actions Runner commands
+
+
+# Basic Dev Utilities Section
+Write-Host "Install Git"
+$wingetInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Git.Git --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+
+if ($wingetInstallResult.ExitCode -eq 0) {
+    Write-Host "Total Commander installed successfully."
+}
+else {
+    Write-Host "Error installing Total Commander"
+}
+Write-Host "* * * * * * * * * *"
+
+# Install Microsoft.AzureCLI
+Write-Host "Install Microsoft.AzureCLI"
+$azureCliInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.AzureCLI --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+
+if ($azureCliInstallResult.ExitCode -eq 0) {
+    Write-Host "Microsoft.AzureCLI installed successfully."
+}
+else {
+    Write-Host "Error installing Microsoft.AzureCLI!!!"
+}
+Write-Host "* * * * * * * * * *"
+
+# Install Microsoft.Bicep
+Write-Host "Install Microsoft.Bicep"
+$bicepInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.Bicep --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+
+if ($bicepInstallResult.ExitCode -eq 0) {
+    Write-Host "Microsoft.Bicep installed successfully."
+}
+else {
+    Write-Host "Error installing Microsoft.Bicep!!!"
+}
+Write-Host "* * * * * * * * * *"
+
+# Install Microsoft.Azd
+Write-Host "Install Microsoft.Azd"
+$bicepInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.Azd --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+
+if ($bicepInstallResult.ExitCode -eq 0) {
+    Write-Host "Microsoft.Azd installed successfully."
+}
+else {
+    Write-Host "Error installing Microsoft.Azd!!!"
+}
+Write-Host "* * * * * * * * * *"
