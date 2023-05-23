@@ -127,13 +127,13 @@ if (-not [string]::isNullorEmpty($github_repository) -and -not [string]::isNullo
 
 if (-not [string]::isNullorEmpty($ado_organization) -and -not [string]::isNullorEmpty($ado_token)) {
     $adoInstallPath = "C:\azure-devops-agent"
-    $adoZipPath = "$($basePath)\azure-devops-agent\vsts-agent-win-x64-2.218.1.zip"
+    $adoZipPath = "$($basePath)\azure-devops-agent\vsts-agent-win-x64-3.220.2.zip"
     
     $downloads += @{
         name            = "Azure DevOps Agent"
-        url             = "https://vstsagentpackage.azureedge.net/agent/2.218.1/vsts-agent-win-x64-2.218.1.zip"
+        url             = "https://vstsagentpackage.azureedge.net/agent/3.220.2/vsts-agent-win-x64-3.220.2.zip"
         path            = "$($basePath)\azure-devops-agent\"
-        file            = "vsts-agent-win-x64-2.218.1.zip"
+        file            = "vsts-agent-win-x64-3.220.2.zip"
         installCmd      = "Add-Type -AssemblyName System.IO.Compression.FileSystem; " +
         "[System.IO.Compression.ZipFile]::ExtractToDirectory(`"$($adoZipPath)`", `"$($adoInstallPath)`");"
         testInstallPath = "$($adoInstallPath)\bin\Agent.Listener.exe"
