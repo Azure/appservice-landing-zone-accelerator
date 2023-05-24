@@ -206,11 +206,17 @@ foreach ($download in $downloads) {
     }
 }
 
+
+##############################################################################################################
 # get latest git 32-bit exe 
+Write-Host "Download and Install latest Git 32-bit"
+
 $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-32-bit\.exe'
 $URL = "https://api.github.com/repos/git-for-windows/git/releases"
-$URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json |
-Select-Object -ExpandProperty "assets" |
+
+$URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
+# hmm when chained together it doesn't work
+$URL = $URL | Select-Object -ExpandProperty "assets" |
 Where-Object "browser_download_url" -Match $pattern |
 Select-Object -ExpandProperty "browser_download_url"
 
@@ -223,23 +229,24 @@ Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
 # Remove the downloaded Git installer
 Remove-Item -Path "git-latest-32-bit.exe"
 
-# # get latest download url for winget-cli
-# get latest download url
-$URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-$URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json |
-Select-Object -ExpandProperty "assets" |
-Where-Object "browser_download_url" -Match '.msixbundle' |
-Select-Object -ExpandProperty "browser_download_url"
+# ##############################################################################################################
+# # # get latest download url for winget-cli
+# # get latest download url
+# $URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+# $URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json |
+# Select-Object -ExpandProperty "assets" |
+# Where-Object "browser_download_url" -Match '.msixbundle' |
+# Select-Object -ExpandProperty "browser_download_url"
 
-# download
-Invoke-WebRequest -Uri $URL -OutFile "Setup.msix" -UseBasicParsing
+# # download
+# Invoke-WebRequest -Uri $URL -OutFile "Setup.msix" -UseBasicParsing
 
-# install
-Add-AppxPackage -Path "Setup.msix"
+# # install
+# Add-AppxPackage -Path "Setup.msix"
 
-# delete file
-Remove-Item "Setup.msix"
-Write-Host "Installing winget finished!"
+# # delete file
+# Remove-Item "Setup.msix"
+# Write-Host "Installing winget finished!"
 
 # # # Run Azure CLI commands
 
@@ -250,6 +257,8 @@ Write-Host "Installing winget finished!"
 
 # # # Run Github Actions Runner commands
 
+
+##############################################################################################################
 # install azure developer CLI AZD
 Write-Host "Install Azure Developer CLI AZD"
 Invoke-RestMethod 'https://aka.ms/install-azd.ps1' -OutFile 'install-azd.ps1'
