@@ -215,16 +215,23 @@ $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d
 $URL = "https://api.github.com/repos/git-for-windows/git/releases"
 
 $URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
+Write-Host "got the json content"
+
 # hmm when chained together it doesn't work
 $URL = $URL | Select-Object -ExpandProperty "assets" |
 Where-Object "browser_download_url" -Match $pattern |
 Select-Object -ExpandProperty "browser_download_url"
 
+Write-Host "got the URLs. Downloading from $($URL[0])"
 # download
 Invoke-WebRequest -Uri $URL[0] -OutFile "git-latest-32-bit.exe" -UseBasicParsing
 
+wrtte-host "Downloaded. Installing..."
+
 # Install Git
 Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
+
+Write-Host "Installed Git. Removing the downloaded installer"
 
 # Remove the downloaded Git installer
 Remove-Item -Path "git-latest-32-bit.exe"
