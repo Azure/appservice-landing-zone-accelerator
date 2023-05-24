@@ -224,9 +224,9 @@ Select-Object -ExpandProperty "browser_download_url"
 
 Write-Host "got the URLs. Downloading from $($URL[0])"
 # download
-Invoke-WebRequest -Uri $URL[0] -OutFile "git-latest-32-bit.exe" -UseBasicParsing
+Invoke-WebRequest -Uri $URL[0] -OutFile "git-latest-32-bit.exe"
 
-wrtte-host "Downloaded. Installing..."
+Write-Host "Downloaded. Installing..."
 
 # Install Git
 Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
