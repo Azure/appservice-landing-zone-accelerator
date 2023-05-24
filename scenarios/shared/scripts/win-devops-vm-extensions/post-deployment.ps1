@@ -207,20 +207,22 @@ foreach ($download in $downloads) {
 }
 
 # # get latest download url for winget-cli
-# $URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-# $URL = (Invoke-WebRequest -Uri $URL).Content | ConvertFrom-Json |
-# Select-Object -ExpandProperty "assets" |
-# Where-Object "browser_download_url" -Match '.msixbundle' |
-# Select-Object -ExpandProperty "browser_download_url"
+# get latest download url
+$URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+$URL = (Invoke-WebRequest -Uri $URL).Content | ConvertFrom-Json |
+Select-Object -ExpandProperty "assets" |
+Where-Object "browser_download_url" -Match '.msixbundle' |
+Select-Object -ExpandProperty "browser_download_url"
 
-# # download
-# Invoke-WebRequest -Uri $URL -OutFile "Setup.msix" -UseBasicParsing
+# download
+Invoke-WebRequest -Uri $URL -OutFile "Setup.msix" -UseBasicParsing
 
-# # install
-# Add-AppxPackage -Path "Setup.msix"
+# install
+Add-AppxPackage -Path "Setup.msix"
 
-# # delete file
-# Remove-Item "Setup.msix"
+# delete file
+Remove-Item "Setup.msix"
+Write-Host "Installing winget finished!"
 
 # # # Run Azure CLI commands
 
@@ -239,17 +241,17 @@ Invoke-RestMethod 'https://aka.ms/install-azd.ps1' -OutFile 'install-azd.ps1'
 # Remove-Item "install-azd.ps1" 
 
 
-# # Basic Dev Utilities Section
-# Write-Host "Install Git"
-# $wingetInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Git.Git --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+# Basic Dev Utilities Section
+Write-Host "Install Git"
+$wingetInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Git.Git --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
 
-# if ($wingetInstallResult.ExitCode -eq 0) {
-#     Write-Host "Total Commander installed successfully."
-# }
-# else {
-#     Write-Host "Error installing Total Commander"
-# }
-# Write-Host "* * * * * * * * * *"
+if ($wingetInstallResult.ExitCode -eq 0) {
+    Write-Host "Total Commander installed successfully."
+}
+else {
+    Write-Host "Error installing Total Commander"
+}
+Write-Host "* * * * * * * * * *"
 
 # # Install Microsoft.AzureCLI
 # Write-Host "Install Microsoft.AzureCLI"

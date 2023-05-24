@@ -147,7 +147,8 @@ resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@20
       ]      
     }    
     protectedSettings: {
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 -install_ssms '
+      // commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 -install_ssms '
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 '
     }
   }
 }
