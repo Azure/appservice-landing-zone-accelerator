@@ -98,7 +98,7 @@ $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 ##############################################################################################################
 Write-Host "Find latest Git-32bit.exe"
 
-$pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-32-bit\.exe'
+$pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-64-bit\.exe'
 $URL = "https://api.github.com/repos/git-for-windows/git/releases"
 
 $URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
@@ -109,18 +109,18 @@ $URL = $URL | Select-Object -ExpandProperty "assets" |
 Where-Object "browser_download_url" -Match $pattern |
 Select-Object -ExpandProperty "browser_download_url"
 
-# https://github.com/git-for-windows/git/releases/download/v2.40.1.windows.1/Git-2.40.1-32-bit.exe
-# Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
+# https://github.com/git-for-windows/git/releases/download/v2.40.1.windows.1/Git-2.40.1-64-bit.exe
+# Start-Process -FilePath "git-latest-64-bit.exe" -ArgumentList "/SILENT" -Wait
 Write-Host "got the URLs to Download from $($URL[0])"
-$git32InstallPath = "C:\Program Files (x86)\Git\bin"
+$gitInstallPath = "C:\Program Files\Git\bin"
 
 $downloads += @{
     name            = "Git 32bit"
     url             = "$($URL[0])"
     path            = "$($basePath)\git\"
-    file            = "git-latest-32-bit.exe"
-    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-32-bit.exe -Argument '/silent' -PassThru"
-    testInstallPath = "$($git32InstallPath)\git.exe"
+    file            = "git-latest-64-bit.exe"
+    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes' -PassThru"
+    testInstallPath = "$($gitInstallPath)\git.exe"
     postInstallCmd  = "" 
 }
 
