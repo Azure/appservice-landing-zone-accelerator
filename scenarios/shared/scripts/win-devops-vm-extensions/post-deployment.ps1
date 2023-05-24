@@ -95,8 +95,36 @@ $downloads += @{
 
 $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 # }
+##############################################################################################################
+Write-Host "Find latest Git-32bit.exe"
 
+$pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-32-bit\.exe'
+$URL = "https://api.github.com/repos/git-for-windows/git/releases"
 
+$URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
+Write-Host "got the json content"
+
+# hmm when chained together it doesn't work
+$URL = $URL | Select-Object -ExpandProperty "assets" |
+Where-Object "browser_download_url" -Match $pattern |
+Select-Object -ExpandProperty "browser_download_url"
+
+# https://github.com/git-for-windows/git/releases/download/v2.40.1.windows.1/Git-2.40.1-32-bit.exe
+# Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
+Write-Host "got the URLs to Download from $($URL[0])"
+$git32InstallPath = "C:\Program Files (x86)\Git\bin"
+
+$downloads += @{
+    name            = "Git 32bit"
+    url             = "$($URL[0])"
+    path            = "$($basePath)\git\"
+    file            = "git-latest-32-bit.exe"
+    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-32-bit.exe -Argument '/silent' -PassThru"
+    testInstallPath = "$($git32InstallPath)\git.exe"
+    postInstallCmd  = "" 
+}
+
+##############################################################################################################
 if ($install_ssms) {
     $ssmsInstallPath = "C:\Program Files (x86)\Microsoft SQL Server Management Studio 19"
 
@@ -208,33 +236,33 @@ foreach ($download in $downloads) {
 
 
 ##############################################################################################################
-# get latest git 32-bit exe 
-Write-Host "Download and Install latest Git 32-bit"
+# # get latest git 32-bit exe 
+# Write-Host "Download and Install latest Git 32-bit"
 
-$pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-32-bit\.exe'
-$URL = "https://api.github.com/repos/git-for-windows/git/releases"
+# $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-32-bit\.exe'
+# $URL = "https://api.github.com/repos/git-for-windows/git/releases"
 
-$URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
-Write-Host "got the json content"
+# $URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
+# Write-Host "got the json content"
 
-# hmm when chained together it doesn't work
-$URL = $URL | Select-Object -ExpandProperty "assets" |
-Where-Object "browser_download_url" -Match $pattern |
-Select-Object -ExpandProperty "browser_download_url"
+# # hmm when chained together it doesn't work
+# $URL = $URL | Select-Object -ExpandProperty "assets" |
+# Where-Object "browser_download_url" -Match $pattern |
+# Select-Object -ExpandProperty "browser_download_url"
 
-Write-Host "got the URLs. Downloading from $($URL[0])"
-# download
-Invoke-WebRequest -Uri $URL[0] -OutFile "git-latest-32-bit.exe"
+# Write-Host "got the URLs. Downloading from $($URL[0])"
+# # download
+# Invoke-WebRequest -Uri $URL[0] -OutFile "git-latest-32-bit.exe"
 
-Write-Host "Downloaded. Installing..."
+# Write-Host "Downloaded. Installing..."
 
-# Install Git
-Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
+# # Install Git
+# Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
 
-Write-Host "Installed Git. Removing the downloaded installer"
+# Write-Host "Installed Git. Removing the downloaded installer"
 
-# Remove the downloaded Git installer
-Remove-Item -Path "git-latest-32-bit.exe"
+# # Remove the downloaded Git installer
+# Remove-Item -Path "git-latest-32-bit.exe"
 
 # ##############################################################################################################
 # # # get latest download url for winget-cli
