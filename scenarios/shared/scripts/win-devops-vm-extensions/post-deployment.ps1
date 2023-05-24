@@ -79,21 +79,23 @@ Start-Transcript ($logsFolder + "post-deployment-script" + $date + ".log")
 
 $downloads = @()
 
-if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
-    $azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
-    
-    $downloads += @{
-        name            = "Azure CLI"
-        url             = "https://aka.ms/installazurecliwindows"
-        path            = "$($basePath)\ac-cli-runner\"
-        file            = "AzureCLI.msi"
-        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/I D:\ac-cli-runner\AzureCLI.msi /quiet'"
-        testInstallPath = "$($azCliInstallPath)\az.cmd"
-        postInstallCmd  = $az_cli_commands 
-    }
+# if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
+# install azure CLI
+$azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
 
-    $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
+$downloads += @{
+    name            = "Azure CLI"
+    url             = "https://aka.ms/installazurecliwindows"
+    path            = "$($basePath)\ac-cli-runner\"
+    file            = "AzureCLI.msi"
+    installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/I D:\ac-cli-runner\AzureCLI.msi /quiet'"
+    testInstallPath = "$($azCliInstallPath)\az.cmd"
+    postInstallCmd  = $az_cli_commands 
 }
+
+$env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
+# }
+
 
 if ($install_ssms) {
     $ssmsInstallPath = "C:\Program Files (x86)\Microsoft SQL Server Management Studio 19"
@@ -204,76 +206,83 @@ foreach ($download in $downloads) {
     }
 }
 
-# get latest download url for winget-cli
-$URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-$URL = (Invoke-WebRequest -Uri $URL).Content | ConvertFrom-Json |
-Select-Object -ExpandProperty "assets" |
-Where-Object "browser_download_url" -Match '.msixbundle' |
-Select-Object -ExpandProperty "browser_download_url"
+# # get latest download url for winget-cli
+# $URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+# $URL = (Invoke-WebRequest -Uri $URL).Content | ConvertFrom-Json |
+# Select-Object -ExpandProperty "assets" |
+# Where-Object "browser_download_url" -Match '.msixbundle' |
+# Select-Object -ExpandProperty "browser_download_url"
 
-# download
-Invoke-WebRequest -Uri $URL -OutFile "Setup.msix" -UseBasicParsing
+# # download
+# Invoke-WebRequest -Uri $URL -OutFile "Setup.msix" -UseBasicParsing
 
-# install
-Add-AppxPackage -Path "Setup.msix"
+# # install
+# Add-AppxPackage -Path "Setup.msix"
 
-# delete file
-Remove-Item "Setup.msix"
+# # delete file
+# Remove-Item "Setup.msix"
 
-# # Run Azure CLI commands
+# # # Run Azure CLI commands
 
-# if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
-#     Write-Host "Running Azure CLI commands: $($az_cli_commands)"
-#     Invoke-Expression $az_cli_commands
+# # if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
+# #     Write-Host "Running Azure CLI commands: $($az_cli_commands)"
+# #     Invoke-Expression $az_cli_commands
+# # }
+
+# # # Run Github Actions Runner commands
+
+# install azure developer CLI AZD
+Write-Host "Install Azure Developer CLI AZD"
+Invoke-RestMethod 'https://aka.ms/install-azd.ps1' -OutFile 'install-azd.ps1'
+./install-azd.ps1
+# # delete file
+# Remove-Item "install-azd.ps1" 
+
+
+# # Basic Dev Utilities Section
+# Write-Host "Install Git"
+# $wingetInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Git.Git --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+
+# if ($wingetInstallResult.ExitCode -eq 0) {
+#     Write-Host "Total Commander installed successfully."
 # }
+# else {
+#     Write-Host "Error installing Total Commander"
+# }
+# Write-Host "* * * * * * * * * *"
 
-# # Run Github Actions Runner commands
+# # Install Microsoft.AzureCLI
+# Write-Host "Install Microsoft.AzureCLI"
+# $azureCliInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.AzureCLI --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
 
+# if ($azureCliInstallResult.ExitCode -eq 0) {
+#     Write-Host "Microsoft.AzureCLI installed successfully."
+# }
+# else {
+#     Write-Host "Error installing Microsoft.AzureCLI!!!"
+# }
+# Write-Host "* * * * * * * * * *"
 
-# Basic Dev Utilities Section
-Write-Host "Install Git"
-$wingetInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Git.Git --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+# # Install Microsoft.Bicep
+# Write-Host "Install Microsoft.Bicep"
+# $bicepInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.Bicep --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
 
-if ($wingetInstallResult.ExitCode -eq 0) {
-    Write-Host "Total Commander installed successfully."
-}
-else {
-    Write-Host "Error installing Total Commander"
-}
-Write-Host "* * * * * * * * * *"
+# if ($bicepInstallResult.ExitCode -eq 0) {
+#     Write-Host "Microsoft.Bicep installed successfully."
+# }
+# else {
+#     Write-Host "Error installing Microsoft.Bicep!!!"
+# }
+# Write-Host "* * * * * * * * * *"
 
-# Install Microsoft.AzureCLI
-Write-Host "Install Microsoft.AzureCLI"
-$azureCliInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.AzureCLI --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+# # Install Microsoft.Azd
+# Write-Host "Install Microsoft.Azd"
+# $bicepInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.Azd --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
 
-if ($azureCliInstallResult.ExitCode -eq 0) {
-    Write-Host "Microsoft.AzureCLI installed successfully."
-}
-else {
-    Write-Host "Error installing Microsoft.AzureCLI!!!"
-}
-Write-Host "* * * * * * * * * *"
-
-# Install Microsoft.Bicep
-Write-Host "Install Microsoft.Bicep"
-$bicepInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.Bicep --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
-
-if ($bicepInstallResult.ExitCode -eq 0) {
-    Write-Host "Microsoft.Bicep installed successfully."
-}
-else {
-    Write-Host "Error installing Microsoft.Bicep!!!"
-}
-Write-Host "* * * * * * * * * *"
-
-# Install Microsoft.Azd
-Write-Host "Install Microsoft.Azd"
-$bicepInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.Azd --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
-
-if ($bicepInstallResult.ExitCode -eq 0) {
-    Write-Host "Microsoft.Azd installed successfully."
-}
-else {
-    Write-Host "Error installing Microsoft.Azd!!!"
-}
-Write-Host "* * * * * * * * * *"
+# if ($bicepInstallResult.ExitCode -eq 0) {
+#     Write-Host "Microsoft.Azd installed successfully."
+# }
+# else {
+#     Write-Host "Error installing Microsoft.Azd!!!"
+# }
+# Write-Host "* * * * * * * * * *"
