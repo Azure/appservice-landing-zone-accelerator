@@ -206,10 +206,27 @@ foreach ($download in $downloads) {
     }
 }
 
+# get latest git 32-bit exe 
+$pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-32-bit\.exe'
+$URL = "https://api.github.com/repos/git-for-windows/git/releases"
+$URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json |
+Select-Object -ExpandProperty "assets" |
+Where-Object "browser_download_url" -Match $pattern |
+Select-Object -ExpandProperty "browser_download_url"
+
+# download
+Invoke-WebRequest -Uri $URL[0] -OutFile "git-latest-32-bit.exe" -UseBasicParsing
+
+# Install Git
+Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
+
+# Remove the downloaded Git installer
+Remove-Item -Path "git-latest-32-bit.exe"
+
 # # get latest download url for winget-cli
 # get latest download url
 $URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-$URL = (Invoke-WebRequest -Uri $URL).Content | ConvertFrom-Json |
+$URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json |
 Select-Object -ExpandProperty "assets" |
 Where-Object "browser_download_url" -Match '.msixbundle' |
 Select-Object -ExpandProperty "browser_download_url"
@@ -241,17 +258,17 @@ Invoke-RestMethod 'https://aka.ms/install-azd.ps1' -OutFile 'install-azd.ps1'
 # Remove-Item "install-azd.ps1" 
 
 
-# Basic Dev Utilities Section
-Write-Host "Install Git"
-$wingetInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Git.Git --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+# # Basic Dev Utilities Section
+# Write-Host "Install Git"
+# $wingetInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Git.Git --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
 
-if ($wingetInstallResult.ExitCode -eq 0) {
-    Write-Host "Total Commander installed successfully."
-}
-else {
-    Write-Host "Error installing Total Commander"
-}
-Write-Host "* * * * * * * * * *"
+# if ($wingetInstallResult.ExitCode -eq 0) {
+#     Write-Host "Git installed successfully."
+# }
+# else {
+#     Write-Host "Error installing Git"
+# }
+# Write-Host "* * * * * * * * * *"
 
 # # Install Microsoft.AzureCLI
 # Write-Host "Install Microsoft.AzureCLI"
