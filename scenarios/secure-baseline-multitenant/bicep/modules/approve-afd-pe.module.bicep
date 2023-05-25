@@ -52,7 +52,7 @@ resource runAfdApproval 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
         value: resourceGroup().name
       }
     ]
-    scriptContent: 'rg_name="$ResourceGroupName"; webapp_id=$(az webapp list -g $rg_name --query "[].id" -o tsv); fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == \'Pending\'].{id:id}" -o tsv);az network private-endpoint-connection approve --id $fd_conn_id --description "ApprovedByCli"'
+    scriptContent: 'rg_name="$ResourceGroupName"; webapp_ids=$(az webapp list -g $rg_name --query "[].id" -o tsv); for webapp_id in $webapp_ids; do fd_conn_ids=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == \'Pending\'].id" -o tsv); for fd_conn_id in $fd_conn_ids; do az network private-endpoint-connection approve --id "$fd_conn_id" --description "ApprovedByCli"; done; done'         
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'
   }

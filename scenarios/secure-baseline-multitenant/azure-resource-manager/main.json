@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "14607136235440263125"
+      "templateHash": "13342301343479096704"
     }
   },
   "parameters": {
@@ -3058,7 +3058,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "16445129936569211151"
+              "templateHash": "2106337604961957366"
             }
           },
           "parameters": {
@@ -8309,7 +8309,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.17.1.54307",
-                      "templateHash": "13580836858218228590"
+                      "templateHash": "6324920352926996485"
                     }
                   },
                   "parameters": {
@@ -8387,7 +8387,7 @@
                             "value": "[resourceGroup().name]"
                           }
                         ],
-                        "scriptContent": "rg_name=\"$ResourceGroupName\"; webapp_id=$(az webapp list -g $rg_name --query \"[].id\" -o tsv); fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query \"[?properties.provisioningState == 'Pending'].{id:id}\" -o tsv);az network private-endpoint-connection approve --id $fd_conn_id --description \"ApprovedByCli\"",
+                        "scriptContent": "rg_name=\"$ResourceGroupName\"; webapp_ids=$(az webapp list -g $rg_name --query \"[].id\" -o tsv); for webapp_id in $webapp_ids; do fd_conn_ids=$(az network private-endpoint-connection list --id $webapp_id --query \"[?properties.provisioningState == 'Pending'].id\" -o tsv); for fd_conn_id in $fd_conn_ids; do az network private-endpoint-connection approve --id \"$fd_conn_id\" --description \"ApprovedByCli\"; done; done",
                         "cleanupPreference": "OnSuccess",
                         "retentionInterval": "P1D"
                       },
@@ -8461,7 +8461,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.17.1.54307",
-                      "templateHash": "15659440928257256549"
+                      "templateHash": "4338166189305100553"
                     }
                   },
                   "parameters": {
@@ -8569,7 +8569,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.17.1.54307",
-                              "templateHash": "16391892586398122206"
+                              "templateHash": "15867081867362206882"
                             }
                           },
                           "parameters": {
@@ -8729,6 +8729,29 @@
                                 "type": "[variables('aadLoginExtensionName')]",
                                 "typeHandlerVersion": "1.0",
                                 "autoUpgradeMinorVersion": true
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
+                              ]
+                            },
+                            {
+                              "type": "Microsoft.Compute/virtualMachines/extensions",
+                              "apiVersion": "2023-03-01",
+                              "name": "[format('{0}/{1}', variables('vmName'), 'customScriptExtension')]",
+                              "location": "[parameters('location')]",
+                              "properties": {
+                                "publisher": "Microsoft.Compute",
+                                "type": "CustomScriptExtension",
+                                "typeHandlerVersion": "1.10",
+                                "autoUpgradeMinorVersion": true,
+                                "settings": {
+                                  "fileUris": [
+                                    "https://raw.githubusercontent.com/thotheod/appservice-landing-zone-accelerator/main/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1"
+                                  ]
+                                },
+                                "protectedSettings": {
+                                  "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 "
+                                }
                               },
                               "dependsOn": [
                                 "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
