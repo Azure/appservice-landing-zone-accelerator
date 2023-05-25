@@ -143,7 +143,7 @@ resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@20
     settings: {
       fileUris: [
         // 'https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/main/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
-        'https://github.com/thotheod/appservice-landing-zone-accelerator/blob/fix/01-postDeploymentVmExtensions/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
+        'https://github.com/thotheod/appservice-landing-zone-accelerator/blob/fix/01-postDeploymentVmExtensions/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment2.ps1'
       ]      
     }    
     protectedSettings: {
