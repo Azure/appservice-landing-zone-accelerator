@@ -79,6 +79,7 @@ Start-Transcript ($logsFolder + "post-deployment-script" + $date + ".log")
 
 $downloads = @()
 
+##############################################################################################################
 # if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
 # install azure CLI
 $azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
@@ -99,12 +100,6 @@ $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 ##############################################################################################################
 # # install azure developer CLI AZD
 
-Start-Process $MSIEXEC `
-    -ArgumentList @("/i", "/qn" ) `
-    -PassThru `
-    -Wait
-
-"Start-Process msiexec.exe -Wait -ArgumentList '/i /qn D:\azd\azd-windows-amd64.msi /quiet'"
 $azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
 
 $downloads += @{
