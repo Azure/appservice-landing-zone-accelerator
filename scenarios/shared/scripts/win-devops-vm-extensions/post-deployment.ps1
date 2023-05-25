@@ -107,7 +107,7 @@ $downloads += @{
     url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
     path            = "$($basePath)\azd\"
     file            = "azd-windows-amd64.msi"
-    installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i /qn D:\azd\azd-windows-amd64.msi /quiet'"
+    installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
     testInstallPath = "$($azdInstallPath)\azd.exe"
     postInstallCmd  = "" 
 }
@@ -138,7 +138,7 @@ $downloads += @{
     url             = "$($URL[0])"
     path            = "$($basePath)\git\"
     file            = "git-latest-64-bit.exe"
-    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes' -PassThru"
+    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes'"
     testInstallPath = "$($gitInstallPath)\git.exe"
     postInstallCmd  = "" 
 }
