@@ -54,8 +54,6 @@ param (
     $install_ssms = $false
 )
 
-Write-Host "script started"
-
 #Validate parameters
 if (-not [string]::IsNullOrEmpty($github_token) -and [string]::IsNullOrEmpty($github_repository)) {
     throw "If github_token is provided, then github_repository must also be provided."
@@ -81,7 +79,6 @@ Start-Transcript ($logsFolder + "post-deployment-script" + $date + ".log")
 
 $downloads = @()
 
-##############################################################################################################
 # if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
 # install azure CLI
 $azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
@@ -98,26 +95,8 @@ $downloads += @{
 
 $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 # }
-
-# ##############################################################################################################
-# # # install azure developer CLI AZD
-
-# $azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
-
-# $downloads += @{
-#     name            = "AZD CLI"
-#     url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
-#     path            = "$($basePath)\azd\"
-#     file            = "azd-windows-amd64.msi"
-#     installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
-#     testInstallPath = "$($azdInstallPath)\azd.exe"
-#     postInstallCmd  = "" 
-# }
-
-# $env:Path += ";$($azdInstallPath)\"
-
-# ##############################################################################################################
-Write-Host "Find latest Git-64bit.exe"
+##############################################################################################################
+Write-Host "Find latest Git-32bit.exe"
 
 $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-64-bit\.exe'
 $URL = "https://api.github.com/repos/git-for-windows/git/releases"
@@ -136,11 +115,11 @@ Write-Host "got the URLs to Download from $($URL[0])"
 $gitInstallPath = "C:\Program Files\Git\bin"
 
 $downloads += @{
-    name            = "Git 64bit"
+    name            = "Git 32bit"
     url             = "$($URL[0])"
     path            = "$($basePath)\git\"
     file            = "git-latest-64-bit.exe"
-    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes'"
+    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes' -PassThru"
     testInstallPath = "$($gitInstallPath)\git.exe"
     postInstallCmd  = "" 
 }
@@ -315,12 +294,12 @@ foreach ($download in $downloads) {
 
 
 ##############################################################################################################
-# # install azure developer CLI AZD
-# Write-Host "Install Azure Developer CLI AZD"
-# Invoke-RestMethod 'https://aka.ms/install-azd.ps1' -OutFile 'install-azd.ps1'
-# ./install-azd.ps1
-# # # delete file
-# # Remove-Item "install-azd.ps1" 
+# install azure developer CLI AZD
+Write-Host "Install Azure Developer CLI AZD"
+Invoke-RestMethod 'https://aka.ms/install-azd.ps1' -OutFile 'install-azd.ps1'
+./install-azd.ps1
+# # delete file
+# Remove-Item "install-azd.ps1" 
 
 
 # # Basic Dev Utilities Section
