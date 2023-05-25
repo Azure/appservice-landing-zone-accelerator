@@ -220,7 +220,7 @@ foreach ($download in $downloads) {
     }
 
     Write-Host "File not present, downloading from: $($download.url)"
-    $job = Start-Job -Name $download.name -ScriptBlock $downloadJob -ArgumentList $download.url, $filePath
+    $job = Start-Job -Name $download.name -ScriptBlock $downloadJob -ArgumentList $download.url, $filePath 
     $jobs += $job
 }
 
