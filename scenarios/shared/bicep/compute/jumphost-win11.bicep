@@ -142,13 +142,13 @@ resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@20
     autoUpgradeMinorVersion: true
     settings: {
       fileUris: [
-        // 'https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/main/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
-        'https://github.com/thotheod/appservice-landing-zone-accelerator/blob/fix/01-postDeploymentVmExtensions/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment2.ps1'
+     // 'https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/main/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
+        'https://raw.githubusercontent.com/thotheod/appservice-landing-zone-accelerator/blob/fix/01-postDeploymentVmExtensions/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
       ]      
     }    
     protectedSettings: {
       // commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 -install_ssms '
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment2.ps1 '
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 '
     }
   }
 }
