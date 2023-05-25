@@ -97,24 +97,24 @@ $downloads += @{
 $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 # }
 
-##############################################################################################################
-# # install azure developer CLI AZD
+# ##############################################################################################################
+# # # install azure developer CLI AZD
 
-$azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
+# $azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
 
-$downloads += @{
-    name            = "AZD CLI"
-    url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
-    path            = "$($basePath)\azd\"
-    file            = "azd-windows-amd64.msi"
-    installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
-    testInstallPath = "$($azdInstallPath)\azd.exe"
-    postInstallCmd  = "" 
-}
+# $downloads += @{
+#     name            = "AZD CLI"
+#     url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
+#     path            = "$($basePath)\azd\"
+#     file            = "azd-windows-amd64.msi"
+#     installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
+#     testInstallPath = "$($azdInstallPath)\azd.exe"
+#     postInstallCmd  = "" 
+# }
 
-$env:Path += ";$($azdInstallPath)\"
+# $env:Path += ";$($azdInstallPath)\"
 
-##############################################################################################################
+# ##############################################################################################################
 Write-Host "Find latest Git-64bit.exe"
 
 $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-64-bit\.exe'
