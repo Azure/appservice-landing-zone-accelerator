@@ -54,6 +54,8 @@ param (
     $install_ssms = $false
 )
 
+Write-Host "script started"
+
 #Validate parameters
 if (-not [string]::IsNullOrEmpty($github_token) -and [string]::IsNullOrEmpty($github_repository)) {
     throw "If github_token is provided, then github_repository must also be provided."
