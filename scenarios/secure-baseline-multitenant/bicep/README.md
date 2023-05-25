@@ -99,7 +99,7 @@ for webapp_id in $webapp_ids; do
 done
 ```
 
-### Verify Deployment and Approval of Azure Front Door Private Endpoint Connection approval
+### Verify Deployment and Approval of Azure Front Door Private Endpoint Connection
 Go to the portal, find the spoke resource group you have just deployed, and identify the Azure Front Door resource (names starts with *afd-*). In the Overview page, find the URL named *Endpoint hostname*, copy it, and try it on a browser. If everything is successful then you should see a sample web app page with title *"Your web app is running and waiting for your content"*. If you get any errors verify that you have approved the private endpoint connection between Azure Front Door and the Web App. 
 
 ### Connect to the Jumpbox VM (deployed in the spoke resource group)
