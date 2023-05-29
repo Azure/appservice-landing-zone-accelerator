@@ -54,6 +54,8 @@ param (
     $install_ssms = $false
 )
 
+Write-Host "script started"
+
 #Validate parameters
 if (-not [string]::IsNullOrEmpty($github_token) -and [string]::IsNullOrEmpty($github_repository)) {
     throw "If github_token is provided, then github_repository must also be provided."
@@ -79,6 +81,7 @@ Start-Transcript ($logsFolder + "post-deployment-script" + $date + ".log")
 
 $downloads = @()
 
+##############################################################################################################
 # if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
 # install azure CLI
 $azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
@@ -95,8 +98,26 @@ $downloads += @{
 
 $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 # }
+
 ##############################################################################################################
-Write-Host "Find latest Git-32bit.exe"
+# # install azure developer CLI AZD
+
+$azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
+
+$downloads += @{
+    name            = "AZD CLI"
+    url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
+    path            = "$($basePath)\azd\"
+    file            = "azd-windows-amd64.msi"
+    installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
+    testInstallPath = "$($azdInstallPath)\azd.exe"
+    postInstallCmd  = "" 
+}
+
+$env:Path += ";$($azdInstallPath)\"
+
+##############################################################################################################
+# install the latest 64-bit Git
 
 $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-64-bit\.exe'
 $URL = "https://api.github.com/repos/git-for-windows/git/releases"
@@ -115,16 +136,17 @@ Write-Host "got the URLs to Download from $($URL[0])"
 $gitInstallPath = "C:\Program Files\Git\bin"
 
 $downloads += @{
-    name            = "Git 32bit"
+    name            = "Git 64bit"
     url             = "$($URL[0])"
     path            = "$($basePath)\git\"
     file            = "git-latest-64-bit.exe"
-    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes' -PassThru"
+    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes'"
     testInstallPath = "$($gitInstallPath)\git.exe"
     postInstallCmd  = "" 
 }
 
 ##############################################################################################################
+# install the SSMS
 if ($install_ssms) {
     $ssmsInstallPath = "C:\Program Files (x86)\Microsoft SQL Server Management Studio 19"
 
@@ -139,6 +161,8 @@ if ($install_ssms) {
     }
 }
 
+##############################################################################################################
+# install the guthub actions runner
 if (-not [string]::isNullorEmpty($github_repository) -and -not [string]::isNullorEmpty($github_token)) {
     $ghInstallPath = "C:\github-actions"
     $ghZipPath = "$($basePath)\github-actions\actions-runner-win-x64-2.303.0.zip"
@@ -155,6 +179,8 @@ if (-not [string]::isNullorEmpty($github_repository) -and -not [string]::isNullo
     }
 }
 
+##############################################################################################################
+# install the azure devops agent
 if (-not [string]::isNullorEmpty($ado_organization) -and -not [string]::isNullorEmpty($ado_token)) {
     $adoInstallPath = "C:\azure-devops-agent"
     $adoZipPath = "$($basePath)\azure-devops-agent\vsts-agent-win-x64-3.220.2.zip"
@@ -194,7 +220,7 @@ foreach ($download in $downloads) {
     }
 
     Write-Host "File not present, downloading from: $($download.url)"
-    $job = Start-Job -Name $download.name -ScriptBlock $downloadJob -ArgumentList $download.url, $filePath
+    $job = Start-Job -Name $download.name -ScriptBlock $downloadJob -ArgumentList $download.url, $filePath 
     $jobs += $job
 }
 
@@ -234,118 +260,5 @@ foreach ($download in $downloads) {
     }
 }
 
-
-##############################################################################################################
-# # get latest git 32-bit exe 
-# Write-Host "Download and Install latest Git 32-bit"
-
-# $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-32-bit\.exe'
-# $URL = "https://api.github.com/repos/git-for-windows/git/releases"
-
-# $URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
-# Write-Host "got the json content"
-
-# # hmm when chained together it doesn't work
-# $URL = $URL | Select-Object -ExpandProperty "assets" |
-# Where-Object "browser_download_url" -Match $pattern |
-# Select-Object -ExpandProperty "browser_download_url"
-
-# Write-Host "got the URLs. Downloading from $($URL[0])"
-# # download
-# Invoke-WebRequest -Uri $URL[0] -OutFile "git-latest-32-bit.exe"
-
-# Write-Host "Downloaded. Installing..."
-
-# # Install Git
-# Start-Process -FilePath "git-latest-32-bit.exe" -ArgumentList "/SILENT" -Wait
-
-# Write-Host "Installed Git. Removing the downloaded installer"
-
-# # Remove the downloaded Git installer
-# Remove-Item -Path "git-latest-32-bit.exe"
-
-# ##############################################################################################################
-# # # get latest download url for winget-cli
-# # get latest download url
-# $URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-# $URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json |
-# Select-Object -ExpandProperty "assets" |
-# Where-Object "browser_download_url" -Match '.msixbundle' |
-# Select-Object -ExpandProperty "browser_download_url"
-
-# # download
-# Invoke-WebRequest -Uri $URL -OutFile "Setup.msix" -UseBasicParsing
-
-# # install
-# Add-AppxPackage -Path "Setup.msix"
-
-# # delete file
-# Remove-Item "Setup.msix"
-# Write-Host "Installing winget finished!"
-
-# # # Run Azure CLI commands
-
-# # if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
-# #     Write-Host "Running Azure CLI commands: $($az_cli_commands)"
-# #     Invoke-Expression $az_cli_commands
-# # }
-
-# # # Run Github Actions Runner commands
-
-
-##############################################################################################################
-# install azure developer CLI AZD
-Write-Host "Install Azure Developer CLI AZD"
-Invoke-RestMethod 'https://aka.ms/install-azd.ps1' -OutFile 'install-azd.ps1'
-./install-azd.ps1
-# # delete file
-# Remove-Item "install-azd.ps1" 
-
-
-# # Basic Dev Utilities Section
-# Write-Host "Install Git"
-# $wingetInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Git.Git --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
-
-# if ($wingetInstallResult.ExitCode -eq 0) {
-#     Write-Host "Git installed successfully."
-# }
-# else {
-#     Write-Host "Error installing Git"
-# }
-# Write-Host "* * * * * * * * * *"
-
-# # Install Microsoft.AzureCLI
-# Write-Host "Install Microsoft.AzureCLI"
-# $azureCliInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.AzureCLI --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
-
-# if ($azureCliInstallResult.ExitCode -eq 0) {
-#     Write-Host "Microsoft.AzureCLI installed successfully."
-# }
-# else {
-#     Write-Host "Error installing Microsoft.AzureCLI!!!"
-# }
-# Write-Host "* * * * * * * * * *"
-
-# # Install Microsoft.Bicep
-# Write-Host "Install Microsoft.Bicep"
-# $bicepInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.Bicep --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
-
-# if ($bicepInstallResult.ExitCode -eq 0) {
-#     Write-Host "Microsoft.Bicep installed successfully."
-# }
-# else {
-#     Write-Host "Error installing Microsoft.Bicep!!!"
-# }
-# Write-Host "* * * * * * * * * *"
-
-# # Install Microsoft.Azd
-# Write-Host "Install Microsoft.Azd"
-# $bicepInstallResult = Start-Process -FilePath "winget" -ArgumentList "install --id=Microsoft.Azd --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
-
-# if ($bicepInstallResult.ExitCode -eq 0) {
-#     Write-Host "Microsoft.Azd installed successfully."
-# }
-# else {
-#     Write-Host "Error installing Microsoft.Azd!!!"
-# }
-# Write-Host "* * * * * * * * * *"
+Write-Host "All done!"
+```
