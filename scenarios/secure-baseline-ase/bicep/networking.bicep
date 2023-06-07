@@ -139,7 +139,8 @@ resource vnetSpoke 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 
 // Peering
 resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
-  name: '${vnetHub.name}/${vnetHub.name}-${vnetSpoke.name}'
+  parent: vnetHub
+  name: '${vnetHub.name}-${vnetSpoke.name}'
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: false
@@ -152,7 +153,8 @@ resource vnetHubPeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2
 }
 
 resource vnetSpokePeer 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-02-01' = {
-  name: '${vnetSpoke.name}/${vnetSpoke.name}-${vnetHub.name}'
+  parent: vnetSpoke
+  name: '${vnetSpoke.name}-${vnetHub.name}'
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: false

@@ -190,7 +190,7 @@ resource redisHostNameSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
 resource redisPassword 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
  name: '${keyVaultName}/redisPassword'  // The first part is KV's name
  properties: {
-  value: '${listKeys(redis.id, redis.apiVersion).keys[0].value}'
+  value: redis.listKeys().primaryKey
  }
 }
 
