@@ -6,8 +6,8 @@
         "workloadName" : {
            "value": "appSvc-LZA"         
         },
-        //Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
-        "environment": {
+        //Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
+        "environmentName": {
             "value": "dev"
         },
         //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
@@ -26,13 +26,9 @@
         "enableEgressLockdown" : {
             "value": "true"
         },
-        // set to true if you want to deploy a WAF in front of the app service
-        "enableWaf": {
-            "value": "true"
-        },
         // set to true if you want to a redis cache
         "deployRedis": {
-            "value": "true"
+            "value": "false"
         },
         // set to true if you want to deploy a azure SQL server and default database
         "deployAzureSql": {
@@ -44,6 +40,10 @@
         },
         // set to true if you want to deploy a jumpbox/devops VM
         "deployJumpHost": {
+            "value": "true"
+        },
+        // set to true if you want to auto approve the Private Endpoint of the AFD Premium
+        "autoApproveAfdPrivateEndpoint": {
             "value": "true"
         },
         // CIDR of the subnet that will host the azure Firewall
@@ -101,8 +101,11 @@
         // The Azure Active Directory (AAD) administrator group used for SQL Server authentication
         "sqlServerAdministrators": {
             "value": {
+                // Azure AD group where your Azure administrators are members
                 "login": "Azure AD SQL Admins",
+                // Azure AD object ID of the group
                 "sid": "xxx-xxxx-xxxx-xxxx",
+                // Azure AD tenant ID where the group is located
                 "tenantId": "xxxx-xxxxxx-xxxxx-xxxxx-xxx"
             }
         }

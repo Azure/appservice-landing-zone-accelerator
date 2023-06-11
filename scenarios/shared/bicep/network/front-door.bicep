@@ -33,7 +33,7 @@ param origins array
 @description('Optional, default value false. Set true if you need to cache content at the AFD level')
 param enableCaching bool = false
 
-@description('Name of the WAF policy to create. Set empty string if not WAF policy is required. Alphanumerics only!')
+@description('Name of the WAF policy to create.')
 @maxLength(128)
 param wafPolicyName string
 
@@ -295,14 +295,14 @@ resource originRoute 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' =  
   ]
 }
 
-resource afdWafSecurityPolicy 'Microsoft.Cdn/profiles/securitypolicies@2022-11-01-preview' =  if ( !empty(wafPolicyName) ) {
+resource afdWafSecurityPolicy 'Microsoft.Cdn/profiles/securitypolicies@2022-11-01-preview' =  {
   parent: profile
   name: 'afdWafSecurityPolicy'
-  properties: !empty(wafPolicyName) ? {
+  properties: {
     parameters: {
-      wafPolicy: !empty(wafPolicyName) ? {
+      wafPolicy: {
         id:  waf.id
-      } : {}
+      }
       associations: [
         {
           domains: endPointIdsForWaf
@@ -313,7 +313,7 @@ resource afdWafSecurityPolicy 'Microsoft.Cdn/profiles/securitypolicies@2022-11-0
       ]
       type: 'WebApplicationFirewall'
     }
-  } : {}
+  }
 }
 
 resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if ( !empty(diagnosticWorkspaceId)) {
@@ -326,7 +326,7 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   scope: profile
 }
 
-resource waf 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2022-05-01' =  if ( !empty(wafPolicyName) ){
+resource waf 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2022-05-01' =  {
   name: wafPolicyName
   location: 'Global'
   sku: {

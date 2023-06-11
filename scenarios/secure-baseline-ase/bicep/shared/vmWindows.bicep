@@ -78,7 +78,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
   name: name
   location: location
   tags: tags
-  zones: availabilityZone == 'any' ? json('null') : [ 
+  zones: availabilityZone == 'any' ? null : [ 
     availabilityZone 
   ]
   properties: {

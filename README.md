@@ -20,7 +20,7 @@ The enterprise architecture is broken down into six different design areas, wher
 
 ## Enterprise-Scale Reference Implementation
 
-In this repo you will find reference implementations with supporting Infrastructure as Code templates. More reference implementations will be added as they become available. [User guide](/docs/README.md) goes into details on how to deploy each reference implementations to your subscription. 
+In this repo you will find reference implementations with supporting Infrastructure as Code templates. More reference implementations will be added as they become available. 
 
 ## Next Steps to implement the Azure App Service Landing Zone Accelerator
 > Reference implementations
@@ -30,6 +30,12 @@ Pick one of the scenarios below to get started on a reference implementation.
 :arrow_forward: [Scenario 1: Multitenant App Service Secure Baseline](scenarios/secure-baseline-multitenant/README.md)
 
 :arrow_forward: [Scenario 2: Line of Business application using internal App Service Environment v3](scenarios/secure-baseline-ase//README.md)
+
+---
+### App Patterns
+Looking for developer-focused reference implementation? Check out Reliable Web Patterns for App Service. 
+
+:arrow_forward: [Reliable web app pattern for .NET](https://github.com/Azure/reliable-web-app-pattern-dotnet)
 
 ---
 
