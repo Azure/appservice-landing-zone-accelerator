@@ -19,4 +19,5 @@ resource "azurerm_log_analytics_workspace" "law" {
   resource_group_name = var.resource_group
   sku                 = "PerGB2018"
   # internet_ingestion_enabled = false
+
 }

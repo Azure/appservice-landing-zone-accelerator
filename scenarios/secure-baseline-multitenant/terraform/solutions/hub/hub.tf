@@ -16,7 +16,7 @@ resource "azurerm_resource_group" "hub" {
 }
 
 module "network" {
-  source = "../../../../../shared/terraform-modules/network"
+  source = "../../../../shared/terraform-modules/network"
 
   global_settings = local.global_settings
   name            = var.application_name
@@ -42,7 +42,7 @@ module "network" {
 module "bastion" {
   count = var.deployment_options.deploy_bastion ? 1 : 0
 
-  source = "../../../../../shared/terraform-modules/bastion"
+  source = "../../../../shared/terraform-modules/bastion"
 
   global_settings = local.global_settings
   name            = var.application_name
@@ -59,7 +59,7 @@ module "bastion" {
 module "firewall" {
   count = var.deployment_options.enable_egress_lockdown ? 1 : 0
 
-  source = "../../../../../shared/terraform-modules/firewall"
+  source = "../../../../shared/terraform-modules/firewall"
 
   global_settings = local.global_settings
   name            = var.application_name

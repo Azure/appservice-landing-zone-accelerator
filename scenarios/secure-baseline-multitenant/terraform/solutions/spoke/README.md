@@ -16,9 +16,9 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | >=1.2.23 >=1.2.23 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=3.49.0 >=3.49.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.24 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.50.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Modules
@@ -97,7 +97,6 @@
 | Name | Description |
 |------|-------------|
 | <a name="output_devops_vm_id"></a> [devops\_vm\_id](#output\_devops\_vm\_id) | n/a |
-| <a name="output_hub"></a> [hub](#output\_hub) | n/a |
 | <a name="output_key_vault_name"></a> [key\_vault\_name](#output\_key\_vault\_name) | n/a |
 | <a name="output_key_vault_uri"></a> [key\_vault\_uri](#output\_key\_vault\_uri) | n/a |
 | <a name="output_redis_connection_secret_name"></a> [redis\_connection\_secret\_name](#output\_redis\_connection\_secret\_name) | n/a |

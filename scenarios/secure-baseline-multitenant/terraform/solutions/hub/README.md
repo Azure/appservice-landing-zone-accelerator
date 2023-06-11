@@ -13,16 +13,16 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.25 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.55.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.24 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.50.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_bastion"></a> [bastion](#module\_bastion) | ../../../../../shared/terraform-modules/bastion | n/a |
-| <a name="module_firewall"></a> [firewall](#module\_firewall) | ../../../../../shared/terraform-modules/firewall | n/a |
-| <a name="module_network"></a> [network](#module\_network) | ../../../../../shared/terraform-modules/network | n/a |
+| <a name="module_bastion"></a> [bastion](#module\_bastion) | ../../../../shared/terraform-modules/bastion | n/a |
+| <a name="module_firewall"></a> [firewall](#module\_firewall) | ../../../../shared/terraform-modules/firewall | n/a |
+| <a name="module_network"></a> [network](#module\_network) | ../../../../shared/terraform-modules/network | n/a |
 
 ## Resources
 
