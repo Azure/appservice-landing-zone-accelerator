@@ -32,7 +32,8 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | Global settings for the naming convention module. | `any` | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | The Azure Region where all resources in this example should be created. | `string` | n/a | yes |
-| <a name="input_name"></a> [name](#input\_name) | The name of the virtual network. | `string` | n/a | yes |
+| <a name="input_name"></a> [name](#input\_name) | The name of the application. | `string` | n/a | yes |
+| <a name="input_peering_vnet"></a> [peering\_vnet](#input\_peering\_vnet) | The virtual network to peer with. | <pre>object({<br>    id             = string,<br>    name           = string,<br>    resource_group = string<br>  })</pre> | `null` | no |
 | <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | The name of the resource group where all resources in this example should be created. | `string` | n/a | yes |
 | <a name="input_subnets"></a> [subnets](#input\_subnets) | A list of subnets inside the virtual network. | <pre>list(object({<br>    name        = string,<br>    subnet_cidr = list(string),<br>    delegation = object({<br>      name = string,<br>      service_delegation = object({<br>        name    = string,<br>        actions = list(string)<br>      })<br>    })<br>  }))</pre> | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the resource. | `map(string)` | `{}` | no |

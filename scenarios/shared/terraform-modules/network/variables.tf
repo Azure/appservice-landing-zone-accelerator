@@ -1,6 +1,6 @@
 variable "name" {
   type        = string
-  description = "The name of the virtual network."
+  description = "The name of the application."
 }
 
 variable "resource_group" {
@@ -16,6 +16,16 @@ variable "location" {
 variable "vnet_cidr" {
   type        = list(string)
   description = "The address space that is used by the virtual network."
+}
+
+variable "peering_vnet" {
+  type = object({
+    id             = string,
+    name           = string,
+    resource_group = string
+  })
+  description = "The virtual network to peer with."
+  default     = null
 }
 
 variable "subnets" {

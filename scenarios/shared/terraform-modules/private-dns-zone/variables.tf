@@ -17,3 +17,13 @@ variable "vnet_links" {
 
   description = "A list of virtual networks to link to the DNS zone."
 }
+
+variable "tags" {
+  description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+  default     = {}
+}
+
+variable "global_settings" {
+  description = "Global settings for the naming convention module."
+}

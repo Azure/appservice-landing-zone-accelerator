@@ -4,6 +4,12 @@ variable "global_settings" {
   default     = {}
 }
 
+variable "owner" {
+  type        = string
+  description = "[Required] Owner of the deployment."
+  default     = ""
+}
+
 variable "hub_state_resource_group_name" {
   type        = string
   description = "The name of the resource group that holds the Terraform state for the hub"

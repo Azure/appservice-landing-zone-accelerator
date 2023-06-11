@@ -30,3 +30,13 @@ variable "subnet_ids" {
   type        = list(string)
   description = "The list of subnets to create routes for."
 }
+
+variable "global_settings" {
+  description = "Global settings for the naming convention module."
+}
+
+variable "tags" {
+  description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+  default     = {}
+}
