@@ -4,6 +4,7 @@ locals {
     environment = try(var.global_settings.environment, var.environment)
     passthrough = try(var.global_settings.passthrough, false)
     prefixes    = try(var.global_settings.prefixes, [local.deployment_name, local.short_location])
+    suffixes    = try(var.global_settings.suffixes, [var.environment])
     # prefixes    = try(var.global_settings.prefixes, [var.application_name, local.short_location])
 
     random_length = try(var.global_settings.random_length, 0)
