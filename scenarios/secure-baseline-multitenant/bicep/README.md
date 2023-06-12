@@ -52,7 +52,7 @@ az deployment sub create \
     --template-file main.bicep \
     --location $location \
     --name $deploymentName \
-    --parameters ./main.parameters.local.jsonc
+    --parameters ./main.parameters.jsonc
 ```
 
 ### Powershell (windows based OS)
@@ -64,7 +64,7 @@ az deployment sub create `
     --template-file main.bicep `
     --location $location `
     --name $deploymentName `
-    --parameters ./main.parameters.local.jsonc
+    --parameters ./main.parameters.jsonc
 ```
 ### Azure Devloper CLI (azd)
 1. [Install the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=localinstall%2Cwindows%2Cbrew%2Cdeb)

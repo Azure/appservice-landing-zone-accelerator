@@ -8,7 +8,7 @@
 
 .PARAMETER az_cli_commands
     A string containing the commands to run after installing the Azure CLI. 
-    This parameter is optional. If not provided, the Azure CLI will not be installed. unless install_CLIs is set to true.
+    This parameter is optional. If not provided, the Azure CLI will not be installed. unless install_clis is set to true.
 
 .PARAMETER github_repository
     The URL of the Github repository to use for the Github Actions Runner. 
@@ -34,7 +34,7 @@
     A switch to indicate whether or not to install Sql Server Management Studio (SSMS). 
     This parameter is optional. If not provided, SSMS will not be installed.
 
-.PARAMETER install_CLIs
+.PARAMETER install_clis
     A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. 
     This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed.    
 #>
@@ -58,7 +58,7 @@ param (
     $install_ssms = $false,
 
     [switch]
-    $install_CLIs = $false
+    $install_clis = $false
 )
 
 Write-Host "script started"
@@ -89,7 +89,7 @@ Start-Transcript ($logsFolder + "post-deployment-script" + $date + ".log")
 $downloads = @()
 
 ##############################################################################################################
-if (-not [string]::IsNullOrEmpty($az_cli_commands) -or $install_CLIs) {
+if (-not [string]::IsNullOrEmpty($az_cli_commands) -or $install_clis) {
 # install azure CLI
 $azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
 
@@ -108,7 +108,7 @@ $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 
 ##############################################################################################################
 ## install azure developer CLI AZD
-if ($install_CLIs) {
+if ($install_clis) {
     $azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
 
     $downloads += @{
@@ -125,7 +125,7 @@ if ($install_CLIs) {
 }
 ##############################################################################################################
 # install the latest 64-bit Git
-if ($install_CLIs) {
+if ($install_clis) {
     $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-64-bit\.exe'
     $URL = "https://api.github.com/repos/git-for-windows/git/releases"
 

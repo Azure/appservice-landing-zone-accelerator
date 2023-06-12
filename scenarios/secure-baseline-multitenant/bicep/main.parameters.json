@@ -18,22 +18,22 @@
             "value": "10.242.0.0/20"
         },
         "enableEgressLockdown" : {
-            "value": "true"
+            "value": true
         },
         "deployRedis": {
-            "value": "false"
+            "value": false
         },
         "deployAzureSql": {
-            "value": "true"
+            "value": true
         },
         "deployAppConfig": {
-            "value": "false"
+            "value": false
         },
         "deployJumpHost": {
-            "value": "true"
+            "value": true
         },
         "autoApproveAfdPrivateEndpoint": {
-            "value": "true"
+            "value": true
         },
         "subnetHubFirewallAddressSpace": {
             "value": "10.242.0.0/26"
