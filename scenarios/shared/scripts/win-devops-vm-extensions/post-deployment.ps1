@@ -1,14 +1,14 @@
 <#
 .SYNOPSIS 
     This script is used to install and configure the following tools on a Windows VM:
-        - Azure CLI
+        - Azure CLI, Azure Developer CLI (AZD), and Git
         - Sql Server Management Studio (SSMS)
         - Github Actions Runner
         - Azure DevOps Agent
 
 .PARAMETER az_cli_commands
     A string containing the commands to run after installing the Azure CLI. 
-    This parameter is optional. If not provided, the Azure CLI will not be installed.
+    This parameter is optional. If not provided, the Azure CLI will not be installed. unless install_CLIs is set to true.
 
 .PARAMETER github_repository
     The URL of the Github repository to use for the Github Actions Runner. 
@@ -33,6 +33,10 @@
 .PARAMETER install_ssms
     A switch to indicate whether or not to install Sql Server Management Studio (SSMS). 
     This parameter is optional. If not provided, SSMS will not be installed.
+
+.PARAMETER install_CLIs
+    A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. 
+    This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed.    
 #>
 param (
     [Parameter(Mandatory = $false)]
@@ -51,7 +55,10 @@ param (
     [string]$ado_token,
 
     [switch]
-    $install_ssms = $false
+    $install_ssms = $false,
+
+    [switch]
+    $install_CLIs = $false
 )
 
 Write-Host "script started"
@@ -82,7 +89,7 @@ Start-Transcript ($logsFolder + "post-deployment-script" + $date + ".log")
 $downloads = @()
 
 ##############################################################################################################
-# if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
+if (-not [string]::IsNullOrEmpty($az_cli_commands) -or $install_CLIs) {
 # install azure CLI
 $azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
 
@@ -97,43 +104,44 @@ $downloads += @{
 }
 
 $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
-# }
-
-##############################################################################################################
-# # install azure developer CLI AZD
-
-$azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
-
-$downloads += @{
-    name            = "AZD CLI"
-    url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
-    path            = "$($basePath)\azd\"
-    file            = "azd-windows-amd64.msi"
-    installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
-    testInstallPath = "$($azdInstallPath)\azd.exe"
-    postInstallCmd  = "" 
 }
 
-$env:Path += ";$($azdInstallPath)\"
+##############################################################################################################
+## install azure developer CLI AZD
+if ($install_CLIs) {
+    $azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
 
+    $downloads += @{
+        name            = "AZD CLI"
+        url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
+        path            = "$($basePath)\azd\"
+        file            = "azd-windows-amd64.msi"
+        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
+        testInstallPath = "$($azdInstallPath)\azd.exe"
+        postInstallCmd  = "" 
+    }
+
+    $env:Path += ";$($azdInstallPath)\"
+}
 ##############################################################################################################
 # install the latest 64-bit Git
+if ($install_CLIs) {
+    $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-64-bit\.exe'
+    $URL = "https://api.github.com/repos/git-for-windows/git/releases"
 
-$pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-64-bit\.exe'
-$URL = "https://api.github.com/repos/git-for-windows/git/releases"
+    $URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
+    Write-Host "got the json content"
 
-$URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
-Write-Host "got the json content"
+    # hmm when chained together it doesn't work
+    $URL = $URL | Select-Object -ExpandProperty "assets" |
+    Where-Object "browser_download_url" -Match $pattern |
+    Select-Object -ExpandProperty "browser_download_url"
 
-# hmm when chained together it doesn't work
-$URL = $URL | Select-Object -ExpandProperty "assets" |
-Where-Object "browser_download_url" -Match $pattern |
-Select-Object -ExpandProperty "browser_download_url"
-
-# https://github.com/git-for-windows/git/releases/download/v2.40.1.windows.1/Git-2.40.1-64-bit.exe
-# Start-Process -FilePath "git-latest-64-bit.exe" -ArgumentList "/SILENT" -Wait
-Write-Host "got the URLs to Download from $($URL[0])"
-$gitInstallPath = "C:\Program Files\Git\bin"
+    # https://github.com/git-for-windows/git/releases/download/v2.40.1.windows.1/Git-2.40.1-64-bit.exe
+    # Start-Process -FilePath "git-latest-64-bit.exe" -ArgumentList "/SILENT" -Wait
+    Write-Host "got the URLs to Download from $($URL[0])"
+    $gitInstallPath = "C:\Program Files\Git\bin"
+}
 
 $downloads += @{
     name            = "Git 64bit"
