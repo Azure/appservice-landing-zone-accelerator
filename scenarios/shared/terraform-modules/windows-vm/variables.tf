@@ -74,3 +74,13 @@ variable "vm_image_version" {
   type    = string
   default = "latest"
 }
+
+variable "global_settings" {
+  description = "Global settings for the naming convention module."
+}
+
+variable "tags" {
+  description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+  default     = {}
+}

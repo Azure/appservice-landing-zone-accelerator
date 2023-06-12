@@ -9,9 +9,9 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | n/a |
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | n/a |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | n/a |
+| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | 2.39.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.25 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.60.0 |
 
 ## Modules
 
@@ -34,9 +34,11 @@ No modules.
 | <a name="input_aad_admin_username"></a> [aad\_admin\_username](#input\_aad\_admin\_username) | The Azure AD username for the VM admin account. | `string` | n/a | yes |
 | <a name="input_admin_password"></a> [admin\_password](#input\_admin\_password) | n/a | `string` | `null` | no |
 | <a name="input_admin_username"></a> [admin\_username](#input\_admin\_username) | n/a | `string` | `null` | no |
+| <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | Global settings for the naming convention module. | `any` | n/a | yes |
 | <a name="input_identity"></a> [identity](#input\_identity) | The identity type and the list of identities ids | <pre>object({<br>    type         = string<br>    identity_ids = optional(list(string))<br>  })</pre> | <pre>{<br>  "identity_ids": [],<br>  "type": "SystemAssigned"<br>}</pre> | no |
 | <a name="input_location"></a> [location](#input\_location) | The location (Azure region) where the resources should be created. | `string` | n/a | yes |
 | <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | The name of the resource group where all resources should be created. | `string` | n/a | yes |
+| <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the resource. | `map(string)` | `{}` | no |
 | <a name="input_vm_image_offer"></a> [vm\_image\_offer](#input\_vm\_image\_offer) | n/a | `string` | `"windows-11"` | no |
 | <a name="input_vm_image_publisher"></a> [vm\_image\_publisher](#input\_vm\_image\_publisher) | n/a | `string` | `"MicrosoftWindowsDesktop"` | no |
 | <a name="input_vm_image_sku"></a> [vm\_image\_sku](#input\_vm\_image\_sku) | n/a | `string` | `"win11-22h2-pro"` | no |

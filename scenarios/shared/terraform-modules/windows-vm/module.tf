@@ -53,6 +53,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
     version   = var.vm_image_version
   }
 
+  tags = local.tags
   # provisioner "remote-exec" {
   #   inline = var.remote_exec_commands
   # }
