@@ -177,6 +177,7 @@ resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@20
     autoUpgradeMinorVersion: true
     settings: {
       fileUris: [
+        //TO_DO: Update the URL to the right main branch
         // 'https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/main/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
         'https://raw.githubusercontent.com/thotheod/appservice-landing-zone-accelerator/fix/02-AutoApprovalAfdPe/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
       ]      
