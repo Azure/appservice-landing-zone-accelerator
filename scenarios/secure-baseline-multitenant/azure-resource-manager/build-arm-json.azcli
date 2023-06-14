@@ -14,15 +14,22 @@ az deployment sub create \
     --template-file main.json \
     --location northeurope \
     --name armAppSvcDeployment-01 \
-    --parameters ./main.parameters.local.jsonc
+    --parameters ./main.parameters.jsonc
 
 
 # after the deployment you need to manually Approve the App Service private endpoint connection from Front Door
 
 # Update the resource group name to match the one used in the deployment of the webapp
-rg_name="rg-spoke-appsvc-lza-dev-northeurope"
-webapp_id=$(az webapp list -g $rg_name --query "[].id" -o tsv)
-fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].{id:id}" -o tsv)
-az network private-endpoint-connection approve --id $fd_conn_id --description "Approved"
+rg_name="rg-spoke-appsvclza1-dev-northeurope"
+webapp_ids=$(az webapp list -g $rg_name --query "[].id" -o tsv)
+
+for webapp_id in $webapp_ids; do
+    fd_conn_ids=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].id" -o tsv)
+    
+    for fd_conn_id in $fd_conn_ids; do
+        az network private-endpoint-connection approve --id "$fd_conn_id" --description "Approved"
+    done
+done
+
 
  # test
