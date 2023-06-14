@@ -475,7 +475,7 @@
                 },
                 {
                     "name": "extra",
-                    "label": "Extra settings",
+                    "label": "Jump-Box settings (VM)",
                     "elements": [
                         {
                             "name": "location",
@@ -586,7 +586,201 @@
                                     "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]"
                                 }
                             ]
+                        },                           
+                        {
+                            "name": "sectionAdditionalTools",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Post-Deployment installation of additional tools",
+                            "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]",
+                            "elements": [
+                                {
+                                    "name": "txtBlockPostDeploymentInfo",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]",
+                                    "options": {
+                                        "text": "Below you can select if you wish to deploy some additional tools on the jump-box VM, i.e. azure cli, azure developer cli, git, sql server management studio. Have in mind that the more the tools you select, the more time it will take for the deployment to complete."
+                                    }
+                                },
+                                {
+                                    "name": "deployClis",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Install useful CLIs (Azure, AZD, and Git)?",
+                                    "subLabel": "",
+                                    "defaultValue": "No",
+                                    "toolTip": "set to true if you want to install CLIs on the jump-box VM",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "Yes",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "No",
+                                                "value": false
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]"
+                                },
+                                {
+                                    "name": "deploySsms",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "install Sql Server Management Studio (SSMS)?",
+                                    "subLabel": "",
+                                    "defaultValue": "No",
+                                    "toolTip": "set to true if you want install Sql Server Management Studio (SSMS) on the jump-box VM",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "Yes",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "No",
+                                                "value": false
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]"
+                                }
+                            ]
                         },
+                        {
+                            "name": "jumpBoxGithubRunnerSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Jump-box GitHub Runner Settings",
+                            "elements": [
+                                {
+                                    "name": "deployGitHubRunner",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Install Github Runner?",
+                                    "subLabel": "",
+                                    "defaultValue": "No",
+                                    "toolTip": "set to true if you want to deploy selft hosted GitHub Actions runner",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "Yes",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "No",
+                                                "value": false
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": true
+                                },
+                                {
+                                    "name": "githubRepositoryUrl",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "GitHub Repository URL",
+                                    "defaultValue": "",
+                                    "toolTip": "The URL of the Github repository to use for the Github Actions Runner. If this parameter is provided, then github_token must also be provided.",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true)]"
+                                },
+                                {
+                                    "name": "githubToken",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "GitHub Token",
+                                    "defaultValue": "",
+                                    "toolTip": "The GitHub token to use for the Github Actions Runner. If this parameter is provided, then github_repository_url must also be provided.",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true)]"
+                                }
+                            ],
+                            "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]"
+                        },
+                        {
+                            "name": "jumpBoxAzDoAgentSection",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure DevOps Self Hosted Agent Settings",
+                            "elements": [
+                                {
+                                    "name": "deployAzDoSelfHostedAgent",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Install Azure DevOps Self Hosted Agent?",
+                                    "subLabel": "",
+                                    "defaultValue": "No",
+                                    "toolTip": "set to true if you want to deploy self hosted agent for Azure DevOps",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [
+                                            {
+                                                "label": "Yes",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "No",
+                                                "value": false
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": true
+                                },
+                                {
+                                    "name": "adoOrganization",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "URL of the Azure DevOps organization",
+                                    "defaultValue": "",
+                                    "toolTip": "The URL of the Azure DevOps organization to use for the Azure DevOps Agent. If this parameter is provided, then ado_token must also be provided",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').jumpBoxAzDoAgentSection.deployAzDoSelfHostedAgent, true)]"
+                                },
+                                {
+                                    "name": "adoToken",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Azure DevOps Token",
+                                    "defaultValue": "",
+                                    "toolTip": "The Azure DevOps token to use for the Azure DevOps Agent. If this parameter is provided, then ado_organization must also be provided.",
+                                    "constraints": {
+                                        "required": false,
+                                        "regex": "",
+                                        "validationMessage": "",
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('extra').jumpBoxAzDoAgentSection.deployAzDoSelfHostedAgent, true)]"
+                                }
+                            ],
+                            "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]"
+                        }
+                    ]
+                },
+                {
+                    "name": "SQL",
+                    "label": "Azure SQL settings",
+                    "elements": [
                         {
                             "name": "sqlServerIntroSection",
                             "type": "Microsoft.Common.Section",
@@ -630,7 +824,7 @@
                             "name": "sqlServerDeploySection",
                             "type": "Microsoft.Common.Section",
                             "label": "SQL Server settings",
-                            "visible": "[equals(steps('extra').sqlServerIntroSection.deployAzureSql, true)]",
+                            "visible": "[equals(steps('SQL').sqlServerIntroSection.deployAzureSql, true)]",
                             "elements": [
                                 {
                                     "name": "sqlServerAuthentication",
@@ -667,7 +861,7 @@
                                 {
                                     "name": "sqlServerAdministratorsExplanation",
                                     "type": "Microsoft.Common.TextBlock",
-                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]",
+                                    "visible": "[equals(steps('SQL').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]",
                                     "options": {
                                         "text": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value (xxxx-xxxx-xxxx-xxxx-xxxx) with Azure AD object ID of that group. The current tenantId value is already filled in."
                                     }
@@ -687,7 +881,7 @@
                                         "validations": []
                                     },
                                     "infoMessages": [],
-                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
+                                    "visible": "[equals(steps('SQL').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]"
                                 },
                                 {
                                     "name": "sqlAdminLogin",
@@ -703,7 +897,7 @@
                                         "validations": []
                                     },
                                     "infoMessages": [],
-                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'local')]"
+                                    "visible": "[equals(steps('SQL').sqlServerDeploySection.azureSqlAuthentication, 'local')]"
                                 },
                                 {
                                     "name": "sqlAdminPassword",
@@ -723,7 +917,7 @@
                                     "options": {
                                         "hideConfirmation": true
                                     },
-                                    "visible": "[equals(steps('extra').sqlServerDeploySection.azureSqlAuthentication, 'local')]"
+                                    "visible": "[equals(steps('SQL').sqlServerDeploySection.azureSqlAuthentication, 'local')]"
                                 }
                             ]
                         }
@@ -852,15 +1046,25 @@
                 "webAppBaseOs": "[steps('basics').appSvcPlanSection.webAppBaseOs]",
                 "adminUsername": "[steps('extra').jumpBoxSection.adminUsername]",
                 "adminPassword": "[if( equals ( steps('extra').jumpBoxSection.deployJumpHost, true), steps('extra').jumpBoxSection.vmCredentials.password , 'Pass@word123$' )]",
-                "sqlServerAdministrators": "[steps('extra').sqlServerDeploySection.sqlServerAdministrators]",
-                "sqlAdminLogin": "[steps('extra').sqlServerDeploySection.sqlAdminLogin]",
-                "sqlAdminPassword": "[steps('extra').sqlServerDeploySection.sqlAdminPassword]",
-                "deployAzureSql": "[steps('extra').sqlServerIntroSection.deployAzureSql]",
+                "sqlServerAdministrators": "[steps('SQL').sqlServerDeploySection.sqlServerAdministrators]",
+                "sqlAdminLogin": "[steps('SQL').sqlServerDeploySection.sqlAdminLogin]",
+                "sqlAdminPassword": "[steps('SQL').sqlServerDeploySection.sqlAdminPassword]",
+                "deployAzureSql": "[steps('SQL').sqlServerIntroSection.deployAzureSql]",
                 "deployJumpHost": "[steps('extra').jumpBoxSection.deployJumpHost]",
                 "enableEgressLockdown": "[steps('flags').enableEgressLockdown]",
                 "deployRedis": "[steps('flags').deployRedis]",
                 "deployAppConfig": "[steps('flags').deployAppConfig]",
-                "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]"
+                "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]",
+
+                "githubRepository": "[if( equals ( steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true), steps('extra').jumpBoxGithubRunnerSection.githubRepositoryUrl , '' )]",
+                "githubToken": "[if( equals ( steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true), steps('extra').jumpBoxGithubRunnerSection.githubToken , '' )]",
+                "adoOrganization": "[if( equals ( steps('extra').jumpBoxAzDoAgentSection.deployAzDoSelfHostedAgent, true), steps('extra').jumpBoxAzDoAgentSection.adoOrganization , '' )]",
+                "adoToken": "[if( equals ( steps('extra').jumpBoxAzDoAgentSection.deployAzDoSelfHostedAgent, true), steps('extra').jumpBoxAzDoAgentSection.adoToken , '' )]",
+                "installClis": "[steps('extra').sectionAdditionalTools.deployClis]",
+                "installSsms": "[steps('extra').sectionAdditionalTools.deploySsms]"
+
+                
+                
             },
             "kind": "Subscription",
             "location": "[steps('basics').resourceScope.location.name]",

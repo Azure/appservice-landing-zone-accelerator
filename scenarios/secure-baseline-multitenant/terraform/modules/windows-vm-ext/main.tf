@@ -37,7 +37,7 @@ resource "azurerm_virtual_machine_extension" "post_deployment" {
   #   protected_settings = <<PROTECTED_SETTINGS
   # {
   #   "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 -az_cli_commands \\"${var.azure_cli_commands}\\" -install_ssms -github_repository \\"${local.gh_repo}\\" -github_token \\"${local.gh_token}\\" -ado_organization \\"${local.ado_org}\\" -ado_token \\"${local.ado_token}\\"",
-  #   "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/secure-baseline-scenario-v2/scenarios/secure-baseline-multitenant/terraform/modules/windows-vm-ext/post-deployment.ps1"]
+  #   "fileUris": ["https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/main/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1"]
   # }
   # PROTECTED_SETTINGS
 

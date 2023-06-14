@@ -148,10 +148,18 @@ This is a manual step that is required to complete the private endpoint connecti
 
 ```bash
 # Update the resource group name to match the one used in the deployment of the webapp
-rg_name="rg-secure-baseline-dev"
-webapp_id=$(az webapp list -g $rg_name --query "[].id" -o tsv)
-fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].{id:id}" -o tsv)
-az network private-endpoint-connection approve --id $fd_conn_id --description "Approved"
+rg_name="rg-spoke-appsvclza1-dev-northeurope"
+webapp_ids=$(az webapp list -g $rg_name --query "[].id" -o tsv)
+
+# you might have more than one web apps, check for all of them if there are pending approvals
+for webapp_id in $webapp_ids; do
+    # there might be more than one pending connection per web app
+    fd_conn_ids=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].id" -o tsv)
+    
+    for fd_conn_id in $fd_conn_ids; do
+        az network private-endpoint-connection approve --id "$fd_conn_id" --description "Approved"
+    done
+done
 ```
 
 ### Connect to the DevOps VM
