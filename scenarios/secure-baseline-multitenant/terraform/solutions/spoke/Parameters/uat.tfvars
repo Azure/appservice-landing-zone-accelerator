@@ -63,12 +63,10 @@ appsvc_options = {
   }
 
   web_app = {
-
     application_stack = {
       current_stack  = "dotnet"
       dotnet_version = "v6.0"
     }
-
     slots = ["staging"]
   }
 }
