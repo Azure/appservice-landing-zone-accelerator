@@ -47,5 +47,9 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_sql_db_connection_string"></a> [sql\_db\_connection\_string](#output\_sql\_db\_connection\_string) | n/a |
+| <a name="output_sql_db_name"></a> [sql\_db\_name](#output\_sql\_db\_name) | n/a |
+| <a name="output_sql_server_name"></a> [sql\_server\_name](#output\_sql\_server\_name) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

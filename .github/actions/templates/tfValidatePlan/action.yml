@@ -107,7 +107,7 @@ runs:
     shell: ${{ inputs.shell }}
     working-directory: ${{ inputs.modulePath }}
     if: steps.plan.outcome == 'success'
-    run: terraform show -no-color tfplan
+    run: terraform show -no-color tfplan > ${GITHUB_WORKSPACE}/plan.out
 
   - name: 'Upload TFPlan Artifact'
     if: steps.plan.outcome == 'success'
@@ -124,6 +124,12 @@ runs:
       PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
     with:
       script: |
+        const run_url = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY + '/actions/runs/' + process.env.GITHUB_RUN_ID
+        const run_link = '<a href="' + run_url + '">Actions</a>.'
+        const fs = require('fs')
+        const plan_file = fs.readFileSync('plan.out', 'utf8')
+        const plan = plan_file.length > 65000 ? plan_file.toString().substring(0, 65000) + " ..." : plan_file
+        const truncated_message = plan_file.length > 65000 ? "Output is too long and was truncated. You can read full Plan in " + run_link + "<br /><br />" : ""
         const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
         #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
         #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
@@ -140,10 +146,11 @@ runs:
         <details><summary>Show Plan</summary>
 
         \`\`\`\n
-        ${{ steps.show.outputs.stdout }}
+        ${plan}
         \`\`\`
 
         </details>
+        ${truncated_message}
 
         *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ inputs.modulePath }}\`, Workflow: \`${{ github.workflow }}\`*`;
         
