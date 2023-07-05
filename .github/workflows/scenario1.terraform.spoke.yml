@@ -52,7 +52,7 @@ jobs:
       tfvarPath: ${{ env.tfvarPath }}
 
   call-workflow-passing-data:
-    name: 'Terraform CICD'
+    name: 'Terraform CICD test'
     needs: 
     - prepare-environment
     uses: ./.github/workflows/.template.terraform.yml
