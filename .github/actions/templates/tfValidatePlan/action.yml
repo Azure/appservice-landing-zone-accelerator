@@ -68,7 +68,9 @@ runs:
     id: validate
     shell: ${{ inputs.shell }}
     working-directory: ${{ inputs.modulePath }}
-    run: terraform validate -no-color
+    run: |
+      terraform validate -no-color
+      echo "::set-output name=stdout::$(terraform validate -no-color)"
 
   - name: tfsec
     uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
@@ -96,18 +98,22 @@ runs:
           -no-color \
           -var-file="${{ inputs.tfvarPath }}"
       fi
+      
+      terraform show -no-color tfplan > ${GITHUB_WORKSPACE}/plan.out
     env:  
       ARM_CLIENT_ID: ${{ inputs.ARM_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ inputs.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ inputs.ARM_TENANT_ID }}
       ARM_USE_OIDC: true
 
+{% comment %} 
   - name: Show TFPlan
     id: show
     shell: ${{ inputs.shell }}
     working-directory: ${{ inputs.modulePath }}
     if: steps.plan.outcome == 'success'
-    run: terraform show -no-color tfplan > ${GITHUB_WORKSPACE}/plan.out
+    run: terraform show -no-color tfplan > ${GITHUB_WORKSPACE}/plan.out 
+{% endcomment %}
 
   - name: 'Upload TFPlan Artifact'
     if: steps.plan.outcome == 'success'
