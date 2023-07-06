@@ -13,7 +13,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/terraform.scenario1.spoke.yml'
+      - '.github/workflows/scenario1.terraform.spoke.yml'
       - '.github/workflows/_template.terraform.yml'
       - 'scenarios/secure-baseline-multitenant/terraform/solutions/spoke/**'
       - '!scenarios/secure-baseline-multitenant/terraform/solutions/spoke/**.md'
@@ -23,7 +23,7 @@ on:
       - main
       - feature/*
     paths:
-      - '.github/workflows/terraform.scenario1.spoke.yml'
+      - '.github/workflows/scenario1.terraform.spoke.yml'
       - '.github/workflows/_template.terraform.yml'
       - 'scenarios/secure-baseline-multitenant/terraform/solutions/spoke/**'
       - '!scenarios/secure-baseline-multitenant/terraform/solutions/spoke/**.md'
