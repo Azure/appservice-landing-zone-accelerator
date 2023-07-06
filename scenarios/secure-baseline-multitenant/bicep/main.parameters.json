@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workloadName" : {
-           "value": "appsvclza3"         
+           "value": "appsvclza2"         
         },
         "environmentName": {
             "value": "${AZURE_ENV_NAME}"
@@ -18,22 +18,22 @@
             "value": "10.242.0.0/20"
         },
         "enableEgressLockdown" : {
-            "value": "false"
+            "value": true
         },
         "deployRedis": {
-            "value": "false"
+            "value": false
         },
         "deployAzureSql": {
-            "value": "true"
+            "value": true
         },
         "deployAppConfig": {
-            "value": "true"
+            "value": false
         },
         "deployJumpHost": {
-            "value": "true"
+            "value": true
         },
         "autoApproveAfdPrivateEndpoint": {
-            "value": "true"
+            "value": true
         },
         "subnetHubFirewallAddressSpace": {
             "value": "10.242.0.0/26"
@@ -74,8 +74,8 @@
         "sqlServerAdministrators": {
             "value": {
                 "login": "Azure AD SQL Admins",
-                "sid": "xxxx-xxxx-xxxx-xxxx-xxxx",
-                "tenantId": "xxxx-xxxx-xxxx-xxxx-xxxx"
+                "sid": "xxx-xxxx-xxxx-xxxx",
+                "tenantId": "xxx-xxxx-xxxx-xxxx"
             }
         }
     }

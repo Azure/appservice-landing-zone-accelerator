@@ -52,7 +52,7 @@ az deployment sub create \
     --template-file main.bicep \
     --location $location \
     --name $deploymentName \
-    --parameters ./main.parameters.local.jsonc
+    --parameters ./main.parameters.jsonc
 ```
 
 ### Powershell (windows based OS)
@@ -64,7 +64,7 @@ az deployment sub create `
     --template-file main.bicep `
     --location $location `
     --name $deploymentName `
-    --parameters ./main.parameters.local.jsonc
+    --parameters ./main.parameters.jsonc
 ```
 ### Azure Devloper CLI (azd)
 1. [Install the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=localinstall%2Cwindows%2Cbrew%2Cdeb)
@@ -85,13 +85,21 @@ If before deployment you set the param `autoApproveAfdPrivateEndpoint` to `false
 
 ```bash
 # Update the resource group name to match the one used in the deployment of the webapp
-rg_name="rg-secure-baseline-dev"
-webapp_id=$(az webapp list -g $rg_name --query "[].id" -o tsv)
-fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].{id:id}" -o tsv)
-az network private-endpoint-connection approve --id $fd_conn_id --description "Approved"
+rg_name="rg-spoke-appsvclza1-dev-northeurope"
+webapp_ids=$(az webapp list -g $rg_name --query "[].id" -o tsv)
+
+# you might have more than one web apps, check for all of them if there are pending approvals
+for webapp_id in $webapp_ids; do
+    # there might be more than one pending connection per web app
+    fd_conn_ids=$(az network private-endpoint-connection list --id $webapp_id --query "[?properties.provisioningState == 'Pending'].id" -o tsv)
+    
+    for fd_conn_id in $fd_conn_ids; do
+        az network private-endpoint-connection approve --id "$fd_conn_id" --description "Approved"
+    done
+done
 ```
 
-### Verify Deployment and Approval of Azure Front Door Private Endpoint Connection approval
+### Verify Deployment and Approval of Azure Front Door Private Endpoint Connection
 Go to the portal, find the spoke resource group you have just deployed, and identify the Azure Front Door resource (names starts with *afd-*). In the Overview page, find the URL named *Endpoint hostname*, copy it, and try it on a browser. If everything is successful then you should see a sample web app page with title *"Your web app is running and waiting for your content"*. If you get any errors verify that you have approved the private endpoint connection between Azure Front Door and the Web App. 
 
 ### Connect to the Jumpbox VM (deployed in the spoke resource group)

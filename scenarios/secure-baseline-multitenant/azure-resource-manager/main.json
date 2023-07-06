@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.17.1.54307",
-      "templateHash": "14607136235440263125"
+      "templateHash": "15757305463107983899"
     }
   },
   "parameters": {
@@ -205,6 +205,48 @@
       "defaultValue": true,
       "metadata": {
         "description": "set to true if you want to deploy a jumpbox/devops VM"
+      }
+    },
+    "githubRepository": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The URL of the Github repository to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_token must also be provided."
+      }
+    },
+    "githubToken": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The token to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_repository must also be provided."
+      }
+    },
+    "adoOrganization": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The URL of the Azure DevOps organization to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_token must also be provided."
+      }
+    },
+    "adoToken": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The PAT token to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_organization must also be provided."
+      }
+    },
+    "installClis": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed"
+      }
+    },
+    "installSsms": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "A switch to indicate whether or not to install Sql Server Management Studio (SSMS). This parameter is optional. If not provided, SSMS will not be installed."
       }
     },
     "autoApproveAfdPrivateEndpoint": {
@@ -3049,6 +3091,24 @@
           },
           "autoApproveAfdPrivateEndpoint": {
             "value": "[parameters('autoApproveAfdPrivateEndpoint')]"
+          },
+          "githubRepository": {
+            "value": "[parameters('githubRepository')]"
+          },
+          "githubToken": {
+            "value": "[parameters('githubToken')]"
+          },
+          "adoOrganization": {
+            "value": "[parameters('adoOrganization')]"
+          },
+          "adoToken": {
+            "value": "[parameters('adoToken')]"
+          },
+          "installClis": {
+            "value": "[parameters('installClis')]"
+          },
+          "installSsms": {
+            "value": "[parameters('installSsms')]"
           }
         },
         "template": {
@@ -3058,7 +3118,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.17.1.54307",
-              "templateHash": "16445129936569211151"
+              "templateHash": "15597731126636010887"
             }
           },
           "parameters": {
@@ -3144,6 +3204,48 @@
               "type": "bool",
               "metadata": {
                 "description": "Deploy (or not) an Azure virtual machine (to be used as jumphost)"
+              }
+            },
+            "githubRepository": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "The URL of the Github repository to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_token must also be provided."
+              }
+            },
+            "githubToken": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "The token to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_repository must also be provided."
+              }
+            },
+            "adoOrganization": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "The URL of the Azure DevOps organization to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_token must also be provided."
+              }
+            },
+            "adoToken": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "The PAT token to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_organization must also be provided."
+              }
+            },
+            "installClis": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed"
+              }
+            },
+            "installSsms": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "A switch to indicate whether or not to install Sql Server Management Studio (SSMS). This parameter is optional. If not provided, SSMS will not be installed."
               }
             },
             "webAppPlanSku": {
@@ -8309,7 +8411,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.17.1.54307",
-                      "templateHash": "13580836858218228590"
+                      "templateHash": "6324920352926996485"
                     }
                   },
                   "parameters": {
@@ -8387,7 +8489,7 @@
                             "value": "[resourceGroup().name]"
                           }
                         ],
-                        "scriptContent": "rg_name=\"$ResourceGroupName\"; webapp_id=$(az webapp list -g $rg_name --query \"[].id\" -o tsv); fd_conn_id=$(az network private-endpoint-connection list --id $webapp_id --query \"[?properties.provisioningState == 'Pending'].{id:id}\" -o tsv);az network private-endpoint-connection approve --id $fd_conn_id --description \"ApprovedByCli\"",
+                        "scriptContent": "rg_name=\"$ResourceGroupName\"; webapp_ids=$(az webapp list -g $rg_name --query \"[].id\" -o tsv); for webapp_id in $webapp_ids; do fd_conn_ids=$(az network private-endpoint-connection list --id $webapp_id --query \"[?properties.provisioningState == 'Pending'].id\" -o tsv); for fd_conn_id in $fd_conn_ids; do az network private-endpoint-connection approve --id \"$fd_conn_id\" --description \"ApprovedByCli\"; done; done",
                         "cleanupPreference": "OnSuccess",
                         "retentionInterval": "P1D"
                       },
@@ -8452,6 +8554,24 @@
                   },
                   "subnetDevOpsId": {
                     "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(format('{0}/{1}', reference(resourceId('Microsoft.Resources/deployments', 'vnetSpoke-Deployment'), '2022-09-01').outputs.vnetName.value, variables('resourceNames').snetDevOps), '/')[0], split(format('{0}/{1}', reference(resourceId('Microsoft.Resources/deployments', 'vnetSpoke-Deployment'), '2022-09-01').outputs.vnetName.value, variables('resourceNames').snetDevOps), '/')[1])]"
+                  },
+                  "githubRepository": {
+                    "value": "[parameters('githubRepository')]"
+                  },
+                  "githubToken": {
+                    "value": "[parameters('githubToken')]"
+                  },
+                  "adoOrganization": {
+                    "value": "[parameters('adoOrganization')]"
+                  },
+                  "adoToken": {
+                    "value": "[parameters('adoToken')]"
+                  },
+                  "installClis": {
+                    "value": "[parameters('installClis')]"
+                  },
+                  "installSsms": {
+                    "value": "[parameters('installSsms')]"
                   }
                 },
                 "template": {
@@ -8461,7 +8581,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.17.1.54307",
-                      "templateHash": "15659440928257256549"
+                      "templateHash": "2982997895193326464"
                     }
                   },
                   "parameters": {
@@ -8522,6 +8642,48 @@
                       "metadata": {
                         "description": "The name of app config store, if any"
                       }
+                    },
+                    "githubRepository": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "The URL of the Github repository to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_token must also be provided."
+                      }
+                    },
+                    "githubToken": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "The token to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_repository must also be provided."
+                      }
+                    },
+                    "adoOrganization": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "The URL of the Azure DevOps organization to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_token must also be provided."
+                      }
+                    },
+                    "adoToken": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "The PAT token to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_organization must also be provided."
+                      }
+                    },
+                    "installClis": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed"
+                      }
+                    },
+                    "installSsms": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "A switch to indicate whether or not to install Sql Server Management Studio (SSMS). This parameter is optional. If not provided, SSMS will not be installed."
+                      }
                     }
                   },
                   "resources": [
@@ -8560,6 +8722,24 @@
                             "value": {
                               "[format('{0}', reference(resourceId('Microsoft.Resources/deployments', 'vmJumpHostUserAssignedManagedIdenity-Deployment'), '2022-09-01').outputs.id.value)]": {}
                             }
+                          },
+                          "githubRepository": {
+                            "value": "[parameters('githubRepository')]"
+                          },
+                          "githubToken": {
+                            "value": "[parameters('githubToken')]"
+                          },
+                          "adoOrganization": {
+                            "value": "[parameters('adoOrganization')]"
+                          },
+                          "adoToken": {
+                            "value": "[parameters('adoToken')]"
+                          },
+                          "installClis": {
+                            "value": "[parameters('installClis')]"
+                          },
+                          "installSsms": {
+                            "value": "[parameters('installSsms')]"
                           }
                         },
                         "template": {
@@ -8569,7 +8749,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.17.1.54307",
-                              "templateHash": "16391892586398122206"
+                              "templateHash": "16379613978965958962"
                             }
                           },
                           "parameters": {
@@ -8644,6 +8824,48 @@
                               "metadata": {
                                 "description": "Optional. The ID(s) to assign to the resource."
                               }
+                            },
+                            "githubRepository": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "The URL of the Github repository to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_token must also be provided."
+                              }
+                            },
+                            "githubToken": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "The token to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_repository must also be provided."
+                              }
+                            },
+                            "adoOrganization": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "The URL of the Azure DevOps organization to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_token must also be provided."
+                              }
+                            },
+                            "adoToken": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "The PAT token to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_organization must also be provided."
+                              }
+                            },
+                            "installClis": {
+                              "type": "bool",
+                              "defaultValue": false,
+                              "metadata": {
+                                "description": "A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed"
+                              }
+                            },
+                            "installSsms": {
+                              "type": "bool",
+                              "defaultValue": false,
+                              "metadata": {
+                                "description": "A switch to indicate whether or not to install Sql Server Management Studio (SSMS). This parameter is optional. If not provided, SSMS will not be installed."
+                              }
                             }
                           },
                           "variables": {
@@ -8654,7 +8876,9 @@
                             "computerNameValid": "[replace(replace(parameters('name'), '-', ''), '_', '')]",
                             "computerName": "[if(greater(length(variables('computerNameValid')), variables('computerNameLength')), substring(variables('computerNameValid'), 0, variables('computerNameLength')), variables('computerNameValid'))]",
                             "identityType": "[if(parameters('systemAssignedIdentity'), if(not(empty(parameters('userAssignedIdentities'))), 'SystemAssigned,UserAssigned', 'SystemAssigned'), if(not(empty(parameters('userAssignedIdentities'))), 'UserAssigned', 'None'))]",
-                            "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]"
+                            "identity": "[if(not(equals(variables('identityType'), 'None')), createObject('type', variables('identityType'), 'userAssignedIdentities', if(not(empty(parameters('userAssignedIdentities'))), parameters('userAssignedIdentities'), null())), null())]",
+                            "installClisValue": "[if(parameters('installClis'), '-install_clis', '')]",
+                            "installSsmsValue": "[if(parameters('installSsms'), '-install_ssms', '')]"
                           },
                           "resources": [
                             {
@@ -8729,6 +8953,29 @@
                                 "type": "[variables('aadLoginExtensionName')]",
                                 "typeHandlerVersion": "1.0",
                                 "autoUpgradeMinorVersion": true
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
+                              ]
+                            },
+                            {
+                              "type": "Microsoft.Compute/virtualMachines/extensions",
+                              "apiVersion": "2023-03-01",
+                              "name": "[format('{0}/{1}', variables('vmName'), 'customScriptExtension')]",
+                              "location": "[parameters('location')]",
+                              "properties": {
+                                "publisher": "Microsoft.Compute",
+                                "type": "CustomScriptExtension",
+                                "typeHandlerVersion": "1.10",
+                                "autoUpgradeMinorVersion": true,
+                                "settings": {
+                                  "fileUris": [
+                                    "https://raw.githubusercontent.com/thotheod/appservice-landing-zone-accelerator/fix/02-AutoApprovalAfdPe/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1"
+                                  ]
+                                },
+                                "protectedSettings": {
+                                  "commandToExecute": "[format('powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 -github_repository \"{0}\" -github_token \"{1}\" -ado_organization \"{2}\" -ado_token \"{3}\" {4} {5}', parameters('githubRepository'), parameters('githubToken'), parameters('adoOrganization'), parameters('adoToken'), variables('installClisValue'), variables('installSsmsValue'))]"
+                                }
                               },
                               "dependsOn": [
                                 "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"

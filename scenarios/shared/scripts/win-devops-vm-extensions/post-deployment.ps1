@@ -1,14 +1,14 @@
 <#
 .SYNOPSIS 
     This script is used to install and configure the following tools on a Windows VM:
-        - Azure CLI
+        - Azure CLI, Azure Developer CLI (AZD), and Git
         - Sql Server Management Studio (SSMS)
         - Github Actions Runner
         - Azure DevOps Agent
 
 .PARAMETER az_cli_commands
     A string containing the commands to run after installing the Azure CLI. 
-    This parameter is optional. If not provided, the Azure CLI will not be installed.
+    This parameter is optional. If not provided, the Azure CLI will not be installed. unless install_clis is set to true.
 
 .PARAMETER github_repository
     The URL of the Github repository to use for the Github Actions Runner. 
@@ -33,6 +33,10 @@
 .PARAMETER install_ssms
     A switch to indicate whether or not to install Sql Server Management Studio (SSMS). 
     This parameter is optional. If not provided, SSMS will not be installed.
+
+.PARAMETER install_clis
+    A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. 
+    This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed.    
 #>
 param (
     [Parameter(Mandatory = $false)]
@@ -51,8 +55,13 @@ param (
     [string]$ado_token,
 
     [switch]
-    $install_ssms = $false
+    $install_ssms = $false,
+
+    [switch]
+    $install_clis = $false
 )
+
+Write-Host "script started"
 
 #Validate parameters
 if (-not [string]::IsNullOrEmpty($github_token) -and [string]::IsNullOrEmpty($github_repository)) {
@@ -79,22 +88,73 @@ Start-Transcript ($logsFolder + "post-deployment-script" + $date + ".log")
 
 $downloads = @()
 
-if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
-    $azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
-    
-    $downloads += @{
-        name            = "Azure CLI"
-        url             = "https://aka.ms/installazurecliwindows"
-        path            = "$($basePath)\ac-cli-runner\"
-        file            = "AzureCLI.msi"
-        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/I D:\ac-cli-runner\AzureCLI.msi /quiet'"
-        testInstallPath = "$($azCliInstallPath)\az.cmd"
-        postInstallCmd  = $az_cli_commands 
-    }
+##############################################################################################################
+if (-not [string]::IsNullOrEmpty($az_cli_commands) -or $install_clis) {
+# install azure CLI
+$azCliInstallPath = "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin"
 
-    $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
+$downloads += @{
+    name            = "Azure CLI"
+    url             = "https://aka.ms/installazurecliwindows"
+    path            = "$($basePath)\ac-cli-runner\"
+    file            = "AzureCLI.msi"
+    installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/I D:\ac-cli-runner\AzureCLI.msi /quiet'"
+    testInstallPath = "$($azCliInstallPath)\az.cmd"
+    postInstallCmd  = $az_cli_commands 
 }
 
+$env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
+}
+
+##############################################################################################################
+## install azure developer CLI AZD
+if ($install_clis) {
+    $azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
+
+    $downloads += @{
+        name            = "AZD CLI"
+        url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
+        path            = "$($basePath)\azd\"
+        file            = "azd-windows-amd64.msi"
+        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
+        testInstallPath = "$($azdInstallPath)\azd.exe"
+        postInstallCmd  = "" 
+    }
+
+    $env:Path += ";$($azdInstallPath)\"
+}
+##############################################################################################################
+# install the latest 64-bit Git
+if ($install_clis) {
+    $pattern = 'https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/v\d+\.\d+\.\d+\.windows\.\d+\/Git-\d+\.\d+\.\d+-64-bit\.exe'
+    $URL = "https://api.github.com/repos/git-for-windows/git/releases"
+
+    $URL = (Invoke-WebRequest -Uri $URL -UseBasicParsing).Content | ConvertFrom-Json 
+    Write-Host "got the json content"
+
+    # hmm when chained together it doesn't work
+    $URL = $URL | Select-Object -ExpandProperty "assets" |
+    Where-Object "browser_download_url" -Match $pattern |
+    Select-Object -ExpandProperty "browser_download_url"
+
+    # https://github.com/git-for-windows/git/releases/download/v2.40.1.windows.1/Git-2.40.1-64-bit.exe
+    # Start-Process -FilePath "git-latest-64-bit.exe" -ArgumentList "/SILENT" -Wait
+    Write-Host "got the URLs to Download from $($URL[0])"
+    $gitInstallPath = "C:\Program Files\Git\bin"
+}
+
+$downloads += @{
+    name            = "Git 64bit"
+    url             = "$($URL[0])"
+    path            = "$($basePath)\git\"
+    file            = "git-latest-64-bit.exe"
+    installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes'"
+    testInstallPath = "$($gitInstallPath)\git.exe"
+    postInstallCmd  = "" 
+}
+
+##############################################################################################################
+# install the SSMS
 if ($install_ssms) {
     $ssmsInstallPath = "C:\Program Files (x86)\Microsoft SQL Server Management Studio 19"
 
@@ -109,6 +169,8 @@ if ($install_ssms) {
     }
 }
 
+##############################################################################################################
+# install the guthub actions runner
 if (-not [string]::isNullorEmpty($github_repository) -and -not [string]::isNullorEmpty($github_token)) {
     $ghInstallPath = "C:\github-actions"
     $ghZipPath = "$($basePath)\github-actions\actions-runner-win-x64-2.303.0.zip"
@@ -125,15 +187,17 @@ if (-not [string]::isNullorEmpty($github_repository) -and -not [string]::isNullo
     }
 }
 
+##############################################################################################################
+# install the azure devops agent
 if (-not [string]::isNullorEmpty($ado_organization) -and -not [string]::isNullorEmpty($ado_token)) {
     $adoInstallPath = "C:\azure-devops-agent"
-    $adoZipPath = "$($basePath)\azure-devops-agent\vsts-agent-win-x64-2.218.1.zip"
+    $adoZipPath = "$($basePath)\azure-devops-agent\vsts-agent-win-x64-3.220.2.zip"
     
     $downloads += @{
         name            = "Azure DevOps Agent"
-        url             = "https://vstsagentpackage.azureedge.net/agent/2.218.1/vsts-agent-win-x64-2.218.1.zip"
+        url             = "https://vstsagentpackage.azureedge.net/agent/3.220.2/vsts-agent-win-x64-3.220.2.zip"
         path            = "$($basePath)\azure-devops-agent\"
-        file            = "vsts-agent-win-x64-2.218.1.zip"
+        file            = "vsts-agent-win-x64-3.220.2.zip"
         installCmd      = "Add-Type -AssemblyName System.IO.Compression.FileSystem; " +
         "[System.IO.Compression.ZipFile]::ExtractToDirectory(`"$($adoZipPath)`", `"$($adoInstallPath)`");"
         testInstallPath = "$($adoInstallPath)\bin\Agent.Listener.exe"
@@ -164,7 +228,7 @@ foreach ($download in $downloads) {
     }
 
     Write-Host "File not present, downloading from: $($download.url)"
-    $job = Start-Job -Name $download.name -ScriptBlock $downloadJob -ArgumentList $download.url, $filePath
+    $job = Start-Job -Name $download.name -ScriptBlock $downloadJob -ArgumentList $download.url, $filePath 
     $jobs += $job
 }
 
@@ -204,11 +268,5 @@ foreach ($download in $downloads) {
     }
 }
 
-# # Run Azure CLI commands
-
-# if (-not [string]::IsNullOrEmpty($az_cli_commands)) {
-#     Write-Host "Running Azure CLI commands: $($az_cli_commands)"
-#     Invoke-Expression $az_cli_commands
-# }
-
-# # Run Github Actions Runner commands
+Write-Host "All done!"
+```

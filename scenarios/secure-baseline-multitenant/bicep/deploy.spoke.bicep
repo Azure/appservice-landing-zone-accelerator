@@ -42,6 +42,25 @@ param deployAppConfig bool
 @description('Deploy (or not) an Azure virtual machine (to be used as jumphost)')
 param deployJumpHost bool
 
+// post deployment specific parameters for the jumpBox
+@description('The URL of the Github repository to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_token must also be provided.')
+param githubRepository string = '' 
+
+@description('The token to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_repository must also be provided.')
+param githubToken string = '' 
+
+@description('The URL of the Azure DevOps organization to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_token must also be provided.')
+param adoOrganization string = '' 
+
+@description('The PAT token to use for the Azure DevOps Agent. This parameter is optional. If not provided, the Github Azure DevOps will not be installed. If this parameter is provided, then ado_organization must also be provided.')
+param adoToken string = '' 
+
+@description('A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed')
+param installClis bool = false
+
+@description('A switch to indicate whether or not to install Sql Server Management Studio (SSMS). This parameter is optional. If not provided, SSMS will not be installed.')
+param installSsms bool = false
+
 @description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
 @allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
 param webAppPlanSku string
@@ -295,6 +314,12 @@ module vmWindowsModule 'modules/vmJumphost.module.bicep' = if (deployJumpHost) {
     keyvaultName: keyvault.outputs.keyvaultName
     appConfigStoreId: webApp.outputs.appConfigStoreId
     subnetDevOpsId: snetDevOps.id
+    githubRepository: githubRepository
+    githubToken: githubToken
+    adoOrganization: adoOrganization
+    adoToken: adoToken
+    installClis: installClis
+    installSsms: installSsms 
   }
 }
 
