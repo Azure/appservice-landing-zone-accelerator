@@ -106,15 +106,6 @@ runs:
       ARM_TENANT_ID: ${{ inputs.ARM_TENANT_ID }}
       ARM_USE_OIDC: true
 
-{% comment %} 
-  - name: Show TFPlan
-    id: show
-    shell: ${{ inputs.shell }}
-    working-directory: ${{ inputs.modulePath }}
-    if: steps.plan.outcome == 'success'
-    run: terraform show -no-color tfplan > ${GITHUB_WORKSPACE}/plan.out 
-{% endcomment %}
-
   - name: 'Upload TFPlan Artifact'
     if: steps.plan.outcome == 'success'
     uses: actions/upload-artifact@v3
@@ -126,8 +117,6 @@ runs:
   - name: Post Plan to GitHub PR
     uses: actions/github-script@v6
     if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
-    env:
-      PLAN: "terraform\n${{ steps.show.outputs.stdout }}"
     with:
       script: |
         const run_url = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY + '/actions/runs/' + process.env.GITHUB_RUN_ID
