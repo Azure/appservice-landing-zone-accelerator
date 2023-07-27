@@ -54,9 +54,9 @@ variable "sql_databases" {
 
 variable "private_dns_zone" {
   type = object({
-    id             = string
-    name           = string
-    resource_group = string
+    id                  = string
+    name                = string
+    resource_group_name = string
   })
 
   description = "The private dns zone id where the app service will be integrated"

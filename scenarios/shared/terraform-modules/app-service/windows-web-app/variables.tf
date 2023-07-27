@@ -49,10 +49,10 @@ variable "identity" {
   }
 }
 
-variable "unique_id" {
-  type        = string
-  description = "A unique identifier"
-}
+# variable "unique_id" {
+#   type        = string
+#   description = "A unique identifier"
+# }
 
 variable "log_analytics_workspace_id" {
   type        = string
@@ -124,18 +124,20 @@ variable "webapp_options" {
 variable "appsvc_subnet_id" {
   type        = string
   description = "The subnet id where the app service will be integrated"
+  default     = null
 }
 
 variable "frontend_subnet_id" {
   type        = string
   description = "The subnet id where the front door will be integrated"
+  default     = null
 }
 
 variable "private_dns_zone" {
   type = object({
-    id             = string
-    name           = string
-    resource_group = string
+    id                  = string
+    name                = string
+    resource_group_name = string
   })
 
   description = "The private dns zone id where the app service will be integrated"

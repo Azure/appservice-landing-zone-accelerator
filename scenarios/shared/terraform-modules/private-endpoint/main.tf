@@ -18,7 +18,7 @@ resource "azurerm_private_dns_a_record" "this" {
 
   name                = var.private_dns_records[count.index]
   zone_name           = var.private_dns_zone.name
-  resource_group_name = var.private_dns_zone.resource_group
+  resource_group_name = var.private_dns_zone.resource_group_name
   ttl                 = var.ttl
   records             = [azurerm_private_endpoint.this.private_service_connection[0].private_ip_address]
 }

@@ -1,3 +1,9 @@
+variable "deploy_web_app" {
+  type        = bool
+  description = "Feature flag to deploy a web app as part of the module"
+  default     = true
+}
+
 variable "application_name" {
   type        = string
   description = "The name of your application"
@@ -20,10 +26,10 @@ variable "location" {
   default     = "westeurope"
 }
 
-variable "unique_id" {
-  type        = string
-  description = "A unique identifier"
-}
+# variable "unique_id" {
+#   type        = string
+#   description = "A unique identifier"
+# }
 
 variable "enable_diagnostic_settings" {
   type        = bool
@@ -38,10 +44,11 @@ variable "log_analytics_workspace_id" {
 
 variable "service_plan_options" {
   type = object({
-    os_type        = string
-    sku_name       = string
-    worker_count   = optional(number)
-    zone_redundant = optional(bool)
+    os_type                    = string
+    sku_name                   = string
+    app_service_environment_id = optional(string)
+    worker_count               = optional(number)
+    zone_redundant             = optional(bool)
   })
 
   description = "The options for the app service"
@@ -83,10 +90,10 @@ variable "identity" {
 
 variable "webapp_options" {
   type = object({
-    slots = list(string)
+    slots = optional(list(string))
 
-    application_stack = object({
-      current_stack       = string # required for windows
+    application_stack = optional(object({
+      current_stack       = optional(string) # required for windows
       dotnet_version      = optional(string)
       php_version         = optional(string)
       node_version        = optional(string)
@@ -100,32 +107,39 @@ variable "webapp_options" {
       docker_image_tag    = optional(string) # linux only
       go_version          = optional(string) # linux only
       ruby_version        = optional(string) # linux only
-    })
+    }))
   })
 
   description = "The options for the app service"
 
-  validation {
-    condition     = contains(["dotnet", "dotnetcore", "java", "php", "python", "node"], var.webapp_options.application_stack.current_stack)
-    error_message = "Please, choose among one of the following stacks: dotnet, dotnetcore, java, php, python or node."
+  # validation {
+  #   condition     = contains(["dotnet", "dotnetcore", "java", "php", "python", "node"], var.webapp_options.application_stack.current_stack)
+  #   error_message = "Please, choose among one of the following stacks: dotnet, dotnetcore, java, php, python or node."
+  # }
+
+  default = {
+    slots             = []
+    application_stack = {}
   }
 }
 
 variable "appsvc_subnet_id" {
   type        = string
   description = "The subnet id where the app service will be integrated"
+  default     = null
 }
 
 variable "frontend_subnet_id" {
   type        = string
   description = "The subnet id where the front door will be integrated"
+  default     = null
 }
 
 variable "private_dns_zone" {
   type = object({
-    id             = string
-    name           = string
-    resource_group = string
+    id                  = string
+    name                = string
+    resource_group_name = string
   })
 
   description = "The private dns zone id where the app service will be integrated"

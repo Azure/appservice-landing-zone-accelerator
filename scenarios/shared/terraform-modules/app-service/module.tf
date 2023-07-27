@@ -24,12 +24,14 @@ resource "azurerm_service_plan" "this" {
   sku_name            = var.service_plan_options.sku_name
   os_type             = var.service_plan_options.os_type
 
-  worker_count           = coalesce(var.service_plan_options.worker_count, 1)
-  zone_balancing_enabled = coalesce(var.service_plan_options.zone_redundant, false)
+  app_service_environment_id = lookup(var.service_plan_options, "app_service_environment_id", null)
+  worker_count               = coalesce(var.service_plan_options.worker_count, 1)
+  zone_balancing_enabled     = coalesce(var.service_plan_options.zone_redundant, false)
+  tags                       = local.tags
 }
 
 module "windows_web_app" {
-  count = var.service_plan_options.os_type == "Windows" ? 1 : 0
+  count = var.deploy_web_app ? (var.service_plan_options.os_type == "Windows" ? 1 : 0) : 0
 
   source = "./windows-web-app"
 
@@ -37,7 +39,6 @@ module "windows_web_app" {
   web_app_name   = var.application_name
   # environment           = var.environment
   location              = var.location
-  unique_id             = var.unique_id
   service_plan_id       = azurerm_service_plan.this.id
   service_plan_resource = azurerm_service_plan.this
   appsvc_subnet_id      = var.appsvc_subnet_id
@@ -53,7 +54,7 @@ module "windows_web_app" {
 }
 
 module "linux_web_app" {
-  count = var.service_plan_options.os_type == "Linux" ? 1 : 0
+  count = var.deploy_web_app ? (var.service_plan_options.os_type == "Linux" ? 1 : 0) : 0
 
   source = "./linux-web-app"
 
@@ -61,7 +62,6 @@ module "linux_web_app" {
   web_app_name   = var.application_name
   # environment           = var.environment
   location              = var.location
-  unique_id             = var.unique_id
   service_plan_id       = azurerm_service_plan.this.id
   service_plan_resource = azurerm_service_plan.this
   appsvc_subnet_id      = var.appsvc_subnet_id

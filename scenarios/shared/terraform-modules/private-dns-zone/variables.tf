@@ -3,10 +3,24 @@ variable "resource_group" {
   description = "The name of the resource group where the private DNS zones will be created."
 }
 
-variable "dns_zones" {
-  type = list(string)
+variable "dns_zone_name" {
+  type        = string
+  description = "The name of the private DNS zone."
+}
+# variable "dns_zones" {
+#   type = list(string)
 
-  description = "A list of DNS zones to create."
+#   description = "A list of DNS zones to create."
+# }
+
+variable "dns_records" {
+  type = list(object({
+    dns_name = string
+    records  = list(string)
+  }))
+
+  description = "A list of DNS records to create."
+  default     = []
 }
 
 variable "vnet_links" {

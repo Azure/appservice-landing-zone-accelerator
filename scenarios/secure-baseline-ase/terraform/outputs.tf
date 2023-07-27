@@ -1,64 +1,51 @@
-# output "app_service_name" {
-#   value = azurerm_app_service.main.name
-# }
+# # output "app_service_name" {
+# #   value = azurerm_app_service.main.name
+# # }
 
-# output "app_service_default_hostname" {
-#   value = "https://${azurerm_app_service.main.default_site_hostname}"
-# }
+# # output "app_service_default_hostname" {
+# #   value = "https://${azurerm_app_service.main.default_site_hostname}"
+# # }
 
-
-# -----------------------------------------------------------------------
-# App Service Environment (ase.tf)
-# -----------------------------------------------------------------------
-output "aseName" {
-  description = "Name of the App Service Environment."
-  value       = local.ase.name
-}
-output "aseId" {
-  description = "ID of the App Service Environment."
-  value       = local.ase.id
-}
-output "appServicePlanName" {
-  description = "Name of the App Service Plan."
-  value       = azurerm_service_plan.appServicePlan.name
-}
-output "appServicePlanId" {
-  description = "ID of the App Service Plan."
-  value       = azurerm_service_plan.appServicePlan.id
-}
 
 # -----------------------------------------------------------------------
 # Networking (network.tf)
 # -----------------------------------------------------------------------
-output "hubVNetName" {
+output "hubVNet" {
   description = "Name of the provisioned Hub virtual network."
-  value       = azurerm_virtual_network.vnetHub.name
-}
-
-output "spokeVNetName" {
-  description = "Name of the provisioned Spoke virtual network."
-  value       = azurerm_virtual_network.vnetSpoke.name
-}
-
-output "hubVNetId" {
-  description = "ID of the provisioned Hub virtual network."
-  value       = azurerm_virtual_network.vnetHub.id
-}
-
-output "spokeVNetId" {
-  description = "ID of the provisioned Spoke virtual network."
-  value       = azurerm_virtual_network.vnetSpoke.id
-}
-
-output "hubSubnets" {
-  description = "Hub virtual network subnet name-to-id mapping."
-  value       = local.hubSubnets
+  value = {
+    name    = module.vnetHub.vnet_name
+    id      = module.vnetHub.vnet_id
+    subnets = module.vnetHub.subnets
+  }
 }
 
 # -----------------------------------------------------------------------
-# Shared-VMs (shared-vms.tf)
+# ASE (ase.tf) Values will only populate if create_new_ase is true
 # -----------------------------------------------------------------------
-output "shared-vms" {
-  description = "Private IP Addresses and IDs of the provisioned shared virtual machines (DevOps and Jumpbox VMs)."
-  value       = module.shared-vms.vms
+output "spokeVNet" {
+  description = "Name of the provisioned Hub virtual network."
+  value = local.create_new_ase ? {
+    name    = module.vnetSpoke[0].vnet_name
+    id      = module.vnetSpoke[0].vnet_id
+    subnets = module.vnetSpoke[0].subnets
+  } : null
 }
+
+output "aseName" {
+  description = "Name of the App Service Environment."
+  value       = local.ase.name
+}
+
+output "aseId" {
+  description = "ID of the App Service Environment."
+  value       = local.ase.id
+}
+
+
+# # -----------------------------------------------------------------------
+# # Shared-VMs (shared-vms.tf)
+# # -----------------------------------------------------------------------
+# output "shared-vms" {
+#   description = "Private IP Addresses and IDs of the provisioned shared virtual machines (DevOps and Jumpbox VMs)."
+#   value       = module.shared-vms.vms
+# }

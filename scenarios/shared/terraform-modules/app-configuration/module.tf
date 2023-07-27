@@ -74,7 +74,7 @@ resource "azurerm_role_assignment" "data_owners" {
 resource "azurerm_private_dns_a_record" "this" {
   name                = lower(azurerm_app_configuration.this.name)
   zone_name           = var.private_dns_zone.name
-  resource_group_name = var.private_dns_zone.resource_group
+  resource_group_name = var.private_dns_zone.resource_group_name
   ttl                 = 300
   records             = [azurerm_private_endpoint.this.private_service_connection[0].private_ip_address]
 }

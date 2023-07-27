@@ -1,3 +1,11 @@
-location = "westus2"
-# app_service_environment_name                = "ase-sec-baseline-sgl-dev-westus2-001"
-# app_service_environment_resource_group_name = "rg-asev3-shared"
+application_name = "lzademo"
+location         = "westus2"
+owner            = "cloudops@contoso.com"
+
+# Toggle deployment of optional features and services for the Landing Zone
+deployment_options = {
+  enable_egress_lockdown     = true
+  enable_diagnostic_settings = true
+  deploy_bastion             = true
+  deploy_vm                  = true
+}
