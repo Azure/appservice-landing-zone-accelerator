@@ -1,5 +1,5 @@
 resource "azurecaf_name" "caf_name_pip" {
-  name          = var.name
+  name          = "${var.name}-bastion"
   resource_type = "azurerm_public_ip"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length

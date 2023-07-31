@@ -43,6 +43,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_resouce_group_name"></a> [resouce\_group\_name](#output\_resouce\_group\_name) | n/a |
 | <a name="output_subnet_ids"></a> [subnet\_ids](#output\_subnet\_ids) | n/a |
 | <a name="output_subnets"></a> [subnets](#output\_subnets) | n/a |
 | <a name="output_vnet"></a> [vnet](#output\_vnet) | n/a |

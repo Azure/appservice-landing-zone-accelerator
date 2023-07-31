@@ -1,3 +1,5 @@
+# Spoke network config
+
 resource "random_integer" "unique_id" {
   min = 1
   max = 9999
@@ -69,10 +71,7 @@ module "private_dns_zones" {
   dns_zone_name = local.private_dns_zones[count.index].name
   dns_records   = local.private_dns_zones[count.index].records
   vnet_links = [
-    {
-      vnet_id             = data.azurerm_virtual_network.hub.id
-      vnet_resource_group = data.terraform_remote_state.hub.outputs.rg_name
-    }
+    data.azurerm_virtual_network.hub.id
   ]
 
   tags = local.base_tags

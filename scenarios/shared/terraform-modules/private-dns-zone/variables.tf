@@ -24,10 +24,7 @@ variable "dns_records" {
 }
 
 variable "vnet_links" {
-  type = list(object({
-    vnet_id             = string
-    vnet_resource_group = string
-  }))
+  type = list(string)
 
   description = "A list of virtual networks to link to the DNS zone."
 }

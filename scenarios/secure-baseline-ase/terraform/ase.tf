@@ -92,10 +92,7 @@ module "private_dns_zones_ase" {
   dns_zone_name   = local.privateDnsZoneName
 
   vnet_links = [
-    {
-      vnet_id             = module.vnetSpoke[0].vnet_id
-      vnet_resource_group = azurerm_resource_group.network.name
-    }
+    module.vnetSpoke[0].vnet_id
   ]
 
   dns_records = [

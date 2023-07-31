@@ -5,7 +5,7 @@ module "vnetHub" {
   global_settings = local.global_settings
   resource_group  = azurerm_resource_group.network.name
   location        = azurerm_resource_group.network.location
-  name            = var.application_name
+  name            = "${var.application_name}-hub"
   vnet_cidr       = var.hubVNetNameAddressPrefix
 
   subnets = [

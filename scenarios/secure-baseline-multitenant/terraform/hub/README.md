@@ -13,8 +13,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.24 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.50.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.26 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.67.0 |
 
 ## Modules
 

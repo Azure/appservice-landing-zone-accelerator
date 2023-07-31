@@ -23,13 +23,60 @@ The enterprise architecture is broken down into six different design areas, wher
 In this repo you will find reference implementations with supporting Infrastructure as Code templates. More reference implementations will be added as they become available. 
 
 ## Next Steps to implement the Azure App Service Landing Zone Accelerator
-> Reference implementations
+
+### Step 1. Reference implementations
 
 Pick one of the scenarios below to get started on a reference implementation.
 
 :arrow_forward: [Scenario 1: Multitenant App Service Secure Baseline](scenarios/secure-baseline-multitenant/README.md)
 
 :arrow_forward: [Scenario 2: Line of Business application using internal App Service Environment v3](scenarios/secure-baseline-ase//README.md)
+
+For configuring the GitHub Actions pipelines, please refer to the [GitHub Actions](docs/github-actions.md) documentation.
+
+### Step 2. Configure and test the deployment on your own environment
+
+With the selected reference implementation, you can now choose between `Bicep` or `Terraform` to deploy the scenario's infrastructure.
+
+#### Deploying Bicep
+
+#### Deploying Terraform
+
+1. Ensure you are logged in to Azure CLI and have selected the correct subscription.
+1. Navigate to the Terraform deployment directory (same directory as the `main.tf` file).
+    - [scenarios/secure-baseline-multitenant/terraform/hub](scenarios/secure-baseline-multitenant/terraform/hub/)
+    - [scenarios/secure-baseline-multitenant/terraform/spoke](scenarios/secure-baseline-multitenant/terraform/spoke/)
+    - [scenarios/secure-baseline-ase/terraform](scenarios/secure-baseline-ase/terraform)
+1. Familiarize yourself with the deployment files:
+    - `main.tf` - Contains the Terraform provider configurations for the selected deployment/module. Note the `backend "azurerm" {}` block as this configures your [Terraform deployment's remote state](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm).  Also contains the resource group definitions to host the deployed resources.
+    - `_locals.tf` - Contains the local variable declarations as well as custom logic to support naming and tagging conventions across each module.
+    - `variables.tf` - Contains the input variable declarations for the selected deployment/module.
+    - `outputs.tf` - Contains the output variable declarations for the selected deployment/module.
+    - other `.tf` files - Contains groupings of resources for organizational purposes.
+    - `Parameters/uat.tfvars` - Reference input parameter file for the UAT environment.
+1. Navigate to the Terraform deployment directory (same directory as the `main.tf` file).
+1. Run `terraform init` to initialize the deployment.
+1. Run `terraform plan -var-file="Parameters/uat.tfvars"` to review the deployment plan.
+1. Run `terraform apply -var-file="Parameters/uat.tfvars"` to deploy the resources.
+
+### Step 3. Configure GitHub Actions
+GitHub Actions pipelines are located in the [`.github/workflows`](.github/workflows/) directory with templates stored in the [`.github/actions`](.github/actions/) directory.i
+
+1. Create an Azure AD Service Principal for OIDC Authentication
+    - Reference the following documentation to configure your Azure AD Service Principal: [OIDC authentication to Azure](https://learn.microsoft.com/en-us/azure/active-directory/saas-apps/github-enterprise-managed-user-oidc-provisioning-tutorial). 
+1. Configure your GitHub Actions Secrets
+    - In your forked repository, navigate to `Settings > Secrets and variables > Actions`.
+    - Create the following secrets:
+      | Secret Name | Description | Example Value |
+      |-------------|-------------|---------------|
+      | `AZURE_CLIENT_ID` | GUID value for the Client ID of the service principal to authenticate with | `00000000-0000-0000-0000-000000000000` |
+      | `AZURE_SUBSCRIPTION_ID` | GUID value for the Subscription ID to deploy resources to | `00000000-0000-0000-0000-000000000000` |
+      | `AZURE_TENANT_ID` | GUID value for the Tenant ID of the service principal to authenticate with | `00000000-0000-0000-0000-000000000000` |
+      | `AZURE_TF_STATE_RESOURCE_GROUP_NAME` | Optional override value to configure the remote state resource group name | `rg-terraform-state` |
+      | `AZURE_TF_STATE_STORAGE_ACCOUNT_NAME` | Optional override value to configure the remote state storage account name | `tfstate` |
+      | `AZURE_TF_STATE_STORAGE_CONTAINER_NAME` | Optional override value to configure the remote state storage container name | `tfstate` |
+      | `ACCOUNT_NAME` | | `https://dev.azure.com/ORGNAME` OR `github.com/ORGUSERNAME` OR `none` |
+      | `PAT` | Personal Access Token for the DevOps VM to leverage on provisioning the pipeline agent | `asdf1234567` |
 
 ---
 ### App Patterns
@@ -55,7 +102,6 @@ Telemetry collection is on by default.
 To opt-out, set the variable enableTelemetry to `false` in Bicep/ARM file and disable_terraform_partner_id to `false` on Terraform files.
 
 ---
-
 ## Contributing
 
 See more at [Contributing](CONTRIBUTING.md)

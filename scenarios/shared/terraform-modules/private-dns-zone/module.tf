@@ -9,10 +9,10 @@ resource "azurerm_private_dns_zone" "this" {
 resource "azurerm_private_dns_zone_virtual_network_link" "this" {
   count = length(var.vnet_links)
 
-  name                  = azurerm_private_dns_zone.this.name
+  name                  = element(split("/", var.vnet_links[count.index]), length(split("/", var.vnet_links[count.index])) - 1)
   private_dns_zone_name = azurerm_private_dns_zone.this.name
-  resource_group_name   = var.vnet_links[count.index].vnet_resource_group
-  virtual_network_id    = var.vnet_links[count.index].vnet_id
+  resource_group_name   = var.resource_group
+  virtual_network_id    = var.vnet_links[count.index]
 }
 
 resource "azurerm_private_dns_a_record" "this" {

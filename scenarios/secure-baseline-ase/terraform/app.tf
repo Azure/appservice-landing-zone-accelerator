@@ -15,7 +15,7 @@ module "app_service" {
   service_plan_options = {
     app_service_environment_id = local.ase.id
     os_type                    = "Windows"
-    sku_name                   = "P${var.workerPool}v2"
+    sku_name                   = var.workerPool == 1 ? "I1" : "I${var.workerPool}v2"
     worker_count               = var.numberOfWorkers
     zone_redundant             = true
   }
