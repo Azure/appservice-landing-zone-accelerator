@@ -15,12 +15,12 @@ module "vnetHub" {
       delegation  = null
     },
     {
-      name        = "jumpBoxSubnetName"
+      name        = "JumpBoxSubnet"
       subnet_cidr = var.jumpBoxAddressPrefix
       delegation  = null
     },
     {
-      name        = "CICDAgentSubnetName"
+      name        = "CICDAgentSubnet"
       subnet_cidr = var.CICDAgentNameAddressPrefix
       delegation  = null
     }

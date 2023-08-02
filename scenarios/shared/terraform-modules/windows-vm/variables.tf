@@ -31,6 +31,12 @@ variable "identity" {
   }
 }
 
+variable "key_vault_id" {
+  type        = string
+  description = "Optional ID of the key vault to store the VM password"
+  default     = null
+}
+
 variable "admin_username" {
   type    = string
   default = null

@@ -102,13 +102,13 @@ variable "workerPool" {
   default     = 1
 }
 
-variable "vmadminUserName" {
+variable "vmAdminUsername" {
   description = "admin username for the virtual machine (devops agent, jumpbox)"
   type        = string
   default     = "vmadmin"
 }
 
-variable "vmadminPassword" {
+variable "vmAdminPassword" {
   description = "admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault"
   type        = string
   default     = null
@@ -129,4 +129,9 @@ variable "deployment_options" {
   description = "[Optional] Deployment options to configure each module with the appropriate features."
   default     = {}
 
+}
+
+variable "vm_aad_admin_username" {
+  type        = string
+  description = "The Azure AD username for the VM admin account."
 }

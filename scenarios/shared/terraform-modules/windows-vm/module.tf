@@ -22,13 +22,39 @@ resource "azurerm_network_interface" "vm_nic" {
   }
 }
 
+# Generate password if none provided
+resource "random_password" "password" {
+  count            = var.admin_password == null ? 1 : 0
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+locals {
+  admin_password = var.admin_password == null ? random_password.password[0].result : var.admin_password
+}
+
+resource "azurerm_key_vault_secret" "admin_password" {
+  count        = var.key_vault_id == null ? 0 : 1
+  name         = azurerm_windows_virtual_machine.vm.name
+  value        = local.admin_password
+  key_vault_id = var.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "admin_username" {
+  count        = var.key_vault_id == null ? 0 : 1
+  name         = azurerm_windows_virtual_machine.vm.name
+  value        = var.admin_username
+  key_vault_id = var.key_vault_id
+}
+
 resource "azurerm_windows_virtual_machine" "vm" {
   name                       = azurecaf_name.caf_name_winvm.result
   resource_group_name        = var.resource_group
   location                   = var.location
   size                       = var.vm_size
   admin_username             = var.admin_username
-  admin_password             = var.admin_password
+  admin_password             = local.admin_password
   provision_vm_agent         = true
   allow_extension_operations = true
 

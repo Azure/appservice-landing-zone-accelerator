@@ -148,6 +148,8 @@ As you configured the backend remote state with your live Azure infrastructure r
 |------|--------|---------|
 | <a name="module_app_service"></a> [app\_service](#module\_app\_service) | ../../shared/terraform-modules/app-service | n/a |
 | <a name="module_bastion"></a> [bastion](#module\_bastion) | ../../shared/terraform-modules/bastion | n/a |
+| <a name="module_devops_vm"></a> [devops\_vm](#module\_devops\_vm) | ../../shared/terraform-modules/windows-vm | n/a |
+| <a name="module_jumpbox_vm"></a> [jumpbox\_vm](#module\_jumpbox\_vm) | ../../shared/terraform-modules/windows-vm | n/a |
 | <a name="module_private_dns_zones_ase"></a> [private\_dns\_zones\_ase](#module\_private\_dns\_zones\_ase) | ../../shared/terraform-modules/private-dns-zone | n/a |
 | <a name="module_vnetHub"></a> [vnetHub](#module\_vnetHub) | ../../shared/terraform-modules/network | n/a |
 | <a name="module_vnetSpoke"></a> [vnetSpoke](#module\_vnetSpoke) | ../../shared/terraform-modules/network | n/a |
@@ -195,8 +197,9 @@ As you configured the backend remote state with your live Azure infrastructure r
 | <a name="input_spoke_vnet_name"></a> [spoke\_vnet\_name](#input\_spoke\_vnet\_name) | [Optional] The VNET NAME of an already existing spoke VNET. | `string` | `null` | no |
 | <a name="input_spoke_vnet_resource_group_name"></a> [spoke\_vnet\_resource\_group\_name](#input\_spoke\_vnet\_resource\_group\_name) | [Optional] The Resource Group NAME of an already existing spoke VNET. | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | [Optional] Additional tags to assign to your resources | `map(string)` | `{}` | no |
-| <a name="input_vmadminPassword"></a> [vmadminPassword](#input\_vmadminPassword) | admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault | `string` | `null` | no |
-| <a name="input_vmadminUserName"></a> [vmadminUserName](#input\_vmadminUserName) | admin username for the virtual machine (devops agent, jumpbox) | `string` | `"vmadmin"` | no |
+| <a name="input_vmAdminPassword"></a> [vmAdminPassword](#input\_vmAdminPassword) | admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault | `string` | `null` | no |
+| <a name="input_vmAdminUsername"></a> [vmAdminUsername](#input\_vmAdminUsername) | admin username for the virtual machine (devops agent, jumpbox) | `string` | `"vmadmin"` | no |
+| <a name="input_vm_aad_admin_username"></a> [vm\_aad\_admin\_username](#input\_vm\_aad\_admin\_username) | The Azure AD username for the VM admin account. | `string` | n/a | yes |
 | <a name="input_workerPool"></a> [workerPool](#input\_workerPool) | workerPool for ASE | `number` | `1` | no |
 
 ## Outputs
