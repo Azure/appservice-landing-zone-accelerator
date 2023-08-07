@@ -167,9 +167,14 @@ variable "vm_admin_password" {
 
 variable "vm_aad_admin_username" {
   type        = string
-  description = "The Azure AD username for the VM admin account."
+  description = "[Optional] The Azure AD username for the VM admin account. If aad_admin_object_id is not specified, this value will be used."
+  default     = null
 }
-
+variable "vm_aad_admin_object_id" {
+  type        = string
+  description = "The Azure AD username for the VM admin account. If aad_admin_username is not specified, this value will be used."
+  default     = null
+}
 variable "deployment_options" {
   type = object({
     enable_waf                 = bool

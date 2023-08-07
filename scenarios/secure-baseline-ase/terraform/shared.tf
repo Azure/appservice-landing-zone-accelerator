@@ -43,14 +43,15 @@ module "jumpbox_vm" {
 
   source = "../../shared/terraform-modules/windows-vm"
 
-  resource_group     = azurerm_resource_group.shared.name
-  vm_name            = "jumpbox"
-  location           = var.location
-  vm_subnet_id       = module.vnetHub.subnets["JumpBoxSubnet"].id
-  admin_username     = var.vmAdminUsername
-  admin_password     = var.vmAdminPassword
-  aad_admin_username = var.vm_aad_admin_username
-  global_settings    = local.global_settings
+  resource_group      = azurerm_resource_group.shared.name
+  vm_name             = "jumpbox"
+  location            = var.location
+  vm_subnet_id        = module.vnetHub.subnets["JumpBoxSubnet"].id
+  admin_username      = var.vmAdminUsername
+  admin_password      = var.vmAdminPassword
+  aad_admin_username  = var.vm_aad_admin_username
+  aad_admin_object_id = var.vm_aad_admin_object_id
+  global_settings     = local.global_settings
 
   tags = local.base_tags
 

@@ -86,11 +86,12 @@ resource "azurerm_windows_virtual_machine" "vm" {
 }
 
 data "azuread_user" "vm_admin" {
+  count               = var.aad_admin_object_id == null ? 1 : 0
   user_principal_name = var.aad_admin_username
 }
 
 resource "azurerm_role_assignment" "vm_admin_role_assignment" {
   scope                = azurerm_windows_virtual_machine.vm.id
   role_definition_name = "Virtual Machine Administrator Login"
-  principal_id         = data.azuread_user.vm_admin.object_id
+  principal_id         = var.aad_admin_object_id == null ? data.azuread_user.vm_admin[0].object_id : var.aad_admin_object_id
 }
