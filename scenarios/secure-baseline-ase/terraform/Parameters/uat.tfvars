@@ -2,7 +2,7 @@ application_name = "lzademo"
 location         = "westus2"
 owner            = "cloudops@contoso.com"
 
-vm_aad_admin_username = "jinle_microsoft.com#EXT#@customersuccessunit.onmicrosoft.com"
+vm_aad_admin_username = "AppSvcLZA Azure AD SQL Admins"
 
 workerPool = 3
 # Toggle deployment of optional features and services for the Landing Zone
