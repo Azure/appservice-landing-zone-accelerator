@@ -50,7 +50,7 @@ jobs:
               --name $rg_name \
               --location ${{ env.location }} 
           fi
-          echo ::set-output name=rg_name::$rg_name
+          echo rg_name=$rg_name >> $GITHUB_ENV
       
       - name: Create Storage Account
         if: ${{ github.event.inputs.createStorageAccount == 'true' }}

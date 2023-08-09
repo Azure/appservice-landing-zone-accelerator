@@ -199,8 +199,8 @@ As you configured the backend remote state with your live Azure infrastructure r
 | <a name="input_tags"></a> [tags](#input\_tags) | [Optional] Additional tags to assign to your resources | `map(string)` | `{}` | no |
 | <a name="input_vmAdminPassword"></a> [vmAdminPassword](#input\_vmAdminPassword) | admin password for the virtual machine (devops agent, jumpbox). If none is provided, will be randomly generated and stored in the Key Vault | `string` | `null` | no |
 | <a name="input_vmAdminUsername"></a> [vmAdminUsername](#input\_vmAdminUsername) | admin username for the virtual machine (devops agent, jumpbox) | `string` | `"vmadmin"` | no |
-| <a name="input_vm_aad_admin_object_id"></a> [vm\_aad\_admin\_object\_id](#input\_vm\_aad\_admin\_object\_id) | The Azure AD username for the VM admin account. If aad\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
-| <a name="input_vm_aad_admin_username"></a> [vm\_aad\_admin\_username](#input\_vm\_aad\_admin\_username) | [Optional] The Azure AD username for the VM admin account. If aad\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_vm_aad_admin_object_id"></a> [vm\_aad\_admin\_object\_id](#input\_vm\_aad\_admin\_object\_id) | The Azure AD username for the VM admin account. If vm\_aad\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_vm_aad_admin_username"></a> [vm\_aad\_admin\_username](#input\_vm\_aad\_admin\_username) | [Optional] The Azure AD username for the VM admin account. If vm\_aad\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
 | <a name="input_workerPool"></a> [workerPool](#input\_workerPool) | workerPool for ASE | `number` | `1` | no |
 
 ## Outputs

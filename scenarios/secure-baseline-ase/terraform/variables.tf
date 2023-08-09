@@ -133,11 +133,12 @@ variable "deployment_options" {
 
 variable "vm_aad_admin_username" {
   type        = string
-  description = "[Optional] The Azure AD username for the VM admin account. If aad_admin_object_id is not specified, this value will be used."
+  description = "[Optional] The Azure AD username for the VM admin account. If vm_aad_admin_object_id is not specified, this value will be used."
   default     = null
 }
+
 variable "vm_aad_admin_object_id" {
   type        = string
-  description = "The Azure AD username for the VM admin account. If aad_admin_username is not specified, this value will be used."
+  description = "The Azure AD username for the VM admin account. If vm_aad_admin_username is not specified, this value will be used."
   default     = null
 }

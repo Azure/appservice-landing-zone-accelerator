@@ -55,7 +55,7 @@ variable "aad_admin_username" {
 
 variable "aad_admin_object_id" {
   type        = string
-  description = "The Azure AD username for the VM admin account. If aad_admin_username is not specified, this value will be used."
+  description = "The Azure AD object ID for the VM admin user/group. If aad_admin_username is not specified, this value will be used."
   default     = null
 }
 

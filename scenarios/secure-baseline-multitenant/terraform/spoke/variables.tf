@@ -44,13 +44,7 @@ variable "environment" {
 variable "location" {
   type        = string
   description = "The Azure region where all resources in this example should be created"
-  default     = "westeurope"
-}
-
-variable "location_short" {
-  type        = string
-  description = "The short name for the Azure region where all resources in this example should be created"
-  default     = "weu"
+  default     = "westus2"
 }
 
 variable "tenant_id" {
@@ -167,12 +161,12 @@ variable "vm_admin_password" {
 
 variable "vm_aad_admin_username" {
   type        = string
-  description = "[Optional] The Azure AD username for the VM admin account. If aad_admin_object_id is not specified, this value will be used."
+  description = "[Optional] The Azure AD username for the VM admin account. If vm_aad_admin_object_id is not specified, this value will be used."
   default     = null
 }
 variable "vm_aad_admin_object_id" {
   type        = string
-  description = "The Azure AD username for the VM admin account. If aad_admin_username is not specified, this value will be used."
+  description = "The Azure AD object ID for the VM admin user/group. If vm_aad_admin_username is not specified, this value will be used."
   default     = null
 }
 variable "deployment_options" {

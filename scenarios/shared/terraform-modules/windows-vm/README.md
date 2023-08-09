@@ -35,7 +35,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aad_admin_object_id"></a> [aad\_admin\_object\_id](#input\_aad\_admin\_object\_id) | The Azure AD username for the VM admin account. If aad\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_aad_admin_object_id"></a> [aad\_admin\_object\_id](#input\_aad\_admin\_object\_id) | The Azure AD object ID for the VM admin user/group. If aad\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
 | <a name="input_aad_admin_username"></a> [aad\_admin\_username](#input\_aad\_admin\_username) | [Optional] The Azure AD username for the VM admin account. If aad\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
 | <a name="input_admin_password"></a> [admin\_password](#input\_admin\_password) | n/a | `string` | `null` | no |
 | <a name="input_admin_username"></a> [admin\_username](#input\_admin\_username) | n/a | `string` | `null` | no |

@@ -70,7 +70,7 @@ runs:
     working-directory: ${{ inputs.modulePath }}
     run: |
       terraform validate -no-color
-      echo "::set-output name=stdout::$(terraform validate -no-color)"
+      echo stdout=$(terraform validate -no-color)
 
   - name: tfsec
     uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0

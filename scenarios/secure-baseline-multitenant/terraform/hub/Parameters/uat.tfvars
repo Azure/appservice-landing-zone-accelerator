@@ -1,6 +1,6 @@
 application_name = "eslz2"
 environment      = "prod"
-location         = "westus3"
+location         = "westus2"
 # location_short   = "wus3"
 owner = "cloudops@contoso.com"
 

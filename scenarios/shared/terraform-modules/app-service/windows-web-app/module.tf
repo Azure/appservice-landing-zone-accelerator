@@ -169,8 +169,4 @@ module "private_endpoint_slot" {
     lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}"),
     lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}.scm")
   ]
-
-  depends_on = [
-    azurerm_windows_web_app_slot.slot
-  ]
 }

@@ -17,7 +17,7 @@ variable "environment" {
 variable "location" {
   type        = string
   description = "The Azure region where all resources in this example should be created"
-  default     = "westeurope"
+  default     = "westus2"
 }
 
 variable "azure_frontdoor_sku" {

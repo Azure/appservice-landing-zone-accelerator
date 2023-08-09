@@ -1,7 +1,6 @@
-application_name = "eslz1"
+application_name = "eslz2"
 environment      = "prod"
-location         = "westus3"
-location_short   = "wus3"
+location         = "westus2"
 owner            = "cloudops@contoso.com"
 
 # For the hub state, use the same settings as the remote state config on the hub deployment from /hub/main.tf
@@ -13,7 +12,9 @@ hub_state_key                  = "scenario1.hub.tfstate"
 aad_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
 aad_admin_group_name      = "AppSvcLZA Azure AD SQL Admins"
 
-# vm_aad_admin_username     = ""
+## Lookup the Azure AD User
+# vm_aad_admin_username = "my-user@contoso.com"
+## Reference an existing Azure AD User/Group Object ID to bypass lookup
 vm_aad_admin_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884" # "AppSvcLZA Azure AD SQL Admins"
 
 
