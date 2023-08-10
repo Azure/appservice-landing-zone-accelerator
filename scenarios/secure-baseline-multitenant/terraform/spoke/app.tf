@@ -32,11 +32,6 @@ module "app_service" {
   }
 
   private_dns_zone = local.provisioned_dns_zones["privatelink.azurewebsites.net"]
-  # {
-  #   name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azurewebsites.net")].name
-  #   id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azurewebsites.net")].id
-  #   resource_group = data.terraform_remote_state.hub.outputs.rg_name
-  # }
 
   depends_on = [
     module.network,
@@ -46,7 +41,6 @@ module "app_service" {
 
   tags = local.base_tags
 }
-
 
 module "sql_database" {
   count = var.deployment_options.deploy_sql_database ? 1 : 0
@@ -72,11 +66,6 @@ module "sql_database" {
   ]
 
   private_dns_zone = local.provisioned_dns_zones["privatelink.database.windows.net"]
-  # {
-  #   name           = module.private_dns_zones[index(module.private_dns_zones.*.name, "privatelink.database.windows.net")].name
-  #   id             = module.private_dns_zones[index(module.private_dns_zones.*.name, "privatelink.database.windows.net")].id
-  #   resource_group = data.terraform_remote_state.hub.outputs.rg_name
-  # }
 }
 
 module "app_configuration" {
@@ -102,11 +91,6 @@ module "app_configuration" {
   ]
 
   private_dns_zone = local.provisioned_dns_zones["privatelink.azconfig.io"]
-  # {
-  #   name           = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].name
-  #   id             = module.private_dns_zones.dns_zones[index(module.private_dns_zones.dns_zones.*.name, "privatelink.azconfig.io")].id
-  #   resource_group = data.terraform_remote_state.hub.outputs.rg_name
-  # }
 }
 
 module "key_vault" {
@@ -148,5 +132,4 @@ module "redis_cache" {
   tags                   = local.base_tags
 
   private_dns_zone = local.provisioned_dns_zones["privatelink.redis.cache.windows.net"]
-
 }

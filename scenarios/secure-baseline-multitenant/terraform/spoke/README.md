@@ -90,7 +90,15 @@
 
 | Name | Description |
 |------|-------------|
+| <a name="output_devops_vm_id"></a> [devops\_vm\_id](#output\_devops\_vm\_id) | n/a |
+| <a name="output_key_vault_name"></a> [key\_vault\_name](#output\_key\_vault\_name) | n/a |
+| <a name="output_key_vault_uri"></a> [key\_vault\_uri](#output\_key\_vault\_uri) | n/a |
+| <a name="output_redis_connection_string"></a> [redis\_connection\_string](#output\_redis\_connection\_string) | n/a |
 | <a name="output_rg_name"></a> [rg\_name](#output\_rg\_name) | n/a |
+| <a name="output_sql_db_connection_string"></a> [sql\_db\_connection\_string](#output\_sql\_db\_connection\_string) | n/a |
 | <a name="output_vnet_id"></a> [vnet\_id](#output\_vnet\_id) | n/a |
 | <a name="output_vnet_name"></a> [vnet\_name](#output\_vnet\_name) | n/a |
+| <a name="output_web_app_name"></a> [web\_app\_name](#output\_web\_app\_name) | n/a |
+| <a name="output_web_app_slot_name"></a> [web\_app\_slot\_name](#output\_web\_app\_slot\_name) | n/a |
+| <a name="output_web_app_uri"></a> [web\_app\_uri](#output\_web\_app\_uri) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

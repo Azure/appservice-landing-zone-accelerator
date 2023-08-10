@@ -1,11 +1,10 @@
-# # output "app_service_name" {
-# #   value = azurerm_app_service.main.name
-# # }
+output "app_service_name" {
+  value = module.app_service.web_app_name
+}
 
-# # output "app_service_default_hostname" {
-# #   value = "https://${azurerm_app_service.main.default_site_hostname}"
-# # }
-
+output "app_service_default_hostname" {
+  value = module.app_service.web_app_hostname
+}
 
 # -----------------------------------------------------------------------
 # Networking (network.tf)
@@ -42,10 +41,19 @@ output "aseId" {
 }
 
 
-# # -----------------------------------------------------------------------
-# # Shared-VMs (shared-vms.tf)
-# # -----------------------------------------------------------------------
-# output "shared-vms" {
-#   description = "Private IP Addresses and IDs of the provisioned shared virtual machines (DevOps and Jumpbox VMs)."
-#   value       = module.shared-vms.vms
-# }
+# -----------------------------------------------------------------------
+# Shared-VMs (shared-vms.tf)
+# -----------------------------------------------------------------------
+output "shared-vms" {
+  description = "Private IP Addresses and IDs of the provisioned shared virtual machines (DevOps and Jumpbox VMs)."
+  value = var.deployment_options.deploy_vm ? {
+    devops = {
+      ip = module.devops_vm[0].private_ip_address
+      id = module.devops_vm[0].id
+    }
+    jumpbox = {
+      ip = module.jumpbox_vm[0].private_ip_address
+      id = module.jumpbox_vm[0].id
+    }
+  } : {}
+}

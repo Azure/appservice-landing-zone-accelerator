@@ -120,15 +120,7 @@ module "frontdoor" {
       web_app_id               = module.app_service.web_app_id
       web_app_hostname         = module.app_service.web_app_hostname
       private_link_target_type = "sites"
-    },
-
-    # Connecting a front door origin to an app service slot through private link is currently not supported
-    # {
-    #   endpoint_name            = "${var.application_name}-${var.environment}-${var.webapp_slot_name}"
-    #   web_app_id               = module.app_service.web_app_id # Note: needs to be the resource id of the app, not the id of the slot
-    #   web_app_hostname         = module.app_service.web_app_slot_hostname
-    #   private_link_target_type = "sites-${var.slots[0].name]}"
-    # }
+    }
   ]
 
   tags = local.base_tags

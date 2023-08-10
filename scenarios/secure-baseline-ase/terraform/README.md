@@ -207,8 +207,11 @@ As you configured the backend remote state with your live Azure infrastructure r
 
 | Name | Description |
 |------|-------------|
+| <a name="output_app_service_default_hostname"></a> [app\_service\_default\_hostname](#output\_app\_service\_default\_hostname) | n/a |
+| <a name="output_app_service_name"></a> [app\_service\_name](#output\_app\_service\_name) | n/a |
 | <a name="output_aseId"></a> [aseId](#output\_aseId) | ID of the App Service Environment. |
 | <a name="output_aseName"></a> [aseName](#output\_aseName) | Name of the App Service Environment. |
 | <a name="output_hubVNet"></a> [hubVNet](#output\_hubVNet) | Name of the provisioned Hub virtual network. |
+| <a name="output_shared-vms"></a> [shared-vms](#output\_shared-vms) | Private IP Addresses and IDs of the provisioned shared virtual machines (DevOps and Jumpbox VMs). |
 | <a name="output_spokeVNet"></a> [spokeVNet](#output\_spokeVNet) | Name of the provisioned Hub virtual network. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

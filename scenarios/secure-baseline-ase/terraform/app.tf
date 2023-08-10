@@ -26,17 +26,3 @@ module "app_service" {
 
   tags = local.base_tags
 }
-
-# resource "azurerm_service_plan" "appServicePlan" {
-#   name                       = local.appServicePlanName
-#   location                   = azurerm_resource_group.aserg.location
-#   resource_group_name        = azurerm_resource_group.aserg.name
-#   app_service_environment_id = local.ase.id
-#   per_site_scaling_enabled   = false
-#   zone_balancing_enabled     = true
-
-#   os_type      = "Windows"
-#   sku_name     = "I${var.workerPool}v2"
-#   worker_count = var.numberOfWorkers
-
-# }
