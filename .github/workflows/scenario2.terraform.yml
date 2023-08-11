@@ -36,7 +36,7 @@ permissions:
 env:
   modulePath: 'scenarios/secure-baseline-ase/terraform'
   terraformVersion: 1.3.9 # must be greater than or equal to 1.2 for OIDC
-  backendStateKey: 'secure-baseline-ase.tfstate'
+  backendStateKey: 'scenario2.tfstate'
   tfvarPath: 'Parameters/uat.tfvars'
 
 jobs:
