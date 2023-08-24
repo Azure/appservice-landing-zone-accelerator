@@ -24,27 +24,27 @@
         // Feature Flags
         // set to true if you want to intercept all outbound traffic with azure firewall
         "enableEgressLockdown" : {
-            "value": "true"
+            "value": true
         },
         // set to true if you want to a redis cache
         "deployRedis": {
-            "value": "false"
+            "value": true
         },
         // set to true if you want to deploy a azure SQL server and default database
         "deployAzureSql": {
-            "value": "true"
+            "value": true
         },
         // set to true if you want to deploy application configuration
         "deployAppConfig": {
-            "value": "true"
+            "value": true
         },
         // set to true if you want to deploy a jumpbox/devops VM
         "deployJumpHost": {
-            "value": "true"
+            "value": true
         },
         // set to true if you want to auto approve the Private Endpoint of the AFD Premium
         "autoApproveAfdPrivateEndpoint": {
-            "value": "true"
+            "value": true
         },
         // CIDR of the subnet that will host the azure Firewall
         "subnetHubFirewallAddressSpace": {
