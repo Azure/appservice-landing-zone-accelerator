@@ -74,10 +74,6 @@ param slots array = []
 param tags object = {}
 
 // Diagnostic Settings
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
 
 @description('Optional. Resource ID of log analytics workspace.')
 param diagnosticWorkspaceId string = ''
@@ -151,20 +147,12 @@ param redundancyMode string = 'None'
 var diagnosticsLogsSpecified = [for category in filter(diagnosticLogCategoriesToEnable, item => item != 'allLogs'): {
   category: category
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsLogs = contains(diagnosticLogCategoriesToEnable, 'allLogs') ? [
   {
     categoryGroup: 'allLogs'
     enabled: true
-    retentionPolicy: {
-      enabled: true
-      days: diagnosticLogsRetentionInDays
-    }
   }
 ] : diagnosticsLogsSpecified
 
@@ -172,10 +160,6 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var identityType = systemAssignedIdentity ? (!empty(userAssignedIdentities) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned') : (!empty(userAssignedIdentities) ? 'UserAssigned' : 'None')
@@ -315,7 +299,6 @@ module app_slots 'web-app.slots.bicep' = [for (slot, index) in slots: {
     storageAccountId: contains(slot, 'storageAccountId') ? slot.storageAccountId : storageAccountId
     appInsightId: contains(slot, 'appInsightId') ? slot.appInsightId : appInsightId
     setAzureWebJobsDashboard: contains(slot, 'setAzureWebJobsDashboard') ? slot.setAzureWebJobsDashboard : setAzureWebJobsDashboard
-    diagnosticLogsRetentionInDays: contains(slot, 'diagnosticLogsRetentionInDays') ? slot.diagnosticLogsRetentionInDays : diagnosticLogsRetentionInDays
     diagnosticWorkspaceId: diagnosticWorkspaceId
     diagnosticLogCategoriesToEnable: contains(slot, 'diagnosticLogCategoriesToEnable') ? slot.diagnosticLogCategoriesToEnable : diagnosticLogCategoriesToEnable
     diagnosticMetricsToEnable: contains(slot, 'diagnosticMetricsToEnable') ? slot.diagnosticMetricsToEnable : diagnosticMetricsToEnable

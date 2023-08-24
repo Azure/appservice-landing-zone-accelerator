@@ -32,7 +32,7 @@
         },
         // set to true if you want to deploy a azure SQL server and default database
         "deployAzureSql": {
-            "value": "true"
+            "value": true
         },
         // set to true if you want to deploy application configuration
         "deployAppConfig": {
