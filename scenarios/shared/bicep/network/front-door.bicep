@@ -61,11 +61,6 @@ param wafPolicyMode string = 'Prevention'
 @description('if no diagnostic serttings are required, provide an empty string. Resource ID of log analytics workspace.')
 param diagnosticWorkspaceId string
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 // Create an Array of all Endpoint which includes customDomain Id and afdEndpoint Id
 // This array is needed to be attached to Microsoft.Cdn/profiles/securitypolicies
 // var customDomainIds = [for (domain, index) in customDomains: {id: custom_domains[index].id}]
@@ -140,20 +135,12 @@ param diagnosticMetricsToEnable array = [
 var diagnosticsLogsSpecified = [for category in filter(diagnosticLogCategoriesToEnable, item => item != 'allLogs'): {
   category: category
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 var diagnosticsLogs = contains(diagnosticLogCategoriesToEnable, 'allLogs') ? [
   {
     categoryGroup: 'allLogs'
     enabled: true
-    retentionPolicy: {
-      enabled: true
-      days: diagnosticLogsRetentionInDays
-    }
   }
 ] : diagnosticsLogsSpecified
 
@@ -161,10 +148,6 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 @description('Optional. The name of the diagnostic setting, if deployed.')

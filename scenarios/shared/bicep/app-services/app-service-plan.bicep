@@ -49,11 +49,6 @@ param targetWorkerSize int = 0
 @description('Optional. The name of the diagnostic setting, if deployed.')
 param diagnosticSettingsName string = '${name}-diagnosticSettings'
 
-@description('Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely.')
-@minValue(0)
-@maxValue(365)
-param diagnosticLogsRetentionInDays int = 365
-
 @description('Optional. Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.')
 param diagnosticWorkspaceId string = ''
 
@@ -80,10 +75,6 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   category: metric
   timeGrain: null
   enabled: true
-  retentionPolicy: {
-    enabled: true
-    days: diagnosticLogsRetentionInDays
-  }
 }]
 
 // https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/patterns-configuration-set#example
