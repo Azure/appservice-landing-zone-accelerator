@@ -1,6 +1,6 @@
 application_name = "eslz2"
 environment      = "prod"
-location         = "westus2"
+location         = "westus3"
 owner            = "cloudops@contoso.com"
 
 # For the hub state, use the same settings as the remote state config on the hub deployment from /hub/main.tf
@@ -18,11 +18,11 @@ aad_admin_group_name      = "AppSvcLZA Azure AD SQL Admins"
 vm_aad_admin_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884" # "AppSvcLZA Azure AD SQL Admins"
 
 
-# Optionally provide non-AAD admin credentials for the VM
+## Optionally provide non-AAD admin credentials for the VM
 # vm_admin_username         = "daniem"
 # vm_admin_password         = "**************"
 
-# These settings are used for peering the spoke to the hub. Fill in the appropriate settings for your environment
+## These settings are used for peering the spoke to the hub. Fill in the appropriate settings for your environment
 # hub_settings = {
 #   rg_name   = "rg-hub-scenario1-wus3"
 #   vnet_name = "vnet-hub-scenario1-wus3"
@@ -32,7 +32,7 @@ vm_aad_admin_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884" # "AppSvcLZA Azu
 #   }
 # }
 
-# Toggle deployment of optional features and services for the Landing Zone
+## Toggle deployment of optional features and services for the Landing Zone
 deployment_options = {
   enable_waf                 = true
   enable_egress_lockdown     = true
@@ -44,7 +44,7 @@ deployment_options = {
   deploy_vm                  = false
 }
 
-# Optionally deploy a Github runner, DevOps agent, or both to the VM. 
+## Optionally deploy a Github runner, DevOps agent, or both to the VM. 
 # devops_settings = {
 #   github_runner = {
 #     repository_url = "https://github.com/{organization}/{repository}"
