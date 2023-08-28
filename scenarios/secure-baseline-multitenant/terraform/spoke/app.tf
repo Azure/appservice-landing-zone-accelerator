@@ -6,12 +6,10 @@ locals {
 module "app_service" {
   source = "../../../shared/terraform-modules/app-service"
 
-  global_settings  = local.global_settings
-  resource_group   = azurerm_resource_group.spoke.name
-  application_name = var.application_name
-  # environment                = var.environment
-  location = var.location
-  # unique_id                  = random_integer.unique_id.result
+  global_settings            = local.global_settings
+  resource_group             = azurerm_resource_group.spoke.name
+  application_name           = var.application_name
+  location                   = var.location
   log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
   enable_diagnostic_settings = var.deployment_options.enable_diagnostic_settings
 
