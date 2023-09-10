@@ -31,6 +31,7 @@ variable "subresource_names" {
 variable "private_dns_records" {
   type        = list(string)
   description = "The dns records to be created for the private endpoint"
+  default     = []
 }
 
 variable "private_dns_zone" {
@@ -47,4 +48,10 @@ variable "ttl" {
   type        = number
   description = "The time to live of the dns records"
   default     = 300
+}
+
+variable "tags" {
+  description = "A mapping of tags to assign to the resource."
+  type        = map(string)
+  default     = {}
 }

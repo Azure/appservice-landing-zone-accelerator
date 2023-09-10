@@ -28,6 +28,7 @@
 | <a name="module_frontdoor"></a> [frontdoor](#module\_frontdoor) | ../../../shared/terraform-modules/frontdoor | n/a |
 | <a name="module_key_vault"></a> [key\_vault](#module\_key\_vault) | ../../../shared/terraform-modules/key-vault | n/a |
 | <a name="module_network"></a> [network](#module\_network) | ../../../shared/terraform-modules/network | n/a |
+| <a name="module_openai"></a> [openai](#module\_openai) | ../../../shared/terraform-modules/openai | n/a |
 | <a name="module_private_dns_zones"></a> [private\_dns\_zones](#module\_private\_dns\_zones) | ../../../shared/terraform-modules/private-dns-zone | n/a |
 | <a name="module_redis_cache"></a> [redis\_cache](#module\_redis\_cache) | ../../../shared/terraform-modules/redis | n/a |
 | <a name="module_sql_database"></a> [sql\_database](#module\_sql\_database) | ../../../shared/terraform-modules/sql-database | n/a |
