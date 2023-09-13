@@ -762,6 +762,16 @@
      nameUnique: endsWith(take(replace(nut, ph, 'dnsrec'), 50), d) ? take(replace(nut, ph, 'dnsrec'), 50-1) : take(replace(nut, ph, 'dnsrec'), 50)
      slug: 'dnsrec'
    }
+   openAiAccount: {
+     name: endsWith(take(replace(nt, ph, 'oaiacc'), 50), d) ? take(replace(nt, ph, 'oaiacc'), 50-1) : take(replace(nt, ph, 'oaiacc'), 50)
+     nameUnique: endsWith(take(replace(nut, ph, 'oaiacc'), 50), d) ? take(replace(nut, ph, 'oaiacc'), 50-1) : take(replace(nut, ph, 'oaiacc'), 50)
+     slug: 'oaiacc'
+   }
+   openAiDeployment: {
+    name: endsWith(take(replace(nt, ph, 'oaidep'), 50), d) ? take(replace(nt, ph, 'oaidep'), 50-1) : take(replace(nt, ph, 'oaidep'), 50)
+    nameUnique: endsWith(take(replace(nut, ph, 'oaidep'), 50), d) ? take(replace(nut, ph, 'oaidep'), 50-1) : take(replace(nut, ph, 'oaidep'), 50)
+    slug: 'oaidep'
+  }
    pointToSiteVpnGateway: { 
      name: endsWith(take(replace(nt, ph, 'vpngw'), 80), d) ? take(replace(nt, ph, 'vpngw'), 80-1) : take(replace(nt, ph, 'vpngw'), 80)
      nameUnique: endsWith(take(replace(nut, ph, 'vpngw'), 80), d) ? take(replace(nut, ph, 'vpngw'), 80-1) : take(replace(nut, ph, 'vpngw'), 80)

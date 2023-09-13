@@ -104,3 +104,12 @@ resource openAIDeployment 'Microsoft.CognitiveServices/accounts/deployments@2023
     }
   }
 }
+
+output openAIAccountEndpoint string = openAIAccount.properties.endpoint
+
+output openAIAccountPrimaryKey string = openAIAccount.properties.endpoints.primaryKey
+
+output openAIAccountSecondaryKey string = openAIAccount.properties.endpoints.secondaryKey
+
+output openAiPrimaryKey string = openAIAccount.properties.customSubDomainName
+

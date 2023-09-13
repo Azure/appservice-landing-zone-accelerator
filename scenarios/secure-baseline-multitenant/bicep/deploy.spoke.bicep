@@ -42,6 +42,9 @@ param deployAppConfig bool
 @description('Deploy (or not) an Azure virtual machine (to be used as jumphost)')
 param deployJumpHost bool
 
+@description('Deploy (or not) an Azure OpenAI account')
+param deployOpenAi bool
+
 // post deployment specific parameters for the jumpBox
 @description('The URL of the Github repository to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_token must also be provided.')
 param githubRepository string = '' 
@@ -113,6 +116,8 @@ var resourceNames = {
   routeTable: naming.routeTable.name
   routeEgressLockdown: '${naming.route.name}-egress-lockdown'
   idAfdApprovePeAutoApprover: take('${naming.userAssignedManagedIdentity.name}-AfdApprovePe', 128)
+  openAiAccount: naming.openAiAccount.name
+  openAiDeployment: naming.openAiDeployment.name
 }
 
 var udrRoutes = [
@@ -355,6 +360,15 @@ module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = if (deployAzu
   }
 }
 
+module openAi '../../shared/bicep/openai/openai.bicep'= if(deployOpenAi) {
+  name: take('${resourceNames.openAiAccount}-openAiModule-Deployment', 64)
+  params: {
+    accountName: resourceNames.openAiAccount
+    deploymentName: resourceNames.openAiDeployment
+    location: location
+    tags: tags
+  }
+}
 
 output vnetSpokeName string = vnetSpoke.outputs.vnetName
 output vnetSpokeId string = vnetSpoke.outputs.vnetId
