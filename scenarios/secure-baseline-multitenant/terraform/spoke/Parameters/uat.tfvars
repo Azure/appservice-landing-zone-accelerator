@@ -42,6 +42,7 @@ deployment_options = {
   deploy_sql_database        = true
   deploy_app_config          = true
   deploy_vm                  = false
+  deploy_openai              = true
 }
 
 ## Optionally deploy a Github runner, DevOps agent, or both to the VM. 

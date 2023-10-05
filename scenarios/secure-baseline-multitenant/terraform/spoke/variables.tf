@@ -179,6 +179,7 @@ variable "deployment_options" {
     deploy_sql_database        = bool
     deploy_app_config          = bool
     deploy_vm                  = bool
+    deploy_openai              = bool
   })
 
   description = "Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache."
@@ -192,6 +193,7 @@ variable "deployment_options" {
     deploy_sql_database        = true
     deploy_app_config          = true
     deploy_vm                  = true
+    deploy_openai              = true
   }
 }
 

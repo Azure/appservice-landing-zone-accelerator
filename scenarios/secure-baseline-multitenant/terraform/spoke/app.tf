@@ -66,6 +66,29 @@ module "sql_database" {
   private_dns_zone = local.provisioned_dns_zones["privatelink.database.windows.net"]
 }
 
+module "key_vault" {
+  source = "../../../shared/terraform-modules/key-vault"
+
+  resource_group         = azurerm_resource_group.spoke.name
+  application_name       = var.application_name
+  environment            = var.environment
+  location               = var.location
+  tenant_id              = var.tenant_id
+  unique_id              = random_integer.unique_id.result
+  sku_name               = "standard"
+  private_link_subnet_id = module.network.subnets["privateLink"].id
+  global_settings        = local.global_settings
+  tags                   = local.base_tags
+  secret_reader_identities = [
+    azurerm_user_assigned_identity.reader.principal_id
+  ]
+
+  secret_officer_identities = [
+    azurerm_user_assigned_identity.contributor.principal_id
+  ]
+  private_dns_zone = local.provisioned_dns_zones["privatelink.vaultcore.azure.net"]
+}
+
 module "app_configuration" {
   count = var.deployment_options.deploy_app_config ? 1 : 0
 
@@ -89,29 +112,6 @@ module "app_configuration" {
   ]
 
   private_dns_zone = local.provisioned_dns_zones["privatelink.azconfig.io"]
-}
-
-module "key_vault" {
-  source = "../../../shared/terraform-modules/key-vault"
-
-  resource_group         = azurerm_resource_group.spoke.name
-  application_name       = var.application_name
-  environment            = var.environment
-  location               = var.location
-  tenant_id              = var.tenant_id
-  unique_id              = random_integer.unique_id.result
-  sku_name               = "standard"
-  private_link_subnet_id = module.network.subnets["privateLink"].id
-  global_settings        = local.global_settings
-  tags                   = local.base_tags
-  secret_reader_identities = [
-    azurerm_user_assigned_identity.reader.principal_id
-  ]
-
-  secret_officer_identities = [
-    azurerm_user_assigned_identity.contributor.principal_id
-  ]
-  private_dns_zone = local.provisioned_dns_zones["privatelink.vaultcore.azure.net"]
 }
 
 module "redis_cache" {
