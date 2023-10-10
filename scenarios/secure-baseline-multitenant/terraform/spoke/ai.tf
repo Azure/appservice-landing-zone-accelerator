@@ -23,9 +23,9 @@ module "openai" {
       scale_type    = "Standard"
     }
   }
-  
-  pe_private_link_subnet_id = module.network.subnets["privateLink"].id 
-  private_dns_zone = local.provisioned_dns_zones["privatelink.openai.azure.com"]
+
+  pe_private_link_subnet_id = module.network.subnets["privateLink"].id
+  private_dns_zone          = local.provisioned_dns_zones["privatelink.openai.azure.com"]
 
   network_acls = [
     {

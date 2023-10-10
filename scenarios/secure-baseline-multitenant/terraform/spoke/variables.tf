@@ -211,6 +211,8 @@ variable "appsvc_options" {
       application_stack = object({
         current_stack       = string # required for windows
         dotnet_version      = optional(string)
+        docker_image        = optional(string) # linux only
+        docker_image_tag    = optional(string) # linux only
         php_version         = optional(string)
         node_version        = optional(string)
         java_version        = optional(string)
@@ -218,9 +220,6 @@ variable "appsvc_options" {
         python_version      = optional(string) # linux only
         java_server         = optional(string) # linux only
         java_server_version = optional(string) # linux only
-        go_version          = optional(string) # linux only
-        docker_image        = optional(string) # linux only
-        docker_image_tag    = optional(string) # linux only
         go_version          = optional(string) # linux only
         ruby_version        = optional(string) # linux only
       })
