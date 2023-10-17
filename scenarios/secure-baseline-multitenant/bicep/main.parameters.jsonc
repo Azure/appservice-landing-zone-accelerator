@@ -4,7 +4,8 @@
     "parameters": {
         // max length: 10. Suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>
         "workloadName" : {
-           "value": "appSvc-LZA"         
+           "value": "merge-ase"  
+           // "value": "merge-mul"
         },
         //Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
         "environmentName": {
@@ -12,7 +13,7 @@
         },
         //Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.
         "deployAseV3": {
-            "value": false
+            "value": true
         },
         //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
         "vnetHubResourceId": {
@@ -32,23 +33,23 @@
         },
         // set to true if you want to a redis cache
         "deployRedis": {
-            "value": true
+            "value": false
         },
         // set to true if you want to deploy a azure SQL server and default database
         "deployAzureSql": {
-            "value": true
+            "value": false
         },
         // set to true if you want to deploy application configuration
         "deployAppConfig": {
-            "value": true
+            "value": false
         },
         // set to true if you want to deploy a jumpbox/devops VM
         "deployJumpHost": {
-            "value": true
+            "value": false
         },
         // set to true if you want to auto approve the Private Endpoint of the AFD Premium
         "autoApproveAfdPrivateEndpoint": {
-            "value": true
+            "value": false
         },
         // CIDR of the subnet that will host the azure Firewall
         "subnetHubFirewallAddressSpace": {
@@ -64,7 +65,7 @@
         },
         //CIDR of the subnet that will hold the app services plan. ATTENTION: ASEv3 needs a /24 network 
         "subnetSpokeAppSvcAddressSpace": {
-            "value": "10.240.0.0/26"
+            "value": "10.240.0.0/24"
         },
         // //CIDRof the subnet that will hold the private link for the AFD Premium 
         // "subnetSpokeAfdIngressAddressSpace": {
