@@ -61,7 +61,7 @@
         "vnetSpokeAddressSpace": {
             "value": "10.240.0.0/20"
         },
-        //CIDR of the subnet that will hold the app services plan 
+        //CIDR of the subnet that will hold the app services plan. ATTENTION: ASEv3 needs a /24 network 
         "subnetSpokeAppSvcAddressSpace": {
             "value": "10.240.0.0/26"
         },

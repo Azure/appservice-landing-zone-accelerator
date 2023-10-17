@@ -98,6 +98,8 @@ var resourceNames = {
   snetAppSvc: 'snet-appSvc-${naming.virtualNetwork.name}-spoke'
   snetDevOps: 'snet-devOps-${naming.virtualNetwork.name}-spoke'
   snetPe: 'snet-pe-${naming.virtualNetwork.name}-spoke'
+  pepNsg: take('${naming.networkSecurityGroup.name}-pep', 80)
+  aseNsg: take('${naming.networkSecurityGroup.name}-ase', 80)
   appSvcUserAssignedManagedIdentity: take('${naming.userAssignedManagedIdentity.name}-appSvc', 128)
   vmJumpHostUserAssignedManagedIdentity: take('${naming.userAssignedManagedIdentity.name}-vmJumpHost', 128)
   keyvault: naming.keyVault.nameUnique
@@ -134,21 +136,18 @@ var subnets = [
     name: resourceNames.snetAppSvc
     properties: {
       addressPrefix: subnetSpokeAppSvcAddressSpace
-      privateEndpointNetworkPolicies: 'Enabled'  
+      privateEndpointNetworkPolicies: !(deployAseV3) ? 'Enabled' : 'Disabled'  
       delegations: [
         {
           name: 'delegation'
           properties: {
-            serviceName: 'Microsoft.Web/serverfarms'
+            serviceName: !(deployAseV3) ? 'Microsoft.Web/serverfarms' : 'Microsoft.Web/hostingEnvironments'
           }
         }
       ]
-      // networkSecurityGroup: {
-      //   id: nsgAca.outputs.nsgID
-      // } 
-      // routeTable: {
-      //   id: !empty(firewallInternalIp) && (enableEgressLockdown) ? routeTableToFirewall.outputs.resourceId : ''
-      // } 
+      networkSecurityGroup: {
+        id: !(deployAseV3) ? nsgPep.outputs.nsgId : nsgAse.outputs.nsgId
+      } 
       routeTable: !empty(firewallInternalIp) && (enableEgressLockdown) ? {
         id: routeTableToFirewall.outputs.resourceId 
       } : null
@@ -160,12 +159,18 @@ var subnets = [
       addressPrefix: subnetSpokeDevOpsAddressSpace
       privateEndpointNetworkPolicies: 'Enabled'    
     }
+    networkSecurityGroup: {
+      id: nsgPep.outputs.nsgId
+    }
   }
   {
     name: resourceNames.snetPe
     properties: {
       addressPrefix: subnetSpokePrivateEndpointAddressSpace
       privateEndpointNetworkPolicies: 'Disabled'    
+    }
+    networkSecurityGroup: {
+      id: nsgPep.outputs.nsgId
     }
   }
 ]
@@ -212,6 +217,46 @@ module routeTableToFirewall '../../shared/bicep/network/udr.bicep' = if (!empty(
   }
 }
 
+@description('NSG Rules for the private enpoint subnet.')
+module nsgPep '../../shared/bicep/network/nsg.bicep' = {
+  name: take('nsgPep-${deployment().name}', 64)
+  params: {
+    name: resourceNames.pepNsg
+    location: location
+    tags: tags
+    securityRules: []
+    diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
+  }
+}
+
+@description('NSG Rules for the private enpoint subnet.')
+module nsgAse '../../shared/bicep/network/nsg.bicep' = {
+  name: take('nsgAse-${deployment().name}', 64)
+  params: {
+    name: resourceNames.aseNsg
+    location: location
+    tags: tags
+    securityRules: [
+      {
+        name: 'SSL_WEB_443'
+        properties: {
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: 'Tcp'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '443'
+          priority: 100
+        }        
+      }
+    ]
+    diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
+  }
+}
+
+
+
 resource snetAppSvc 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
   name: '${vnetSpoke.outputs.vnetName}/${resourceNames.snetAppSvc}'
 }
@@ -227,7 +272,7 @@ resource snetPe 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing 
 module logAnalyticsWs '../../shared/bicep/log-analytics-ws.bicep' = {
   name: 'logAnalyticsWs-Deployment'
   params: {
-    name: resourceNames.logAnalyticsWs
+    name: resourceNames.logAnalticsWs
     location: location
     tags: tags
   }
