@@ -10,6 +10,9 @@
         "environmentName": {
             "value": "dev"
         },
+        "deployAseV3": {
+            "value": false
+        },
         //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
         "vnetHubResourceId": {
             "value": ""

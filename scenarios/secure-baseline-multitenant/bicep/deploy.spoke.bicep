@@ -6,6 +6,9 @@ param naming object
 @description('Azure region where the resources will be deployed in')
 param location string = resourceGroup().location
 
+@description('Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.')
+param deployAseV3 bool = false
+
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param vnetSpokeAddressSpace string
 

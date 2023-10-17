@@ -15,6 +15,9 @@ param location string = deployment().location
 @maxLength(8)
 param environmentName string = 'test'
 
+@description('Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.')
+param deployAseV3 bool = false
+
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24 - optional if you want to use an existing hub vnet (vnetHubResourceId)')
 param vnetHubAddressSpace string = '10.242.0.0/20'
 
@@ -192,6 +195,7 @@ module spoke 'deploy.spoke.bicep' = {
     naming: naming.outputs.names
     location: location
     tags: tags
+    deployAseV3: deployAseV3
     firewallInternalIp: empty(vnetHubResourceId) ? hub.outputs.firewallPrivateIp : firewallInternalIp
     vnetSpokeAddressSpace: vnetSpokeAddressSpace
     subnetSpokeAppSvcAddressSpace: subnetSpokeAppSvcAddressSpace
