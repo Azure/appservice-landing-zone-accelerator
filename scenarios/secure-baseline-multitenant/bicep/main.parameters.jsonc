@@ -10,6 +10,7 @@
         "environmentName": {
             "value": "dev"
         },
+        //Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.
         "deployAseV3": {
             "value": false
         },

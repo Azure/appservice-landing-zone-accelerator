@@ -19,15 +19,16 @@ The table below summurizes the avaialble parameters and the possible values that
 | Name | Description | Example | 
 |------|-------------|---------|
 |workloadName|A suffix that will be used to name the resources in a pattern similar to ` <resourceAbbreviation>-<workloadName> ` . Must be up to 10 characters long, alphanumeric with dashes|app-svc-01|
-|location|Azure region where the resources will be deployed in||
-|environment|Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.||
+|location|Azure region where the resources will be deployed in|northeurope|
+|environment|Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.|dev|
+|deployAseV3|Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.|false|
 |vnetHubResourceId|If empty, then a new hub will be created. If you select not to deploy a new Hub resource group, set the resource id of the Hub Virtual Network that you want to peer to. In that case, no new hub will be created and a peering will be created between the new spoke and and existing hub vnet|/subscriptions/<subscription_id>/ resourceGroups/<rg_name>/providers/ Microsoft.Network/virtualNetworks/<vnet_name>|
 |firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewal so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
 |vnetHubAddressSpace|If you deploy a new hub, you need to set the appropriate CIDR of the newly created Hub virtual network|10.242.0.0/20|
 |subnetHubFirewallAddressSpace|CIDR of the subnet that will host the azure Firewall|10.242.0.0/26|
 |subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.64/26|
 |vnetSpokeAddressSpace|CIDR of the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)|10.240.0.0/20|
-|subnetSpokeAppSvcAddressSpace|CIDR of the subnet that will hold the app services plan|10.240.0.0/26|
+|subnetSpokeAppSvcAddressSpace|CIDR of the subnet that will hold the app services plan. ATTENTION: If you deploy ASEv3 this CIDR should be x.x.x.x/24 |10.240.0.0/26 (*USE 10.240.0.0/24 if deployAseV3=true*)|
 |subnetSpokeDevOpsAddressSpace|CIDR of the subnet that will hold devOps agents etc|10.240.10.128/26|
 |subnetSpokePrivateEndpointAddressSpace|CIDR of the subnet that will hold the private endpoints of the supporting services|10.240.11.0/24|
 |webAppPlanSku|Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. select one from: 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ||
