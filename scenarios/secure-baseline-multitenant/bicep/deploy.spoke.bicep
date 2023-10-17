@@ -272,7 +272,7 @@ resource snetPe 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing 
 module logAnalyticsWs '../../shared/bicep/log-analytics-ws.bicep' = {
   name: 'logAnalyticsWs-Deployment'
   params: {
-    name: resourceNames.logAnalticsWs
+    name: resourceNames.logAnalyticsWs
     location: location
     tags: tags
   }
