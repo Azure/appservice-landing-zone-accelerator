@@ -17,7 +17,7 @@
         },
         //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
         "vnetHubResourceId": {
-            "value": ""
+            "value": "/subscriptions/f446c3cb-cee2-43df-a12c-2c858a062fdd/resourceGroups/rg-hub-appscen1-dev-northeurope/providers/Microsoft.Network/virtualNetworks/vnet-appscen1-dev-neu-hub"
         },
         //If vnetHubResourceId empty, this value is irrelevant. If vnetHubResourceId has value and we need UDR, then the internal IP of the azFW needs to be set. Otherwise no UDR will be created
         "firewallInternalIp": {
