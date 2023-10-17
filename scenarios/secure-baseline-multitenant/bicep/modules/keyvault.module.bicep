@@ -11,7 +11,7 @@ param tags object
 @description('Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled')
 param virtualNetworkLinks array = []
 
-@description('Default is empty. If empty no Private endpoint will be created fro the resoure. Otherwise, the subnet where the private endpoint will be attached to')
+@description('Default is empty. If empty no Private endpoint will be created for the resoure. Otherwise, the subnet where the private endpoint will be attached to')
 param subnetPrivateEndpointId string = ''
 
 @description('if empty, private dns zone will be deployed in the current RG scope')
@@ -33,7 +33,7 @@ module keyvault '../../../shared/bicep/keyvault.bicep' = {
 }
 
 module keyvaultPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
-  // condiotional scope is not working: https://github.com/Azure/bicep/issues/7367
+    // conditional scope is not working: https://github.com/Azure/bicep/issues/7367 but workaround: https://github.com/Azure/bicep/issues/10419#issuecomment-1507708535
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
   name: 'keyvaultPrivateDnsZoneDeployment'
