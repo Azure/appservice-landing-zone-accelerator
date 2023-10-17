@@ -30,7 +30,7 @@ param subnetHubBastionAddressSpace string = '10.242.0.64/26'
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param vnetSpokeAddressSpace string = '10.240.0.0/20'
 
-@description('CIDR of the subnet that will hold the app services plan')
+@description('CIDR of the subnet that will hold the app services plan. ATTENTION: ASEv3 needs a /24 network')
 param subnetSpokeAppSvcAddressSpace string = '10.240.0.0/26'
 
 @description('CIDR of the subnet that will hold devOps agents etc ')
