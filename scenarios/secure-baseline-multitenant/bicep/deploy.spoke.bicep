@@ -65,7 +65,7 @@ param installClis bool = false
 param installSsms bool = false
 
 @description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
-@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
+@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3', 'ASE_I1V2_AZ' ])
 param webAppPlanSku string
 
 @description('Kind of server OS of the App Service Plan')
@@ -105,6 +105,7 @@ var resourceNames = {
   keyvault: naming.keyVault.nameUnique
   logAnalyticsWs: naming.logAnalyticsWorkspace.name
   appInsights: naming.applicationInsights.name
+  aseName: naming.appServiceEnvironment.nameUnique
   aspName: naming.appServicePlan.name
   webApp: naming.appService.nameUnique
   vmWindowsJumpbox: take('${naming.windowsVirtualMachine.name}-win-jumpbox', 64)
@@ -293,6 +294,8 @@ module keyvault 'modules/keyvault.module.bicep' = {
 module webApp 'modules/app-service.module.bicep' = {
   name: 'webAppModule-Deployment'
   params: {
+    deployAseV3: deployAseV3
+    aseName: resourceNames.aseName
     appServicePlanName: resourceNames.aspName
     webAppName: resourceNames.webApp
     managedIdentityName: resourceNames.appSvcUserAssignedManagedIdentity
@@ -314,40 +317,42 @@ module webApp 'modules/app-service.module.bicep' = {
   }
 }
 
-module afd '../../shared/bicep/network/front-door.bicep' = {
-  name: take ('AzureFrontDoor-${resourceNames.frontDoor}-deployment', 64)
-  params: {
-    afdName: resourceNames.frontDoor
-    diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
-    endpointName: resourceNames.frontDoorEndPoint
-    originGroupName: resourceNames.frontDoorEndPoint
-    origins: [
-      {
-          name: webApp.outputs.webAppName  //1-50 Alphanumerics and hyphens
-          hostname: webApp.outputs.webAppHostName
-          enabledState: true
-          privateLinkOrigin: {
-            privateEndpointResourceId: webApp.outputs.webAppResourceId
-            privateLinkResourceType: 'sites'
-            privateEndpointLocation: webApp.outputs.webAppLocation
-          }
-      }
-    ]
-    skuName:'Premium_AzureFrontDoor'
-    wafPolicyName: resourceNames.frontDoorWaf 
-  }
-}
 
-module autoApproveAfdPe 'modules/approve-afd-pe.module.bicep' = if (autoApproveAfdPrivateEndpoint) {
-  name: take ('autoApproveAfdPe-${resourceNames.frontDoor}-deployment', 64)
-  params: { 
-    location: location
-    idAfdPeAutoApproverName: resourceNames.idAfdApprovePeAutoApprover
-  }
-  dependsOn: [
-    afd
-  ]
-}
+//ATTENTION: TODO: Temporarily commented out to fix web hosted in ASE
+// module afd '../../shared/bicep/network/front-door.bicep' = {
+//   name: take ('AzureFrontDoor-${resourceNames.frontDoor}-deployment', 64)
+//   params: {
+//     afdName: resourceNames.frontDoor
+//     diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
+//     endpointName: resourceNames.frontDoorEndPoint
+//     originGroupName: resourceNames.frontDoorEndPoint
+//     origins: [
+//       {
+//           name: webApp.outputs.webAppName  //1-50 Alphanumerics and hyphens
+//           hostname: webApp.outputs.webAppHostName
+//           enabledState: true
+//           privateLinkOrigin: {
+//             privateEndpointResourceId: webApp.outputs.webAppResourceId
+//             privateLinkResourceType: 'sites'
+//             privateEndpointLocation: webApp.outputs.webAppLocation
+//           }
+//       }
+//     ]
+//     skuName:'Premium_AzureFrontDoor'
+//     wafPolicyName: resourceNames.frontDoorWaf 
+//   }
+// }
+
+// module autoApproveAfdPe 'modules/approve-afd-pe.module.bicep' = if (autoApproveAfdPrivateEndpoint) {
+//   name: take ('autoApproveAfdPe-${resourceNames.frontDoor}-deployment', 64)
+//   params: { 
+//     location: location
+//     idAfdPeAutoApproverName: resourceNames.idAfdApprovePeAutoApprover
+//   }
+//   dependsOn: [
+//     afd
+//   ]
+// }
 
 
 module vmWindowsModule 'modules/vmJumphost.module.bicep' = if (deployJumpHost) {

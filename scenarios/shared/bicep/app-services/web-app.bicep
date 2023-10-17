@@ -253,7 +253,6 @@ resource app 'Microsoft.Web/sites@2022-03-01' = {
     hostNameSslStates: hostNameSslStates
     hyperV: false
     redundancyMode: redundancyMode
-
   }
 }
 
