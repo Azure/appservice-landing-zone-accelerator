@@ -158,21 +158,21 @@ var subnets = [
     name: resourceNames.snetDevOps
     properties: {
       addressPrefix: subnetSpokeDevOpsAddressSpace
-      privateEndpointNetworkPolicies: 'Enabled'    
-    }
-    networkSecurityGroup: {
-      id: nsgPep.outputs.nsgId
-    }
+      privateEndpointNetworkPolicies: 'Enabled'   
+      networkSecurityGroup: {
+        id: nsgPep.outputs.nsgId
+      } 
+    }    
   }
   {
     name: resourceNames.snetPe
     properties: {
       addressPrefix: subnetSpokePrivateEndpointAddressSpace
-      privateEndpointNetworkPolicies: 'Disabled'    
-    }
-    networkSecurityGroup: {
-      id: nsgPep.outputs.nsgId
-    }
+      privateEndpointNetworkPolicies: 'Disabled'  
+      networkSecurityGroup: {
+        id: nsgPep.outputs.nsgId
+      }  
+    }    
   }
 ]
 
