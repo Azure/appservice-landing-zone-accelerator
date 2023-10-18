@@ -127,17 +127,17 @@
                                     "name": "deployAseV3",
                                     "type": "Microsoft.Common.OptionsGroup",
                                     "visible": true,
-                                    "label": "Deploy Isolated App Service Environment v3?",
+                                    "label": "Deploy Isolated ASEv3?",
                                     "defaultValue": "No",
                                     "constraints": {
-                                        "allowedValues": [
-                                            {
-                                                "label": "Yes",
-                                                "value": true
-                                            },
+                                        "allowedValues": [                                            
                                             {
                                                 "label": "No",
                                                 "value": false
+                                            },
+                                            {
+                                                "label": "Yes",
+                                                "value": true
                                             }
                                         ]
                                     }
@@ -157,7 +157,7 @@
                                 {
                                     "name": "webAppPlanSku",
                                     "type": "Microsoft.Common.DropDown",
-                                    "label": "Web App Plan Sku (Select ASE_I1V2_AZ if you want to deploy an ASEv3)",
+                                    "label": "Web App Plan Sku (Select 'ASE_I1V2_AZ' if you want to deploy an ASEv3)",
                                     "subLabel": "",
                                     "defaultValue": "S1",
                                     "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
