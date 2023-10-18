@@ -89,6 +89,8 @@ module ase '../../../shared/bicep/app-services/ase/ase.bicep' = if (deployAseV3)
     diagnosticWorkspaceId: logAnalyticsWsId
     subnetResourceId: subnetIdForVnetInjection
     zoneRedundant: true
+    allowNewPrivateEndpointConnections: true  //we need to expose our web app through AFD Premium, and that needs to create a Private Link. Otherwise the error you get is: 
+    // Private Link for App Service Environment Site is only allowed on ASEv3's that have allowedPrivateEndpointConnections specified to be true object is not present in the request body.
   }
 }
 

@@ -318,41 +318,40 @@ module webApp 'modules/app-service.module.bicep' = {
 }
 
 
-//ATTENTION: TODO: Temporarily commented out to fix web hosted in ASE
-// module afd '../../shared/bicep/network/front-door.bicep' = {
-//   name: take ('AzureFrontDoor-${resourceNames.frontDoor}-deployment', 64)
-//   params: {
-//     afdName: resourceNames.frontDoor
-//     diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
-//     endpointName: resourceNames.frontDoorEndPoint
-//     originGroupName: resourceNames.frontDoorEndPoint
-//     origins: [
-//       {
-//           name: webApp.outputs.webAppName  //1-50 Alphanumerics and hyphens
-//           hostname: webApp.outputs.webAppHostName
-//           enabledState: true
-//           privateLinkOrigin: {
-//             privateEndpointResourceId: webApp.outputs.webAppResourceId
-//             privateLinkResourceType: 'sites'
-//             privateEndpointLocation: webApp.outputs.webAppLocation
-//           }
-//       }
-//     ]
-//     skuName:'Premium_AzureFrontDoor'
-//     wafPolicyName: resourceNames.frontDoorWaf 
-//   }
-// }
+module afd '../../shared/bicep/network/front-door.bicep' = {
+  name: take ('AzureFrontDoor-${resourceNames.frontDoor}-deployment', 64)
+  params: {
+    afdName: resourceNames.frontDoor
+    diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
+    endpointName: resourceNames.frontDoorEndPoint
+    originGroupName: resourceNames.frontDoorEndPoint
+    origins: [
+      {
+          name: webApp.outputs.webAppName  //1-50 Alphanumerics and hyphens
+          hostname: webApp.outputs.webAppHostName
+          enabledState: true
+          privateLinkOrigin: {
+            privateEndpointResourceId: webApp.outputs.webAppResourceId
+            privateLinkResourceType: 'sites'
+            privateEndpointLocation: webApp.outputs.webAppLocation
+          }
+      }
+    ]
+    skuName:'Premium_AzureFrontDoor'
+    wafPolicyName: resourceNames.frontDoorWaf 
+  }
+}
 
-// module autoApproveAfdPe 'modules/approve-afd-pe.module.bicep' = if (autoApproveAfdPrivateEndpoint) {
-//   name: take ('autoApproveAfdPe-${resourceNames.frontDoor}-deployment', 64)
-//   params: { 
-//     location: location
-//     idAfdPeAutoApproverName: resourceNames.idAfdApprovePeAutoApprover
-//   }
-//   dependsOn: [
-//     afd
-//   ]
-// }
+module autoApproveAfdPe 'modules/approve-afd-pe.module.bicep' = if (autoApproveAfdPrivateEndpoint) {
+  name: take ('autoApproveAfdPe-${resourceNames.frontDoor}-deployment', 64)
+  params: { 
+    location: location
+    idAfdPeAutoApproverName: resourceNames.idAfdApprovePeAutoApprover
+  }
+  dependsOn: [
+    afd
+  ]
+}
 
 
 module vmWindowsModule 'modules/vmJumphost.module.bicep' = if (deployJumpHost) {

@@ -77,7 +77,7 @@ param ipsslAddressCount int = 0
 ])
 param multiSize string = ''
 
-@description('Optional. Property to enable and disable new private endpoint connection creation on ASE. Ignored when kind is set to ASEv2.')
+@description('Optional. Property to enable and disable new private endpoint connection creation on ASE. Ignored when kind is set to ASEv2. If you wish to add a Premium AFD in front of the ASEv3, set this to true.')
 param allowNewPrivateEndpointConnections bool = false
 
 @description('Optional. Property to enable and disable FTP on ASEV3. Ignored when kind is set to ASEv2.')
