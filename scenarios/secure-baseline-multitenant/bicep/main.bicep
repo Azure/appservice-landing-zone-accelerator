@@ -238,6 +238,7 @@ module peerings 'modules/peerings.deployment.bicep' = {
 //  Telemetry Deployment
 @description('Enable usage and telemetry feedback to Microsoft.')
 var telemetryId = 'cf7e9f0a-f872-49db-b72f-f2e318189a6d-${location}-msb'
+#disable-next-line no-deployments-resources
 resource telemetrydeployment 'Microsoft.Resources/deployments@2021-04-01' = if (enableTelemetry) {
   name: telemetryId
   location: location

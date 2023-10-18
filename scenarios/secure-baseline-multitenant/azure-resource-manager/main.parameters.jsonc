@@ -4,11 +4,16 @@
     "parameters": {
         // max length: 10. Suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>
         "workloadName" : {
-           "value": "appSvc-LZA"         
+           "value": "merge-ase"  
+           // "value": "merge-mul"
         },
         //Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
         "environmentName": {
             "value": "dev"
+        },
+        //Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.
+        "deployAseV3": {
+            "value": false
         },
         //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
         "vnetHubResourceId": {
@@ -16,7 +21,7 @@
         },
         //If vnetHubResourceId empty, this value is irrelevant. If vnetHubResourceId has value and we need UDR, then the internal IP of the azFW needs to be set. Otherwise no UDR will be created
         "firewallInternalIp": {
-            "value": ""
+            "value": "10.242.0.4"
         },
         "vnetHubAddressSpace": {
             "value": "10.242.0.0/20"
@@ -28,23 +33,23 @@
         },
         // set to true if you want to a redis cache
         "deployRedis": {
-            "value": true
+            "value": false
         },
         // set to true if you want to deploy a azure SQL server and default database
         "deployAzureSql": {
-            "value": true
+            "value": false
         },
         // set to true if you want to deploy application configuration
         "deployAppConfig": {
-            "value": true
+            "value": false
         },
         // set to true if you want to deploy a jumpbox/devops VM
         "deployJumpHost": {
-            "value": true
+            "value": false
         },
         // set to true if you want to auto approve the Private Endpoint of the AFD Premium
         "autoApproveAfdPrivateEndpoint": {
-            "value": true
+            "value": false
         },
         // CIDR of the subnet that will host the azure Firewall
         "subnetHubFirewallAddressSpace": {
@@ -58,7 +63,7 @@
         "vnetSpokeAddressSpace": {
             "value": "10.240.0.0/20"
         },
-        //CIDR of the subnet that will hold the app services plan 
+        //CIDR of the subnet that will hold the app services plan. ATTENTION: ASEv3 needs a /24 network 
         "subnetSpokeAppSvcAddressSpace": {
             "value": "10.240.0.0/26"
         },
@@ -75,7 +80,7 @@
             "value": "10.240.11.0/24"
         },
         // Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions'
-        // select one from: 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ'
+        // select one from: 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3', 'ASE_I1V2_AZ'
         "webAppPlanSku": {
             "value": "S1"
         },

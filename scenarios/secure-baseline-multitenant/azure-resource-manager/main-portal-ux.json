@@ -112,6 +112,37 @@
                             "label": "App Service Plan settings",
                             "elements": [
                                 {
+                                    "name": "scenarioSelector",
+                                    "type": "Microsoft.Common.TextBlock",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "You can host your web applications in App Service Environment v3 (isolated hosting) or in an App service Plan (multitenant hosting)",
+                                        "link": {
+                                            "label": "Learn more for App Service Environment v3",
+                                            "uri": "https://learn.microsoft.com/azure/app-service/environment/overview"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "deployAseV3",
+                                    "type": "Microsoft.Common.OptionsGroup",
+                                    "visible": true,
+                                    "label": "Deploy Isolated App Service Environment v3?",
+                                    "defaultValue": "No",
+                                    "constraints": {
+                                        "allowedValues": [
+                                            {
+                                                "label": "Yes",
+                                                "value": true
+                                            },
+                                            {
+                                                "label": "No",
+                                                "value": false
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
                                     "name": "appSvcPlanSettings",
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": true,
@@ -126,7 +157,7 @@
                                 {
                                     "name": "webAppPlanSku",
                                     "type": "Microsoft.Common.DropDown",
-                                    "label": "Web App Plan Sku",
+                                    "label": "Web App Plan Sku (Select ASE_I1V2_AZ if you want to deploy an ASEv3)",
                                     "subLabel": "",
                                     "defaultValue": "S1",
                                     "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
@@ -168,6 +199,10 @@
                                             {
                                                 "label": "P3V3_AZ",
                                                 "value": "P3V3_AZ"
+                                            },
+                                            {
+                                                "label": "ASE_I1V2_AZ",
+                                                "value": "ASE_I1V2_AZ"
                                             }
                                         ],
                                         "validations": []
@@ -414,7 +449,7 @@
                             "label": "Spoke Subnet CIDR for Azure App Service",
                             "subLabel": "",
                             "defaultValue": "10.240.0.0/26",
-                            "toolTip": "CIDR of the subnet that will hold the app services plan",
+                            "toolTip": "CIDR of the subnet that will hold the app services plan. Use a /24 network space if you wish to deploy ASEv3, otherwise use a /26 for multi tenant app service plan.",
                             "constraints": {
                                 "required": true,
                                 "regex": "",
@@ -1042,6 +1077,7 @@
                 "numericSuffix": "[steps('extra').numericSuffix]",
                 "vnetHubResourceId": "[steps('networking').vnetHubResourceId]",
                 "firewallInternalIp": "[steps('networking').firewallInternalIp]",
+                "deployAseV3": "[steps('basics').appSvcPlanSection.deployAseV3]",
                 "webAppPlanSku": "[steps('basics').appSvcPlanSection.webAppPlanSku]",
                 "webAppBaseOs": "[steps('basics').appSvcPlanSection.webAppBaseOs]",
                 "adminUsername": "[steps('extra').jumpBoxSection.adminUsername]",
