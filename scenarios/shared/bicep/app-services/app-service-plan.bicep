@@ -70,7 +70,7 @@ param diagnosticMetricsToEnable array = [
 // If sku is Elastic Premium - used for EP Function hosting. Default is true
 // param isElasticPremium bool = true
 // 'Optional, default is false. If true, then starts with minimum 3 instances')
-var zoneRedundant  = endsWith(sku, 'LZA') ? true : false
+var zoneRedundant  = endsWith(sku, 'AZ') ? true : false
 var isElasticPremium = startsWith(sku, 'EP') ? true : false
 var aspKind = isElasticPremium ? 'elastic' : (serverOS == 'Windows' ? '' : 'linux')
 
