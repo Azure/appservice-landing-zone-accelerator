@@ -98,7 +98,7 @@ resource aseResource  'Microsoft.Web/hostingEnvironments@2022-09-01' existing = 
 
 module asePrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( deployAseV3 ) {
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
-  name: take('${replace('ase-appserviceenvironment-net', '.', '-')}-PrivateDnsZoneDeployment', 64)
+  name: take('${'ase-appserviceenvironment-net'}-PrivateDnsZoneDeployment', 64)
   params: {
     name: deployAseV3 ? '${aseResource.name}.appserviceenvironment.net' : ''
     virtualNetworkLinks: virtualNetworkLinks
