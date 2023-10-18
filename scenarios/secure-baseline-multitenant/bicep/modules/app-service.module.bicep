@@ -106,17 +106,17 @@ module asePrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( d
     aRecords: [
       {
         name: '*'
-        ipAddress: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
         ttl: 3600
       }
       {
         name: '*.scm'
-        ipAddress: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
         ttl: 3600
       }
       {
         name: '@'
-        ipAddress: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
         ttl: 3600
       }
     ]
