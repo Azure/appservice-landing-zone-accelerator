@@ -3,9 +3,9 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         // max length: 10. Suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>
-        "workloadName" : {
-           "value": "merge-ase"  
-           // "value": "merge-mul"
+        "workloadName": {
+            "value": "merge-ase"
+            // "value": "merge-mul"
         },
         //Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
         "environmentName": {
@@ -13,11 +13,11 @@
         },
         //Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.
         "deployAseV3": {
-            "value": true
+            "value": false
         },
         //If empty, then a new hub will be deployed. If given, no new hub will be created and we create the peering between spoke and and existing hub vnet
         "vnetHubResourceId": {
-            "value": "/subscriptions/f446c3cb-cee2-43df-a12c-2c858a062fdd/resourceGroups/rg-hub-appscen1-dev-northeurope/providers/Microsoft.Network/virtualNetworks/vnet-appscen1-dev-neu-hub"
+            "value": ""
         },
         //If vnetHubResourceId empty, this value is irrelevant. If vnetHubResourceId has value and we need UDR, then the internal IP of the azFW needs to be set. Otherwise no UDR will be created
         "firewallInternalIp": {
@@ -28,7 +28,7 @@
         },
         // Feature Flags
         // set to true if you want to intercept all outbound traffic with azure firewall
-        "enableEgressLockdown" : {
+        "enableEgressLockdown": {
             "value": true
         },
         // set to true if you want to a redis cache
@@ -65,7 +65,7 @@
         },
         //CIDR of the subnet that will hold the app services plan. ATTENTION: ASEv3 needs a /24 network 
         "subnetSpokeAppSvcAddressSpace": {
-            "value": "10.240.0.0/24"
+            "value": "10.240.0.0/26"
         },
         // //CIDRof the subnet that will hold the private link for the AFD Premium 
         // "subnetSpokeAfdIngressAddressSpace": {
@@ -82,11 +82,10 @@
         // Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions'
         // select one from: 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3', 'ASE_I1V2_AZ'
         "webAppPlanSku": {
-            "value": "ASE_I1V2_AZ"
+            "value": "S1"
         },
         // two options: Windows or Linux
-        "webAppBaseOs" : 
-        {
+        "webAppBaseOs": {
             "value": "Windows"
         },
         // admin username of the VM agent deployed in the Spoke
@@ -102,7 +101,7 @@
             "value": {
                 "deployment": "bicep"
             }
-        }, 
+        },
         // The Azure Active Directory (AAD) administrator group used for SQL Server authentication
         "sqlServerAdministrators": {
             "value": {

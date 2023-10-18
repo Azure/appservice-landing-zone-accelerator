@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.20.4.51522",
-      "templateHash": "14977110681381139912"
+      "version": "0.22.6.54827",
+      "templateHash": "3336052971969522478"
     }
   },
   "parameters": {
@@ -30,6 +30,13 @@
       "maxLength": 8,
       "metadata": {
         "description": "Required. The name of the environmentName (e.g. \"dev\", \"test\", \"prod\", \"preprod\", \"staging\", \"uat\", \"dr\", \"qa\"). Up to 8 characters long."
+      }
+    },
+    "deployAseV3": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan."
       }
     },
     "vnetHubAddressSpace": {
@@ -64,7 +71,7 @@
       "type": "string",
       "defaultValue": "10.240.0.0/26",
       "metadata": {
-        "description": "CIDR of the subnet that will hold the app services plan"
+        "description": "CIDR of the subnet that will hold the app services plan. ATTENTION: ASEv3 needs a /24 network"
       }
     },
     "subnetSpokeDevOpsAddressSpace": {
@@ -121,7 +128,11 @@
         "P3V3",
         "P1V3_AZ",
         "P2V3_AZ",
-        "P3V3_AZ"
+        "P3V3_AZ",
+        "EP1",
+        "EP2",
+        "EP3",
+        "ASE_I1V2_AZ"
       ],
       "metadata": {
         "description": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions"
@@ -330,8 +341,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "1979265534967934369"
+              "version": "0.22.6.54827",
+              "templateHash": "6039020287274305321"
             }
           },
           "parameters": {
@@ -1503,8 +1514,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "12984224661558000879"
+              "version": "0.22.6.54827",
+              "templateHash": "6164280833125289566"
             }
           },
           "parameters": {
@@ -1899,8 +1910,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "4064709153537522093"
+                      "version": "0.22.6.54827",
+                      "templateHash": "11030415745656825690"
                     }
                   },
                   "parameters": {
@@ -2035,8 +2046,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "6389026189341578887"
+                      "version": "0.22.6.54827",
+                      "templateHash": "18249007994089590825"
                     }
                   },
                   "parameters": {
@@ -2145,8 +2156,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "8724449987696627131"
+                              "version": "0.22.6.54827",
+                              "templateHash": "13078266356101405252"
                             }
                           },
                           "parameters": {
@@ -2339,8 +2350,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "11535560972989472774"
+                      "version": "0.22.6.54827",
+                      "templateHash": "7950762402225783762"
                     }
                   },
                   "parameters": {
@@ -2496,8 +2507,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "15323422695799345105"
+                      "version": "0.22.6.54827",
+                      "templateHash": "13538279806026434176"
                     }
                   },
                   "parameters": {
@@ -2760,8 +2771,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "8724449987696627131"
+                              "version": "0.22.6.54827",
+                              "templateHash": "13078266356101405252"
                             }
                           },
                           "parameters": {
@@ -3022,6 +3033,9 @@
           "tags": {
             "value": "[variables('tags')]"
           },
+          "deployAseV3": {
+            "value": "[parameters('deployAseV3')]"
+          },
           "firewallInternalIp": "[if(empty(parameters('vnetHubResourceId')), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('hubResourceGroupName')), 'Microsoft.Resources/deployments', take(format('hub-{0}-deployment', deployment().name), 64)), '2022-09-01').outputs.firewallPrivateIp.value), createObject('value', parameters('firewallInternalIp')))]",
           "vnetSpokeAddressSpace": {
             "value": "[parameters('vnetSpokeAddressSpace')]"
@@ -3100,8 +3114,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "1518181767354561309"
+              "version": "0.22.6.54827",
+              "templateHash": "16516488958431698090"
             }
           },
           "parameters": {
@@ -3113,6 +3127,13 @@
               "defaultValue": "[resourceGroup().location]",
               "metadata": {
                 "description": "Azure region where the resources will be deployed in"
+              }
+            },
+            "deployAseV3": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan."
               }
             },
             "vnetSpokeAddressSpace": {
@@ -3245,7 +3266,8 @@
                 "P3V3_AZ",
                 "EP1",
                 "EP2",
-                "EP3"
+                "EP3",
+                "ASE_I1V2_AZ"
               ],
               "metadata": {
                 "description": "Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions"
@@ -3309,11 +3331,14 @@
               "snetAppSvc": "[format('snet-appSvc-{0}-spoke', parameters('naming').virtualNetwork.name)]",
               "snetDevOps": "[format('snet-devOps-{0}-spoke', parameters('naming').virtualNetwork.name)]",
               "snetPe": "[format('snet-pe-{0}-spoke', parameters('naming').virtualNetwork.name)]",
+              "pepNsg": "[take(format('{0}-pep', parameters('naming').networkSecurityGroup.name), 80)]",
+              "aseNsg": "[take(format('{0}-ase', parameters('naming').networkSecurityGroup.name), 80)]",
               "appSvcUserAssignedManagedIdentity": "[take(format('{0}-appSvc', parameters('naming').userAssignedManagedIdentity.name), 128)]",
               "vmJumpHostUserAssignedManagedIdentity": "[take(format('{0}-vmJumpHost', parameters('naming').userAssignedManagedIdentity.name), 128)]",
               "keyvault": "[parameters('naming').keyVault.nameUnique]",
               "logAnalyticsWs": "[parameters('naming').logAnalyticsWorkspace.name]",
               "appInsights": "[parameters('naming').applicationInsights.name]",
+              "aseName": "[parameters('naming').appServiceEnvironment.nameUnique]",
               "aspName": "[parameters('naming').appServicePlan.name]",
               "webApp": "[parameters('naming').appService.nameUnique]",
               "vmWindowsJumpbox": "[take(format('{0}-win-jumpbox', parameters('naming').windowsVirtualMachine.name), 64)]",
@@ -3369,15 +3394,18 @@
                         "name": "[variables('resourceNames').snetAppSvc]",
                         "properties": {
                           "addressPrefix": "[parameters('subnetSpokeAppSvcAddressSpace')]",
-                          "privateEndpointNetworkPolicies": "Enabled",
+                          "privateEndpointNetworkPolicies": "[if(not(parameters('deployAseV3')), 'Enabled', 'Disabled')]",
                           "delegations": [
                             {
                               "name": "delegation",
                               "properties": {
-                                "serviceName": "Microsoft.Web/serverfarms"
+                                "serviceName": "[if(not(parameters('deployAseV3')), 'Microsoft.Web/serverfarms', 'Microsoft.Web/hostingEnvironments')]"
                               }
                             }
                           ],
+                          "networkSecurityGroup": {
+                            "id": "[if(not(parameters('deployAseV3')), reference(resourceId('Microsoft.Resources/deployments', take(format('nsgPep-{0}', deployment().name), 64)), '2022-09-01').outputs.nsgId.value, reference(resourceId('Microsoft.Resources/deployments', take(format('nsgAse-{0}', deployment().name), 64)), '2022-09-01').outputs.nsgId.value)]"
+                          },
                           "routeTable": "[if(and(not(empty(parameters('firewallInternalIp'))), parameters('enableEgressLockdown')), createObject('id', reference(resourceId('Microsoft.Resources/deployments', 'routeTableToFirewall-Deployment'), '2022-09-01').outputs.resourceId.value), null())]"
                         }
                       },
@@ -3385,14 +3413,20 @@
                         "name": "[variables('resourceNames').snetDevOps]",
                         "properties": {
                           "addressPrefix": "[parameters('subnetSpokeDevOpsAddressSpace')]",
-                          "privateEndpointNetworkPolicies": "Enabled"
+                          "privateEndpointNetworkPolicies": "Enabled",
+                          "networkSecurityGroup": {
+                            "id": "[reference(resourceId('Microsoft.Resources/deployments', take(format('nsgPep-{0}', deployment().name), 64)), '2022-09-01').outputs.nsgId.value]"
+                          }
                         }
                       },
                       {
                         "name": "[variables('resourceNames').snetPe]",
                         "properties": {
                           "addressPrefix": "[parameters('subnetSpokePrivateEndpointAddressSpace')]",
-                          "privateEndpointNetworkPolicies": "Disabled"
+                          "privateEndpointNetworkPolicies": "Disabled",
+                          "networkSecurityGroup": {
+                            "id": "[reference(resourceId('Microsoft.Resources/deployments', take(format('nsgPep-{0}', deployment().name), 64)), '2022-09-01').outputs.nsgId.value]"
+                          }
                         }
                       }
                     ]
@@ -3404,8 +3438,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "4064709153537522093"
+                      "version": "0.22.6.54827",
+                      "templateHash": "11030415745656825690"
                     }
                   },
                   "parameters": {
@@ -3508,6 +3542,8 @@
                 }
               },
               "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', take(format('nsgAse-{0}', deployment().name), 64))]",
+                "[resourceId('Microsoft.Resources/deployments', take(format('nsgPep-{0}', deployment().name), 64))]",
                 "[resourceId('Microsoft.Resources/deployments', 'routeTableToFirewall-Deployment')]"
               ]
             },
@@ -3541,8 +3577,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "2580239868289231046"
+                      "version": "0.22.6.54827",
+                      "templateHash": "2518125350103842528"
                     }
                   },
                   "parameters": {
@@ -3630,6 +3666,396 @@
             {
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
+              "name": "[take(format('nsgPep-{0}', deployment().name), 64)]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "name": {
+                    "value": "[variables('resourceNames').pepNsg]"
+                  },
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  },
+                  "securityRules": {
+                    "value": []
+                  },
+                  "diagnosticWorkspaceId": {
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', 'logAnalyticsWs-Deployment'), '2022-09-01').outputs.logAnalyticsWsId.value]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "120799231760097885"
+                    }
+                  },
+                  "parameters": {
+                    "name": {
+                      "type": "string",
+                      "maxLength": 80,
+                      "metadata": {
+                        "description": "Name of the Network Security Group. Alphanumerics, underscores, periods, and hyphens. Start with alphanumeric. End alphanumeric or underscore. "
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Azure Region where the resource will be deployed in"
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "key-value pairs as tags, to identify the resource"
+                      }
+                    },
+                    "securityRules": {
+                      "type": "array",
+                      "defaultValue": [],
+                      "metadata": {
+                        "description": "Optional. Array of Security Rules to deploy to the Network Security Group. When not provided, an NSG including only the built-in roles will be deployed."
+                      }
+                    },
+                    "flushConnection": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Optional. When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation. Network Security Group connection flushing is not available in all regions."
+                      }
+                    },
+                    "diagnosticStorageAccountId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Resource ID of the diagnostic storage account."
+                      }
+                    },
+                    "diagnosticWorkspaceId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Resource ID of the diagnostic log analytics workspace."
+                      }
+                    },
+                    "diagnosticEventHubAuthorizationRuleId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+                      }
+                    },
+                    "diagnosticEventHubName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+                      }
+                    },
+                    "diagnosticLogCategoriesToEnable": {
+                      "type": "array",
+                      "defaultValue": [
+                        "allLogs"
+                      ],
+                      "allowedValues": [
+                        "allLogs",
+                        "NetworkSecurityGroupEvent",
+                        "NetworkSecurityGroupRuleCounter"
+                      ],
+                      "metadata": {
+                        "description": "Optional. The name of logs that will be streamed. \"allLogs\" includes all possible logs for the resource."
+                      }
+                    },
+                    "diagnosticSettingsName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. The name of the diagnostic setting, if deployed. If left empty, it defaults to \"<resourceName>-diagnosticSettings\"."
+                      }
+                    }
+                  },
+                  "variables": {
+                    "copy": [
+                      {
+                        "name": "diagnosticsLogsSpecified",
+                        "count": "[length(filter(parameters('diagnosticLogCategoriesToEnable'), lambda('item', not(equals(lambdaVariables('item'), 'allLogs')))))]",
+                        "input": {
+                          "category": "[filter(parameters('diagnosticLogCategoriesToEnable'), lambda('item', not(equals(lambdaVariables('item'), 'allLogs'))))[copyIndex('diagnosticsLogsSpecified')]]",
+                          "enabled": true
+                        }
+                      }
+                    ],
+                    "diagnosticsLogs": "[if(contains(parameters('diagnosticLogCategoriesToEnable'), 'allLogs'), createArray(createObject('categoryGroup', 'allLogs', 'enabled', true())), variables('diagnosticsLogsSpecified'))]"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Network/networkSecurityGroups",
+                      "apiVersion": "2022-07-01",
+                      "name": "[parameters('name')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "properties": {
+                        "flushConnection": "[parameters('flushConnection')]",
+                        "securityRules": "[parameters('securityRules')]"
+                      }
+                    },
+                    {
+                      "condition": "[or(or(or(not(empty(parameters('diagnosticStorageAccountId'))), not(empty(parameters('diagnosticWorkspaceId')))), not(empty(parameters('diagnosticEventHubAuthorizationRuleId')))), not(empty(parameters('diagnosticEventHubName'))))]",
+                      "type": "Microsoft.Insights/diagnosticSettings",
+                      "apiVersion": "2021-05-01-preview",
+                      "scope": "[format('Microsoft.Network/networkSecurityGroups/{0}', parameters('name'))]",
+                      "name": "[if(not(empty(parameters('diagnosticSettingsName'))), parameters('diagnosticSettingsName'), format('{0}-diagnosticSettings', parameters('name')))]",
+                      "properties": {
+                        "storageAccountId": "[if(not(empty(parameters('diagnosticStorageAccountId'))), parameters('diagnosticStorageAccountId'), null())]",
+                        "workspaceId": "[if(not(empty(parameters('diagnosticWorkspaceId'))), parameters('diagnosticWorkspaceId'), null())]",
+                        "eventHubAuthorizationRuleId": "[if(not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))), parameters('diagnosticEventHubAuthorizationRuleId'), null())]",
+                        "eventHubName": "[if(not(empty(parameters('diagnosticEventHubName'))), parameters('diagnosticEventHubName'), null())]",
+                        "logs": "[variables('diagnosticsLogs')]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('name'))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "nsgId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource id of the newly created Network Security Group"
+                      },
+                      "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('name'))]"
+                    },
+                    "nsgName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource name of the newly created Network Security Group"
+                      },
+                      "value": "[parameters('name')]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'logAnalyticsWs-Deployment')]"
+              ],
+              "metadata": {
+                "description": "NSG Rules for the private enpoint subnet."
+              }
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[take(format('nsgAse-{0}', deployment().name), 64)]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "name": {
+                    "value": "[variables('resourceNames').aseNsg]"
+                  },
+                  "location": {
+                    "value": "[parameters('location')]"
+                  },
+                  "tags": {
+                    "value": "[parameters('tags')]"
+                  },
+                  "securityRules": {
+                    "value": [
+                      {
+                        "name": "SSL_WEB_443",
+                        "properties": {
+                          "direction": "Inbound",
+                          "access": "Allow",
+                          "protocol": "Tcp",
+                          "sourceAddressPrefix": "*",
+                          "sourcePortRange": "*",
+                          "destinationAddressPrefix": "*",
+                          "destinationPortRange": "443",
+                          "priority": 100
+                        }
+                      }
+                    ]
+                  },
+                  "diagnosticWorkspaceId": {
+                    "value": "[reference(resourceId('Microsoft.Resources/deployments', 'logAnalyticsWs-Deployment'), '2022-09-01').outputs.logAnalyticsWsId.value]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "120799231760097885"
+                    }
+                  },
+                  "parameters": {
+                    "name": {
+                      "type": "string",
+                      "maxLength": 80,
+                      "metadata": {
+                        "description": "Name of the Network Security Group. Alphanumerics, underscores, periods, and hyphens. Start with alphanumeric. End alphanumeric or underscore. "
+                      }
+                    },
+                    "location": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Azure Region where the resource will be deployed in"
+                      }
+                    },
+                    "tags": {
+                      "type": "object",
+                      "metadata": {
+                        "description": "key-value pairs as tags, to identify the resource"
+                      }
+                    },
+                    "securityRules": {
+                      "type": "array",
+                      "defaultValue": [],
+                      "metadata": {
+                        "description": "Optional. Array of Security Rules to deploy to the Network Security Group. When not provided, an NSG including only the built-in roles will be deployed."
+                      }
+                    },
+                    "flushConnection": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Optional. When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation. Network Security Group connection flushing is not available in all regions."
+                      }
+                    },
+                    "diagnosticStorageAccountId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Resource ID of the diagnostic storage account."
+                      }
+                    },
+                    "diagnosticWorkspaceId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Resource ID of the diagnostic log analytics workspace."
+                      }
+                    },
+                    "diagnosticEventHubAuthorizationRuleId": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+                      }
+                    },
+                    "diagnosticEventHubName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+                      }
+                    },
+                    "diagnosticLogCategoriesToEnable": {
+                      "type": "array",
+                      "defaultValue": [
+                        "allLogs"
+                      ],
+                      "allowedValues": [
+                        "allLogs",
+                        "NetworkSecurityGroupEvent",
+                        "NetworkSecurityGroupRuleCounter"
+                      ],
+                      "metadata": {
+                        "description": "Optional. The name of logs that will be streamed. \"allLogs\" includes all possible logs for the resource."
+                      }
+                    },
+                    "diagnosticSettingsName": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. The name of the diagnostic setting, if deployed. If left empty, it defaults to \"<resourceName>-diagnosticSettings\"."
+                      }
+                    }
+                  },
+                  "variables": {
+                    "copy": [
+                      {
+                        "name": "diagnosticsLogsSpecified",
+                        "count": "[length(filter(parameters('diagnosticLogCategoriesToEnable'), lambda('item', not(equals(lambdaVariables('item'), 'allLogs')))))]",
+                        "input": {
+                          "category": "[filter(parameters('diagnosticLogCategoriesToEnable'), lambda('item', not(equals(lambdaVariables('item'), 'allLogs'))))[copyIndex('diagnosticsLogsSpecified')]]",
+                          "enabled": true
+                        }
+                      }
+                    ],
+                    "diagnosticsLogs": "[if(contains(parameters('diagnosticLogCategoriesToEnable'), 'allLogs'), createArray(createObject('categoryGroup', 'allLogs', 'enabled', true())), variables('diagnosticsLogsSpecified'))]"
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Network/networkSecurityGroups",
+                      "apiVersion": "2022-07-01",
+                      "name": "[parameters('name')]",
+                      "location": "[parameters('location')]",
+                      "tags": "[parameters('tags')]",
+                      "properties": {
+                        "flushConnection": "[parameters('flushConnection')]",
+                        "securityRules": "[parameters('securityRules')]"
+                      }
+                    },
+                    {
+                      "condition": "[or(or(or(not(empty(parameters('diagnosticStorageAccountId'))), not(empty(parameters('diagnosticWorkspaceId')))), not(empty(parameters('diagnosticEventHubAuthorizationRuleId')))), not(empty(parameters('diagnosticEventHubName'))))]",
+                      "type": "Microsoft.Insights/diagnosticSettings",
+                      "apiVersion": "2021-05-01-preview",
+                      "scope": "[format('Microsoft.Network/networkSecurityGroups/{0}', parameters('name'))]",
+                      "name": "[if(not(empty(parameters('diagnosticSettingsName'))), parameters('diagnosticSettingsName'), format('{0}-diagnosticSettings', parameters('name')))]",
+                      "properties": {
+                        "storageAccountId": "[if(not(empty(parameters('diagnosticStorageAccountId'))), parameters('diagnosticStorageAccountId'), null())]",
+                        "workspaceId": "[if(not(empty(parameters('diagnosticWorkspaceId'))), parameters('diagnosticWorkspaceId'), null())]",
+                        "eventHubAuthorizationRuleId": "[if(not(empty(parameters('diagnosticEventHubAuthorizationRuleId'))), parameters('diagnosticEventHubAuthorizationRuleId'), null())]",
+                        "eventHubName": "[if(not(empty(parameters('diagnosticEventHubName'))), parameters('diagnosticEventHubName'), null())]",
+                        "logs": "[variables('diagnosticsLogs')]"
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('name'))]"
+                      ]
+                    }
+                  ],
+                  "outputs": {
+                    "nsgId": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource id of the newly created Network Security Group"
+                      },
+                      "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('name'))]"
+                    },
+                    "nsgName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Resource name of the newly created Network Security Group"
+                      },
+                      "value": "[parameters('name')]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'logAnalyticsWs-Deployment')]"
+              ],
+              "metadata": {
+                "description": "NSG Rules for the private enpoint subnet."
+              }
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
               "name": "logAnalyticsWs-Deployment",
               "properties": {
                 "expressionEvaluationOptions": {
@@ -3653,8 +4079,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "11535560972989472774"
+                      "version": "0.22.6.54827",
+                      "templateHash": "7950762402225783762"
                     }
                   },
                   "parameters": {
@@ -3818,8 +4244,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "17746697918973691672"
+                      "version": "0.22.6.54827",
+                      "templateHash": "579397741599745077"
                     }
                   },
                   "parameters": {
@@ -3853,7 +4279,7 @@
                       "type": "string",
                       "defaultValue": "",
                       "metadata": {
-                        "description": "Default is empty. If empty no Private endpoint will be created fro the resoure. Otherwise, the subnet where the private endpoint will be attached to"
+                        "description": "Default is empty. If empty no Private endpoint will be created for the resoure. Otherwise, the subnet where the private endpoint will be attached to"
                       }
                     },
                     "vnetHubResourceId": {
@@ -3900,8 +4326,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "351369789614429753"
+                              "version": "0.22.6.54827",
+                              "templateHash": "5170989495095778148"
                             }
                           },
                           "parameters": {
@@ -4063,8 +4489,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "5362294501967708784"
+                              "version": "0.22.6.54827",
+                              "templateHash": "10924070960515423066"
                             }
                           },
                           "parameters": {
@@ -4132,7 +4558,7 @@
                               "apiVersion": "2020-06-01",
                               "name": "[format('{0}/{1}', parameters('name'), parameters('aRecords')[copyIndex()].name)]",
                               "properties": {
-                                "ttl": 60,
+                                "ttl": "[if(contains(parameters('aRecords')[copyIndex()], 'ttl'), parameters('aRecords')[copyIndex()].ttl, 3600)]",
                                 "aRecords": [
                                   {
                                     "ipv4Address": "[parameters('aRecords')[copyIndex()].ipv4Address]"
@@ -4192,8 +4618,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16757856721763746334"
+                              "version": "0.22.6.54827",
+                              "templateHash": "515879137059342444"
                             }
                           },
                           "parameters": {
@@ -4320,6 +4746,12 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
+                  "deployAseV3": {
+                    "value": "[parameters('deployAseV3')]"
+                  },
+                  "aseName": {
+                    "value": "[variables('resourceNames').aseName]"
+                  },
                   "appServicePlanName": {
                     "value": "[variables('resourceNames').aspName]"
                   },
@@ -4385,11 +4817,26 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "960377053318251904"
+                      "version": "0.22.6.54827",
+                      "templateHash": "10325983806202465387"
                     }
                   },
                   "parameters": {
+                    "deployAseV3": {
+                      "type": "bool",
+                      "defaultValue": false,
+                      "metadata": {
+                        "description": "Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan."
+                      }
+                    },
+                    "aseName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 36,
+                      "metadata": {
+                        "description": "Optional if deployAseV3 = false. The identifier for the App Service Environment v3 resource."
+                      }
+                    },
                     "appServicePlanName": {
                       "type": "string",
                       "minLength": 1,
@@ -4435,7 +4882,8 @@
                         "P3V3_AZ",
                         "EP1",
                         "EP2",
-                        "EP3"
+                        "EP3",
+                        "ASE_I1V2_AZ"
                       ],
                       "metadata": {
                         "description": "Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions"
@@ -4492,7 +4940,7 @@
                     "subnetIdForVnetInjection": {
                       "type": "string",
                       "metadata": {
-                        "description": "The subnet ID that is dedicated to Web Server, for Vnet Injection of the web app"
+                        "description": "The subnet ID that is dedicated to Web Server, for Vnet Injection of the web app. If deployAseV3=true then this is the subnet dedicated to the ASE v3"
                       }
                     },
                     "keyvaultName": {
@@ -4544,6 +4992,739 @@
                       ]
                     },
                     {
+                      "condition": "[parameters('deployAseV3')]",
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[take(format('ase-{0}-Deployment', parameters('aseName')), 64)]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "name": {
+                            "value": "[parameters('aseName')]"
+                          },
+                          "location": {
+                            "value": "[parameters('location')]"
+                          },
+                          "tags": {
+                            "value": "[parameters('tags')]"
+                          },
+                          "diagnosticWorkspaceId": {
+                            "value": "[parameters('logAnalyticsWsId')]"
+                          },
+                          "subnetResourceId": {
+                            "value": "[parameters('subnetIdForVnetInjection')]"
+                          },
+                          "zoneRedundant": {
+                            "value": true
+                          },
+                          "allowNewPrivateEndpointConnections": {
+                            "value": true
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "13575433654925949791"
+                            }
+                          },
+                          "parameters": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "metadata": {
+                                "description": "Required. Name of the App Service Environment."
+                              }
+                            },
+                            "location": {
+                              "type": "string",
+                              "defaultValue": "[resourceGroup().location]",
+                              "metadata": {
+                                "description": "Optional. Location for all resources."
+                              }
+                            },
+                            "lock": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "allowedValues": [
+                                "",
+                                "CanNotDelete",
+                                "ReadOnly"
+                              ],
+                              "metadata": {
+                                "description": "Optional. Specify the type of lock."
+                              }
+                            },
+                            "tags": {
+                              "type": "object",
+                              "defaultValue": {},
+                              "metadata": {
+                                "description": "Optional. Resource tags."
+                              }
+                            },
+                            "kind": {
+                              "type": "string",
+                              "defaultValue": "ASEv3",
+                              "allowedValues": [
+                                "ASEv2",
+                                "ASEv3"
+                              ],
+                              "metadata": {
+                                "description": "Optional. Kind of resource."
+                              }
+                            },
+                            "clusterSettings": {
+                              "type": "array",
+                              "defaultValue": [
+                                {
+                                  "name": "DisableTls1.0",
+                                  "value": "1"
+                                }
+                              ],
+                              "metadata": {
+                                "description": "Optional. Custom settings for changing the behavior of the App Service Environment."
+                              }
+                            },
+                            "customDnsSuffix": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "Optional. Enable the default custom domain suffix to use for all sites deployed on the ASE. If provided, then customDnsSuffixCertificateUrl and customDnsSuffixKeyVaultReferenceIdentity are required. Cannot be used when kind is set to ASEv2."
+                              }
+                            },
+                            "customDnsSuffixCertificateUrl": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "Conditional. The URL referencing the Azure Key Vault certificate secret that should be used as the default SSL/TLS certificate for sites with the custom domain suffix. Required if customDnsSuffix is not empty. Cannot be used when kind is set to ASEv2."
+                              }
+                            },
+                            "customDnsSuffixKeyVaultReferenceIdentity": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "Conditional. The user-assigned identity to use for resolving the key vault certificate reference. If not specified, the system-assigned ASE identity will be used if available. Required if customDnsSuffix is not empty. Cannot be used when kind is set to ASEv2."
+                              }
+                            },
+                            "dedicatedHostCount": {
+                              "type": "int",
+                              "defaultValue": 0,
+                              "metadata": {
+                                "description": "Optional. The Dedicated Host Count. If `zoneRedundant` is false, and you want physical hardware isolation enabled, set to 2. Otherwise 0. Cannot be used when kind is set to ASEv2."
+                              }
+                            },
+                            "dnsSuffix": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "Optional. DNS suffix of the App Service Environment."
+                              }
+                            },
+                            "frontEndScaleFactor": {
+                              "type": "int",
+                              "defaultValue": 15,
+                              "metadata": {
+                                "description": "Optional. Scale factor for frontends."
+                              }
+                            },
+                            "internalLoadBalancingMode": {
+                              "type": "string",
+                              "defaultValue": "Web, Publishing",
+                              "allowedValues": [
+                                "None",
+                                "Web",
+                                "Publishing",
+                                "Web, Publishing"
+                              ],
+                              "metadata": {
+                                "description": "Optional. Specifies which endpoints to serve internally in the Virtual Network for the App Service Environment. - None, Web, Publishing, Web,Publishing. \"None\" Exposes the ASE-hosted apps on an internet-accessible IP address."
+                              }
+                            },
+                            "ipsslAddressCount": {
+                              "type": "int",
+                              "defaultValue": 0,
+                              "metadata": {
+                                "description": "Optional. Number of IP SSL addresses reserved for the App Service Environment. Cannot be used when kind is set to ASEv3."
+                              }
+                            },
+                            "multiSize": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "allowedValues": [
+                                "",
+                                "Medium",
+                                "Large",
+                                "ExtraLarge",
+                                "Standard_D2",
+                                "Standard_D3",
+                                "Standard_D4",
+                                "Standard_D1_V2",
+                                "Standard_D2_V2",
+                                "Standard_D3_V2",
+                                "Standard_D4_V2"
+                              ],
+                              "metadata": {
+                                "description": "Optional. Frontend VM size. Cannot be used when kind is set to ASEv3."
+                              }
+                            },
+                            "allowNewPrivateEndpointConnections": {
+                              "type": "bool",
+                              "defaultValue": false,
+                              "metadata": {
+                                "description": "Optional. Property to enable and disable new private endpoint connection creation on ASE. Ignored when kind is set to ASEv2. If you wish to add a Premium AFD in front of the ASEv3, set this to true."
+                              }
+                            },
+                            "ftpEnabled": {
+                              "type": "bool",
+                              "defaultValue": false,
+                              "metadata": {
+                                "description": "Optional. Property to enable and disable FTP on ASEV3. Ignored when kind is set to ASEv2."
+                              }
+                            },
+                            "inboundIpAddressOverride": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "Optional. Customer provided Inbound IP Address. Only able to be set on Ase create. Ignored when kind is set to ASEv2."
+                              }
+                            },
+                            "remoteDebugEnabled": {
+                              "type": "bool",
+                              "defaultValue": false,
+                              "metadata": {
+                                "description": "Optional. Property to enable and disable Remote Debug on ASEv3. Ignored when kind is set to ASEv2."
+                              }
+                            },
+                            "upgradePreference": {
+                              "type": "string",
+                              "defaultValue": "None",
+                              "allowedValues": [
+                                "Early",
+                                "Late",
+                                "Manual",
+                                "None"
+                              ],
+                              "metadata": {
+                                "description": "Optional. Specify preference for when and how the planned maintenance is applied."
+                              }
+                            },
+                            "subnetResourceId": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Required. ResourceId for the subnet."
+                              }
+                            },
+                            "userWhitelistedIpRanges": {
+                              "type": "array",
+                              "defaultValue": [],
+                              "metadata": {
+                                "description": "Optional. User added IP ranges to whitelist on ASE DB. Cannot be used with 'kind' `ASEv3`."
+                              }
+                            },
+                            "zoneRedundant": {
+                              "type": "bool",
+                              "defaultValue": false,
+                              "metadata": {
+                                "description": "Optional. Switch to make the App Service Environment zone redundant. If enabled, the minimum App Service plan instance count will be three, otherwise 1. If enabled, the `dedicatedHostCount` must be set to `-1`."
+                              }
+                            },
+                            "diagnosticWorkspaceId": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "Optional. Resource ID of the diagnostic log analytics workspace."
+                              }
+                            },
+                            "diagnosticLogCategoriesToEnable": {
+                              "type": "array",
+                              "defaultValue": [
+                                "allLogs"
+                              ],
+                              "allowedValues": [
+                                "",
+                                "allLogs",
+                                "AppServiceEnvironmentPlatformLogs"
+                              ],
+                              "metadata": {
+                                "description": "Optional. The name of logs that will be streamed. \"allLogs\" includes all possible logs for the resource. Set to '' to disable log collection."
+                              }
+                            },
+                            "diagnosticSettingsName": {
+                              "type": "string",
+                              "defaultValue": "[format('{0}-diagnosticSettings', parameters('name'))]",
+                              "metadata": {
+                                "description": "Optional. The name of the diagnostic setting, if deployed. If left empty, it defaults to \"<resourceName>-diagnosticSettings\"."
+                              }
+                            }
+                          },
+                          "variables": {
+                            "copy": [
+                              {
+                                "name": "diagnosticsLogsSpecified",
+                                "count": "[length(filter(parameters('diagnosticLogCategoriesToEnable'), lambda('item', and(not(equals(lambdaVariables('item'), 'allLogs')), not(equals(lambdaVariables('item'), ''))))))]",
+                                "input": {
+                                  "category": "[filter(parameters('diagnosticLogCategoriesToEnable'), lambda('item', and(not(equals(lambdaVariables('item'), 'allLogs')), not(equals(lambdaVariables('item'), '')))))[copyIndex('diagnosticsLogsSpecified')]]",
+                                  "enabled": true
+                                }
+                              }
+                            ],
+                            "diagnosticsLogs": "[if(contains(parameters('diagnosticLogCategoriesToEnable'), 'allLogs'), createArray(createObject('categoryGroup', 'allLogs', 'enabled', true())), if(contains(parameters('diagnosticLogCategoriesToEnable'), ''), createArray(), variables('diagnosticsLogsSpecified')))]"
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Web/hostingEnvironments",
+                              "apiVersion": "2022-09-01",
+                              "name": "[parameters('name')]",
+                              "kind": "[parameters('kind')]",
+                              "location": "[parameters('location')]",
+                              "tags": "[parameters('tags')]",
+                              "properties": {
+                                "clusterSettings": "[parameters('clusterSettings')]",
+                                "dedicatedHostCount": "[if(not(equals(parameters('dedicatedHostCount'), 0)), parameters('dedicatedHostCount'), null())]",
+                                "dnsSuffix": "[if(not(empty(parameters('dnsSuffix'))), parameters('dnsSuffix'), null())]",
+                                "frontEndScaleFactor": "[parameters('frontEndScaleFactor')]",
+                                "internalLoadBalancingMode": "[parameters('internalLoadBalancingMode')]",
+                                "ipsslAddressCount": "[if(not(equals(parameters('ipsslAddressCount'), 0)), parameters('ipsslAddressCount'), null())]",
+                                "multiSize": "[if(not(empty(parameters('multiSize'))), parameters('multiSize'), null())]",
+                                "upgradePreference": "[parameters('upgradePreference')]",
+                                "userWhitelistedIpRanges": "[if(not(empty(parameters('userWhitelistedIpRanges'))), parameters('userWhitelistedIpRanges'), null())]",
+                                "virtualNetwork": {
+                                  "id": "[parameters('subnetResourceId')]",
+                                  "subnet": "[last(split(parameters('subnetResourceId'), '/'))]"
+                                },
+                                "zoneRedundant": "[parameters('zoneRedundant')]"
+                              }
+                            },
+                            {
+                              "condition": "[not(empty(parameters('lock')))]",
+                              "type": "Microsoft.Authorization/locks",
+                              "apiVersion": "2020-05-01",
+                              "scope": "[format('Microsoft.Web/hostingEnvironments/{0}', parameters('name'))]",
+                              "name": "[format('{0}-{1}-lock', parameters('name'), parameters('lock'))]",
+                              "properties": {
+                                "level": "[parameters('lock')]",
+                                "notes": "[if(equals(parameters('lock'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot modify the resource or child resources.')]"
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))]"
+                              ]
+                            },
+                            {
+                              "condition": "[not(empty(parameters('diagnosticWorkspaceId')))]",
+                              "type": "Microsoft.Insights/diagnosticSettings",
+                              "apiVersion": "2021-05-01-preview",
+                              "scope": "[format('Microsoft.Web/hostingEnvironments/{0}', parameters('name'))]",
+                              "name": "[if(not(empty(parameters('diagnosticSettingsName'))), parameters('diagnosticSettingsName'), format('{0}-diagnosticSettings', parameters('name')))]",
+                              "properties": {
+                                "storageAccountId": null,
+                                "workspaceId": "[if(not(empty(parameters('diagnosticWorkspaceId'))), parameters('diagnosticWorkspaceId'), null())]",
+                                "eventHubAuthorizationRuleId": null,
+                                "eventHubName": null,
+                                "logs": "[variables('diagnosticsLogs')]"
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))]"
+                              ]
+                            },
+                            {
+                              "condition": "[equals(parameters('kind'), 'ASEv3')]",
+                              "type": "Microsoft.Resources/deployments",
+                              "apiVersion": "2022-09-01",
+                              "name": "[format('{0}-AppServiceEnv-Configurations-Networking', uniqueString(deployment().name, parameters('location')))]",
+                              "properties": {
+                                "expressionEvaluationOptions": {
+                                  "scope": "inner"
+                                },
+                                "mode": "Incremental",
+                                "parameters": {
+                                  "hostingEnvironmentName": {
+                                    "value": "[parameters('name')]"
+                                  },
+                                  "allowNewPrivateEndpointConnections": {
+                                    "value": "[parameters('allowNewPrivateEndpointConnections')]"
+                                  },
+                                  "ftpEnabled": {
+                                    "value": "[parameters('ftpEnabled')]"
+                                  },
+                                  "inboundIpAddressOverride": {
+                                    "value": "[parameters('inboundIpAddressOverride')]"
+                                  },
+                                  "remoteDebugEnabled": {
+                                    "value": "[parameters('remoteDebugEnabled')]"
+                                  }
+                                },
+                                "template": {
+                                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                  "contentVersion": "1.0.0.0",
+                                  "metadata": {
+                                    "_generator": {
+                                      "name": "bicep",
+                                      "version": "0.22.6.54827",
+                                      "templateHash": "18080221163532118369"
+                                    },
+                                    "name": "Hosting Environment Network Configuration",
+                                    "description": "This module deploys a Hosting Environment Network Configuration.",
+                                    "owner": "Azure/module-maintainers"
+                                  },
+                                  "parameters": {
+                                    "hostingEnvironmentName": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "Conditional. The name of the parent Hosting Environment. Required if the template is used in a standalone deployment."
+                                      }
+                                    },
+                                    "allowNewPrivateEndpointConnections": {
+                                      "type": "bool",
+                                      "defaultValue": false,
+                                      "metadata": {
+                                        "description": "Optional. Property to enable and disable new private endpoint connection creation on ASE."
+                                      }
+                                    },
+                                    "ftpEnabled": {
+                                      "type": "bool",
+                                      "defaultValue": false,
+                                      "metadata": {
+                                        "description": "Optional. Property to enable and disable FTP on ASEV3."
+                                      }
+                                    },
+                                    "inboundIpAddressOverride": {
+                                      "type": "string",
+                                      "defaultValue": "",
+                                      "metadata": {
+                                        "description": "Optional. Customer provided Inbound IP Address. Only able to be set on Ase create."
+                                      }
+                                    },
+                                    "remoteDebugEnabled": {
+                                      "type": "bool",
+                                      "defaultValue": false,
+                                      "metadata": {
+                                        "description": "Optional. Property to enable and disable Remote Debug on ASEv3."
+                                      }
+                                    }
+                                  },
+                                  "resources": [
+                                    {
+                                      "type": "Microsoft.Web/hostingEnvironments/configurations",
+                                      "apiVersion": "2022-03-01",
+                                      "name": "[format('{0}/{1}', parameters('hostingEnvironmentName'), 'networking')]",
+                                      "properties": {
+                                        "allowNewPrivateEndpointConnections": "[parameters('allowNewPrivateEndpointConnections')]",
+                                        "ftpEnabled": "[parameters('ftpEnabled')]",
+                                        "inboundIpAddressOverride": "[parameters('inboundIpAddressOverride')]",
+                                        "remoteDebugEnabled": "[parameters('remoteDebugEnabled')]"
+                                      }
+                                    }
+                                  ],
+                                  "outputs": {
+                                    "name": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "The name of the configuration."
+                                      },
+                                      "value": "networking"
+                                    },
+                                    "resourceId": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "The resource ID of the deployed configuration."
+                                      },
+                                      "value": "[resourceId('Microsoft.Web/hostingEnvironments/configurations', parameters('hostingEnvironmentName'), 'networking')]"
+                                    },
+                                    "resourceGroupName": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "The resource group of the deployed configuration."
+                                      },
+                                      "value": "[resourceGroup().name]"
+                                    }
+                                  }
+                                }
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))]"
+                              ]
+                            },
+                            {
+                              "condition": "[and(equals(parameters('kind'), 'ASEv3'), not(empty(parameters('customDnsSuffix'))))]",
+                              "type": "Microsoft.Resources/deployments",
+                              "apiVersion": "2022-09-01",
+                              "name": "[format('{0}-AppServiceEnv-Configurations-CustomDnsSuffix', uniqueString(deployment().name, parameters('location')))]",
+                              "properties": {
+                                "expressionEvaluationOptions": {
+                                  "scope": "inner"
+                                },
+                                "mode": "Incremental",
+                                "parameters": {
+                                  "hostingEnvironmentName": {
+                                    "value": "[parameters('name')]"
+                                  },
+                                  "certificateUrl": {
+                                    "value": "[parameters('customDnsSuffixCertificateUrl')]"
+                                  },
+                                  "keyVaultReferenceIdentity": {
+                                    "value": "[parameters('customDnsSuffixKeyVaultReferenceIdentity')]"
+                                  },
+                                  "dnsSuffix": {
+                                    "value": "[parameters('customDnsSuffix')]"
+                                  }
+                                },
+                                "template": {
+                                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                  "contentVersion": "1.0.0.0",
+                                  "metadata": {
+                                    "_generator": {
+                                      "name": "bicep",
+                                      "version": "0.22.6.54827",
+                                      "templateHash": "8386115904485308134"
+                                    },
+                                    "name": "Hosting Environment Custom DNS Suffix Configuration",
+                                    "description": "This module deploys a Hosting Environment Custom DNS Suffix Configuration.",
+                                    "owner": "Azure/module-maintainers"
+                                  },
+                                  "parameters": {
+                                    "hostingEnvironmentName": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "Conditional. The name of the parent Hosting Environment. Required if the template is used in a standalone deployment."
+                                      }
+                                    },
+                                    "dnsSuffix": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "Required. Enable the default custom domain suffix to use for all sites deployed on the ASE."
+                                      }
+                                    },
+                                    "certificateUrl": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "Required. The URL referencing the Azure Key Vault certificate secret that should be used as the default SSL/TLS certificate for sites with the custom domain suffix."
+                                      }
+                                    },
+                                    "keyVaultReferenceIdentity": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "Required. The user-assigned identity to use for resolving the key vault certificate reference. If not specified, the system-assigned ASE identity will be used if available."
+                                      }
+                                    }
+                                  },
+                                  "resources": [
+                                    {
+                                      "type": "Microsoft.Web/hostingEnvironments/configurations",
+                                      "apiVersion": "2022-03-01",
+                                      "name": "[format('{0}/{1}', parameters('hostingEnvironmentName'), 'customdnssuffix')]",
+                                      "properties": {
+                                        "certificateUrl": "[parameters('certificateUrl')]",
+                                        "keyVaultReferenceIdentity": "[parameters('keyVaultReferenceIdentity')]",
+                                        "dnsSuffix": "[parameters('dnsSuffix')]"
+                                      }
+                                    }
+                                  ],
+                                  "outputs": {
+                                    "name": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "The name of the configuration."
+                                      },
+                                      "value": "customdnssuffix"
+                                    },
+                                    "resourceId": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "The resource ID of the deployed configuration."
+                                      },
+                                      "value": "[resourceId('Microsoft.Web/hostingEnvironments/configurations', parameters('hostingEnvironmentName'), 'customdnssuffix')]"
+                                    },
+                                    "resourceGroupName": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "The resource group of the deployed configuration."
+                                      },
+                                      "value": "[resourceGroup().name]"
+                                    }
+                                  }
+                                }
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))]"
+                              ]
+                            }
+                          ],
+                          "outputs": {
+                            "resourceId": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The resource ID of the App Service Environment."
+                              },
+                              "value": "[resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))]"
+                            },
+                            "resourceGroupName": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The resource group the App Service Environment was deployed into."
+                              },
+                              "value": "[resourceGroup().name]"
+                            },
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The name of the App Service Environment."
+                              },
+                              "value": "[parameters('name')]"
+                            },
+                            "location": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The location the resource was deployed into."
+                              },
+                              "value": "[reference(resourceId('Microsoft.Web/hostingEnvironments', parameters('name')), '2022-09-01', 'full').location]"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "condition": "[parameters('deployAseV3')]",
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "[take(format('{0}-PrivateDnsZoneDeployment', 'ase-appserviceenvironment-net'), 64)]",
+                      "subscriptionId": "[variables('vnetHubSplitTokens')[2]]",
+                      "resourceGroup": "[variables('vnetHubSplitTokens')[4]]",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "name": "[if(parameters('deployAseV3'), createObject('value', format('{0}.appserviceenvironment.net', parameters('aseName'))), createObject('value', ''))]",
+                          "virtualNetworkLinks": {
+                            "value": "[parameters('virtualNetworkLinks')]"
+                          },
+                          "tags": {
+                            "value": "[parameters('tags')]"
+                          },
+                          "aRecords": {
+                            "value": [
+                              {
+                                "name": "*",
+                                "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))), '2020-06-01').internalInboundIpAddresses[0], '')]",
+                                "ttl": 3600
+                              },
+                              {
+                                "name": "*.scm",
+                                "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))), '2020-06-01').internalInboundIpAddresses[0], '')]",
+                                "ttl": 3600
+                              },
+                              {
+                                "name": "@",
+                                "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))), '2020-06-01').internalInboundIpAddresses[0], '')]",
+                                "ttl": 3600
+                              }
+                            ]
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "10924070960515423066"
+                            }
+                          },
+                          "parameters": {
+                            "name": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "Required. Name of the Private DNS Zone Service. For az private endpoints you might find info here: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns#azure-services-dns-zone-configuration"
+                              }
+                            },
+                            "tags": {
+                              "type": "object",
+                              "defaultValue": {},
+                              "metadata": {
+                                "description": "Optional. Tags of the resource."
+                              }
+                            },
+                            "virtualNetworkLinks": {
+                              "type": "array",
+                              "defaultValue": [],
+                              "metadata": {
+                                "description": "Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled"
+                              }
+                            },
+                            "aRecords": {
+                              "type": "array",
+                              "defaultValue": [],
+                              "metadata": {
+                                "description": "Optional. Array of A records to be added to the DNS Zone"
+                              }
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/privateDnsZones",
+                              "apiVersion": "2020-06-01",
+                              "name": "[parameters('name')]",
+                              "location": "global",
+                              "tags": "[parameters('tags')]"
+                            },
+                            {
+                              "copy": {
+                                "name": "privateDnsZoneLink",
+                                "count": "[length(parameters('virtualNetworkLinks'))]"
+                              },
+                              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+                              "apiVersion": "2018-09-01",
+                              "name": "[format('{0}/{1}', parameters('name'), format('{0}-link', parameters('virtualNetworkLinks')[copyIndex()].vnetName))]",
+                              "location": "global",
+                              "properties": {
+                                "registrationEnabled": "[parameters('virtualNetworkLinks')[copyIndex()].registrationEnabled]",
+                                "virtualNetwork": {
+                                  "id": "[parameters('virtualNetworkLinks')[copyIndex()].vnetId]"
+                                }
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
+                              ]
+                            },
+                            {
+                              "copy": {
+                                "name": "dnsARecord",
+                                "count": "[length(parameters('aRecords'))]"
+                              },
+                              "type": "Microsoft.Network/privateDnsZones/A",
+                              "apiVersion": "2020-06-01",
+                              "name": "[format('{0}/{1}', parameters('name'), parameters('aRecords')[copyIndex()].name)]",
+                              "properties": {
+                                "ttl": "[if(contains(parameters('aRecords')[copyIndex()], 'ttl'), parameters('aRecords')[copyIndex()].ttl, 3600)]",
+                                "aRecords": [
+                                  {
+                                    "ipv4Address": "[parameters('aRecords')[copyIndex()].ipv4Address]"
+                                  }
+                                ]
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
+                              ]
+                            }
+                          ],
+                          "outputs": {
+                            "privateDnsZonesId": {
+                              "type": "string",
+                              "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
                       "name": "appInsights-Deployment",
@@ -4572,8 +5753,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "6964356398637818331"
+                              "version": "0.22.6.54827",
+                              "templateHash": "8177651313894344378"
                             }
                           },
                           "parameters": {
@@ -4754,7 +5935,8 @@
                           "serverOS": "[if(equals(toLower(parameters('webAppBaseOs')), toLower('linux')), createObject('value', 'Linux'), createObject('value', 'Windows'))]",
                           "diagnosticWorkspaceId": {
                             "value": "[parameters('logAnalyticsWsId')]"
-                          }
+                          },
+                          "hostingEnvironmentProfileId": "[if(parameters('deployAseV3'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', take(format('ase-{0}-Deployment', parameters('aseName')), 64)), '2022-09-01').outputs.resourceId.value), createObject('value', ''))]"
                         },
                         "template": {
                           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -4762,8 +5944,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16499077276740623926"
+                              "version": "0.22.6.54827",
+                              "templateHash": "771589631100286225"
                             }
                           },
                           "parameters": {
@@ -4802,7 +5984,8 @@
                                 "P3V3_AZ",
                                 "EP1",
                                 "EP2",
-                                "EP3"
+                                "EP3",
+                                "ASE_I1V2_AZ"
                               ],
                               "metadata": {
                                 "description": "Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions"
@@ -4817,6 +6000,13 @@
                               ],
                               "metadata": {
                                 "description": "Optional, default is Windows. Kind of server OS."
+                              }
+                            },
+                            "hostingEnvironmentProfileId": {
+                              "type": "string",
+                              "defaultValue": "",
+                              "metadata": {
+                                "description": "Optional. The Resource ID of the hosting environment to use for the App Service Plan. Used only if deployAseV3=true or SKU is ASE_I1V2_AZ."
                               }
                             },
                             "perSiteScaling": {
@@ -4891,7 +6081,7 @@
                                 }
                               }
                             ],
-                            "zoneRedundant": "[if(endsWith(parameters('sku'), 'LZA'), true(), false())]",
+                            "zoneRedundant": "[if(endsWith(parameters('sku'), 'AZ'), true(), false())]",
                             "isElasticPremium": "[if(startsWith(parameters('sku'), 'EP'), true(), false())]",
                             "aspKind": "[if(variables('isElasticPremium'), 'elastic', if(equals(parameters('serverOS'), 'Windows'), '', 'linux'))]",
                             "skuConfigurationMap": {
@@ -4999,6 +6189,13 @@
                                 "size": "P3V3",
                                 "family": "Pv3",
                                 "capacity": 3
+                              },
+                              "ASE_I1V2_AZ": {
+                                "name": "I1v2",
+                                "tier": "IsolatedV2",
+                                "size": "I1v2",
+                                "family": "Iv2",
+                                "capacity": 3
                               }
                             }
                           },
@@ -5017,7 +6214,8 @@
                                 "reserved": "[equals(parameters('serverOS'), 'Linux')]",
                                 "targetWorkerCount": "[if(and(less(parameters('targetWorkerCount'), 3), variables('zoneRedundant')), 3, parameters('targetWorkerCount'))]",
                                 "targetWorkerSizeId": "[parameters('targetWorkerSize')]",
-                                "zoneRedundant": "[variables('zoneRedundant')]"
+                                "zoneRedundant": "[variables('zoneRedundant')]",
+                                "hostingEnvironmentProfile": "[if(startsWith(parameters('sku'), 'ASE'), createObject('id', parameters('hostingEnvironmentProfileId')), null())]"
                               }
                             },
                             {
@@ -5070,7 +6268,10 @@
                             }
                           }
                         }
-                      }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', take(format('ase-{0}-Deployment', parameters('aseName')), 64))]"
+                      ]
                     },
                     {
                       "type": "Microsoft.Resources/deployments",
@@ -5095,16 +6296,12 @@
                           "diagnosticWorkspaceId": {
                             "value": "[parameters('logAnalyticsWsId')]"
                           },
-                          "virtualNetworkSubnetId": {
-                            "value": "[parameters('subnetIdForVnetInjection')]"
-                          },
+                          "virtualNetworkSubnetId": "[if(not(parameters('deployAseV3')), createObject('value', parameters('subnetIdForVnetInjection')), createObject('value', ''))]",
                           "appInsightId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'appInsights-Deployment'), '2022-09-01').outputs.appInsResourceId.value]"
                           },
                           "siteConfigSelection": "[if(equals(toLower(parameters('webAppBaseOs')), toLower('linux')), createObject('value', 'linuxNet6'), createObject('value', 'windowsNet6'))]",
-                          "hasPrivateLink": {
-                            "value": "[not(empty(parameters('subnetPrivateEndpointId')))]"
-                          },
+                          "hasPrivateLink": "[if(not(parameters('deployAseV3')), createObject('value', not(empty(parameters('subnetPrivateEndpointId')))), createObject('value', false()))]",
                           "systemAssignedIdentity": {
                             "value": false
                           },
@@ -5130,8 +6327,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "4151561885012978576"
+                              "version": "0.22.6.54827",
+                              "templateHash": "860119083651993361"
                             }
                           },
                           "parameters": {
@@ -5550,8 +6747,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.20.4.51522",
-                                      "templateHash": "4678926577241725449"
+                                      "version": "0.22.6.54827",
+                                      "templateHash": "2403871696889962391"
                                     }
                                   },
                                   "parameters": {
@@ -5710,8 +6907,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.20.4.51522",
-                                      "templateHash": "17610178805028045872"
+                                      "version": "0.22.6.54827",
+                                      "templateHash": "5914243688373707722"
                                     }
                                   },
                                   "parameters": {
@@ -6091,8 +7288,8 @@
                                           "metadata": {
                                             "_generator": {
                                               "name": "bicep",
-                                              "version": "0.20.4.51522",
-                                              "templateHash": "12141117254902367852"
+                                              "version": "0.22.6.54827",
+                                              "templateHash": "12149900229898989241"
                                             }
                                           },
                                           "parameters": {
@@ -6327,8 +7524,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16624770513957439457"
+                              "version": "0.22.6.54827",
+                              "templateHash": "10555888960994130887"
                             }
                           },
                           "parameters": {
@@ -6411,7 +7608,7 @@
                       }
                     },
                     {
-                      "condition": "[not(empty(parameters('subnetPrivateEndpointId')))]",
+                      "condition": "[and(not(empty(parameters('subnetPrivateEndpointId'))), not(parameters('deployAseV3')))]",
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
                       "name": "[take(format('{0}-PrivateDnsZoneDeployment', replace(variables('webAppDnsZoneName'), '.', '-')), 64)]",
@@ -6439,8 +7636,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "5362294501967708784"
+                              "version": "0.22.6.54827",
+                              "templateHash": "10924070960515423066"
                             }
                           },
                           "parameters": {
@@ -6508,7 +7705,7 @@
                               "apiVersion": "2020-06-01",
                               "name": "[format('{0}/{1}', parameters('name'), parameters('aRecords')[copyIndex()].name)]",
                               "properties": {
-                                "ttl": 60,
+                                "ttl": "[if(contains(parameters('aRecords')[copyIndex()], 'ttl'), parameters('aRecords')[copyIndex()].ttl, 3600)]",
                                 "aRecords": [
                                   {
                                     "ipv4Address": "[parameters('aRecords')[copyIndex()].ipv4Address]"
@@ -6530,7 +7727,7 @@
                       }
                     },
                     {
-                      "condition": "[not(empty(parameters('subnetPrivateEndpointId')))]",
+                      "condition": "[and(not(empty(parameters('subnetPrivateEndpointId'))), not(parameters('deployAseV3')))]",
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
                       "name": "[take(format('pe-{0}-Deployment', parameters('webAppName')), 64)]",
@@ -6568,8 +7765,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16757856721763746334"
+                              "version": "0.22.6.54827",
+                              "templateHash": "515879137059342444"
                             }
                           },
                           "parameters": {
@@ -6670,7 +7867,7 @@
                       ]
                     },
                     {
-                      "condition": "[not(empty(parameters('subnetPrivateEndpointId')))]",
+                      "condition": "[and(not(empty(parameters('subnetPrivateEndpointId'))), not(parameters('deployAseV3')))]",
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
                       "name": "[take(format('pe-{0}-slot-{1}-Deployment', parameters('webAppName'), variables('slotName')), 64)]",
@@ -6708,8 +7905,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16757856721763746334"
+                              "version": "0.22.6.54827",
+                              "templateHash": "515879137059342444"
                             }
                           },
                           "parameters": {
@@ -6842,8 +8039,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "11016487736119141662"
+                              "version": "0.22.6.54827",
+                              "templateHash": "14940987358308253574"
                             }
                           },
                           "parameters": {
@@ -7030,8 +8227,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "5362294501967708784"
+                              "version": "0.22.6.54827",
+                              "templateHash": "10924070960515423066"
                             }
                           },
                           "parameters": {
@@ -7099,7 +8296,7 @@
                               "apiVersion": "2020-06-01",
                               "name": "[format('{0}/{1}', parameters('name'), parameters('aRecords')[copyIndex()].name)]",
                               "properties": {
-                                "ttl": 60,
+                                "ttl": "[if(contains(parameters('aRecords')[copyIndex()], 'ttl'), parameters('aRecords')[copyIndex()].ttl, 3600)]",
                                 "aRecords": [
                                   {
                                     "ipv4Address": "[parameters('aRecords')[copyIndex()].ipv4Address]"
@@ -7153,8 +8350,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16757856721763746334"
+                              "version": "0.22.6.54827",
+                              "templateHash": "515879137059342444"
                             }
                           },
                           "parameters": {
@@ -7282,8 +8479,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "13945851285616680724"
+                              "version": "0.22.6.54827",
+                              "templateHash": "11562630491400954103"
                             }
                           },
                           "parameters": {
@@ -7408,8 +8605,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "13945851285616680724"
+                              "version": "0.22.6.54827",
+                              "templateHash": "11562630491400954103"
                             }
                           },
                           "parameters": {
@@ -7532,8 +8729,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "13945851285616680724"
+                              "version": "0.22.6.54827",
+                              "templateHash": "11562630491400954103"
                             }
                           },
                           "parameters": {
@@ -7658,8 +8855,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "13945851285616680724"
+                              "version": "0.22.6.54827",
+                              "templateHash": "11562630491400954103"
                             }
                           },
                           "parameters": {
@@ -7844,8 +9041,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "15774402054966915173"
+                      "version": "0.22.6.54827",
+                      "templateHash": "13569317092130297378"
                     }
                   },
                   "parameters": {
@@ -8328,8 +9525,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "9443579810642006669"
+                      "version": "0.22.6.54827",
+                      "templateHash": "12476181127364111574"
                     }
                   },
                   "parameters": {
@@ -8498,8 +9695,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "13533098897900792860"
+                      "version": "0.22.6.54827",
+                      "templateHash": "11952711678765047217"
                     }
                   },
                   "parameters": {
@@ -8666,8 +9863,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "831346153285897056"
+                              "version": "0.22.6.54827",
+                              "templateHash": "5313083394471156958"
                             }
                           },
                           "parameters": {
@@ -8928,8 +10125,8 @@
                                   "metadata": {
                                     "_generator": {
                                       "name": "bicep",
-                                      "version": "0.20.4.51522",
-                                      "templateHash": "4541805467666285522"
+                                      "version": "0.22.6.54827",
+                                      "templateHash": "16542889521229310255"
                                     }
                                   },
                                   "parameters": {
@@ -9067,8 +10264,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16624770513957439457"
+                              "version": "0.22.6.54827",
+                              "templateHash": "10555888960994130887"
                             }
                           },
                           "parameters": {
@@ -9179,8 +10376,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "13945851285616680724"
+                              "version": "0.22.6.54827",
+                              "templateHash": "11562630491400954103"
                             }
                           },
                           "parameters": {
@@ -9304,8 +10501,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "13945851285616680724"
+                              "version": "0.22.6.54827",
+                              "templateHash": "11562630491400954103"
                             }
                           },
                           "parameters": {
@@ -9430,8 +10627,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "13945851285616680724"
+                              "version": "0.22.6.54827",
+                              "templateHash": "11562630491400954103"
                             }
                           },
                           "parameters": {
@@ -9588,8 +10785,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "10269755258310872269"
+                      "version": "0.22.6.54827",
+                      "templateHash": "15408735991750900011"
                     }
                   },
                   "parameters": {
@@ -9687,8 +10884,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "11733225414564442312"
+                              "version": "0.22.6.54827",
+                              "templateHash": "11418129739523871235"
                             }
                           },
                           "parameters": {
@@ -10007,8 +11204,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "5362294501967708784"
+                              "version": "0.22.6.54827",
+                              "templateHash": "10924070960515423066"
                             }
                           },
                           "parameters": {
@@ -10076,7 +11273,7 @@
                               "apiVersion": "2020-06-01",
                               "name": "[format('{0}/{1}', parameters('name'), parameters('aRecords')[copyIndex()].name)]",
                               "properties": {
-                                "ttl": 60,
+                                "ttl": "[if(contains(parameters('aRecords')[copyIndex()], 'ttl'), parameters('aRecords')[copyIndex()].ttl, 3600)]",
                                 "aRecords": [
                                   {
                                     "ipv4Address": "[parameters('aRecords')[copyIndex()].ipv4Address]"
@@ -10136,8 +11333,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16757856721763746334"
+                              "version": "0.22.6.54827",
+                              "templateHash": "515879137059342444"
                             }
                           },
                           "parameters": {
@@ -10349,8 +11546,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "13964324975529071265"
+                      "version": "0.22.6.54827",
+                      "templateHash": "18332586862620571613"
                     }
                   },
                   "parameters": {
@@ -10471,8 +11668,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "14572902388080328941"
+                              "version": "0.22.6.54827",
+                              "templateHash": "12528687580765097259"
                             }
                           },
                           "parameters": {
@@ -10714,8 +11911,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "5362294501967708784"
+                              "version": "0.22.6.54827",
+                              "templateHash": "10924070960515423066"
                             }
                           },
                           "parameters": {
@@ -10783,7 +11980,7 @@
                               "apiVersion": "2020-06-01",
                               "name": "[format('{0}/{1}', parameters('name'), parameters('aRecords')[copyIndex()].name)]",
                               "properties": {
-                                "ttl": 60,
+                                "ttl": "[if(contains(parameters('aRecords')[copyIndex()], 'ttl'), parameters('aRecords')[copyIndex()].ttl, 3600)]",
                                 "aRecords": [
                                   {
                                     "ipv4Address": "[parameters('aRecords')[copyIndex()].ipv4Address]"
@@ -10843,8 +12040,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.20.4.51522",
-                              "templateHash": "16757856721763746334"
+                              "version": "0.22.6.54827",
+                              "templateHash": "515879137059342444"
                             }
                           },
                           "parameters": {
@@ -11001,8 +12198,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.20.4.51522",
-              "templateHash": "4741460206960601395"
+              "version": "0.22.6.54827",
+              "templateHash": "12559704120310779635"
             }
           },
           "parameters": {
@@ -11060,8 +12257,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "9683203958437324298"
+                      "version": "0.22.6.54827",
+                      "templateHash": "4009938085889713028"
                     }
                   },
                   "parameters": {
@@ -11140,8 +12337,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.20.4.51522",
-                      "templateHash": "9683203958437324298"
+                      "version": "0.22.6.54827",
+                      "templateHash": "4009938085889713028"
                     }
                   },
                   "parameters": {
