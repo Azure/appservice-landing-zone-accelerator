@@ -194,6 +194,20 @@ var skuConfigurationMap = {
     family: 'Iv2'
     capacity: 3
   }
+  ASE_I2V2_AZ: {
+    name: 'I2v2'
+    tier: 'IsolatedV2'
+    size: 'I2v2'
+    family: 'Iv2'
+    capacity: 3
+  }
+  ASE_I3V2_AZ: {
+    name: 'I3v2'
+    tier: 'IsolatedV2'
+    size: 'I3v2'
+    family: 'Iv2'
+    capacity: 3
+  }
 }
 
 // =========== //
