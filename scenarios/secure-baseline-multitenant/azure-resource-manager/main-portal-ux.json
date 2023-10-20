@@ -116,7 +116,7 @@
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": true,
                                     "options": {
-                                        "text": "You can host your web applications in App Service Environment v3 (isolated hosting) or in an App service Plan (multitenant hosting)",
+                                        "text": "You can host your web applications in App Service Environment v3 (isolated hosting) or in an App Service Plan (multitenant hosting)",
                                         "link": {
                                             "label": "Learn more for App Service Environment v3",
                                             "uri": "https://learn.microsoft.com/azure/app-service/environment/overview"
@@ -157,7 +157,7 @@
                                 {
                                     "name": "webAppPlanSku",
                                     "type": "Microsoft.Common.DropDown",
-                                    "label": "Web App Plan Sku (Select 'ASE_I1V2_AZ' if you want to deploy an ASEv3)",
+                                    "label": "Web App Plan Sku",
                                     "subLabel": "",
                                     "defaultValue": "S1",
                                     "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
@@ -199,16 +199,40 @@
                                             {
                                                 "label": "P3V3_AZ",
                                                 "value": "P3V3_AZ"
-                                            },
-                                            {
-                                                "label": "ASE_I1V2_AZ",
-                                                "value": "ASE_I1V2_AZ"
                                             }
                                         ],
                                         "validations": []
                                     },
                                     "infoMessages": [],
-                                    "visible": true
+                                    "visible": "[equals(steps('basics').appSvcPlanSection.deployAseV3, false)]"
+                                },
+                                {
+                                    "name": "webAppPlanSkuAse",
+                                    "type": "Microsoft.Common.DropDown",
+                                    "label": "Web App Plan Sku (ASEv3)",
+                                    "subLabel": "",
+                                    "defaultValue": "ASE_I1V2_AZ",
+                                    "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
+                                    "constraints": {
+                                        "required": false,
+                                        "allowedValues": [                                            
+                                            {
+                                                "label": "ASE_I1V2_AZ",
+                                                "value": "ASE_I1V2_AZ"
+                                            },
+                                            {
+                                                "label": "ASE_I2V2_AZ",
+                                                "value": "ASE_I2V2_AZ"
+                                            },
+                                            {
+                                                "label": "ASE_I3V2_AZ",
+                                                "value": "ASE_I3V2_AZ"
+                                            }
+                                        ],
+                                        "validations": []
+                                    },
+                                    "infoMessages": [],
+                                    "visible": "[equals(steps('basics').appSvcPlanSection.deployAseV3, false)]"
                                 },
                                 {
                                     "name": "webAppBaseOs",
@@ -444,6 +468,27 @@
                             "visible": true
                         },
                         {
+                            "name": "subnetSpokeAppSvcAddressSpaceAse",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Spoke Subnet CIDR for Azure App Service",
+                            "subLabel": "",
+                            "defaultValue": "10.240.0.0/24",
+                            "toolTip": "CIDR of the subnet that will hold the app services plan. Use a /24 network space if you wish to deploy ASEv3, otherwise use a /26 for multi tenant app service plan.",
+                            "constraints": {
+                                "required": true,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": [
+                                    {
+                                        "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(2[0-6]))$",
+                                        "message": "Invalid CIDR range. The address prefix must be in the range [20,26]."
+                                    }
+                                ]
+                            },
+                            "infoMessages": [],
+                            "visible": "[equals(steps('basics').appSvcPlanSection.deployAseV3, true)]"
+                        },
+                        {
                             "name": "subnetSpokeAppSvcAddressSpace",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Spoke Subnet CIDR for Azure App Service",
@@ -462,7 +507,7 @@
                                 ]
                             },
                             "infoMessages": [],
-                            "visible": true
+                            "visible": "[equals(steps('basics').appSvcPlanSection.deployAseV3, false)]"
                         },
                         {
                             "name": "subnetSpokeDevOpsAddressSpace",
@@ -1071,14 +1116,14 @@
                 "subnetHubFirewallAddressSpace": "[steps('networking').subnetHubFirewallAddressSpace]",
                 "subnetHubBastionAddressSpace": "[steps('networking').subnetHubBastionAddressSpace]",
                 "vnetSpokeAddressSpace": "[steps('networking').vnetSpokeAddressSpace]",
-                "subnetSpokeAppSvcAddressSpace": "[steps('networking').subnetSpokeAppSvcAddressSpace]",
+                "subnetSpokeAppSvcAddressSpace": "[if( equals ( steps('basics').appSvcPlanSection.deployAseV3, true), steps('networking').subnetSpokeAppSvcAddressSpaceAse , steps('networking').subnetSpokeAppSvcAddressSpace )]",
                 "subnetSpokeDevOpsAddressSpace": "[steps('networking').subnetSpokeDevOpsAddressSpace]",
                 "subnetSpokePrivateEndpointAddressSpace": "[steps('networking').subnetSpokePrivateEndpointAddressSpace]",
                 "numericSuffix": "[steps('extra').numericSuffix]",
                 "vnetHubResourceId": "[steps('networking').vnetHubResourceId]",
                 "firewallInternalIp": "[steps('networking').firewallInternalIp]",
                 "deployAseV3": "[steps('basics').appSvcPlanSection.deployAseV3]",
-                "webAppPlanSku": "[steps('basics').appSvcPlanSection.webAppPlanSku]",
+                "webAppPlanSku": "[if( equals ( steps('basics').appSvcPlanSection.deployAseV3, true), steps('basics').appSvcPlanSection.webAppPlanSkuAse , steps('basics').appSvcPlanSection.webAppPlanSku )]",
                 "webAppBaseOs": "[steps('basics').appSvcPlanSection.webAppBaseOs]",
                 "adminUsername": "[steps('extra').jumpBoxSection.adminUsername]",
                 "adminPassword": "[if( equals ( steps('extra').jumpBoxSection.deployJumpHost, true), steps('extra').jumpBoxSection.vmCredentials.password , 'Pass@word123$' )]",
@@ -1091,7 +1136,6 @@
                 "deployRedis": "[steps('flags').deployRedis]",
                 "deployAppConfig": "[steps('flags').deployAppConfig]",
                 "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]",
-
                 "githubRepository": "[if( equals ( steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true), steps('extra').jumpBoxGithubRunnerSection.githubRepositoryUrl , '' )]",
                 "githubToken": "[if( equals ( steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true), steps('extra').jumpBoxGithubRunnerSection.githubToken , '' )]",
                 "adoOrganization": "[if( equals ( steps('extra').jumpBoxAzDoAgentSection.deployAzDoSelfHostedAgent, true), steps('extra').jumpBoxAzDoAgentSection.adoOrganization , '' )]",
