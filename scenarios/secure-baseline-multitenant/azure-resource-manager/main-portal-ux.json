@@ -232,7 +232,7 @@
                                         "validations": []
                                     },
                                     "infoMessages": [],
-                                    "visible": "[equals(steps('basics').appSvcPlanSection.deployAseV3, false)]"
+                                    "visible": "[equals(steps('basics').appSvcPlanSection.deployAseV3, true)]"
                                 },
                                 {
                                     "name": "webAppBaseOs",
