@@ -51,7 +51,7 @@ Below you can see the selected folder structure for the project. The main folder
 - **sample-apps**
   This folder may contain one or more subfolders, depending on the selected sample applications that will be created to serve as smoke tests or best-practices examples using the specific Landing Zone Accelerator artifacts. Folder structure inside each sample application sub-folder is free. 
 - **scenarios**
-  This folder can contain one or more scenarios (currently contains secure-baseline-ase and secure-baseline-multitenant), but in the future more scenarios might be added. Each scenario has the following (minimum) folder structure
+  This folder can contain one or more scenarios (currently contains secure-baseline), but in the future more scenarios might be added. Each scenario has the following (minimum) folder structure
   - (scenario1)\bicep
     Stores Azure Bicep related deployment scripts and artifacts for the given scenario. Contains also a README.md file that gives detailed instructions on how to use the specific IaC artifacts and scripts, to help end users parameterize and deploy successfully the LZA scenario
   - (scenario1)\terraform

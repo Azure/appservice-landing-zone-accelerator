@@ -26,11 +26,7 @@ In this repo you will find reference implementations with supporting Infrastruct
 
 ### Step 1. Reference implementations
 
-Pick one of the scenarios below to get started on a reference implementation.
-
-:arrow_forward: [Scenario 1: Multitenant App Service Secure Baseline](scenarios/secure-baseline-multitenant/README.md)
-
-:arrow_forward: [Scenario 2: Line of Business application using internal App Service Environment v3](scenarios/secure-baseline-ase//README.md)
+:arrow_forward: [App Service Secure Baseline](scenarios/secure-baseline-multitenant/README.md)
 
 For configuring the GitHub Actions pipelines, please refer to the [GitHub Actions](docs/github-actions.md) documentation.
 
@@ -46,7 +42,6 @@ With the selected reference implementation, you can now choose between `Bicep` o
 1. Navigate to the Terraform deployment directory (same directory as the `main.tf` file).
     - [scenarios/secure-baseline-multitenant/terraform/hub](scenarios/secure-baseline-multitenant/terraform/hub/)
     - [scenarios/secure-baseline-multitenant/terraform/spoke](scenarios/secure-baseline-multitenant/terraform/spoke/)
-    - [scenarios/secure-baseline-ase/terraform](scenarios/secure-baseline-ase/terraform)
 1. Familiarize yourself with the deployment files:
     - `main.tf` - Contains the Terraform provider configurations for the selected deployment/module. Note the `backend "azurerm" {}` block as this configures your [Terraform deployment's remote state](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm).  Also contains the resource group definitions to host the deployed resources.
     - `_locals.tf` - Contains the local variable declarations as well as custom logic to support naming and tagging conventions across each module.
