@@ -132,20 +132,20 @@ variable "private_link_subnet_cidr" {
   default     = ["10.240.11.0/24"]
 }
 
-# variable "hub_settings" {
-#   type = object({
-#     rg_name   = string
-#     vnet_name = string
+variable "hub_settings" {
+  type = object({
+    rg_name   = string
+    vnet_name = string
 
-#     firewall = object({
-#       private_ip = optional(string)
-#     })
-#   })
+    firewall = object({
+      private_ip = optional(string)
+    })
+  })
 
-#   description = "The settings for the hub virtual network."
+  description = "The settings for the hub virtual network."
 
-#   default = null
-# }
+  default = null
+}
 
 variable "vm_admin_username" {
   type        = string
