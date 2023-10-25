@@ -65,6 +65,7 @@ deployment_options = {
   deploy_sql_database        = true
   deploy_app_config          = true
   deploy_vm                  = true
+  deploy_openai              = true
 }
 
 # Optionally deploy a Github runner, DevOps agent, or both to the VM. 
@@ -260,4 +261,3 @@ Connect to the VM using the local VM admin credentials and run `dsregcmd /status
 ```
 
 If the VM is AAD joined, try to login in with the Azure AD credentials again after a few minutes. If it's not AAD joined, attempt to re-install the VM extension or manually enroll the VM to AAD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
-
