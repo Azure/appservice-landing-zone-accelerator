@@ -16,7 +16,7 @@ module "devops_vm" {
   resource_group      = azurerm_resource_group.spoke.name
   vm_name             = "devops"
   location            = var.location
-  vm_subnet_id        = module.network.subnets[index(module.network.subnets.*.name, "devops")].id
+  vm_subnet_id        = module.network.subnets["devops"].id
   admin_username      = var.vm_admin_username
   admin_password      = var.vm_admin_password
   aad_admin_username  = var.vm_aad_admin_username

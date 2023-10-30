@@ -14,4 +14,5 @@ deployment_options = {
   deploy_sql_database        = true
   deploy_app_config          = true
   deploy_vm                  = true
+  deploy_openai              = true
 }

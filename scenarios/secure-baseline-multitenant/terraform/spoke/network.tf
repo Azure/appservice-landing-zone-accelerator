@@ -69,7 +69,7 @@ module "private_dns_zones" {
   global_settings = local.global_settings
 
   dns_zone_name = local.private_dns_zones[count.index].name
-  dns_records   = local.private_dns_zones[count.index].records
+  dns_records   = lookup(local.private_dns_zones[count.index], "records", [])
   vnet_links = [
     data.azurerm_virtual_network.hub.id
   ]

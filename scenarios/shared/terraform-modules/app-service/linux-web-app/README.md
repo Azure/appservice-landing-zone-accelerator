@@ -9,8 +9,8 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.24 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.52.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.26 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.75.0 |
 
 ## Modules
 
@@ -48,7 +48,7 @@ No requirements.
 | <a name="input_service_plan_resource"></a> [service\_plan\_resource](#input\_service\_plan\_resource) | The service plan resource where the web application will be created | `any` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the resource. | `map(string)` | `{}` | no |
 | <a name="input_web_app_name"></a> [web\_app\_name](#input\_web\_app\_name) | The name of the web application | `string` | n/a | yes |
-| <a name="input_webapp_options"></a> [webapp\_options](#input\_webapp\_options) | The options for the app service | <pre>object({<br>    instrumentation_key  = string<br>    ai_connection_string = string<br>    slots                = list(string)<br><br>    application_stack = object({<br>      current_stack       = string # required for windows<br>      dotnet_version      = optional(string)<br>      php_version         = optional(string)<br>      node_version        = optional(string)<br>      java_version        = optional(string)<br>      python              = optional(bool)   # windows only<br>      python_version      = optional(string) # linux only<br>      java_server         = optional(string) # linux only<br>      java_server_version = optional(string) # linux only<br>      go_version          = optional(string) # linux only<br>      docker_image        = optional(string) # linux only<br>      docker_image_tag    = optional(string) # linux only<br>      go_version          = optional(string) # linux only<br>      ruby_version        = optional(string) # linux only<br>    })<br>  })</pre> | n/a | yes |
+| <a name="input_webapp_options"></a> [webapp\_options](#input\_webapp\_options) | The options for the app service | <pre>object({<br>    instrumentation_key  = string<br>    ai_connection_string = string<br>    slots                = list(string)<br><br>    application_stack = object({<br>      current_stack       = string # required for windows<br>      dotnet_version      = optional(string)<br>      php_version         = optional(string)<br>      node_version        = optional(string)<br>      java_version        = optional(string)<br>      python              = optional(bool)   # windows only<br>      python_version      = optional(string) # linux only<br>      java_server         = optional(string) # linux only<br>      java_server_version = optional(string) # linux only<br>      docker_image        = optional(string) # linux only<br>      docker_image_tag    = optional(string) # linux only<br>      go_version          = optional(string) # linux only<br>      ruby_version        = optional(string) # linux only<br>    })<br>  })</pre> | n/a | yes |
 
 ## Outputs
 

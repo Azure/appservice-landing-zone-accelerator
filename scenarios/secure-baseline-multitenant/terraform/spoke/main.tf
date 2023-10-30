@@ -1,5 +1,7 @@
 terraform {
-  required_version = ">=1.3" # must be greater than or equal to 1.2 for OIDC
+  # must be greater than or equal to 1.2 for OIDC
+  # must be greater than or equal to 1.3 for OpenAI
+  required_version = ">=1.3"
 
   required_providers {
     azurerm = {

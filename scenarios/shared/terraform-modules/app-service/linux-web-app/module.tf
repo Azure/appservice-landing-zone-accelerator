@@ -91,20 +91,22 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   enabled_log {
     category_group = "allLogs"
 
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
+    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
+    # retention_policy {
+    #   days    = 0
+    #   enabled = false
+    # }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = false
 
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
+    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
+    # retention_policy {
+    #   days    = 0
+    #   enabled = false
+    # }
   }
 }
 

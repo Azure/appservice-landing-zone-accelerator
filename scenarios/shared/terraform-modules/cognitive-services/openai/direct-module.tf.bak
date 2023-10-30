@@ -1,0 +1,32 @@
+# This is a "placeholder module" awaiting for some tagging configuration to be integrated into the openai module project
+
+module "openai" {
+  source  = "Azure/openai/azurerm"
+  version = "0.1.1"
+
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  application_name = var.application_name
+  account_name = azurecaf_name.caf_name_akv.result
+
+  sku_name = var.sku_name
+
+  storage = var.storage
+  deployment = var.deployment  
+
+  network_acls = var.network_acls
+  private_endpoint = var.private_endpoint
+  public_network_access_enabled = var.public_network_access_enabled
+  custom_subdomain_name = var.custom_subdomain_name
+  dynamic_throttling_enabled = var.dynamic_throttling_enabled
+  fqdns = var.fqdns
+  local_auth_enabled = var.local_auth_enabled
+  outbound_network_access_restricted = var.outbound_network_access_restricted
+
+  customer_managed_key = var.customer_managed_key
+  identity = var.identity
+
+  default_tags_enabled = var.tracing_tags_prefix
+  tracing_tags_enabled = var.tracing_tags_enabled
+}
