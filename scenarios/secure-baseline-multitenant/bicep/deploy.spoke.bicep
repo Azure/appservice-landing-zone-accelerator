@@ -116,7 +116,7 @@ var resourceNames = {
   routeTable: naming.routeTable.name
   routeEgressLockdown: '${naming.route.name}-egress-lockdown'
   idAfdApprovePeAutoApprover: take('${naming.userAssignedManagedIdentity.name}-AfdApprovePe', 128)
-  openAiAccount: naming.openAiAccount.name
+  openAiAccount: naming.openAiAccount.nameUnique
   openAiDeployment: naming.openAiDeployment.name
 }
 
