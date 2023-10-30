@@ -21,7 +21,6 @@ on:
   pull_request:
     branches:
       - main
-      - feature/*
     paths:
       - '.github/workflows/scenario1.terraform.spoke.yml'
       - '.github/workflows/_template.terraform.yml'
@@ -64,4 +63,3 @@ jobs:
       # Ensure this value is a boolean
       destroy: ${{ github.event.inputs.destroy == 'true' }}
     secrets: inherit
-
