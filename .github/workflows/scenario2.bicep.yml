@@ -14,9 +14,6 @@ on:
   pull_request:
     branches:
       - main
-      - feature/*
-      - feat/*
-      - fix/*
     paths:
       - '.github/workflows/bicep.scenario2.yml'
       - 'scenarios/secure-baseline-ase/bicep/**'
