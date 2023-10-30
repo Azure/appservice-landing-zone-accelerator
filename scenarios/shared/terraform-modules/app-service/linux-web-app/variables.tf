@@ -105,7 +105,6 @@ variable "webapp_options" {
       python_version      = optional(string) # linux only
       java_server         = optional(string) # linux only
       java_server_version = optional(string) # linux only
-      go_version          = optional(string) # linux only
       docker_image        = optional(string) # linux only
       docker_image_tag    = optional(string) # linux only
       go_version          = optional(string) # linux only

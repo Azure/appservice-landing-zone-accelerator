@@ -132,20 +132,20 @@ variable "private_link_subnet_cidr" {
   default     = ["10.240.11.0/24"]
 }
 
-# variable "hub_settings" {
-#   type = object({
-#     rg_name   = string
-#     vnet_name = string
+variable "hub_settings" {
+  type = object({
+    rg_name   = string
+    vnet_name = string
 
-#     firewall = object({
-#       private_ip = optional(string)
-#     })
-#   })
+    firewall = object({
+      private_ip = optional(string)
+    })
+  })
 
-#   description = "The settings for the hub virtual network."
+  description = "The settings for the hub virtual network."
 
-#   default = null
-# }
+  default = null
+}
 
 variable "vm_admin_username" {
   type        = string
@@ -179,6 +179,7 @@ variable "deployment_options" {
     deploy_sql_database        = bool
     deploy_app_config          = bool
     deploy_vm                  = bool
+    deploy_openai              = bool
   })
 
   description = "Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache."
@@ -192,6 +193,7 @@ variable "deployment_options" {
     deploy_sql_database        = true
     deploy_app_config          = true
     deploy_vm                  = true
+    deploy_openai              = true
   }
 }
 
@@ -209,6 +211,8 @@ variable "appsvc_options" {
       application_stack = object({
         current_stack       = string # required for windows
         dotnet_version      = optional(string)
+        docker_image        = optional(string) # linux only
+        docker_image_tag    = optional(string) # linux only
         php_version         = optional(string)
         node_version        = optional(string)
         java_version        = optional(string)
@@ -216,9 +220,6 @@ variable "appsvc_options" {
         python_version      = optional(string) # linux only
         java_server         = optional(string) # linux only
         java_server_version = optional(string) # linux only
-        go_version          = optional(string) # linux only
-        docker_image        = optional(string) # linux only
-        docker_image_tag    = optional(string) # linux only
         go_version          = optional(string) # linux only
         ruby_version        = optional(string) # linux only
       })
