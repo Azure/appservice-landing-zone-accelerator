@@ -42,7 +42,7 @@ param deployAppConfig bool
 @description('Deploy (or not) an Azure virtual machine (to be used as jumphost)')
 param deployJumpHost bool
 
-@description('Deploy (or not) an Azure OpenAI account')
+@description('Deploy (or not) an Azure OpenAI account. ATTENTION: At the time of writing this, OpenAI is in preview and only available in limited regions: look here: https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart#prerequisites')
 param deployOpenAi bool
 
 // post deployment specific parameters for the jumpBox
@@ -116,7 +116,7 @@ var resourceNames = {
   routeTable: naming.routeTable.name
   routeEgressLockdown: '${naming.route.name}-egress-lockdown'
   idAfdApprovePeAutoApprover: take('${naming.userAssignedManagedIdentity.name}-AfdApprovePe', 128)
-  openAiAccount: naming.openAiAccount.nameUnique
+  openAiAccount: naming.cognitiveAccount.nameUnique
   openAiDeployment: naming.openAiDeployment.name
 }
 
@@ -360,13 +360,17 @@ module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = if (deployAzu
   }
 }
 
-module openAi '../../shared/bicep/openai/openai.bicep'= if(deployOpenAi) {
+module openAi 'modules/open-ai.module.bicep'= if(deployOpenAi) {
   name: take('${resourceNames.openAiAccount}-openAiModule-Deployment', 64)
   params: {
-    accountName: resourceNames.openAiAccount
+    name: resourceNames.openAiAccount
     deploymentName: resourceNames.openAiDeployment
     location: location
     tags: tags
+    vnetHubResourceId: vnetHubResourceId
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks
+    logAnalyticsWsId: logAnalyticsWs.outputs.logAnalyticsWsId
   }
 }
 
