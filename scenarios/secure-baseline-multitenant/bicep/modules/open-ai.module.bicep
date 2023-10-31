@@ -26,6 +26,9 @@ param vnetHubResourceId string
 @description('An existing Log Analytics WS Id for creating app Insights, diagnostics etc.')
 param logAnalyticsWsId string
 
+@description('Deploy (or not) a model on the openAI Account. This is used only as a sample to show how to deploy a model on the OpenAI account.')
+param deployOpenAiGptModel bool = false
+
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 var openAiDnsZoneName = 'privatelink.openai.azure.com' 
 
@@ -45,7 +48,7 @@ module openAI '../../../shared/bicep/cognitive-services/open-ai.bicep' = {
   }
 }
 
-module gpt35TurboDeployment  '../../../shared/bicep/cognitive-services/open-ai.Gpt.deployment.bicep' = {
+module gpt35TurboDeployment  '../../../shared/bicep/cognitive-services/open-ai.Gpt.deployment.bicep' = if (deployOpenAiGptModel) {
     name: 'GPT-${name}-Deployment'
     params: {
       openAiName: name

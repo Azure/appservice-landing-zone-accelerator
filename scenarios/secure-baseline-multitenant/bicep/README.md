@@ -13,7 +13,7 @@ Before deploying the Bicep IaC artifacts, you need to review and customize the v
 > **Note**  
   Azure Developer CLI (azd) is also supported as a deployment method. Since azd CLI does not support parameter files with *jsonc* extension, we provide a simple json parameter file (which does not contain inline comments)
 
-The table below summurizes the avaialble parameters and the possible values that can be set. 
+The table below summarizes the available parameters and the possible values that can be set. 
 
 
 | Name | Description | Example | 
@@ -22,7 +22,7 @@ The table below summurizes the avaialble parameters and the possible values that
 |location|Azure region where the resources will be deployed in||
 |environment|Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.||
 |vnetHubResourceId|If empty, then a new hub will be created. If you select not to deploy a new Hub resource group, set the resource id of the Hub Virtual Network that you want to peer to. In that case, no new hub will be created and a peering will be created between the new spoke and and existing hub vnet|/subscriptions/<subscription_id>/ resourceGroups/<rg_name>/providers/ Microsoft.Network/virtualNetworks/<vnet_name>|
-|firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewal so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
+|firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewall so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
 |vnetHubAddressSpace|If you deploy a new hub, you need to set the appropriate CIDR of the newly created Hub virtual network|10.242.0.0/20|
 |subnetHubFirewallAddressSpace|CIDR of the subnet that will host the azure Firewall|10.242.0.0/26|
 |subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.64/26|
@@ -30,7 +30,7 @@ The table below summurizes the avaialble parameters and the possible values that
 |subnetSpokeAppSvcAddressSpace|CIDR of the subnet that will hold the app services plan|10.240.0.0/26|
 |subnetSpokeDevOpsAddressSpace|CIDR of the subnet that will hold devOps agents etc|10.240.10.128/26|
 |subnetSpokePrivateEndpointAddressSpace|CIDR of the subnet that will hold the private endpoints of the supporting services|10.240.11.0/24|
-|webAppPlanSku|Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. select one from: 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ||
+|webAppPlanSku|Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deploying at least three instances in three Availability Zones. select one from: 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ||
 |webAppBaseOs|The OS for the App service plan. Two options available: Windows or Linux||
 |resourceTags|Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)|"resourceTags": {<br>         "value": { <br>               "deployment": "bicep", <br>  "key1": "value1" <br>           } <br>         } |
 |enableEgressLockdown|Feature Flag: te (or not) a UDR for the App Service Subnet, to route all egress traffic through Hub Azure Firewall|
@@ -38,6 +38,7 @@ The table below summurizes the avaialble parameters and the possible values that
 |deployAzureSql|Feature Flag: Deploy (or not) an Azure SQL with default database|
 |deployAppConfig|Feature Flag: Deploy (or not) an Azure app configuration|
 |deployJumpHost|Feature Flag: Deploy (or not) an Azure virtual machine (to be used as jumphost)|
+|deployOpenAi|Feature Flag: Deploy (or not) an Azure OpenAI account. ATTENTION: At the time of writing, [OpenAI is in preview](https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart#prerequisites) and available in limited regions. |false
 |autoApproveAfdPrivateEndpoint|Default value: true. Set to true if you want to auto approve the Private Endpoint of the AFD Premium. See details [regarding approving the App Service private endpoint connection from Front Door](#approve-the-app-service-private-endpoint-connection-from-front-door-in-the-azure-portal) | false
 |sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
 
@@ -66,7 +67,7 @@ az deployment sub create `
     --name $deploymentName `
     --parameters ./main.parameters.jsonc
 ```
-### Azure Devloper CLI (azd)
+### Azure Developer CLI (azd)
 1. [Install the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=localinstall%2Cwindows%2Cbrew%2Cdeb)
 2. Login to azure from your terminal. You can do this by running `azd auth login`. If no web browser is available or the web browser fails to open, you may force device code flow with  `azd auth login --use-device-code` 
 3. Run `azd up` in the correct folder (/scenarios/secure-baseline-multitenant). This will start the Azure infrastructure provisioning process. The first time you run it, you will be asked to give some information, i.e. environmentName, subscription ID etc
