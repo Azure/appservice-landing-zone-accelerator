@@ -23,14 +23,14 @@ vm_aad_admin_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884" # "AppSvcLZA Azu
 # vm_admin_password         = "**************"
 
 ## These settings are used for peering the spoke to the hub. Fill in the appropriate settings for your environment
-# hub_settings = {
-#   rg_name   = "rg-hub-scenario1-wus3"
-#   vnet_name = "vnet-hub-scenario1-wus3"
+hub_settings = {
+  rg_name   = "rg-hub-scenario1-wus3"
+  vnet_name = "vnet-hub-scenario1-wus3"
 
-#   firewall = {
-#     private_ip = "10.242.0.4"
-#   }
-# }
+  firewall = {
+    private_ip = "10.242.0.4"
+  }
+}
 
 ## Toggle deployment of optional features and services for the Landing Zone
 deployment_options = {
@@ -42,6 +42,7 @@ deployment_options = {
   deploy_sql_database        = true
   deploy_app_config          = true
   deploy_vm                  = false
+  deploy_openai              = true
 }
 
 ## Optionally deploy a Github runner, DevOps agent, or both to the VM. 
