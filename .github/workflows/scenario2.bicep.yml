@@ -3,21 +3,21 @@ name: 'Scenario 2: Bicep Single-tenant ASEv3 Secure Baseline'
 on:
   workflow_dispatch:
 
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/bicep.scenario2.yml'
-      - 'scenarios/secure-baseline-ase/bicep/**'
-      - '!scenarios/secure-baseline-ase/**.md'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - '.github/workflows/bicep.scenario2.yml'
+  #     - 'scenarios/secure-baseline-ase/bicep/**'
+  #     - '!scenarios/secure-baseline-ase/**.md'
 
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/bicep.scenario2.yml'
-      - 'scenarios/secure-baseline-ase/bicep/**'
-      - '!scenarios/secure-baseline-ase/**.md'
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - '.github/workflows/bicep.scenario2.yml'
+  #     - 'scenarios/secure-baseline-ase/bicep/**'
+  #     - '!scenarios/secure-baseline-ase/**.md'
 
 permissions:
   id-token: write
