@@ -225,7 +225,7 @@ module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(sub
     name: take('pe-${webApp.outputs.name}', 64)
     location: location
     tags: tags
-    privateDnsZonesId: webAppPrivateDnsZone.outputs.privateDnsZonesId
+    privateDnsZonesId: ( !empty(subnetPrivateEndpointId) && !deployAseV3 ) ? webAppPrivateDnsZone.outputs.privateDnsZonesId : ''
     privateLinkServiceId: webApp.outputs.resourceId
     snetId: subnetPrivateEndpointId
     subresource: 'sites'
@@ -238,7 +238,7 @@ module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty
     name: take('pe-${webAppName}-slot-${slotName}', 64)
     location: location
     tags: tags
-    privateDnsZonesId: webAppPrivateDnsZone.outputs.privateDnsZonesId
+    privateDnsZonesId: ( !empty(subnetPrivateEndpointId) && !deployAseV3 ) ? webAppPrivateDnsZone.outputs.privateDnsZonesId : ''
     privateLinkServiceId: webApp.outputs.resourceId
     snetId: subnetPrivateEndpointId
     subresource: 'sites-${slotName}'
