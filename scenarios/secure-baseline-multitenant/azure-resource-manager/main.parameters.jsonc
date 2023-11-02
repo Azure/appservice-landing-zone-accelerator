@@ -3,9 +3,9 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         // max length: 10. Suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>
-        "workloadName" : {
-           "value": "merge-ase"  
-           // "value": "merge-mul"
+        "workloadName": {
+            "value": "merge-ase"
+            // "value": "merge-mul"
         },
         //Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
         "environmentName": {
@@ -28,7 +28,7 @@
         },
         // Feature Flags
         // set to true if you want to intercept all outbound traffic with azure firewall
-        "enableEgressLockdown" : {
+        "enableEgressLockdown": {
             "value": true
         },
         // set to true if you want to a redis cache
@@ -85,8 +85,7 @@
             "value": "S1"
         },
         // two options: Windows or Linux
-        "webAppBaseOs" : 
-        {
+        "webAppBaseOs": {
             "value": "Windows"
         },
         // admin username of the VM agent deployed in the Spoke
@@ -102,7 +101,7 @@
             "value": {
                 "deployment": "bicep"
             }
-        }, 
+        },
         // The Azure Active Directory (AAD) administrator group used for SQL Server authentication
         "sqlServerAdministrators": {
             "value": {
