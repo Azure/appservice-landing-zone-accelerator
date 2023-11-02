@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "3336052971969522478"
+      "templateHash": "5843179047527254209"
     }
   },
   "parameters": {
@@ -132,7 +132,9 @@
         "EP1",
         "EP2",
         "EP3",
-        "ASE_I1V2_AZ"
+        "ASE_I1V2_AZ",
+        "ASE_I2V2_AZ",
+        "ASE_I3V2_AZ"
       ],
       "metadata": {
         "description": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions"
@@ -3115,7 +3117,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "16516488958431698090"
+              "templateHash": "2090198776473392765"
             }
           },
           "parameters": {
@@ -3267,7 +3269,9 @@
                 "EP1",
                 "EP2",
                 "EP3",
-                "ASE_I1V2_AZ"
+                "ASE_I1V2_AZ",
+                "ASE_I2V2_AZ",
+                "ASE_I3V2_AZ"
               ],
               "metadata": {
                 "description": "Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions"
@@ -4818,7 +4822,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "10325983806202465387"
+                      "templateHash": "8022333665852058257"
                     }
                   },
                   "parameters": {
@@ -4883,7 +4887,9 @@
                         "EP1",
                         "EP2",
                         "EP3",
-                        "ASE_I1V2_AZ"
+                        "ASE_I1V2_AZ",
+                        "ASE_I2V2_AZ",
+                        "ASE_I3V2_AZ"
                       ],
                       "metadata": {
                         "description": "Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions"
@@ -5592,7 +5598,7 @@
                       "condition": "[parameters('deployAseV3')]",
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
-                      "name": "[take(format('{0}-PrivateDnsZoneDeployment', 'ase-appserviceenvironment-net'), 64)]",
+                      "name": "asev3-net-PrivateDnsZone-Deployment",
                       "subscriptionId": "[variables('vnetHubSplitTokens')[2]]",
                       "resourceGroup": "[variables('vnetHubSplitTokens')[4]]",
                       "properties": {
@@ -5722,7 +5728,10 @@
                             }
                           }
                         }
-                      }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', take(format('ase-{0}-Deployment', parameters('aseName')), 64))]"
+                      ]
                     },
                     {
                       "type": "Microsoft.Resources/deployments",
@@ -5945,7 +5954,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.22.6.54827",
-                              "templateHash": "771589631100286225"
+                              "templateHash": "482467051875792647"
                             }
                           },
                           "parameters": {
@@ -5985,7 +5994,9 @@
                                 "EP1",
                                 "EP2",
                                 "EP3",
-                                "ASE_I1V2_AZ"
+                                "ASE_I1V2_AZ",
+                                "ASE_I2V2_AZ",
+                                "ASE_I3V2_AZ"
                               ],
                               "metadata": {
                                 "description": "Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions"
@@ -6194,6 +6205,20 @@
                                 "name": "I1v2",
                                 "tier": "IsolatedV2",
                                 "size": "I1v2",
+                                "family": "Iv2",
+                                "capacity": 3
+                              },
+                              "ASE_I2V2_AZ": {
+                                "name": "I2v2",
+                                "tier": "IsolatedV2",
+                                "size": "I2v2",
+                                "family": "Iv2",
+                                "capacity": 3
+                              },
+                              "ASE_I3V2_AZ": {
+                                "name": "I3v2",
+                                "tier": "IsolatedV2",
+                                "size": "I3v2",
                                 "family": "Iv2",
                                 "capacity": 3
                               }
