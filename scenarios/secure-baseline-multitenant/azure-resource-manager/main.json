@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.22.6.54827",
-      "templateHash": "5843179047527254209"
+      "templateHash": "6961336045200603151"
     }
   },
   "parameters": {
@@ -3117,7 +3117,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.22.6.54827",
-              "templateHash": "2090198776473392765"
+              "templateHash": "7370064753805988074"
             }
           },
           "parameters": {
@@ -4822,7 +4822,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.22.6.54827",
-                      "templateHash": "8022333665852058257"
+                      "templateHash": "9202849077085776851"
                     }
                   },
                   "parameters": {
@@ -7771,9 +7771,7 @@
                           "tags": {
                             "value": "[parameters('tags')]"
                           },
-                          "privateDnsZonesId": {
-                            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vnetHubSplitTokens')[2], variables('vnetHubSplitTokens')[4]), 'Microsoft.Resources/deployments', take(format('{0}-PrivateDnsZoneDeployment', replace(variables('webAppDnsZoneName'), '.', '-')), 64)), '2022-09-01').outputs.privateDnsZonesId.value]"
-                          },
+                          "privateDnsZonesId": "[if(and(not(empty(parameters('subnetPrivateEndpointId'))), not(parameters('deployAseV3'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vnetHubSplitTokens')[2], variables('vnetHubSplitTokens')[4]), 'Microsoft.Resources/deployments', take(format('{0}-PrivateDnsZoneDeployment', replace(variables('webAppDnsZoneName'), '.', '-')), 64)), '2022-09-01').outputs.privateDnsZonesId.value), createObject('value', ''))]",
                           "privateLinkServiceId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('{0}-webApp-Deployment', parameters('webAppName')), 64)), '2022-09-01').outputs.resourceId.value]"
                           },
@@ -7911,9 +7909,7 @@
                           "tags": {
                             "value": "[parameters('tags')]"
                           },
-                          "privateDnsZonesId": {
-                            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vnetHubSplitTokens')[2], variables('vnetHubSplitTokens')[4]), 'Microsoft.Resources/deployments', take(format('{0}-PrivateDnsZoneDeployment', replace(variables('webAppDnsZoneName'), '.', '-')), 64)), '2022-09-01').outputs.privateDnsZonesId.value]"
-                          },
+                          "privateDnsZonesId": "[if(and(not(empty(parameters('subnetPrivateEndpointId'))), not(parameters('deployAseV3'))), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('vnetHubSplitTokens')[2], variables('vnetHubSplitTokens')[4]), 'Microsoft.Resources/deployments', take(format('{0}-PrivateDnsZoneDeployment', replace(variables('webAppDnsZoneName'), '.', '-')), 64)), '2022-09-01').outputs.privateDnsZonesId.value), createObject('value', ''))]",
                           "privateLinkServiceId": {
                             "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('{0}-webApp-Deployment', parameters('webAppName')), 64)), '2022-09-01').outputs.resourceId.value]"
                           },
