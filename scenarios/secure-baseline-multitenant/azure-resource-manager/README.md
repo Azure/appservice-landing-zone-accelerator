@@ -15,7 +15,7 @@ Alternatively, you can clone the repo and follow the instractions below
 ## Deploy the App Service Landing Zone ARM template file
 Before deploying the Bicep IaC artifacts, you need to review and customize the values of the parameters in the [main.parameters.jsonc](main.parameters.jsonc) file. 
 
-The table below summurizes the avaialble parameters and the possible values that can be set. 
+The table below summarizes the available parameters and the possible values that can be set. 
 
 
 | Name | Description | Example | 
@@ -40,6 +40,7 @@ The table below summurizes the avaialble parameters and the possible values that
 |deployAzureSql|Feature Flag: Deploy (or not) an Azure SQL with default database|
 |deployAppConfig|Feature Flag: Deploy (or not) an Azure app configuration|
 |deployJumpHost|Feature Flag: Deploy (or not) an Azure virtual machine (to be used as jumphost)|
+|deployOpenAi|Feature Flag: Deploy (or not) an Azure OpenAI account. ATTENTION: At the time of writing, [OpenAI is in preview](https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart#prerequisites) and available in limited regions. |false
 |sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group  must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
 
 After the parameters have been initialized, you can deploy the Landing Zone Accelerator resources with the following `az cli` command:
