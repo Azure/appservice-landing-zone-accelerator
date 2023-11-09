@@ -88,6 +88,12 @@ param deployAppConfig bool = false
 @description('set to true if you want to deploy a jumpbox/devops VM')
 param deployJumpHost bool = true
 
+@description('set to true if you want to deploy a openai VM')
+param deployOpenAi bool = false
+
+@description('Deploy (or not) a model on the openAI Account. This is used only as a sample to show how to deploy a model on the OpenAI account.')
+param deployOpenAiGptModel bool = false
+
 // post deployment specific parameters for the jumpBox
 @description('The URL of the Github repository to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_token must also be provided.')
 param githubRepository string = '' 
@@ -210,6 +216,8 @@ module spoke 'deploy.spoke.bicep' = {
     deployRedis: deployRedis
     deployAzureSql: deployAzureSql
     deployAppConfig: deployAppConfig
+    deployOpenAi: deployOpenAi
+    deployOpenAiGptModel: deployOpenAiGptModel
     autoApproveAfdPrivateEndpoint: autoApproveAfdPrivateEndpoint
     githubRepository: githubRepository
     githubToken: githubToken
@@ -234,6 +242,7 @@ module peerings 'modules/peerings.deployment.bicep' = {
 //  Telemetry Deployment
 @description('Enable usage and telemetry feedback to Microsoft.')
 var telemetryId = 'cf7e9f0a-f872-49db-b72f-f2e318189a6d-${location}-msb'
+#disable-next-line no-deployments-resources
 resource telemetrydeployment 'Microsoft.Resources/deployments@2021-04-01' = if (enableTelemetry) {
   name: telemetryId
   location: location

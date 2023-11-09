@@ -31,6 +31,7 @@ param roledescription string = '' // leave these for loggin in the portal
 // var segment = [for (item, index) in range(1,last) : item == 1 ? '${segments[0]}/${segments[item]}/${items[index]}/' : item != last ? '${segments[item]}/${items[index]}/' : '${segments[item]}/${items[index]}' ]
 // var resourceid =  replace(replace(replace(string(string(segment)), '","', ''), '["', ''), '"]', '') // currently no join() method
 // // ----------------------------------------------
+#disable-next-line no-deployments-resources
 resource resourceRoleAssignment 'Microsoft.Resources/deployments@2021-04-01' = {
     name: name // take('RA-${principalId}-${roleDefinitionId}-${last(split(resourceId,'/'))}',64)
     properties: {

@@ -1,6 +1,6 @@
 # Multitenant App Service Secure Baseline
 
-This reference architecture shows how to run a web-app workload on Azure App Services in a secure configuration. This secure baseline follow [Defence in Depth](https://learn.microsoft.com/en-us/shows/azure-videos/defense-in-depth-security-in-azure) approach to protect AppService workload against cloud vulnerabilities along with additional [Well-Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/) pillars to enable a resilient solution.
+This reference architecture shows how to run a web-app workload on Azure App Services in a secure configuration. This secure baseline follow [Defense in Depth](https://learn.microsoft.com/en-us/shows/azure-videos/defense-in-depth-security-in-azure) approach to protect AppService workload against cloud vulnerabilities along with additional [Well-Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/) pillars to enable a resilient solution.
 
 ## Quick deployment to Azure
 You can deploy the current LZA directly in your azure subscription by hitting the button below or using Azure Dev CLI. 
@@ -33,6 +33,7 @@ You can deploy the current LZA directly in your azure subscription by hitting th
 * App Services use [Virtual Network (VNet) Integration](https://learn.microsoft.com/en-us/azure/app-service/overview-vnet-integration#regional-virtual-network-integration) to connect to backend Azure services over a private VNet.
 * [Azure Cache for Redis](https://azure.microsoft.com/services/cache/) provides a high-performance distributed cache for output, session, and general-purpose caching.
 * [Azure SQL DB](https://azure.microsoft.com/en-us/products/azure-sql/database/) provides a fully managed relational database service for back-end application services.
+* [Azure OpenAI](https://learn.microsoft.com/en-us/azure/ai-services/openai/overview) provides REST API access to OpenAI's powerful language models including the GPT-4, GPT-3.5-Turbo, and Embeddings model series.
 * [Private Endpoints](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview) allow connections to Azure services from private VNets, and allow the public endpoints on these services to be disabled.
 * [Azure private DNS](https://learn.microsoft.com/en-us/azure/dns/private-dns-overview) automatically configures and updates the DNS records required by private endpoint services.
 * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/) securely stores secrets and certificates to be accessed by Azure services.
@@ -57,7 +58,7 @@ For network and subnet topology details, see the [Azure sample template](https:/
 
 ## Scenario details
 The scenario describes a secure baseline that allows you to have a protect environment and a good starting point for designing your solution.
-Defence in depth is a security strategy that involves implementing multiple layers of defence at different points within a network or system. The idea is that if one layer of defence is breached, the next layer will be able to prevent an attacker from gaining access to sensitive information or critical systems. 
+Defense in depth is a security strategy that involves implementing multiple layers of defense at different points within a network or system. The idea is that if one layer of defense is breached, the next layer will be able to prevent an attacker from gaining access to sensitive information or critical systems. 
 This approach is a key point that drives the architecture decisions ->
 * Use isolated network layers for the different components.
 * Use protected AD based access via Managed Identity (where possible).
