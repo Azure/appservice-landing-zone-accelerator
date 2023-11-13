@@ -43,7 +43,7 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-shared/agentsetup.ps1
+# shared/agentsetup.ps1
 .vscode/tasks.json
 .vscode/launch.json
 .vscode/launch.json
