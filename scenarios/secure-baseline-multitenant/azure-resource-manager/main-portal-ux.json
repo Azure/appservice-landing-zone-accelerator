@@ -160,7 +160,7 @@
                                     "label": "Web App Plan Sku",
                                     "subLabel": "",
                                     "defaultValue": "S1",
-                                    "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
+                                    "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deploying at least three instances in three Availability Zones. EP* is only for functions",
                                     "constraints": {
                                         "required": false,
                                         "allowedValues": [
@@ -212,7 +212,7 @@
                                     "label": "Web App Plan Sku (ASEv3)",
                                     "subLabel": "",
                                     "defaultValue": "ASE_I1V2_AZ",
-                                    "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions",
+                                    "toolTip": "Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deploying at least three instances in three Availability Zones. EP* is only for functions",
                                     "constraints": {
                                         "required": false,
                                         "allowedValues": [                                            
