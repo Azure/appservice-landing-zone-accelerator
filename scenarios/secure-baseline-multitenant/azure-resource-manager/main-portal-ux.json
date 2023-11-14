@@ -1037,7 +1037,7 @@
                             "label": "Deploy Redis",
                             "subLabel": "",
                             "defaultValue": "false",
-                            "toolTip": "set to true if you want to a redis cache",
+                            "toolTip": "set to true if you want to deploy a redis cache",
                             "constraints": {
                                 "required": false,
                                 "allowedValues": [
@@ -1102,6 +1102,48 @@
                             },
                             "infoMessages": [],
                             "visible": true
+                        }, 
+                        {
+                            "name": "openAiInfoTitle",
+                            "type": "Microsoft.Common.Section",
+                            "label": "Azure OpenAI Feature Flag",
+                            "elements": []
+                        },
+                        {
+                            "name": "openAiInfo",
+                            "type": "Microsoft.Common.TextBlock",
+                            "visible": true,
+                            "options": {
+                                "text": "Please be informed that currently Azure OpenAI is in preview and only available in limited regions. Also your azure subscription needs to be allow-listed.",
+                                "link": {
+                                    "label": "Azure OpenAI Prerequisites",
+                                    "uri": "https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart#prerequisites"
+                                }
+                            }
+                        },
+                        {
+                            "name": "deployOpenAI",
+                            "type": "Microsoft.Common.DropDown",
+                            "label": "Deploy OpenAI",
+                            "subLabel": "what is that??",
+                            "defaultValue": "false",
+                            "toolTip": "set to true if you want to deploy OpenAI",
+                            "constraints": {
+                                "required": false,
+                                "allowedValues": [
+                                    {
+                                        "label": "true",
+                                        "value": true
+                                    },
+                                    {
+                                        "label": "false",
+                                        "value": false
+                                    }
+                                ],
+                                "validations": []
+                            },
+                            "infoMessages": [],
+                            "visible": true
                         }
                     ]
                 }
@@ -1136,6 +1178,7 @@
                 "deployRedis": "[steps('flags').deployRedis]",
                 "deployAppConfig": "[steps('flags').deployAppConfig]",
                 "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]",
+                "deployOpenAI": "[steps('flags').deployOpenAI]",
                 "githubRepository": "[if( equals ( steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true), steps('extra').jumpBoxGithubRunnerSection.githubRepositoryUrl , '' )]",
                 "githubToken": "[if( equals ( steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true), steps('extra').jumpBoxGithubRunnerSection.githubToken , '' )]",
                 "adoOrganization": "[if( equals ( steps('extra').jumpBoxAzDoAgentSection.deployAzDoSelfHostedAgent, true), steps('extra').jumpBoxAzDoAgentSection.adoOrganization , '' )]",
