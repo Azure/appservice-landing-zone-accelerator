@@ -47,6 +47,10 @@
         "deployJumpHost": {
             "value": false
         },
+        // Deploy (or not) an Azure OpenAI account. ATTENTION: At the time of writing , OpenAI is in preview and only available in limited regions: look here: https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart#prerequisites
+        "deployOpenAi": {
+            "value": false
+        },
         // set to true if you want to auto approve the Private Endpoint of the AFD Premium
         "autoApproveAfdPrivateEndpoint": {
             "value": false

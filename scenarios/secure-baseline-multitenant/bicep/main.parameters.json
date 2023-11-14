@@ -35,6 +35,9 @@
         "deployJumpHost": {
             "value": false
         },
+        "deployOpenAi": {
+            "value": false
+        },
         "autoApproveAfdPrivateEndpoint": {
             "value": true
         },

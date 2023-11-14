@@ -45,6 +45,12 @@ param deployAppConfig bool
 @description('Deploy (or not) an Azure virtual machine (to be used as jumphost)')
 param deployJumpHost bool
 
+@description('Deploy (or not) an Azure OpenAI account. ATTENTION: At the time of writing this, OpenAI is in preview and only available in limited regions: look here: https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart#prerequisites')
+param deployOpenAi bool
+
+@description('Deploy (or not) a model on the openAI Account. This is used only as a sample to show how to deploy a model on the OpenAI account.')
+param deployOpenAiGptModel bool = false
+
 // post deployment specific parameters for the jumpBox
 @description('The URL of the Github repository to use for the Github Actions Runner. This parameter is optional. If not provided, the Github Actions Runner will not be installed. If this parameter is provided, then github_token must also be provided.')
 param githubRepository string = '' 
@@ -119,6 +125,8 @@ var resourceNames = {
   routeTable: naming.routeTable.name
   routeEgressLockdown: '${naming.route.name}-egress-lockdown'
   idAfdApprovePeAutoApprover: take('${naming.userAssignedManagedIdentity.name}-AfdApprovePe', 128)
+  openAiAccount: naming.cognitiveAccount.nameUnique
+  openAiDeployment: naming.openAiDeployment.name
 }
 
 var udrRoutes = [
@@ -407,6 +415,20 @@ module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = if (deployAzu
   }
 }
 
+module openAi 'modules/open-ai.module.bicep'= if(deployOpenAi) {
+  name: take('${resourceNames.openAiAccount}-openAiModule-Deployment', 64)
+  params: {
+    name: resourceNames.openAiAccount
+    deploymentName: resourceNames.openAiDeployment
+    location: location
+    tags: tags
+    vnetHubResourceId: vnetHubResourceId
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks
+    logAnalyticsWsId: logAnalyticsWs.outputs.logAnalyticsWsId
+    deployOpenAiGptModel: deployOpenAiGptModel
+  }
+}
 
 output vnetSpokeName string = vnetSpoke.outputs.vnetName
 output vnetSpokeId string = vnetSpoke.outputs.vnetId
