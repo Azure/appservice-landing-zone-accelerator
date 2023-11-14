@@ -227,6 +227,18 @@
                                             {
                                                 "label": "ASE_I3V2_AZ",
                                                 "value": "ASE_I3V2_AZ"
+                                            },
+                                            {
+                                                "label": "ASE_I1V2",
+                                                "value": "ASE_I1V2"
+                                            },
+                                            {
+                                                "label": "ASE_I2V2",
+                                                "value": "ASE_I2V2"
+                                            },
+                                            {
+                                                "label": "ASE_I3V2",
+                                                "value": "ASE_I3V2"
                                             }
                                         ],
                                         "validations": []
