@@ -1134,7 +1134,7 @@
                             }
                         },
                         {
-                            "name": "deployOpenAI",
+                            "name": "deployOpenAi",
                             "type": "Microsoft.Common.DropDown",
                             "label": "Deploy OpenAI",
                             "subLabel": "what is that??",
@@ -1190,7 +1190,7 @@
                 "deployRedis": "[steps('flags').deployRedis]",
                 "deployAppConfig": "[steps('flags').deployAppConfig]",
                 "autoApproveAfdPrivateEndpoint": "[steps('flags').autoApproveAfdPrivateEndpoint]",
-                "deployOpenAI": "[steps('flags').deployOpenAI]",
+                "deployOpenAi": "[steps('flags').deployOpenAi]",
                 "githubRepository": "[if( equals ( steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true), steps('extra').jumpBoxGithubRunnerSection.githubRepositoryUrl , '' )]",
                 "githubToken": "[if( equals ( steps('extra').jumpBoxGithubRunnerSection.deployGitHubRunner, true), steps('extra').jumpBoxGithubRunnerSection.githubToken , '' )]",
                 "adoOrganization": "[if( equals ( steps('extra').jumpBoxAzDoAgentSection.deployAzDoSelfHostedAgent, true), steps('extra').jumpBoxAzDoAgentSection.adoOrganization , '' )]",
