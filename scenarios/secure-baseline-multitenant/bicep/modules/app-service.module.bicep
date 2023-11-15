@@ -95,39 +95,39 @@ module ase '../../../shared/bicep/app-services/ase/ase.bicep' = if (deployAseV3)
   }
 }
 
-// resource aseResource  'Microsoft.Web/hostingEnvironments@2022-09-01' existing = {
-//   name: aseName
-// }
+resource aseResource  'Microsoft.Web/hostingEnvironments@2022-09-01' existing = {
+  name: aseName
+}
 
-// module asePrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( deployAseV3 ) {
-//   // scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
-//   name: 'asev3-net-PrivateDnsZone-Deployment'
-//   params: {
-//     name: deployAseV3 ? '${aseResource.name}.appserviceenvironment.net' : ''
-//     virtualNetworkLinks: virtualNetworkLinks
-//     tags: tags
-//     aRecords: [
-//       {
-//         name: '*'
-//         ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
-//         ttl: 3600
-//       }
-//       {
-//         name: '*.scm'
-//         ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
-//         ttl: 3600
-//       }
-//       {
-//         name: '@'
-//         ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
-//         ttl: 3600
-//       }
-//     ]
-//   }
-//   dependsOn: [
-//     ase
-//   ]
-// }
+module asePrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( deployAseV3 ) {
+  // scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
+  name: 'asev3-net-PrivateDnsZone-Deployment'
+  params: {
+    name: deployAseV3 ? '${aseResource.name}.appserviceenvironment.net' : ''
+    virtualNetworkLinks: virtualNetworkLinks
+    tags: tags
+    aRecords: [
+      {
+        name: '*'
+        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ttl: 3600
+      }
+      {
+        name: '*.scm'
+        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ttl: 3600
+      }
+      {
+        name: '@'
+        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ttl: 3600
+      }
+    ]
+  }
+  dependsOn: [
+    ase
+  ]
+}
 
 module appInsights '../../../shared/bicep/app-insights.bicep' = {
   name: 'appInsights-Deployment'

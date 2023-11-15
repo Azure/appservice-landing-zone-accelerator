@@ -205,32 +205,32 @@ resource appServiceEnvironment_diagnosticSettings 'Microsoft.Insights/diagnostic
   scope: appServiceEnvironment
 }
 
-module asePrivateDnsZone '../../private-dns-zone.bicep' = {
-  // scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
-  name: 'asev3-PrivateDnsZone-Deployment'
-  params: {
-    name: '${appServiceEnvironment.name}.appserviceenvironment.net'
-    virtualNetworkLinks: virtualNetworkLinks
-    tags: tags
-    aRecords: [
-      {
-        name: '*'
-        ipv4Address: reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
-        ttl: 3600
-      }
-      {
-        name: '*.scm'
-        ipv4Address:  reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
-        ttl: 3600
-      }
-      {
-        name: '@'
-        ipv4Address:  reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
-        ttl: 3600
-      }
-    ]
-  }  
-}
+// module asePrivateDnsZone '../../private-dns-zone.bicep' = {
+//   // scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
+//   name: 'asev3-PrivateDnsZone-Deployment'
+//   params: {
+//     name: '${appServiceEnvironment.name}.appserviceenvironment.net'
+//     virtualNetworkLinks: virtualNetworkLinks
+//     tags: tags
+//     aRecords: [
+//       {
+//         name: '*'
+//         ipv4Address: reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
+//         ttl: 3600
+//       }
+//       {
+//         name: '*.scm'
+//         ipv4Address:  reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
+//         ttl: 3600
+//       }
+//       {
+//         name: '@'
+//         ipv4Address:  reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
+//         ttl: 3600
+//       }
+//     ]
+//   }  
+// }
 
 @description('The resource ID of the App Service Environment.')
 output resourceId string = appServiceEnvironment.id
