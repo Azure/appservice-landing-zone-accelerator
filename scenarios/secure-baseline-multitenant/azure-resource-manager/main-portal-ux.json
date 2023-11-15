@@ -1137,7 +1137,7 @@
                             "name": "deployOpenAi",
                             "type": "Microsoft.Common.DropDown",
                             "label": "Deploy OpenAI",
-                            "subLabel": "what is that??",
+                            "subLabel": "",
                             "defaultValue": "true",
                             "toolTip": "set to true if you want to deploy OpenAI",
                             "constraints": {
