@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "13100531979578698772"
+      "templateHash": "695141640865710664"
     }
   },
   "parameters": {
@@ -3145,7 +3145,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "962783884285588249"
+              "templateHash": "13198278400471438245"
             }
           },
           "parameters": {
@@ -4868,7 +4868,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "17150672178639424505"
+                      "templateHash": "2798292955813957486"
                     }
                   },
                   "parameters": {
@@ -5050,7 +5050,7 @@
                       "condition": "[parameters('deployAseV3')]",
                       "type": "Microsoft.Resources/deployments",
                       "apiVersion": "2022-09-01",
-                      "name": "[take(format('ase-{0}-Deployment', parameters('aseName')), 64)]",
+                      "name": "[take(format('{0}-ASEv3-Deployment', parameters('aseName')), 64)]",
                       "properties": {
                         "expressionEvaluationOptions": {
                           "scope": "inner"
@@ -5075,6 +5075,9 @@
                           "zoneRedundant": "[if(endsWith(parameters('sku'), 'AZ'), createObject('value', true()), createObject('value', false()))]",
                           "allowNewPrivateEndpointConnections": {
                             "value": true
+                          },
+                          "virtualNetworkLinks": {
+                            "value": "[parameters('virtualNetworkLinks')]"
                           }
                         },
                         "template": {
@@ -5084,7 +5087,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.23.1.45101",
-                              "templateHash": "7992467341980888924"
+                              "templateHash": "11033887861618104369"
                             }
                           },
                           "parameters": {
@@ -5314,6 +5317,13 @@
                               "metadata": {
                                 "description": "Optional. The name of the diagnostic setting, if deployed. If left empty, it defaults to \"<resourceName>-diagnosticSettings\"."
                               }
+                            },
+                            "virtualNetworkLinks": {
+                              "type": "array",
+                              "defaultValue": [],
+                              "metadata": {
+                                "description": "Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled"
+                              }
                             }
                           },
                           "variables": {
@@ -5389,7 +5399,7 @@
                               "condition": "[equals(parameters('kind'), 'ASEv3')]",
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2022-09-01",
-                              "name": "[format('{0}-AppServiceEnv-Configurations-Networking', uniqueString(deployment().name, parameters('location')))]",
+                              "name": "[format('AppServiceEnv-Configurations-Networking-{0}', uniqueString(deployment().name, parameters('location')))]",
                               "properties": {
                                 "expressionEvaluationOptions": {
                                   "scope": "inner"
@@ -5507,7 +5517,7 @@
                               "condition": "[and(equals(parameters('kind'), 'ASEv3'), not(empty(parameters('customDnsSuffix'))))]",
                               "type": "Microsoft.Resources/deployments",
                               "apiVersion": "2022-09-01",
-                              "name": "[format('{0}-AppServiceEnv-Configurations-CustomDnsSuffix', uniqueString(deployment().name, parameters('location')))]",
+                              "name": "[format('AppServiceEnv-Configurations-CustomDnsSuffix-{0}', uniqueString(deployment().name, parameters('location')))]",
                               "properties": {
                                 "expressionEvaluationOptions": {
                                   "scope": "inner"
@@ -5606,6 +5616,144 @@
                               "dependsOn": [
                                 "[resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))]"
                               ]
+                            },
+                            {
+                              "type": "Microsoft.Resources/deployments",
+                              "apiVersion": "2022-09-01",
+                              "name": "asev3-PrivateDnsZone-Deployment",
+                              "properties": {
+                                "expressionEvaluationOptions": {
+                                  "scope": "inner"
+                                },
+                                "mode": "Incremental",
+                                "parameters": {
+                                  "name": {
+                                    "value": "[format('{0}.appserviceenvironment.net', parameters('name'))]"
+                                  },
+                                  "virtualNetworkLinks": {
+                                    "value": "[parameters('virtualNetworkLinks')]"
+                                  },
+                                  "tags": {
+                                    "value": "[parameters('tags')]"
+                                  },
+                                  "aRecords": {
+                                    "value": [
+                                      {
+                                        "name": "*",
+                                        "ipv4Address": "[reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))), '2020-06-01').internalInboundIpAddresses[0]]",
+                                        "ttl": 3600
+                                      },
+                                      {
+                                        "name": "*.scm",
+                                        "ipv4Address": "[reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))), '2020-06-01').internalInboundIpAddresses[0]]",
+                                        "ttl": 3600
+                                      },
+                                      {
+                                        "name": "@",
+                                        "ipv4Address": "[reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))), '2020-06-01').internalInboundIpAddresses[0]]",
+                                        "ttl": 3600
+                                      }
+                                    ]
+                                  }
+                                },
+                                "template": {
+                                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                                  "contentVersion": "1.0.0.0",
+                                  "metadata": {
+                                    "_generator": {
+                                      "name": "bicep",
+                                      "version": "0.23.1.45101",
+                                      "templateHash": "2289993845234568916"
+                                    }
+                                  },
+                                  "parameters": {
+                                    "name": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "Required. Name of the Private DNS Zone Service. For az private endpoints you might find info here: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns#azure-services-dns-zone-configuration"
+                                      }
+                                    },
+                                    "tags": {
+                                      "type": "object",
+                                      "defaultValue": {},
+                                      "metadata": {
+                                        "description": "Optional. Tags of the resource."
+                                      }
+                                    },
+                                    "virtualNetworkLinks": {
+                                      "type": "array",
+                                      "defaultValue": [],
+                                      "metadata": {
+                                        "description": "Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled"
+                                      }
+                                    },
+                                    "aRecords": {
+                                      "type": "array",
+                                      "defaultValue": [],
+                                      "metadata": {
+                                        "description": "Optional. Array of A records to be added to the DNS Zone"
+                                      }
+                                    }
+                                  },
+                                  "resources": [
+                                    {
+                                      "type": "Microsoft.Network/privateDnsZones",
+                                      "apiVersion": "2020-06-01",
+                                      "name": "[parameters('name')]",
+                                      "location": "global",
+                                      "tags": "[parameters('tags')]"
+                                    },
+                                    {
+                                      "copy": {
+                                        "name": "privateDnsZoneLink",
+                                        "count": "[length(parameters('virtualNetworkLinks'))]"
+                                      },
+                                      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+                                      "apiVersion": "2018-09-01",
+                                      "name": "[format('{0}/{1}', parameters('name'), format('{0}-link', parameters('virtualNetworkLinks')[copyIndex()].vnetName))]",
+                                      "location": "global",
+                                      "properties": {
+                                        "registrationEnabled": "[parameters('virtualNetworkLinks')[copyIndex()].registrationEnabled]",
+                                        "virtualNetwork": {
+                                          "id": "[parameters('virtualNetworkLinks')[copyIndex()].vnetId]"
+                                        }
+                                      },
+                                      "dependsOn": [
+                                        "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
+                                      ]
+                                    },
+                                    {
+                                      "copy": {
+                                        "name": "dnsARecord",
+                                        "count": "[length(parameters('aRecords'))]"
+                                      },
+                                      "type": "Microsoft.Network/privateDnsZones/A",
+                                      "apiVersion": "2020-06-01",
+                                      "name": "[format('{0}/{1}', parameters('name'), parameters('aRecords')[copyIndex()].name)]",
+                                      "properties": {
+                                        "ttl": "[if(contains(parameters('aRecords')[copyIndex()], 'ttl'), parameters('aRecords')[copyIndex()].ttl, 3600)]",
+                                        "aRecords": [
+                                          {
+                                            "ipv4Address": "[parameters('aRecords')[copyIndex()].ipv4Address]"
+                                          }
+                                        ]
+                                      },
+                                      "dependsOn": [
+                                        "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
+                                      ]
+                                    }
+                                  ],
+                                  "outputs": {
+                                    "privateDnsZonesId": {
+                                      "type": "string",
+                                      "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
+                                    }
+                                  }
+                                }
+                              },
+                              "dependsOn": [
+                                "[resourceId('Microsoft.Web/hostingEnvironments', parameters('name'))]"
+                              ]
                             }
                           ],
                           "outputs": {
@@ -5640,145 +5788,6 @@
                           }
                         }
                       }
-                    },
-                    {
-                      "condition": "[parameters('deployAseV3')]",
-                      "type": "Microsoft.Resources/deployments",
-                      "apiVersion": "2022-09-01",
-                      "name": "asev3-net-PrivateDnsZone-Deployment",
-                      "subscriptionId": "[variables('vnetHubSplitTokens')[2]]",
-                      "resourceGroup": "[variables('vnetHubSplitTokens')[4]]",
-                      "properties": {
-                        "expressionEvaluationOptions": {
-                          "scope": "inner"
-                        },
-                        "mode": "Incremental",
-                        "parameters": {
-                          "name": "[if(parameters('deployAseV3'), createObject('value', format('{0}.appserviceenvironment.net', parameters('aseName'))), createObject('value', ''))]",
-                          "virtualNetworkLinks": {
-                            "value": "[parameters('virtualNetworkLinks')]"
-                          },
-                          "tags": {
-                            "value": "[parameters('tags')]"
-                          },
-                          "aRecords": {
-                            "value": [
-                              {
-                                "name": "*",
-                                "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))), '2020-06-01').internalInboundIpAddresses[0], '')]",
-                                "ttl": 3600
-                              },
-                              {
-                                "name": "*.scm",
-                                "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))), '2020-06-01').internalInboundIpAddresses[0], '')]",
-                                "ttl": 3600
-                              },
-                              {
-                                "name": "@",
-                                "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName'))), '2020-06-01').internalInboundIpAddresses[0], '')]",
-                                "ttl": 3600
-                              }
-                            ]
-                          }
-                        },
-                        "template": {
-                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                          "contentVersion": "1.0.0.0",
-                          "metadata": {
-                            "_generator": {
-                              "name": "bicep",
-                              "version": "0.23.1.45101",
-                              "templateHash": "2289993845234568916"
-                            }
-                          },
-                          "parameters": {
-                            "name": {
-                              "type": "string",
-                              "metadata": {
-                                "description": "Required. Name of the Private DNS Zone Service. For az private endpoints you might find info here: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns#azure-services-dns-zone-configuration"
-                              }
-                            },
-                            "tags": {
-                              "type": "object",
-                              "defaultValue": {},
-                              "metadata": {
-                                "description": "Optional. Tags of the resource."
-                              }
-                            },
-                            "virtualNetworkLinks": {
-                              "type": "array",
-                              "defaultValue": [],
-                              "metadata": {
-                                "description": "Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled"
-                              }
-                            },
-                            "aRecords": {
-                              "type": "array",
-                              "defaultValue": [],
-                              "metadata": {
-                                "description": "Optional. Array of A records to be added to the DNS Zone"
-                              }
-                            }
-                          },
-                          "resources": [
-                            {
-                              "type": "Microsoft.Network/privateDnsZones",
-                              "apiVersion": "2020-06-01",
-                              "name": "[parameters('name')]",
-                              "location": "global",
-                              "tags": "[parameters('tags')]"
-                            },
-                            {
-                              "copy": {
-                                "name": "privateDnsZoneLink",
-                                "count": "[length(parameters('virtualNetworkLinks'))]"
-                              },
-                              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-                              "apiVersion": "2018-09-01",
-                              "name": "[format('{0}/{1}', parameters('name'), format('{0}-link', parameters('virtualNetworkLinks')[copyIndex()].vnetName))]",
-                              "location": "global",
-                              "properties": {
-                                "registrationEnabled": "[parameters('virtualNetworkLinks')[copyIndex()].registrationEnabled]",
-                                "virtualNetwork": {
-                                  "id": "[parameters('virtualNetworkLinks')[copyIndex()].vnetId]"
-                                }
-                              },
-                              "dependsOn": [
-                                "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
-                              ]
-                            },
-                            {
-                              "copy": {
-                                "name": "dnsARecord",
-                                "count": "[length(parameters('aRecords'))]"
-                              },
-                              "type": "Microsoft.Network/privateDnsZones/A",
-                              "apiVersion": "2020-06-01",
-                              "name": "[format('{0}/{1}', parameters('name'), parameters('aRecords')[copyIndex()].name)]",
-                              "properties": {
-                                "ttl": "[if(contains(parameters('aRecords')[copyIndex()], 'ttl'), parameters('aRecords')[copyIndex()].ttl, 3600)]",
-                                "aRecords": [
-                                  {
-                                    "ipv4Address": "[parameters('aRecords')[copyIndex()].ipv4Address]"
-                                  }
-                                ]
-                              },
-                              "dependsOn": [
-                                "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
-                              ]
-                            }
-                          ],
-                          "outputs": {
-                            "privateDnsZonesId": {
-                              "type": "string",
-                              "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('name'))]"
-                            }
-                          }
-                        }
-                      },
-                      "dependsOn": [
-                        "[resourceId('Microsoft.Resources/deployments', take(format('ase-{0}-Deployment', parameters('aseName')), 64))]"
-                      ]
                     },
                     {
                       "type": "Microsoft.Resources/deployments",
@@ -5992,7 +6001,7 @@
                           "diagnosticWorkspaceId": {
                             "value": "[parameters('logAnalyticsWsId')]"
                           },
-                          "hostingEnvironmentProfileId": "[if(parameters('deployAseV3'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', take(format('ase-{0}-Deployment', parameters('aseName')), 64)), '2022-09-01').outputs.resourceId.value), createObject('value', ''))]"
+                          "hostingEnvironmentProfileId": "[if(parameters('deployAseV3'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', take(format('{0}-ASEv3-Deployment', parameters('aseName')), 64)), '2022-09-01').outputs.resourceId.value), createObject('value', ''))]"
                         },
                         "template": {
                           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -6366,7 +6375,7 @@
                         }
                       },
                       "dependsOn": [
-                        "[resourceId('Microsoft.Resources/deployments', take(format('ase-{0}-Deployment', parameters('aseName')), 64))]"
+                        "[resourceId('Microsoft.Resources/deployments', take(format('{0}-ASEv3-Deployment', parameters('aseName')), 64))]"
                       ]
                     },
                     {
