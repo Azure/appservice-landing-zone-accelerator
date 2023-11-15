@@ -325,31 +325,27 @@ module webApp 'modules/app-service.module.bicep' = {
   }
 }
 
-resource aseResource  'Microsoft.Web/hostingEnvironments@2022-09-01' existing = if ( deployAseV3 ) {
-  name: resourceNames.aseName
-}
-
 module asePrivateDnsZone '../../shared/bicep/private-dns-zone.bicep' = if ( deployAseV3 ) {
-  // scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
+  scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
   name: 'asev3-hub-PrivateDnsZone-Deployment'
   params: {
-    name: deployAseV3 ? '${aseResource.name}.appserviceenvironment.net' : ''
+    name: deployAseV3 ? '${webApp.outputs.aseName}.appserviceenvironment.net' : ''
     virtualNetworkLinks: virtualNetworkLinks
     tags: tags
     aRecords: [
       {
         name: '*'
-        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
         ttl: 3600
       }
       {
         name: '*.scm'
-        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
         ttl: 3600
       }
       {
         name: '@'
-        ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
         ttl: 3600
       }
     ]
