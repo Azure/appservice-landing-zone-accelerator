@@ -19,6 +19,7 @@
 ---
 
 ## Contributing
+
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
@@ -30,6 +31,7 @@ The rest of this document outlines a few important notes/guidelines to help us t
 ## GitHub Operations, Conventions and other Standards
 
 ### GitHub Basics
+
 The following guides provide basic knowledge for understanding Git command usage and the workflow of GitHub.
 
 - [Introduction to version control with Git](https://docs.microsoft.com/learn/paths/intro-to-vc-git/)
@@ -37,12 +39,14 @@ The following guides provide basic knowledge for understanding Git command usage
 - [GitHub Flow](https://guides.github.com/introduction/flow/)
 
 ### Folder Structure and Naming Conventions
+
 - Github uses ASCII for ordering files and folders. For consistent ordering create all files and folders in **lowercase**. The only exception to this guideline is the *common supporting files* such as README.md, CONTRIBUTING.md etc files, that should be in the format **UPPERCASE.lowercase**. Remember that there are operating systems that handle files with different casing as distinct files, so we need to avoid these kind of conflicts. 
 - Avoid **camelCase** for files and folders consisting of two or more words. Use only lowercase and append words with dashes, i.e. **`folder-name-one`** and **not** `folderNameOne` 
 
 > NOTE: the aforementioned rules can be overridden, if any Language Coding Styles or Guidelines instruct the usage of different conventions
 
-Below you can see the selected folder structure for the project. The main folders and a brief description of their purpose is as follows: 
+Below you can see the selected folder structure for the project. The main folders and a brief description of their purpose is as follows:
+
 - **docs**
   The *docs* folder contains two subfolders; **design-areas** and **media**.
   - The **design-areas** subfolder contains the relevant documentation. 
@@ -107,6 +111,7 @@ Unless you are working with multiple contributors on the same file, we ask that 
 - [Contributing to GitHub projects](https://guides.github.com/activities/forking/).
 
 ### Branch Naming Standards
+
 For branches, use the following prefixes depending on which is most applicable to the work being done:
 | Prefix    | Purpose | 
 |-------------|-----------|
@@ -118,10 +123,11 @@ For branches, use the following prefixes depending on which is most applicable t
 |test/|Any task pertaining to testing updates |
 
 ### Commit Standards (optional)
+
 Prefixing the commits as described below, is **optional**, however is **highly encouraged**.  
 For commits, use the following prefixes depending on which is most applicable to the changes:
-| Prefix    | Purpose | 
-|-------------|-----------|         
+| Prefix    | Purpose |
+|-------------|-----------|
 |fix:|Update to code base or bug|
 |feat:|New feature added to code base|
 |chore:|Basic task to update formatting or versions, etc.|
@@ -129,11 +135,13 @@ For commits, use the following prefixes depending on which is most applicable to
 |ci:|New workflow or updates to workflow(s) |
 |test:|New tests or updates to testing framework(s) |
 
-## Style Guide and coding conventions 
-A guide outlining the coding conventions and style guidelines that should be followed when contributing code to the repository is outlined below: 
+## Style Guide and coding conventions
+
+A guide outlining the coding conventions and style guidelines that should be followed when contributing code to the repository is outlined below:
 
 ### Bicep Best Practices and Conventions
-- The starting point for any deployment should be named **main.bicep**. This (usually) should be the main deployment file, scoped at *subscription* level, and it would call several sub-deployments, usually at the resource group scope. 
+
+- The starting point for any deployment should be named **main.bicep**. This (usually) should be the main deployment file, scoped at *subscription* level, and it would call several sub-deployments, usually at the resource group scope.
   - The **main.bicep** file should be accompanied with a parameter file named **main.parameters.jsonc**. The benefit of the `*.jsonc` file extension is that you can use  inline comments (either `//` or `/* ... */`) in Visual Studio Code (otherwise you will get an error message saying "*Comments not permitted in JSON*"). [Bicep Parameter Files](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/parameter-files)
   - Details of using the deployment should be given in the README.md file. However if we need extra scripts to either deploy the bicep files or other functionality use a naming conventions as the following
     - deploy.main.sh: for bash-based script deploying the main.bicep
@@ -144,6 +152,7 @@ A guide outlining the coding conventions and style guidelines that should be fol
 - Use strictly `camelCasing` for all elements like parameters, variables, resources, modules and outputs, and avoid prepending those elements in a [Hungarian Notation](https://en.wikipedia.org/wiki/Hungarian_notation) style.  
   
   **Bad practice examples that should be avoided:**
+
   ``` bicep
   \\ BAD PRACTICE param EXAMPLES
   param parVmSubnetAddressPrefix string
@@ -167,8 +176,10 @@ A guide outlining the coding conventions and style guidelines that should be fol
   output acrId string = acr.id
   ```
 
-  **Acceptable naming convention examples:** 
+  **Acceptable naming convention examples:**
+
     ``` bicep
+
   \\ GOOD PRACTICE param EXAMPLES
   param vmSubnetAddressPrefix string
 
@@ -179,12 +190,12 @@ A guide outlining the coding conventions and style guidelines that should be fol
   output acrId string = acr.id
   ```
 
-
-- For **parameters and outputs**, avoid using extreme abbreviations, and stick to well known (de-facto) Azure resource abbreviations. Examples: 
+- For **parameters and outputs**, avoid using extreme abbreviations, and stick to well known (de-facto) Azure resource abbreviations. Examples:
   - **expressRouteGwName**  instead of *erGwName*
   - **storageAccountName** instead of *stAccName*
 
-- Bicep is a declarative language, which means the elements can appear in any order. In reality you can put parameter declarations anywhere in the template file, and the same you can do for resources, variables and outputs. However it is highly recommended that any bicep template file to adhere to the following order `Parameters > Variables > Resources/Modules > Outputs` as shown in the code snippet. 
+- Bicep is a declarative language, which means the elements can appear in any order. In reality you can put parameter declarations anywhere in the template file, and the same you can do for resources, variables and outputs. However it is highly recommended that any bicep template file to adhere to the following order `Parameters > Variables > Resources/Modules > Outputs` as shown in the code snippet.
+
   ``` bicep
   targetScope = 'subscription'
   // ================ //
@@ -254,11 +265,12 @@ A guide outlining the coding conventions and style guidelines that should be fol
     - `app-marketCampaign-backEnd`
     - `app-marketCampaign-frontEnd`
   
-- Consider sanitizing names of resources to avoid deployment errors. For example consider the name limitations for a storage account (all lowercase, less than 24 characters long, no dashes etc). 
+- Consider sanitizing names of resources to avoid deployment errors. For example consider the name limitations for a storage account (all lowercase, less than 24 characters long, no dashes etc).
+
   ``` bicep
   var maxStorageNameLength = 24
   var storageName = length(name) > maxStorageNameLength ? toLower(substring(replace(name, '-', ''), 0, maxStorageNameLength)) : toLower(replace(name, '-', ''))
-  ``` 
+  ```
 
 - Use bicep **parameter** files for giving the end user the ability to paramterize the deployed resources. (i.e. to select CIDR network spaces, to select SKUs for given resources etc). As a rule of thumb, avoid using the parameter file for *naming recources*, unless there is a really good reason for that. Naming resources should be handled centrally (preferably with variables), following specific rules (as already described). Try not to overuse parameters in the template, because this creates a burden on your template users, since they need to understand the values to use for each resource, and the impact of setting each parameter. Consider using the [t-shirt sizing pattern](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/patterns-configuration-set#solution)
 
@@ -307,6 +319,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2019-06-01' = {
 - [Azure Resource Abbreviations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations)
 
 ### Terraform Best Practices and Conventions
+
 - Use modules: Terraform modules allow you to reuse and share code across different projects and teams. This helps to reduce duplication of effort and increases consistency
 - Use Terraform variables: Use Terraform variables to provide input values and make your code more flexible and easier to maintain.
 - Use Terraform outputs: Use Terraform outputs to extract information about your infrastructure for later use.
@@ -320,16 +333,10 @@ resource storage 'Microsoft.Storage/storageAccounts@2019-06-01' = {
 - Declare all outputs in **outputs.tf**, including a description
 - Modules must always include the following files, even if empty: **main.tf**, **variables.tf**, and **outputs.tf**
 
-
-
-
-
-
-
-
-
 ## Issue Tracker
+
 > TODO: Instructions on how to use the issue tracker, including how to submit bugs and feature requests.
 
 ## Pull Request Process
+
 > TODO: A description of the pull request process, including the criteria that pull requests will be reviewed against and the steps that will be taken to merge a pull request.
