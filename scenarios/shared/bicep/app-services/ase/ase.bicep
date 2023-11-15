@@ -124,9 +124,6 @@ param diagnosticLogCategoriesToEnable array = [
 @description('Optional. The name of the diagnostic setting, if deployed. If left empty, it defaults to "<resourceName>-diagnosticSettings".')
 param diagnosticSettingsName string = '${name}-diagnosticSettings'
 
-@description('Optional. Array of custom objects describing vNet links of the DNS zone. Each object should contain vnetName, vnetId, registrationEnabled')
-param virtualNetworkLinks array = []
-
 var diagnosticsLogsSpecified = [for category in filter(diagnosticLogCategoriesToEnable, item => item != 'allLogs' && item != ''): {
   category: category
   enabled: true
@@ -204,33 +201,6 @@ resource appServiceEnvironment_diagnosticSettings 'Microsoft.Insights/diagnostic
   }
   scope: appServiceEnvironment
 }
-
-// module asePrivateDnsZone '../../private-dns-zone.bicep' = {
-//   // scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
-//   name: 'asev3-PrivateDnsZone-Deployment'
-//   params: {
-//     name: '${appServiceEnvironment.name}.appserviceenvironment.net'
-//     virtualNetworkLinks: virtualNetworkLinks
-//     tags: tags
-//     aRecords: [
-//       {
-//         name: '*'
-//         ipv4Address: reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
-//         ttl: 3600
-//       }
-//       {
-//         name: '*.scm'
-//         ipv4Address:  reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
-//         ttl: 3600
-//       }
-//       {
-//         name: '@'
-//         ipv4Address:  reference('${appServiceEnvironment.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] 
-//         ttl: 3600
-//       }
-//     ]
-//   }  
-// }
 
 @description('The resource ID of the App Service Environment.')
 output resourceId string = appServiceEnvironment.id
