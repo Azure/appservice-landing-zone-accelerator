@@ -347,3 +347,9 @@ output webAppHostName string = webApp.outputs.defaultHostname
 output webAppResourceId string = webApp.outputs.resourceId
 output webAppLocation string = webApp.outputs.location
 output webAppSystemAssignedPrincipalId string = webApp.outputs.systemAssignedPrincipalId
+
+@description('The Internal ingress IP of the ASE.')
+output internalInboundIpAddress string = (deployAseV3) ? ase.outputs.internalInboundIpAddress : ''
+
+@description('The name of the ASE.')
+output aseName string = (deployAseV3) ? ase.outputs.name : ''

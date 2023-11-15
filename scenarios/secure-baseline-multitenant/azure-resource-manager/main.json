@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "12538204704660583936"
+      "templateHash": "3155891815467737201"
     }
   },
   "parameters": {
@@ -3145,7 +3145,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "9943315960706017294"
+              "templateHash": "1654223450960799014"
             }
           },
           "parameters": {
@@ -4868,7 +4868,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "14949854216969356107"
+                      "templateHash": "4380872212038873205"
                     }
                   },
                   "parameters": {
@@ -5084,7 +5084,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.23.1.45101",
-                              "templateHash": "7654062851435854751"
+                              "templateHash": "2196528725555359145"
                             }
                           },
                           "parameters": {
@@ -5419,7 +5419,7 @@
                                     "_generator": {
                                       "name": "bicep",
                                       "version": "0.23.1.45101",
-                                      "templateHash": "4930647551538683768"
+                                      "templateHash": "1964814780544358387"
                                     },
                                     "name": "Hosting Environment Network Configuration",
                                     "description": "This module deploys a Hosting Environment Network Configuration.",
@@ -5495,6 +5495,13 @@
                                         "description": "The resource group of the deployed configuration."
                                       },
                                       "value": "[resourceGroup().name]"
+                                    },
+                                    "internalInboundIpAddresses": {
+                                      "type": "string",
+                                      "metadata": {
+                                        "description": "The resource group of the deployed configuration."
+                                      },
+                                      "value": "[reference(resourceId('Microsoft.Web/hostingEnvironments/configurations', parameters('hostingEnvironmentName'), 'networking'), '2022-03-01').internalInboundIpAddresses[0]]"
                                     }
                                   }
                                 }
@@ -5636,6 +5643,13 @@
                                 "description": "The location the resource was deployed into."
                               },
                               "value": "[reference(resourceId('Microsoft.Web/hostingEnvironments', parameters('name')), '2022-09-01', 'full').location]"
+                            },
+                            "internalInboundIpAddress": {
+                              "type": "string",
+                              "metadata": {
+                                "description": "The Internal ingress IP of the ASE."
+                              },
+                              "value": "[reference(resourceId('Microsoft.Web/hostingEnvironments', parameters('name')), '2022-09-01').networkingConfiguration.properties.internalInboundIpAddresses[0]]"
                             }
                           }
                         }
@@ -8933,6 +8947,20 @@
                     "webAppSystemAssignedPrincipalId": {
                       "type": "string",
                       "value": "[reference(resourceId('Microsoft.Resources/deployments', take(format('{0}-webApp-Deployment', parameters('webAppName')), 64)), '2022-09-01').outputs.systemAssignedPrincipalId.value]"
+                    },
+                    "internalInboundIpAddress": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "The Internal ingress IP of the ASE."
+                      },
+                      "value": "[if(parameters('deployAseV3'), reference(resourceId('Microsoft.Resources/deployments', take(format('{0}-ASEv3-Deployment', parameters('aseName')), 64)), '2022-09-01').outputs.internalInboundIpAddress.value, '')]"
+                    },
+                    "aseName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "The name of the ASE."
+                      },
+                      "value": "[if(parameters('deployAseV3'), reference(resourceId('Microsoft.Resources/deployments', take(format('{0}-ASEv3-Deployment', parameters('aseName')), 64)), '2022-09-01').outputs.name.value, '')]"
                     }
                   }
                 }
@@ -8950,13 +8978,15 @@
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "asev3-hub-PrivateDnsZone-Deployment",
+              "subscriptionId": "[variables('vnetHubSplitTokens')[2]]",
+              "resourceGroup": "[variables('vnetHubSplitTokens')[4]]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "name": "[if(parameters('deployAseV3'), createObject('value', format('{0}.appserviceenvironment.net', variables('resourceNames').aseName)), createObject('value', ''))]",
+                  "name": "[if(parameters('deployAseV3'), createObject('value', format('{0}.appserviceenvironment.net', reference(resourceId('Microsoft.Resources/deployments', 'webAppModule-Deployment'), '2022-09-01').outputs.aseName.value)), createObject('value', ''))]",
                   "virtualNetworkLinks": {
                     "value": [
                       {
@@ -8978,17 +9008,17 @@
                     "value": [
                       {
                         "name": "*",
-                        "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', variables('resourceNames').aseName)), '2020-06-01').internalInboundIpAddresses[0], '')]",
+                        "ipv4Address": "[if(parameters('deployAseV3'), reference(resourceId('Microsoft.Resources/deployments', 'webAppModule-Deployment'), '2022-09-01').outputs.internalInboundIpAddress.value, '')]",
                         "ttl": 3600
                       },
                       {
                         "name": "*.scm",
-                        "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', variables('resourceNames').aseName)), '2020-06-01').internalInboundIpAddresses[0], '')]",
+                        "ipv4Address": "[if(parameters('deployAseV3'), reference(resourceId('Microsoft.Resources/deployments', 'webAppModule-Deployment'), '2022-09-01').outputs.internalInboundIpAddress.value, '')]",
                         "ttl": 3600
                       },
                       {
                         "name": "@",
-                        "ipv4Address": "[if(parameters('deployAseV3'), reference(format('{0}/configurations/networking', resourceId('Microsoft.Web/hostingEnvironments', variables('resourceNames').aseName)), '2020-06-01').internalInboundIpAddresses[0], '')]",
+                        "ipv4Address": "[if(parameters('deployAseV3'), reference(resourceId('Microsoft.Resources/deployments', 'webAppModule-Deployment'), '2022-09-01').outputs.internalInboundIpAddress.value, '')]",
                         "ttl": 3600
                       }
                     ]

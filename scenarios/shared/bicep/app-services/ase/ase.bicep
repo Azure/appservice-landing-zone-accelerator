@@ -213,3 +213,6 @@ output name string = appServiceEnvironment.name
 
 @description('The location the resource was deployed into.')
 output location string = appServiceEnvironment.location
+
+@description('The Internal ingress IP of the ASE.')
+output internalInboundIpAddress string = appServiceEnvironment.properties.networkingConfiguration.properties.internalInboundIpAddresses[0]
