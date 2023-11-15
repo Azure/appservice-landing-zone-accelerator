@@ -330,7 +330,7 @@ resource aseResource  'Microsoft.Web/hostingEnvironments@2022-09-01' existing = 
 }
 
 module asePrivateDnsZone '../../shared/bicep/private-dns-zone.bicep' = if ( deployAseV3 ) {
-  scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
+  // scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
   name: 'asev3-hub-PrivateDnsZone-Deployment'
   params: {
     name: deployAseV3 ? '${aseResource.name}.appserviceenvironment.net' : ''

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "443193897061371291"
+      "templateHash": "12538204704660583936"
     }
   },
   "parameters": {
@@ -3145,7 +3145,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "4394321832840972538"
+              "templateHash": "9943315960706017294"
             }
           },
           "parameters": {
@@ -8950,8 +8950,6 @@
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "asev3-hub-PrivateDnsZone-Deployment",
-              "subscriptionId": "[variables('vnetHubSplitTokens')[2]]",
-              "resourceGroup": "[variables('vnetHubSplitTokens')[4]]",
               "properties": {
                 "expressionEvaluationOptions": {
                   "scope": "inner"
