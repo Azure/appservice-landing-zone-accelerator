@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "3155891815467737201"
+      "templateHash": "957400822720931987"
     }
   },
   "parameters": {
@@ -3145,7 +3145,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "1654223450960799014"
+              "templateHash": "13397936353686687459"
             }
           },
           "parameters": {
@@ -4868,7 +4868,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "4380872212038873205"
+                      "templateHash": "14810133882435023852"
                     }
                   },
                   "parameters": {
@@ -5084,7 +5084,7 @@
                             "_generator": {
                               "name": "bicep",
                               "version": "0.23.1.45101",
-                              "templateHash": "2196528725555359145"
+                              "templateHash": "10075717986481116584"
                             }
                           },
                           "parameters": {
@@ -5419,7 +5419,7 @@
                                     "_generator": {
                                       "name": "bicep",
                                       "version": "0.23.1.45101",
-                                      "templateHash": "1964814780544358387"
+                                      "templateHash": "187014544868231076"
                                     },
                                     "name": "Hosting Environment Network Configuration",
                                     "description": "This module deploys a Hosting Environment Network Configuration.",
@@ -5496,7 +5496,7 @@
                                       },
                                       "value": "[resourceGroup().name]"
                                     },
-                                    "internalInboundIpAddresses": {
+                                    "internalInboundIpAddress": {
                                       "type": "string",
                                       "metadata": {
                                         "description": "The resource group of the deployed configuration."
@@ -5649,7 +5649,7 @@
                               "metadata": {
                                 "description": "The Internal ingress IP of the ASE."
                               },
-                              "value": "[reference(resourceId('Microsoft.Web/hostingEnvironments', parameters('name')), '2022-09-01').networkingConfiguration.properties.internalInboundIpAddresses[0]]"
+                              "value": "[if(equals(parameters('kind'), 'ASEv3'), reference(resourceId('Microsoft.Resources/deployments', format('AppServiceEnv-Configurations-Networking-{0}', uniqueString(deployment().name, parameters('location')))), '2022-09-01').outputs.internalInboundIpAddress.value, '')]"
                             }
                           }
                         }

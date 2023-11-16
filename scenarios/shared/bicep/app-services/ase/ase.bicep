@@ -215,4 +215,4 @@ output name string = appServiceEnvironment.name
 output location string = appServiceEnvironment.location
 
 @description('The Internal ingress IP of the ASE.')
-output internalInboundIpAddress string = appServiceEnvironment.properties.networkingConfiguration.properties.internalInboundIpAddresses[0]
+output internalInboundIpAddress string = (kind == 'ASEv3') ? appServiceEnvironment_configurations_networking.outputs.internalInboundIpAddress : '' //appServiceEnvironment.properties.networkingConfiguration.properties.internalInboundIpAddresses[0]
