@@ -463,3 +463,19 @@ module openAi 'modules/open-ai.module.bicep'= if(deployOpenAi) {
 output vnetSpokeName string = vnetSpoke.outputs.vnetName
 output vnetSpokeId string = vnetSpoke.outputs.vnetId
 //output sampleAppIngress string = webApp.outputs.fqdn
+
+
+output webAppHostName string = webApp.outputs.webAppHostName
+output webAppResourceId string = webApp.outputs.webAppResourceId
+output webAppSystemAssignedPrincipalId string = webApp.outputs.webAppSystemAssignedPrincipalId
+output subnetAppSvcId string = snetAppSvc.id
+output subnetDevOpsId string = snetDevOps.id
+output subnetPeId string = snetPe.id
+output logAnalyticsWsId string = logAnalyticsWs.outputs.logAnalyticsWsId
+output openAIAccountId string = openAi.outputs.openAIAccountId
+output sqlServerName string = sqlServerAndDefaultDb.outputs.sqlServerName
+output sqlServerId string = sqlServerAndDefaultDb.outputs.sqlServerId
+output redisCacheId string = redisCache.outputs.resourceId
+output keyvaultName string = keyvault.outputs.keyvaultName
+output keyvaultId string = keyvault.outputs.keyvaultId
+output afdProfileId string = afd.outputs.afdProfileId

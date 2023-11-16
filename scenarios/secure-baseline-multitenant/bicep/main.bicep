@@ -259,3 +259,35 @@ resource telemetrydeployment 'Microsoft.Resources/deployments@2021-04-01' = if (
     }
   }
 }
+
+
+// Hub
+@description('The resource ID of hub virtual network.')
+output hubVNetId string = hub.outputs.vnetHubId
+
+// Spoke
+@description('The name of the Spoke resource group.')
+output spokeResourceGroupName string = spokeResourceGroup.name
+
+@description('The  resource ID of the Spoke Virtual Network.')
+output spokeVNetId string = spoke.outputs.vnetSpokeId
+
+@description('The name of the Spoke Virtual Network.')
+output spokeVnetName string = spoke.outputs.vnetSpokeName
+
+
+
+output webAppHostName string = spoke.outputs.webAppHostName
+output webAppResourceId string = spoke.outputs.webAppResourceId
+output webAppSystemAssignedPrincipalId string = spoke.outputs.webAppSystemAssignedPrincipalId
+output subnetAppSvcId string =spoke.outputs.subnetAppSvcId
+output subnetDevOpsId string = spoke.outputs.subnetDevOpsId
+output subnetPeId string = spoke.outputs.subnetPeId
+output logAnalyticsWsId string = spoke.outputs.logAnalyticsWsId
+output openAIAccountId string = spoke.outputs.openAIAccountId
+output sqlServerName string = spoke.outputs.sqlServerName
+output sqlServerId string = spoke.outputs.sqlServerId
+output redisCacheId string = spoke.outputs.redisCacheId
+output keyvaultName string = spoke.outputs.keyvaultName
+output keyvaultId string = spoke.outputs.keyvaultId
+output afdProfileId string = spoke.outputs.afdProfileId
