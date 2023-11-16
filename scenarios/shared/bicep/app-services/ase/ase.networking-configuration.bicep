@@ -43,4 +43,4 @@ output resourceId string = configuration.id
 output resourceGroupName string = resourceGroup().name
 
 @description('The resource group of the deployed configuration.')
-output internalInboundIpAddresses string = configuration.properties.internalInboundIpAddresses[0]
+output internalInboundIpAddress string = configuration.properties.internalInboundIpAddresses[0]
