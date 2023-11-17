@@ -84,4 +84,4 @@ module peOpenAI '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(sub
   }
 }
 
-output openAIAccountId string = openAI.outputs.resourceId
+output openAIAccountName string = openAI.outputs.name
