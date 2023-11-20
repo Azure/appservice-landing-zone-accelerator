@@ -76,4 +76,3 @@ module peSqlServer '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(
 }
 
 output sqlServerName string = sqlDbAndServer.outputs.sqlServerName
-output sqlServerId string = sqlDbAndServer.outputs.sqlServerId
