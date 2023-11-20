@@ -157,6 +157,7 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     kind: (webAppBaseOs =~ 'linux') ? 'app,linux' : 'app'
     name:  webAppName
     location: location
+    tags:tags
     serverFarmResourceId: asp.outputs.resourceId
     diagnosticWorkspaceId: logAnalyticsWsId   
     virtualNetworkSubnetId: !(deployAseV3)  ? subnetIdForVnetInjection  : ''                              // no
