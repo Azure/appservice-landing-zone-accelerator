@@ -196,7 +196,7 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     virtualNetworkSubnetId: !(deployAseV3)  ? subnetIdForVnetInjection  : ''                              // no
     appInsightId: appInsights.outputs.appInsResourceId
     siteConfigSelection:  (webAppBaseOs =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
-    linuxFxVersionValue: (webAppBaseOs =~ 'linux') ? linuxFxVersion : 'DOTNETCORE:6.0'
+    linuxFxVersionValue: (webAppBaseOs =~ 'linux') ? linuxFxVersion : 'DOTNETCORE|6.0'
     hasPrivateLink: !(deployAseV3)  ? (!empty (subnetPrivateEndpointId))    : false                           // no
     systemAssignedIdentity: false
     userAssignedIdentities:  {
