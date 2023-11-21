@@ -141,6 +141,44 @@ param hasPrivateLink bool
 ])
 param redundancyMode string = 'None'
 
+
+@description('Optional. Mandatory when kind is app,linux. Kind of webapp runtime')
+@allowed([
+  'DOTNETCORE:8.0'
+  'DOTNETCORE:7.0'
+  'DOTNETCORE:6.0'
+  'NODE:20-lts'
+  'NODE:18-lts'
+  'NODE:16-lts'
+  'PYTHON:3.12'
+  'PYTHON:3.11'
+  'PYTHON:3.10'
+  'PYTHON:3.9'
+  'PYTHON:3.8'
+  'PHP:8.2'
+  'PHP:8.1'
+  'PHP:8.0'
+  'JAVA:17-java17'
+  'JAVA:11-java11'
+  'JAVA:8-jre8'
+  'JBOSSEAP:7-java17'
+  'JBOSSEAP:7-java11'
+  'JBOSSEAP:7-java8'
+  'TOMCAT:10.0-java17'
+  'TOMCAT:10.0-java11'
+  'TOMCAT:10.0-jre8'
+  'TOMCAT:9.0-java17'
+  'TOMCAT:9.0-java11'
+  'TOMCAT:9.0-jre8'
+  'TOMCAT:8.5-java11'
+  'TOMCAT:8.5-jre8'
+])
+param linuxFxVersionValue string
+
+
+
+
+
 // =========== //
 // Variables   //
 // =========== //
@@ -241,7 +279,7 @@ resource app 'Microsoft.Web/sites@2022-03-01' = {
     keyVaultReferenceIdentity: !empty(keyVaultAccessIdentityResourceId) ? keyVaultAccessIdentityResourceId : null
     virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : any(null)
     vnetRouteAllEnabled: !empty(virtualNetworkSubnetId) ? true : false
-    siteConfig: siteConfigConfigurationMap[siteConfigSelection]
+    siteConfig: kind == 'app,linux' ? { linuxFxVersion : linuxFxVersionValue } : siteConfigConfigurationMap[siteConfigSelection]
     clientCertEnabled: false
     clientCertExclusionPaths: null
     clientCertMode: 'Optional'
@@ -294,7 +332,7 @@ module app_slots 'web-app.slots.bicep' = [for (slot, index) in slots: {
     keyVaultAccessIdentityResourceId: contains(slot, 'keyVaultAccessIdentityResourceId') ? slot.keyVaultAccessIdentityResourceId : keyVaultAccessIdentityResourceId
     storageAccountRequired: contains(slot, 'storageAccountRequired') ? slot.storageAccountRequired : storageAccountRequired
     virtualNetworkSubnetId: contains(slot, 'virtualNetworkSubnetId') ? slot.virtualNetworkSubnetId : virtualNetworkSubnetId
-    siteConfig: contains(slot, 'siteConfig') ? slot.siteConfig : siteConfigConfigurationMap[siteConfigSelection]
+    siteConfig: contains(slot, 'siteConfig') ? slot.siteConfig : kind == 'app,linux' ? { linuxFxVersion : linuxFxVersionValue } : siteConfigConfigurationMap[siteConfigSelection]
     storageAccountId: contains(slot, 'storageAccountId') ? slot.storageAccountId : storageAccountId
     appInsightId: contains(slot, 'appInsightId') ? slot.appInsightId : appInsightId
     setAzureWebJobsDashboard: contains(slot, 'setAzureWebJobsDashboard') ? slot.setAzureWebJobsDashboard : setAzureWebJobsDashboard

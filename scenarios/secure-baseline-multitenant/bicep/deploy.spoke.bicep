@@ -78,6 +78,39 @@ param webAppPlanSku string
 @allowed([ 'Windows', 'Linux'])
 param webAppBaseOs string
 
+@description('Optional. Mandatory when webAppBaseOs is Linux. Kind of webapp runtime')
+@allowed([
+  'DOTNETCORE:8.0'
+  'DOTNETCORE:7.0'
+  'DOTNETCORE:6.0'
+  'NODE:20-lts'
+  'NODE:18-lts'
+  'NODE:16-lts'
+  'PYTHON:3.12'
+  'PYTHON:3.11'
+  'PYTHON:3.10'
+  'PYTHON:3.9'
+  'PYTHON:3.8'
+  'PHP:8.2'
+  'PHP:8.1'
+  'PHP:8.0'
+  'JAVA:17-java17'
+  'JAVA:11-java11'
+  'JAVA:8-jre8'
+  'JBOSSEAP:7-java17'
+  'JBOSSEAP:7-java11'
+  'JBOSSEAP:7-java8'
+  'TOMCAT:10.0-java17'
+  'TOMCAT:10.0-java11'
+  'TOMCAT:10.0-jre8'
+  'TOMCAT:9.0-java17'
+  'TOMCAT:9.0-java11'
+  'TOMCAT:9.0-jre8'
+  'TOMCAT:8.5-java11'
+  'TOMCAT:8.5-jre8'
+])
+param linuxFxVersion string
+
 @description('optional, default value is azureuser')
 param adminUsername string
 
@@ -313,6 +346,7 @@ module webApp 'modules/app-service.module.bicep' = {
     tags: tags
     vnetHubResourceId: vnetHubResourceId
     webAppBaseOs: webAppBaseOs
+    linuxFxVersion:linuxFxVersion
     subnetPrivateEndpointId: snetPe.id
     virtualNetworkLinks: virtualNetworkLinks   
     appConfigurationName: resourceNames.appConfig

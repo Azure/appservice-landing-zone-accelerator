@@ -49,6 +49,39 @@ param vnetHubResourceId string
 @allowed([ 'Windows', 'Linux'])
 param webAppBaseOs string
 
+@description('Optional. Mandatory when webAppBaseOs is Linux. Kind of webapp runtime')
+@allowed([
+  'DOTNETCORE:8.0'
+  'DOTNETCORE:7.0'
+  'DOTNETCORE:6.0'
+  'NODE:20-lts'
+  'NODE:18-lts'
+  'NODE:16-lts'
+  'PYTHON:3.12'
+  'PYTHON:3.11'
+  'PYTHON:3.10'
+  'PYTHON:3.9'
+  'PYTHON:3.8'
+  'PHP:8.2'
+  'PHP:8.1'
+  'PHP:8.0'
+  'JAVA:17-java17'
+  'JAVA:11-java11'
+  'JAVA:8-jre8'
+  'JBOSSEAP:7-java17'
+  'JBOSSEAP:7-java11'
+  'JBOSSEAP:7-java8'
+  'TOMCAT:10.0-java17'
+  'TOMCAT:10.0-java11'
+  'TOMCAT:10.0-jre8'
+  'TOMCAT:9.0-java17'
+  'TOMCAT:9.0-java11'
+  'TOMCAT:9.0-jre8'
+  'TOMCAT:8.5-java11'
+  'TOMCAT:8.5-jre8'
+])
+param linuxFxVersion string
+
 @description('An existing Log Analytics WS Id for creating app Insights, diagnostics etc.')
 param logAnalyticsWsId string
 
@@ -163,6 +196,7 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     virtualNetworkSubnetId: !(deployAseV3)  ? subnetIdForVnetInjection  : ''                              // no
     appInsightId: appInsights.outputs.appInsResourceId
     siteConfigSelection:  (webAppBaseOs =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
+    linuxFxVersionValue: (webAppBaseOs =~ 'linux') ? linuxFxVersion : 'DOTNETCORE:6.0'
     hasPrivateLink: !(deployAseV3)  ? (!empty (subnetPrivateEndpointId))    : false                           // no
     systemAssignedIdentity: false
     userAssignedIdentities:  {
