@@ -90,7 +90,7 @@ param webAppBaseOs string = 'Windows'
   'TOMCAT|8.5-java11'
   'TOMCAT|8.5-jre8'
 ])
-param linuxFxVersion string = 'DOTNETCORE:6.0'
+param linuxFxVersion string = 'DOTNETCORE|6.0'
 
 @description('mandatory, the username of the admin user of the jumpbox VM')
 param adminUsername string = 'azureuser'
