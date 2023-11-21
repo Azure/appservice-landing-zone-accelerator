@@ -314,6 +314,7 @@ output spokeVnetName string = spoke.outputs.vnetSpokeName
 output webAppHostName string = spoke.outputs.webAppHostName
 output webAppResourceId string = spoke.outputs.webAppResourceId
 output webAppSystemAssignedPrincipalId string = spoke.outputs.webAppSystemAssignedPrincipalId
+output webappUserIdentityAssignedPrincipalId string = spoke.outputs.webappUserIdentityAssignedPrincipalId
 output subnetAppSvcId string =spoke.outputs.subnetAppSvcId
 output subnetDevOpsId string = spoke.outputs.subnetDevOpsId
 output subnetPeId string = spoke.outputs.subnetPeId

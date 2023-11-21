@@ -502,6 +502,7 @@ output vnetSpokeId string = vnetSpoke.outputs.vnetId
 output webAppHostName string = webApp.outputs.webAppHostName
 output webAppResourceId string = webApp.outputs.webAppResourceId
 output webAppSystemAssignedPrincipalId string = webApp.outputs.webAppSystemAssignedPrincipalId
+output webappUserIdentityAssignedPrincipalId string = webApp.outputs.webappUserIdentityAssignedPrincipalId
 output subnetAppSvcId string = snetAppSvc.id
 output subnetAppSvcName string = snetAppSvc.name
 output subnetDevOpsId string = snetDevOps.id
