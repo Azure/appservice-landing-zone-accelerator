@@ -30,6 +30,9 @@ param vnetHubResourceId string = ''
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param tags object
 
+@description('Specific tags that we might need to add only to app service instance (i.e. azd-service-name)')
+param webappHostTags object = {}
+
 @description('Create (or not) a UDR for the App Service Subnet, to route all egress traffic through Hub Azure Firewall')
 param enableEgressLockdown bool
 
@@ -111,6 +114,9 @@ param webAppBaseOs string
 ])
 param linuxFxVersion string
 
+@description('Optional. App settings key value pairs that will be added to the web app')
+param appSettingsKeyValuePairs object = {}
+
 @description('optional, default value is azureuser')
 param adminUsername string
 
@@ -130,6 +136,8 @@ param sqlAdminPassword string = ''
 
 @description('set to true if you want to auto approve the Private Endpoint of the AFD')
 param autoApproveAfdPrivateEndpoint bool = true
+
+
 
 var resourceNames = {
   storageAccount: naming.storageAccount.nameUnique
@@ -344,6 +352,8 @@ module webApp 'modules/app-service.module.bicep' = {
     logAnalyticsWsId: logAnalyticsWs.outputs.logAnalyticsWsId
     subnetIdForVnetInjection: snetAppSvc.id
     tags: tags
+    webappHostTags: webappHostTags
+    appSettingsKeyValuePairs:appSettingsKeyValuePairs
     vnetHubResourceId: vnetHubResourceId
     webAppBaseOs: webAppBaseOs
     linuxFxVersion:linuxFxVersion

@@ -45,6 +45,9 @@ param numericSuffix string = ''
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param resourceTags object = {}
 
+@description('Specific tags that we might need to add only to app service instance (i.e. azd-service-name)')
+param webappHostTags object = {}
+
 @description('Default is empty. If empty, then a new hub will be created. If given, no new hub will be created and we create the  peering between spoke and and existing hub vnet')
 param vnetHubResourceId string = ''
 
@@ -91,6 +94,9 @@ param webAppBaseOs string = 'Windows'
   'TOMCAT|8.5-jre8'
 ])
 param linuxFxVersion string = 'DOTNETCORE|6.0'
+
+@description('Optional. App settings key value pairs that will be added to the web app')
+param appSettingsKeyValuePairs object = {}
 
 @description('mandatory, the username of the admin user of the jumpbox VM')
 param adminUsername string = 'azureuser'
@@ -234,6 +240,8 @@ module spoke 'deploy.spoke.bicep' = {
     naming: naming.outputs.names
     location: location
     tags: tags
+    webappHostTags: webappHostTags
+    appSettingsKeyValuePairs:appSettingsKeyValuePairs
     deployAseV3: deployAseV3
     firewallInternalIp: empty(vnetHubResourceId) ? hub.outputs.firewallPrivateIp : firewallInternalIp
     vnetSpokeAddressSpace: vnetSpokeAddressSpace

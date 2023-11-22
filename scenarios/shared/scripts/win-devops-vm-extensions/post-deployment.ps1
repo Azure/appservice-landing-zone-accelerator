@@ -36,7 +36,19 @@
 
 .PARAMETER install_clis
     A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. 
-    This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed.    
+    This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed.
+
+.PARAMETER install_java_tools
+    A switch to indicate whether or not to install the Java tools.Maven is included 
+    This parameter is optional. If not provided, the Java tools will not be installed.
+
+.PARAMETER install_python_tools
+    A switch to indicate whether or not to install the Python tools. 
+    This parameter is optional. If not provided, the Python tools will not be installed.
+
+.PARAMETER install_node_tools 
+    A switch to indicate whether or not to install the Node tools. 
+    This parameter is optional. If not provided, the Node tools will not be installed.
 #>
 param (
     [Parameter(Mandatory = $false)]
@@ -58,7 +70,16 @@ param (
     $install_ssms = $false,
 
     [switch]
-    $install_clis = $false
+    $install_clis = $false,
+
+    [switch]
+    $install_java_tools = $false,
+
+    [switch]
+    $install_python_tools = $false,
+
+    [switch]
+    $install_node_tools = $false
 )
 
 Write-Host "script started"
@@ -123,6 +144,43 @@ if ($install_clis) {
 
     $env:Path += ";$($azdInstallPath)\"
 }
+
+##############################################################################################################
+## install Java
+if ($install_java_tools) {
+    $javaInstallPath = "C:\Program Files\Java\jdk-17"
+
+    $downloads += @{
+        name            = "Java JDK 17"
+        url             = "https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.msi"
+        path            = "$($basePath)\java\"
+        file            = "jdk-17_windows-x64_bin.msi"
+        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\java\jdk-17_windows-x64_bin.msi /qn /quiet'"
+        testInstallPath = "$($javaInstallPath)\bin\java.exe"
+        postInstallCmd  = "" 
+    }
+
+    $env:Path += ";$($javaInstallPath)\bin\"
+}
+
+##############################################################################################################
+## install Node.js
+if ($install_node_tools) {
+    $nodeInstallPath = "C:\Program Files\nodejs"
+
+    $downloads += @{
+        name            = "Node.js"
+        url             = "https://nodejs.org/dist/v20.9.0/node-v20.9.0-x64.msi"
+        path            = "$($basePath)\nodejs\"
+        file            = "node-v20.9.0-x64.msi"
+        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\nodejs\node-v20.9.0-x64.msi /qn /quiet'"
+        testInstallPath = "$($nodeInstallPath)\node.exe"
+        postInstallCmd  = "" 
+    }
+
+    $env:Path += ";$($nodeInstallPath)\"
+}
+
 ##############################################################################################################
 # install the latest 64-bit Git
 if ($install_clis) {
@@ -151,6 +209,24 @@ $downloads += @{
     installCmd      = "Start-Process -Wait -FilePath D:\git\git-latest-64-bit.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes'"
     testInstallPath = "$($gitInstallPath)\git.exe"
     postInstallCmd  = "" 
+}
+
+##############################################################################################################
+## install Python
+if ($install_python_tools) {
+    $pythonInstallPath = "C:\Python\Python312"
+
+    $downloads += @{
+        name            = "Python 3.12.0"
+        url             = "https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe"
+        path            = "$($basePath)\python\"
+        file            = "python-3.12.0-amd64.exe"
+        installCmd      = "Start-Process -Wait -FilePath D:\python\python-3.12.0-amd64.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes InstallAllUsers=1 PrependPath=1'"
+        testInstallPath = "$($pythonInstallPath)\python.exe"
+        postInstallCmd  = ""
+    }
+
+    $env:Path += ";$($pythonInstallPath)\"
 }
 
 ##############################################################################################################

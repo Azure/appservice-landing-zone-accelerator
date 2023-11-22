@@ -36,6 +36,9 @@ param location string
 @description('Resource tags that we might need to add to all resources (i.e. Environment, Cost center, application name etc)')
 param tags object
 
+@description('Specific tags that we might need to add only to app service instance (i.e. azd-service-name)')
+param webappHostTags object = {}
+
 @description('Default is empty. If empty no Private Endpoint will be created for the resoure. Otherwise, the subnet where the private endpoint will be attached to')
 param subnetPrivateEndpointId string = ''
 
@@ -99,6 +102,9 @@ param sqlDbConnectionString string
 
 @description('Deploy an azure app configuration, or not')
 param deployAppConfig bool
+
+@description('Optional. App settings key value pairs that will be added to the web app')
+param appSettingsKeyValuePairs object = {}
 
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 
@@ -183,6 +189,10 @@ module asp '../../../shared/bicep/app-services/app-service-plan.bicep' = {
     hostingEnvironmentProfileId: deployAseV3 ? ase.outputs.resourceId : ''
   }
 }
+var webappComposedTags = union (webappHostTags, tags)
+
+
+var composedAppSettingsKeyValuePairs = union(appSettingsKeyValuePairs, redisConnStr)
 
 module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
   name: take('${webAppName}-webApp-Deployment', 64)
@@ -190,7 +200,7 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     kind: (webAppBaseOs =~ 'linux') ? 'app,linux' : 'app'
     name:  webAppName
     location: location
-    tags:tags
+    tags:webappComposedTags
     serverFarmResourceId: asp.outputs.resourceId
     diagnosticWorkspaceId: logAnalyticsWsId   
     virtualNetworkSubnetId: !(deployAseV3)  ? subnetIdForVnetInjection  : ''                              // no
@@ -202,7 +212,7 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     userAssignedIdentities:  {
       '${webAppUserAssignedManagedIdenity.outputs.id}': {}
     }
-    appSettingsKeyValuePairs: redisConnStr // union(redisConnStr, sqlConnStr)
+    appSettingsKeyValuePairs: composedAppSettingsKeyValuePairs // union(redisConnStr, sqlConnStr)
     slots: [
       {
         name: slotName
