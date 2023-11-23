@@ -258,7 +258,7 @@ $downloads += @{
 ##############################################################################################################
 ## install Python
 if ($install_python_tools) {
-    $pythonInstallPath = "$($env:LOCALAPPDATA)\Programs\Python\Python311"
+    $pythonInstallPath = "C:\Program Files\Python311\"
 
     $downloads += @{
         name            = "Python 3.11.6"
@@ -270,7 +270,7 @@ if ($install_python_tools) {
         postInstallCmd  = ""
     }
 
-    $env:Path += ";$($pythonInstallPath)\"
+
 }
 
 ##############################################################################################################
