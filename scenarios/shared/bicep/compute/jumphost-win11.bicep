@@ -194,7 +194,7 @@ resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@20
     autoUpgradeMinorVersion: true
     settings: {
       fileUris: [
-        'https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/main/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
+        'https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/feature/external-outputs/scenarios/shared/scripts/win-devops-vm-extensions/post-deployment.ps1'
       ]      
     }    
     protectedSettings: {

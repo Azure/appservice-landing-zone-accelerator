@@ -258,13 +258,13 @@ $downloads += @{
 ##############################################################################################################
 ## install Python
 if ($install_python_tools) {
-    $pythonInstallPath = "C:\Python\Python312"
+    $pythonInstallPath = "$($env:LOCALAPPDATA)\Programs\Python\Python311"
 
     $downloads += @{
-        name            = "Python 3.12.0"
+        name            = "Python 3.11.6"
         url             = "https://www.python.org/ftp/python/3.11.6/python-3.11.6-amd64.exe"
         path            = "$($basePath)\python\"
-        file            = "python-3.12.0-amd64.exe"
+        file            = "python-3.11.6-amd64.exe"
         installCmd      = "Start-Process -Wait -FilePath D:\python\python-3.11.6-amd64.exe -ArgumentList '/verysilent /norestart /suppressmsgboxes InstallAllUsers=1 PrependPath=1'"
         testInstallPath = "$($pythonInstallPath)\python.exe"
         postInstallCmd  = ""
@@ -389,4 +389,3 @@ foreach ($download in $downloads) {
 }
 
 Write-Host "All done!"
-```
