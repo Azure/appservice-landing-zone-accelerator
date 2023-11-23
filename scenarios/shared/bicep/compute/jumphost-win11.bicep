@@ -178,10 +178,10 @@ resource virtualMachineName_aadLoginExtensionName 'Microsoft.Compute/virtualMach
 
 var installClisValue = installClis   ? '-install_clis' : ''
 var installSsmsValue = installSsms   ? '-install_ssms' : ''
-var installJavaValue = installSsms   ? '-install_java_tools' : ''
-var installPythonValue = installSsms ? '-install_python_tools' : ''
-var installNodeValue = installSsms   ? '-install_node_tools' : ''
-var installPwshValue = installSsms   ? '-install_pwsh_tools' : ''
+var installJavaValue = installJava   ? '-install_java_tools' : ''
+var installPythonValue = installPython ? '-install_python_tools' : ''
+var installNodeValue = installNode   ? '-install_node_tools' : ''
+var installPwshValue = installPwsh   ? '-install_pwsh_tools' : ''
 
 resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
   parent: jumphost
