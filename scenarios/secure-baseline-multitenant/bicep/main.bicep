@@ -152,6 +152,18 @@ param adoToken string = ''
 @description('A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed')
 param installClis bool = false
 
+@description('A switch to indicate whether or not to install the Java tools.Maven is included. This parameter is optional. If not provided, the Java tools will not be installed')
+param installJava bool = false
+
+@description('A switch to indicate whether or not to install the Python tools. This parameter is optional. If not provided, the Python tools will not be installed')
+param installPython bool = false
+
+@description('A switch to indicate whether or not to install the Node tools. This parameter is optional. If not provided, the Node tools will not be installed')
+param installNode bool = false
+
+@description('A switch to indicate whether or not to install the Power Shell 6+ tools. This parameter is optional. If not provided, the Power Shell 6+ tools will not be installed')
+param installPwsh bool = false
+
 @description('A switch to indicate whether or not to install Sql Server Management Studio (SSMS). This parameter is optional. If not provided, SSMS will not be installed.')
 param installSsms bool = false
 
@@ -271,6 +283,10 @@ module spoke 'deploy.spoke.bicep' = {
     adoToken: adoToken
     installClis: installClis
     installSsms: installSsms 
+    installJava: installJava
+    installPython: installPython
+    installNode: installNode
+    installPwsh: installPwsh
   }
 }
 

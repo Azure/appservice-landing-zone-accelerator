@@ -55,6 +55,18 @@ param adoToken string = ''
 @description('A switch to indicate whether or not to install the Azure CLI, AZD CLI and git. This parameter is optional. If not provided, the Azure CLI, AZD CLI and git will not be installed')
 param installClis bool = false
 
+@description('A switch to indicate whether or not to install the Java tools.Maven is included. This parameter is optional. If not provided, the Java tools will not be installed')
+param installJava bool = false
+
+@description('A switch to indicate whether or not to install the Python tools. This parameter is optional. If not provided, the Python tools will not be installed')
+param installPython bool = false
+
+@description('A switch to indicate whether or not to install the Node tools. This parameter is optional. If not provided, the Node tools will not be installed')
+param installNode bool = false
+
+@description('A switch to indicate whether or not to install the Power Shell 6+ tools. This parameter is optional. If not provided, the Power Shell 6+ tools will not be installed')
+param installPwsh bool = false
+
 @description('A switch to indicate whether or not to install Sql Server Management Studio (SSMS). This parameter is optional. If not provided, SSMS will not be installed.')
 param installSsms bool = false
 
@@ -164,8 +176,13 @@ resource virtualMachineName_aadLoginExtensionName 'Microsoft.Compute/virtualMach
 }
 
 
-var installClisValue = installClis ? '-install_clis' : ''
-var installSsmsValue = installSsms ? '-install_ssms' : ''
+var installClisValue = installClis   ? '-install_clis' : ''
+var installSsmsValue = installSsms   ? '-install_ssms' : ''
+var installJavaValue = installSsms   ? '-install_java_tools' : ''
+var installPythonValue = installSsms ? '-install_python_tools' : ''
+var installNodeValue = installSsms   ? '-install_node_tools' : ''
+var installPwshValue = installSsms   ? '-install_pwsh_tools' : ''
+
 resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
   parent: jumphost
   name: 'customScriptExtension'
@@ -182,7 +199,7 @@ resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@20
     }    
     protectedSettings: {
       // commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 -install_ssms '
-      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 -github_repository "${githubRepository}" -github_token "${githubToken}" -ado_organization "${adoOrganization}" -ado_token "${adoToken}" ${installClisValue} ${installSsmsValue}'
+      commandToExecute: 'powershell.exe -ExecutionPolicy Unrestricted -File post-deployment.ps1 -github_repository "${githubRepository}" -github_token "${githubToken}" -ado_organization "${adoOrganization}" -ado_token "${adoToken}" ${installClisValue} ${installSsmsValue} ${installJavaValue} ${installPythonValue} ${installNodeValue} ${installPwshValue}'
     }
   }
 }
