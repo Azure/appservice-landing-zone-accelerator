@@ -49,6 +49,10 @@
 .PARAMETER install_node_tools 
     A switch to indicate whether or not to install the Node tools. 
     This parameter is optional. If not provided, the Node tools will not be installed.
+
+.PARAMETER install_pwsh_tools 
+    A switch to indicate whether or not to install the cross platform Power Shell based on .net core. 
+    This parameter is optional. If not provided, the PowerShell will not be installed.
 #>
 param (
     [Parameter(Mandatory = $false)]
@@ -79,7 +83,10 @@ param (
     $install_python_tools = $false,
 
     [switch]
-    $install_node_tools = $false
+    $install_node_tools = $false,
+
+    [switch]
+    $install_pwsh_tools  = $false
 )
 
 Write-Host "script started"
@@ -161,6 +168,25 @@ if ($install_java_tools) {
     }
 
     $env:Path += ";$($javaInstallPath)\bin\"
+    [Environment]::SetEnvironmentVariable("JAVA_HOME", "$($javaInstallPath)", "Machine")
+
+    # install maven
+    $mavenInstallPath = "C:\Program Files\apache-maven-3.9.5"
+    
+    $downloads += @{
+        name            = "Maven 3.9.5"
+        url             = "https://dlcdn.apache.org/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.zip"
+        path            = "$($basePath)\maven\"
+        file            = "apache-maven-3.9.5-bin.zip"
+        installCmd      = "Add-Type -AssemblyName System.IO.Compression.FileSystem; " +
+        "[System.IO.Compression.ZipFile]::ExtractToDirectory(`"$($basePath)\maven\apache-maven-3.9.5-bin.zip`", `"C:\Program Files\`");"
+        testInstallPath = "$($mavenInstallPath)\bin\mvn.cmd"
+        postInstallCmd  = "" 
+    }
+
+    
+
+    $env:Path += ";$($mavenInstallPath)\bin\"
 }
 
 ##############################################################################################################
@@ -179,6 +205,24 @@ if ($install_node_tools) {
     }
 
     $env:Path += ";$($nodeInstallPath)\"
+}
+
+##############################################################################################################
+## install Power Shell
+if ($install_pwsh_tools ) {
+    $pwshInstallPath = "C:\Program Files\PowerShell"
+
+    $downloads += @{
+        name            = "Power Shell"
+        url             = "https://github.com/PowerShell/PowerShell/releases/download/v7.4.0/PowerShell-7.4.0-win-x64.msi"
+        path            = "$($basePath)\powershell\"
+        file            = "PowerShell-7.4.0-win-x64.msi"
+        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\powershell\PowerShell-7.4.0-win-x64.msi /qn /quiet'"
+        testInstallPath = "$($pwshInstallPath)\7\pwsh.exe"
+        postInstallCmd  = "" 
+    }
+
+    $env:Path += ";$($pwshInstallPath)\7\"
 }
 
 ##############################################################################################################
