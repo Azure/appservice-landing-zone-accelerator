@@ -529,6 +529,7 @@ output webAppHostName string = webApp.outputs.webAppHostName
 output webAppResourceName string = webApp.outputs.webAppName
 output webAppSystemAssignedPrincipalId string = webApp.outputs.webAppSystemAssignedPrincipalId
 output webappUserIdentityAssignedPrincipalId string = webApp.outputs.webappUserIdentityAssignedPrincipalId
+output webAppUserAssignedManagedIdenityClientId string = webApp.outputs.webAppUserAssignedManagedIdenityClientId
 output subnetAppSvcId string = snetAppSvc.id
 output subnetAppSvcName string = snetAppSvc.name
 output subnetDevOpsId string = snetDevOps.id
