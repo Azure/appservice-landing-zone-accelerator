@@ -393,6 +393,7 @@ output webAppResourceId string = webApp.outputs.resourceId
 output webAppLocation string = webApp.outputs.location
 output webAppSystemAssignedPrincipalId string = webApp.outputs.systemAssignedPrincipalId
 output webappUserIdentityAssignedPrincipalId string = webAppUserAssignedManagedIdenity.outputs.principalId
+output webAppUserAssignedManagedIdenityClientId string = webAppUserAssignedManagedIdenity.outputs.clientId
 
 @description('The Internal ingress IP of the ASE.')
 output internalInboundIpAddress string = (deployAseV3) ? ase.outputs.internalInboundIpAddress : ''
