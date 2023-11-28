@@ -4,7 +4,7 @@ targetScope = 'subscription'
 // Parameters       //
 // ================ //
 
-@maxLength(10)
+@maxLength(20)
 @description('suffix (max 10 characters long) that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>')
 param workloadName string =  'appsvc${ take( uniqueString( subscription().id), 4) }'
 
