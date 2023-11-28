@@ -309,57 +309,6 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   scope: profile
 }
 
-resource waf 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2022-05-01' =  {
-  name: wafPolicyName
-  location: 'Global'
-  sku: {
-    name: skuName
-  }
-  properties: {
-    policySettings: {
-      enabledState: wafPolicyState
-      mode: wafPolicyMode
-      // customBlockResponseStatusCode: wafBlockResponseCode
-      // customBlockResponseBody: base64(wafBlockResponseBody)
-      requestBodyCheck: 'Enabled' 
-    }
-    customRules: {
-      rules: [
-        {
-          name: 'BlockMethod'
-          enabledState: 'Enabled'
-          priority: 10
-          ruleType: 'MatchRule'
-          rateLimitDurationInMinutes: 1
-          rateLimitThreshold: 100
-          matchConditions: [
-            {
-              matchVariable: 'RequestMethod'
-              operator: 'Equal'
-              negateCondition: true
-              matchValue: [
-                'GET'
-                'OPTIONS'
-                'HEAD'
-              ]
-            }
-          ]
-          action: 'Block'
-        }
-      ]
-    }
-    managedRules: {
-      managedRuleSets: [
-        {
-          ruleSetType: 'Microsoft_DefaultRuleSet'
-          ruleSetVersion: '2.1'
-          ruleSetAction: wafRuleSetAction
-          ruleGroupOverrides: []
-        }
-      ]
-    }
-  }
-}
 
 
 @description('The name of the CDN profile.')
