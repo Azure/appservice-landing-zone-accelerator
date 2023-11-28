@@ -210,7 +210,7 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     hasPrivateLink: !(deployAseV3)  ? (!empty (subnetPrivateEndpointId))    : false                           // no
     systemAssignedIdentity: false
     userAssignedIdentities:  {
-      '${webAppUserAssignedManagedIdenity.outputs.id}': {}
+      '${webAppUserAssignedManagedIdentity.outputs.id}': {}
     }
     appSettingsKeyValuePairs: composedAppSettingsKeyValuePairs // union(redisConnStr, sqlConnStr)
     slots: [
@@ -243,7 +243,7 @@ resource webappConnectionstring 'Microsoft.Web/sites/config@2019-08-01' = if ( !
   ]
 }
 
-module webAppUserAssignedManagedIdenity '../../../shared/bicep/managed-identity.bicep' = {
+module webAppUserAssignedManagedIdentity '../../../shared/bicep/managed-identity.bicep' = {
   name: 'appSvcUserAssignedManagedIdenity-Deployment'
   params: {
     name: managedIdentityName
@@ -348,7 +348,7 @@ module webAppIdentityOnAppConfigDataReader '../../../shared/bicep/role-assignmen
   name: 'webAppSystemIdentityOnAppConfigDataReader-Deployment'
   params: {
     name: 'ra-webAppSystemIdentityOnAppConfigDataReader'
-    principalId: webAppUserAssignedManagedIdenity.outputs.principalId
+    principalId: webAppUserAssignedManagedIdentity.outputs.principalId
     resourceId: ( deployAppConfig ) ?  appConfigStore.outputs.resourceId : ''
     roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
   }
@@ -358,7 +358,7 @@ module webAppIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignmen
   name: 'webAppSystemIdentityOnKeyvaultSecretsUser-Deployment'
   params: {
     name: 'ra-webAppSystemIdentityOnKeyvaultSecretsUser'
-    principalId: webAppUserAssignedManagedIdenity.outputs.principalId
+    principalId: webAppUserAssignedManagedIdentity.outputs.principalId
     resourceId: keyvault.id
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'  //Key Vault Secrets User  
   }
@@ -368,7 +368,7 @@ module webAppStagingSlotSystemIdentityOnAppConfigDataReader '../../../shared/bic
   name: 'webAppStagingSlotSystemIdentityOnAppConfigDataReader-Deployment'
   params: {
     name: 'ra-webAppStagingSlotSystemIdentityOnAppConfigDataReader'
-    principalId: webAppUserAssignedManagedIdenity.outputs.principalId //webApp.outputs.slotSystemAssignedPrincipalIds[0]
+    principalId: webAppUserAssignedManagedIdentity.outputs.principalId //webApp.outputs.slotSystemAssignedPrincipalIds[0]
     resourceId: ( deployAppConfig ) ?  appConfigStore.outputs.resourceId : ''
     roleDefinitionId: '516239f1-63e1-4d78-a4de-a74fb236a071'  //App Configuration Data Reader 
   }
@@ -378,7 +378,7 @@ module webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser '../../../shared/bic
   name: 'webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser-Deployment'
   params: {
     name: 'ra-webAppStagingSlotSystemIdentityOnKeyvaultSecretsUser'
-    principalId: webAppUserAssignedManagedIdenity.outputs.principalId // webApp.outputs.slotSystemAssignedPrincipalIds[0]
+    principalId: webAppUserAssignedManagedIdentity.outputs.principalId // webApp.outputs.slotSystemAssignedPrincipalIds[0]
     resourceId: keyvault.id
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'  //Key Vault Secrets User   
   }
@@ -392,8 +392,8 @@ output webAppHostName string = webApp.outputs.defaultHostname
 output webAppResourceId string = webApp.outputs.resourceId
 output webAppLocation string = webApp.outputs.location
 output webAppSystemAssignedPrincipalId string = webApp.outputs.systemAssignedPrincipalId
-output webappUserIdentityAssignedPrincipalId string = webAppUserAssignedManagedIdenity.outputs.principalId
-output webAppUserAssignedManagedIdenityClientId string = webAppUserAssignedManagedIdenity.outputs.clientId
+output webappUserIdentityAssignedPrincipalId string = webAppUserAssignedManagedIdentity.outputs.principalId
+output webAppUserAssignedManagedIdentityClientId string = webAppUserAssignedManagedIdentity.outputs.clientId
 
 @description('The Internal ingress IP of the ASE.')
 output internalInboundIpAddress string = (deployAseV3) ? ase.outputs.internalInboundIpAddress : ''
