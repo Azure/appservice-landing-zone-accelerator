@@ -278,7 +278,26 @@ resource originRoute 'Microsoft.Cdn/profiles/afdendpoints/routes@2021-06-01' =  
   ]
 }
 
-
+resource afdWafSecurityPolicy 'Microsoft.Cdn/profiles/securitypolicies@2022-11-01-preview' =  {
+  parent: profile
+  name: 'afdWafSecurityPolicy'
+  properties: {
+    parameters: {
+      wafPolicy: {
+        id:  waf.id
+      }
+      associations: [
+        {
+          domains: endPointIdsForWaf
+          patternsToMatch: [
+            '/*'
+          ]
+        }
+      ]
+      type: 'WebApplicationFirewall'
+    }
+  }
+}
 
 resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if ( !empty(diagnosticWorkspaceId)) {
   name: diagnosticSettingsName
@@ -290,7 +309,33 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   scope: profile
 }
 
-
+resource waf 'Microsoft.Network/FrontDoorWebApplicationFirewallPolicies@2022-05-01' =  {
+  name: wafPolicyName
+  location: 'Global'
+  sku: {
+    name: skuName
+  }
+  properties: {
+    policySettings: {
+      enabledState: wafPolicyState
+      mode: wafPolicyMode
+      // customBlockResponseStatusCode: wafBlockResponseCode
+      // customBlockResponseBody: base64(wafBlockResponseBody)
+      requestBodyCheck: 'Enabled' 
+    }
+    
+    managedRules: {
+      managedRuleSets: [
+        {
+          ruleSetType: 'Microsoft_DefaultRuleSet'
+          ruleSetVersion: '2.1'
+          ruleSetAction: wafRuleSetAction
+          ruleGroupOverrides: []
+        }
+      ]
+    }
+  }
+}
 
 
 @description('The name of the CDN profile.')
