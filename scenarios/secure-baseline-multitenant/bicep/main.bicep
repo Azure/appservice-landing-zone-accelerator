@@ -335,6 +335,7 @@ output spokeVnetName string = spoke.outputs.vnetSpokeName
 
 
 
+output naming object = naming.outputs.names
 output webAppHostName string = spoke.outputs.webAppHostName
 output webAppResourceName string = spoke.outputs.webAppResourceName
 output webAppSystemAssignedPrincipalId string = spoke.outputs.webAppSystemAssignedPrincipalId
