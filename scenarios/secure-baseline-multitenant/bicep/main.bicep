@@ -323,6 +323,8 @@ resource telemetrydeployment 'Microsoft.Resources/deployments@2021-04-01' = if (
 @description('The resource ID of hub virtual network.')
 output hubVNetId string = hub.outputs.vnetHubId
 
+output hubVNetName string = hub.outputs.vnetHubName
+
 // Spoke
 @description('The name of the Spoke resource group.')
 output spokeResourceGroupName string = spokeResourceGroup.name
@@ -340,7 +342,7 @@ output webAppHostName string = spoke.outputs.webAppHostName
 output webAppResourceName string = spoke.outputs.webAppResourceName
 output webAppSystemAssignedPrincipalId string = spoke.outputs.webAppSystemAssignedPrincipalId
 output webappUserIdentityAssignedPrincipalId string = spoke.outputs.webappUserIdentityAssignedPrincipalId
-output webAppUserAssignedManagedIdenityClientId string = spoke.outputs.webAppUserAssignedManagedIdenityClientId
+output webAppUserAssignedManagedIdentityClientId string = spoke.outputs.webAppUserAssignedManagedIdentityClientId
 output subnetAppSvcId string =spoke.outputs.subnetAppSvcId
 output subnetDevOpsId string = spoke.outputs.subnetDevOpsId
 output subnetPeId string = spoke.outputs.subnetPeId
