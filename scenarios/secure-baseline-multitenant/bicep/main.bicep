@@ -15,6 +15,9 @@ param location string = deployment().location
 @maxLength(8)
 param environmentName string = 'test'
 
+@description('Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.')
+param deployAseV3 bool = false
+
 @description('CIDR of the HUB vnet i.e. 192.168.0.0/24 - optional if you want to use an existing hub vnet (vnetHubResourceId)')
 param vnetHubAddressSpace string = '10.242.0.0/20'
 
@@ -27,7 +30,7 @@ param subnetHubBastionAddressSpace string = '10.242.0.64/26'
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param vnetSpokeAddressSpace string = '10.240.0.0/20'
 
-@description('CIDR of the subnet that will hold the app services plan')
+@description('CIDR of the subnet that will hold the app services plan. ATTENTION: ASEv3 needs a /24 network')
 param subnetSpokeAppSvcAddressSpace string = '10.240.0.0/26'
 
 @description('CIDR of the subnet that will hold devOps agents etc ')
@@ -48,8 +51,8 @@ param vnetHubResourceId string = ''
 @description('Internal IP of the Azure firewall deployed in Hub. Used for creating UDR to route all vnet egress traffic through Firewall. If empty no UDR')
 param firewallInternalIp string = ''
 
-@description('Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
-@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ' ])
+@description('Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deploying at least three instances in three Availability Zones. EP* is only for functions')
+@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3', 'ASE_I1V2_AZ', 'ASE_I2V2_AZ', 'ASE_I3V2_AZ', 'ASE_I1V2', 'ASE_I2V2', 'ASE_I3V2' ])
 param webAppPlanSku string = 'S1'
 
 @description('Kind of server OS of the App Service Plan')
@@ -198,6 +201,7 @@ module spoke 'deploy.spoke.bicep' = {
     naming: naming.outputs.names
     location: location
     tags: tags
+    deployAseV3: deployAseV3
     firewallInternalIp: empty(vnetHubResourceId) ? hub.outputs.firewallPrivateIp : firewallInternalIp
     vnetSpokeAddressSpace: vnetSpokeAddressSpace
     subnetSpokeAppSvcAddressSpace: subnetSpokeAppSvcAddressSpace

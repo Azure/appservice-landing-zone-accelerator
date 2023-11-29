@@ -21,7 +21,6 @@ on:
   pull_request:
     branches:
       - main
-      - feature/*
     paths:
       - '.github/workflows/scenario1.terraform.hub.yml'
       - '.github/workflows/_template.terraform.yml'
