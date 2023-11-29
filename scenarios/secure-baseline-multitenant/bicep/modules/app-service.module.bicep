@@ -1,3 +1,12 @@
+@description('Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.')
+param deployAseV3 bool = false
+
+
+@description('Optional if deployAseV3 = false. The identifier for the App Service Environment v3 resource.')
+@minLength(1)
+@maxLength(36)
+param aseName string
+
 @description('Required. Name of the App Service Plan.')
 @minLength(1)
 @maxLength(40)
@@ -17,8 +26,8 @@ param managedIdentityName string
 @maxLength(50)
 param appConfigurationName string
 
-@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
-@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
+@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deploying at least three instances in three Availability Zones. EP* is only for functions')
+@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3', 'ASE_I1V2_AZ', 'ASE_I2V2_AZ', 'ASE_I3V2_AZ', 'ASE_I1V2', 'ASE_I2V2', 'ASE_I3V2' ])
 param sku string
 
 @description('Optional. Location for all resources.')
@@ -43,7 +52,7 @@ param webAppBaseOs string
 @description('An existing Log Analytics WS Id for creating app Insights, diagnostics etc.')
 param logAnalyticsWsId string
 
-@description('The subnet ID that is dedicated to Web Server, for Vnet Injection of the web app')
+@description('The subnet ID that is dedicated to Web Server, for Vnet Injection of the web app. If deployAseV3=true then this is the subnet dedicated to the ASE v3')
 param subnetIdForVnetInjection string
 
 @description('The name of an existing keyvault, that it will be used to store secrets (connection string)' )
@@ -71,6 +80,54 @@ resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
   name: keyvaultName
 }
 
+module ase '../../../shared/bicep/app-services/ase/ase.bicep' = if (deployAseV3) {
+  name: take('${aseName}-ASEv3-Deployment', 64)
+  params: {
+    name: aseName
+    location: location
+    tags: tags
+    diagnosticWorkspaceId: logAnalyticsWsId
+    subnetResourceId: subnetIdForVnetInjection
+    zoneRedundant: endsWith(sku, 'AZ') ? true : false
+    allowNewPrivateEndpointConnections: true  //we need to expose our web app through AFD Premium, and that needs to create a Private Link. Otherwise the error you get is: 
+    // Private Link for App Service Environment Site is only allowed on ASEv3's that have allowedPrivateEndpointConnections specified to be true object is not present in the request body.
+  }
+}
+
+// resource aseResource  'Microsoft.Web/hostingEnvironments@2022-09-01' existing = {
+//   name: aseName
+// }
+
+// module asePrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( deployAseV3 ) {
+//   // scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
+//   name: 'asev3-net-PrivateDnsZone-Deployment'
+//   params: {
+//     name: deployAseV3 ? '${aseResource.name}.appserviceenvironment.net' : ''
+//     virtualNetworkLinks: virtualNetworkLinks
+//     tags: tags
+//     aRecords: [
+//       {
+//         name: '*'
+//         ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+//         ttl: 3600
+//       }
+//       {
+//         name: '*.scm'
+//         ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+//         ttl: 3600
+//       }
+//       {
+//         name: '@'
+//         ipv4Address: deployAseV3 ? reference('${aseResource.id}/configurations/networking', '2020-06-01').internalInboundIpAddresses[0] : ''
+//         ttl: 3600
+//       }
+//     ]
+//   }
+//   dependsOn: [
+//     ase
+//   ]
+// }
+
 module appInsights '../../../shared/bicep/app-insights.bicep' = {
   name: 'appInsights-Deployment'
   params: {
@@ -90,6 +147,7 @@ module asp '../../../shared/bicep/app-services/app-service-plan.bicep' = {
     sku: sku
     serverOS: (webAppBaseOs =~ 'linux') ? 'Linux' : 'Windows'
     diagnosticWorkspaceId: logAnalyticsWsId
+    hostingEnvironmentProfileId: deployAseV3 ? ase.outputs.resourceId : ''
   }
 }
 
@@ -101,10 +159,10 @@ module webApp '../../../shared/bicep/app-services/web-app.bicep' = {
     location: location
     serverFarmResourceId: asp.outputs.resourceId
     diagnosticWorkspaceId: logAnalyticsWsId   
-    virtualNetworkSubnetId: subnetIdForVnetInjection
+    virtualNetworkSubnetId: !(deployAseV3)  ? subnetIdForVnetInjection  : ''                              // no
     appInsightId: appInsights.outputs.appInsResourceId
     siteConfigSelection:  (webAppBaseOs =~ 'linux') ? 'linuxNet6' : 'windowsNet6'
-    hasPrivateLink: (!empty (subnetPrivateEndpointId))
+    hasPrivateLink: !(deployAseV3)  ? (!empty (subnetPrivateEndpointId))    : false                           // no
     systemAssignedIdentity: false
     userAssignedIdentities:  {
       '${webAppUserAssignedManagedIdenity.outputs.id}': {}
@@ -149,7 +207,7 @@ module webAppUserAssignedManagedIdenity '../../../shared/bicep/managed-identity.
   }
 }
 
-module webAppPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
+module webAppPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) && !deployAseV3 ) {
   // conditional scope is not working: https://github.com/Azure/bicep/issues/7367
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
@@ -161,26 +219,26 @@ module webAppPrivateDnsZone '../../../shared/bicep/private-dns-zone.bicep' = if 
   }
 }
 
-module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
+module peWebApp '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) && !deployAseV3) {
   name:  take('pe-${webAppName}-Deployment', 64)
   params: {
     name: take('pe-${webApp.outputs.name}', 64)
     location: location
     tags: tags
-    privateDnsZonesId: webAppPrivateDnsZone.outputs.privateDnsZonesId
+    privateDnsZonesId: ( !empty(subnetPrivateEndpointId) && !deployAseV3 ) ? webAppPrivateDnsZone.outputs.privateDnsZonesId : ''
     privateLinkServiceId: webApp.outputs.resourceId
     snetId: subnetPrivateEndpointId
     subresource: 'sites'
   }
 }
 
-module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
+module peWebAppSlot '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subnetPrivateEndpointId) && !deployAseV3) {
   name:  take('pe-${webAppName}-slot-${slotName}-Deployment', 64)
   params: {
     name: take('pe-${webAppName}-slot-${slotName}', 64)
     location: location
     tags: tags
-    privateDnsZonesId: webAppPrivateDnsZone.outputs.privateDnsZonesId
+    privateDnsZonesId: ( !empty(subnetPrivateEndpointId) && !deployAseV3 ) ? webAppPrivateDnsZone.outputs.privateDnsZonesId : ''
     privateLinkServiceId: webApp.outputs.resourceId
     snetId: subnetPrivateEndpointId
     subresource: 'sites-${slotName}'
@@ -289,3 +347,9 @@ output webAppHostName string = webApp.outputs.defaultHostname
 output webAppResourceId string = webApp.outputs.resourceId
 output webAppLocation string = webApp.outputs.location
 output webAppSystemAssignedPrincipalId string = webApp.outputs.systemAssignedPrincipalId
+
+@description('The Internal ingress IP of the ASE.')
+output internalInboundIpAddress string = (deployAseV3) ? ase.outputs.internalInboundIpAddress : ''
+
+@description('The name of the ASE.')
+output aseName string = (deployAseV3) ? ase.outputs.name : ''

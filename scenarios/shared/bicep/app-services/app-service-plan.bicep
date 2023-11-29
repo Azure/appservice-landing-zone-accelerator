@@ -9,8 +9,8 @@ param location string
 @description('Optional. Tags of the resource.')
 param tags object = {}
 
-@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
-@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
+@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deploying at least three instances in three Availability Zones. EP* is only for functions')
+@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3', 'ASE_I1V2_AZ', 'ASE_I2V2_AZ', 'ASE_I3V2_AZ', 'ASE_I1V2', 'ASE_I2V2', 'ASE_I3V2' ])
 param sku string
 
 @description('Optional, default is Windows. Kind of server OS.')
@@ -19,6 +19,9 @@ param sku string
   'Linux'
 ])
 param serverOS string = 'Windows'
+
+@description('Optional. The Resource ID of the hosting environment to use for the App Service Plan. Used only if deployAseV3=true or SKU is ASE_I1V2_AZ.')
+param hostingEnvironmentProfileId string = ''
 
 // @description('Optional. The Resource ID of the App Service Environment to use for the App Service Plan.')
 // param appServiceEnvironmentId string = ''
@@ -67,7 +70,7 @@ param diagnosticMetricsToEnable array = [
 // If sku is Elastic Premium - used for EP Function hosting. Default is true
 // param isElasticPremium bool = true
 // 'Optional, default is false. If true, then starts with minimum 3 instances')
-var zoneRedundant  = endsWith(sku, 'LZA') ? true : false
+var zoneRedundant  = endsWith(sku, 'AZ') ? true : false
 var isElasticPremium = startsWith(sku, 'EP') ? true : false
 var aspKind = isElasticPremium ? 'elastic' : (serverOS == 'Windows' ? '' : 'linux')
 
@@ -184,6 +187,48 @@ var skuConfigurationMap = {
     family: 'Pv3'
     capacity: 3
   }
+  ASE_I1V2_AZ: {
+    name: 'I1v2'
+    tier: 'IsolatedV2'
+    size: 'I1v2'
+    family: 'Iv2'
+    capacity: 3
+  }
+  ASE_I2V2_AZ: {
+    name: 'I2v2'
+    tier: 'IsolatedV2'
+    size: 'I2v2'
+    family: 'Iv2'
+    capacity: 3
+  }
+  ASE_I3V2_AZ: {
+    name: 'I3v2'
+    tier: 'IsolatedV2'
+    size: 'I3v2'
+    family: 'Iv2'
+    capacity: 3
+  }
+   ASE_I1V2: {
+    name: 'I1v2'
+    tier: 'IsolatedV2'
+    size: 'I1v2'
+    family: 'Iv2'
+    capacity: 1
+  }
+  ASE_I2V2: {
+    name: 'I2v2'
+    tier: 'IsolatedV2'
+    size: 'I2v2'
+    family: 'Iv2'
+    capacity: 1
+  }
+  ASE_I3V2: {
+    name: 'I3v2'
+    tier: 'IsolatedV2'
+    size: 'I3v2'
+    family: 'Iv2'
+    capacity: 1
+  }
 }
 
 // =========== //
@@ -203,6 +248,9 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
     targetWorkerCount: (targetWorkerCount < 3 && zoneRedundant) ? 3 : targetWorkerCount
     targetWorkerSizeId: targetWorkerSize
     zoneRedundant: zoneRedundant
+    hostingEnvironmentProfile: startsWith(sku, 'ASE') ? {
+      id: hostingEnvironmentProfileId
+    } : null
   }
 }
 

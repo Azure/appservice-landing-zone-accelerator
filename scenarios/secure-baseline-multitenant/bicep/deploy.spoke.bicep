@@ -6,6 +6,9 @@ param naming object
 @description('Azure region where the resources will be deployed in')
 param location string = resourceGroup().location
 
+@description('Optional, default is false. Set to true if you want to deploy ASE v3 instead of Multitenant App Service Plan.')
+param deployAseV3 bool = false
+
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param vnetSpokeAddressSpace string
 
@@ -67,8 +70,8 @@ param installClis bool = false
 @description('A switch to indicate whether or not to install Sql Server Management Studio (SSMS). This parameter is optional. If not provided, SSMS will not be installed.')
 param installSsms bool = false
 
-@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deplying at least three instances in three Availability Zones. EP* is only for functions')
-@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3' ])
+@description('Optional S1 is default. Defines the name, tier, size, family and capacity of the App Service Plan. Plans ending to _AZ, are deploying at least three instances in three Availability Zones. EP* is only for functions')
+@allowed([ 'S1', 'S2', 'S3', 'P1V3', 'P2V3', 'P3V3', 'P1V3_AZ', 'P2V3_AZ', 'P3V3_AZ', 'EP1', 'EP2', 'EP3', 'ASE_I1V2_AZ', 'ASE_I2V2_AZ', 'ASE_I3V2_AZ', 'ASE_I1V2', 'ASE_I2V2', 'ASE_I3V2' ])
 param webAppPlanSku string
 
 @description('Kind of server OS of the App Service Plan')
@@ -101,11 +104,14 @@ var resourceNames = {
   snetAppSvc: 'snet-appSvc-${naming.virtualNetwork.name}-spoke'
   snetDevOps: 'snet-devOps-${naming.virtualNetwork.name}-spoke'
   snetPe: 'snet-pe-${naming.virtualNetwork.name}-spoke'
+  pepNsg: take('${naming.networkSecurityGroup.name}-pep', 80)
+  aseNsg: take('${naming.networkSecurityGroup.name}-ase', 80)
   appSvcUserAssignedManagedIdentity: take('${naming.userAssignedManagedIdentity.name}-appSvc', 128)
   vmJumpHostUserAssignedManagedIdentity: take('${naming.userAssignedManagedIdentity.name}-vmJumpHost', 128)
   keyvault: naming.keyVault.nameUnique
   logAnalyticsWs: naming.logAnalyticsWorkspace.name
   appInsights: naming.applicationInsights.name
+  aseName: naming.appServiceEnvironment.nameUnique
   aspName: naming.appServicePlan.name
   webApp: naming.appService.nameUnique
   vmWindowsJumpbox: take('${naming.windowsVirtualMachine.name}-win-jumpbox', 64)
@@ -139,21 +145,18 @@ var subnets = [
     name: resourceNames.snetAppSvc
     properties: {
       addressPrefix: subnetSpokeAppSvcAddressSpace
-      privateEndpointNetworkPolicies: 'Enabled'  
+      privateEndpointNetworkPolicies: !(deployAseV3) ? 'Enabled' : 'Disabled'  
       delegations: [
         {
           name: 'delegation'
           properties: {
-            serviceName: 'Microsoft.Web/serverfarms'
+            serviceName: !(deployAseV3) ? 'Microsoft.Web/serverfarms' : 'Microsoft.Web/hostingEnvironments'
           }
         }
       ]
-      // networkSecurityGroup: {
-      //   id: nsgAca.outputs.nsgID
-      // } 
-      // routeTable: {
-      //   id: !empty(firewallInternalIp) && (enableEgressLockdown) ? routeTableToFirewall.outputs.resourceId : ''
-      // } 
+      networkSecurityGroup: {
+        id: !(deployAseV3) ? nsgPep.outputs.nsgId : nsgAse.outputs.nsgId
+      } 
       routeTable: !empty(firewallInternalIp) && (enableEgressLockdown) ? {
         id: routeTableToFirewall.outputs.resourceId 
       } : null
@@ -163,15 +166,21 @@ var subnets = [
     name: resourceNames.snetDevOps
     properties: {
       addressPrefix: subnetSpokeDevOpsAddressSpace
-      privateEndpointNetworkPolicies: 'Enabled'    
-    }
+      privateEndpointNetworkPolicies: 'Enabled'   
+      networkSecurityGroup: {
+        id: nsgPep.outputs.nsgId
+      } 
+    }    
   }
   {
     name: resourceNames.snetPe
     properties: {
       addressPrefix: subnetSpokePrivateEndpointAddressSpace
-      privateEndpointNetworkPolicies: 'Disabled'    
-    }
+      privateEndpointNetworkPolicies: 'Disabled'  
+      networkSecurityGroup: {
+        id: nsgPep.outputs.nsgId
+      }  
+    }    
   }
 ]
 
@@ -217,6 +226,46 @@ module routeTableToFirewall '../../shared/bicep/network/udr.bicep' = if (!empty(
   }
 }
 
+@description('NSG Rules for the private enpoint subnet.')
+module nsgPep '../../shared/bicep/network/nsg.bicep' = {
+  name: take('nsgPep-${deployment().name}', 64)
+  params: {
+    name: resourceNames.pepNsg
+    location: location
+    tags: tags
+    securityRules: []
+    diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
+  }
+}
+
+@description('NSG Rules for the private enpoint subnet.')
+module nsgAse '../../shared/bicep/network/nsg.bicep' = {
+  name: take('nsgAse-${deployment().name}', 64)
+  params: {
+    name: resourceNames.aseNsg
+    location: location
+    tags: tags
+    securityRules: [
+      {
+        name: 'SSL_WEB_443'
+        properties: {
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: 'Tcp'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '443'
+          priority: 100
+        }        
+      }
+    ]
+    diagnosticWorkspaceId: logAnalyticsWs.outputs.logAnalyticsWsId
+  }
+}
+
+
+
 resource snetAppSvc 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
   name: '${vnetSpoke.outputs.vnetName}/${resourceNames.snetAppSvc}'
 }
@@ -253,6 +302,8 @@ module keyvault 'modules/keyvault.module.bicep' = {
 module webApp 'modules/app-service.module.bicep' = {
   name: 'webAppModule-Deployment'
   params: {
+    deployAseV3: deployAseV3
+    aseName: resourceNames.aseName
     appServicePlanName: resourceNames.aspName
     webAppName: resourceNames.webApp
     managedIdentityName: resourceNames.appSvcUserAssignedManagedIdentity
@@ -273,6 +324,37 @@ module webApp 'modules/app-service.module.bicep' = {
     deployAppConfig: deployAppConfig     
   }
 }
+
+module asePrivateDnsZone '../../shared/bicep/private-dns-zone.bicep' = if ( deployAseV3 ) {
+  scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
+  name: 'asev3-hub-PrivateDnsZone-Deployment'
+  params: {
+    name: deployAseV3 ? '${webApp.outputs.aseName}.appserviceenvironment.net' : ''
+    virtualNetworkLinks: virtualNetworkLinks
+    tags: tags
+    aRecords: [
+      {
+        name: '*'
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
+        ttl: 3600
+      }
+      {
+        name: '*.scm'
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
+        ttl: 3600
+      }
+      {
+        name: '@'
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
+        ttl: 3600
+      }
+    ]
+  }
+  dependsOn: [
+    webApp
+  ]
+}
+
 
 module afd '../../shared/bicep/network/front-door.bicep' = {
   name: take ('AzureFrontDoor-${resourceNames.frontDoor}-deployment', 64)

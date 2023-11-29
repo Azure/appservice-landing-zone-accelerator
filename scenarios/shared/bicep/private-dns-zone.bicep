@@ -32,7 +32,7 @@ resource dnsARecord 'Microsoft.Network/privateDnsZones/A@2020-06-01' = [for (aRe
   parent: privateDnsZone
   name: aRecord.name
   properties: {
-    ttl: 60
+    ttl: contains(aRecord, 'ttl') ? aRecord.ttl : 3600
     aRecords: [
       {
         ipv4Address: aRecord.ipv4Address
