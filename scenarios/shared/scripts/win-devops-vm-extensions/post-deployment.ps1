@@ -144,7 +144,7 @@ if ($install_clis) {
         url             = "https://azure-dev.azureedge.net/azd/standalone/release/latest/azd-windows-amd64.msi"
         path            = "$($basePath)\azd\"
         file            = "azd-windows-amd64.msi"
-        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet'"
+        installCmd      = "Start-Process msiexec.exe -Wait -ArgumentList '/i D:\azd\azd-windows-amd64.msi /qn /quiet ALLUSERS=1'"
         testInstallPath = "$($azdInstallPath)\azd.exe"
         postInstallCmd  = "" 
     }
