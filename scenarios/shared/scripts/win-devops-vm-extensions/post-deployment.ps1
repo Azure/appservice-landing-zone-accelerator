@@ -137,7 +137,7 @@ $env:Path += ";C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\"
 ##############################################################################################################
 ## install azure developer CLI AZD
 if ($install_clis) {
-    $azdInstallPath = "$($env:LOCALAPPDATA)\Programs\Azure Dev CLI"
+    $azdInstallPath = "$($env:PROGRAMFILES)\Azure Dev CLI"
 
     $downloads += @{
         name            = "AZD CLI"
