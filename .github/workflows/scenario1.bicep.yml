@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - refactor/iac-cicd
     paths:
       - '.github/workflows/bicep.scenario2.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**'
