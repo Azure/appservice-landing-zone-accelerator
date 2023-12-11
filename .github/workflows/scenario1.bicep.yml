@@ -48,8 +48,8 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
 
-      # Deploy Bicep file
-      - name: deployment-what-if
+      # Validate Bicep File
+      - name: deployment-validation
         uses: azure/arm-deploy@v1
         with:
           scope: subscription
@@ -59,6 +59,7 @@ jobs:
           parameters: ${{ env.modulePath }}/main.parameters.jsonc
           failOnStdErr: false
           additionalArguments: "--what-if"
+          deploymentMode: Validate
 
 
   build-and-deploy:
