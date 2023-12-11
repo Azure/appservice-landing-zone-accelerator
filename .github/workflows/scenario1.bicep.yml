@@ -32,6 +32,7 @@ jobs:
   validate_bicep:
     name: "Validate Bicep files"
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
