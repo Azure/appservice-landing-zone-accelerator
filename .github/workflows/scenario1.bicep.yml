@@ -56,7 +56,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Run Bicep linter
-      run: az bicep build --file deploy/main.bicep
+      run: az bicep build --file main.bicep
       working-directory: ${{ env.modulePath }}
 
   validate:
@@ -65,10 +65,6 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
-
-      - name: Validate that bicep builds
-        run: az bicep build -f main.bicep
-        working-directory: ${{ env.modulePath }}
 
       # Log into Azure via OIDC
       - uses: azure/login@v1
