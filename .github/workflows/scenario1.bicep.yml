@@ -1,13 +1,5 @@
 name: 'Scenario 1: Bicep Multi-Tenant ASEv3 Secure Baseline'
 
-# This workflow tests the ASEv3 Secure Baseline Multi-Tenant scenario deployment.
-# This will use the default parameter file (main.parameters.jsonc) with an overridden
-#   SKU to deploy ASEv3
-
-concurrency:
-  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
-  cancel-in-progress: false
-
 on:
   workflow_dispatch:
 
@@ -15,20 +7,16 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/_template.bicep.yml'
-      - '.github/workflows/scenario1.bicep.yml'
-      - 'scenarios/secure-baseline-multitenant/bicep/**.bicep'
-      - 'scenarios/secure-baseline-multitenant/bicep/main.parameters.jsonc'
+      - '.github/workflows/bicep.scenario2.yml'
+      - 'scenarios/secure-baseline-multitenant/bicep/**'
       - '!scenarios/secure-baseline-multitenant/**.md'
 
   pull_request:
     branches:
       - main
     paths:
-      - '.github/workflows/_template.bicep.yml'
-      - '.github/workflows/scenario1.bicep.yml'
-      - 'scenarios/secure-baseline-multitenant/bicep/**.bicep'
-      - 'scenarios/secure-baseline-multitenant/bicep/main.parameters.jsonc'
+      - '.github/workflows/bicep.scenario2.yml'
+      - 'scenarios/secure-baseline-multitenant/bicep/**'
       - '!scenarios/secure-baseline-multitenant/**.md'
 
 permissions:
@@ -36,38 +24,110 @@ permissions:
   contents: read
 
 env:
-  deployStackName: 'Scenario1-ASEv3-Secure-Baseline-MultiTenant'
-  deploymentPath: 'scenarios/secure-baseline-multitenant/bicep/main.bicep'
-  scenarioName: 'ase-multitenant'
+  modulePath: 'scenarios/secure-baseline-multitenant/bicep'
   region: 'westus2'
-  # webAppPlanSKU is the only parameter that is overridden for ASEv3
-  webAppPlanSku: 'ASE_I3V2_AZ'
 
 jobs:
-  prepare-environment:
-    name: 'Prepare CICD Environment for Bicep Workflow'
+  validate_bicep:
+    name: "Validate Bicep files"
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout the code
-      uses: actions/checkout@main
-    outputs:
-      deployStackName: ${{ env.deployStackName }}
-      region: ${{ env.region }}
-      modulePath: ${{ env.deploymentPath }}
-      bicepParamPath: ${{ env.deploymentPath }}/main.parameters.jsonc
-      bicepAdditionalParams: -p webAppPlanSku=${{ env.webAppPlanSku }} --deny-settings-mode 'none'
+      - name: Checkout the code
+        uses: actions/checkout@v4
 
-  call-workflow-passing-data:
-    name: 'Bicep CICD'
-    needs: 
-    - prepare-environment
-    uses: ./.github/workflows/.template.bicep.yml
-    with:
-      deployStackName: ${{ needs.prepare-environment.outputs.deployStackName }}
-      region: ${{ needs.prepare-environment.outputs.region }}
-      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}
-      bicepParamPath: ${{ needs.prepare-environment.outputs.bicepParamPath }}
-      bicepAdditionalParams: ${{ needs.prepare-environment.outputs.bicepAdditionalParams }}
-      # Ensure this value is a boolean
-      destroy: ${{ github.event.inputs.destroy == 'true' }}
-    secrets: inherit
+      - name: Validate that bicep builds
+        run: az bicep build -f main.bicep
+        working-directory: ${{ env.modulePath }}
+
+      # Log into Azure via OIDC
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+      # Deploy Bicep file
+      - name: deployment-what-if
+        uses: azure/arm-deploy@v1
+        with:
+          scope: subscription
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          region: ${{ env.region }}
+          template: ${{ env.modulePath }}/main.bicep
+          parameters: ${{ env.modulePath }}/main.parameters.jsonc
+          failOnStdErr: false
+          additionalArguments: "--what-if"
+
+
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    timeout-minutes: 360
+    name: "Deploy Bicep templates"
+    needs: validate_bicep
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      # Checkout code
+      - name: Checkout the code
+        uses: actions/checkout@main
+
+      # - name: Variable substitution
+      #   uses: microsoft/variable-substitution@v1
+      #   with:
+      #     files: ${{ env.modulePath }}/config.yml
+      #   env:
+      #     ACCOUNT_NAME: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+      # - name: Install yq to parse yaml file
+      #   run: |
+      #     sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.5.0/yq_linux_amd64
+      #     sudo chmod +x /usr/local/bin/yq
+
+      # - name: Parse config.yaml as output to GitHub Actions matrix
+      #   run: |
+      #     echo "config=$(yq e ${{ env.modulePath }}/config.yml -j -I=0)" >> $GITHUB_ENV
+
+      # - name: Write deployment information to log
+      #   run: |
+      #     echo "Deploying to ${{ fromJson(env.config).AZURE_LOCATION }} with name prefix ${{ fromJson(env.config).RESOURCE_NAME_PREFIX }}"
+
+      # Log into Azure via OIDC
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+      # Deploy Bicep file
+      - name: deploy
+        uses: azure/arm-deploy@v1
+        with:
+          scope: subscription
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          template: ${{ env.modulePath }}/main.bicep
+          parameters: ${{ env.modulePath }}/main.parameters.jsonc
+          failOnStdErr: false
+
+
+      - name: Run Preflight Validation
+        working-directory: ${{ env.modulePath }}
+        run: |
+          az deployment sub validate \
+            --location ${{ fromJson(env.config).AZURE_LOCATION }} \
+            --parameters  --template-file main.bicep
+
+        # Deploy Bicep file, need to point parameters to the main.parameters.json location
+      - name: deploy
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          scope: subscription
+          region: ${{ fromJson(env.config).AZURE_LOCATION }}
+          deploymentName: "${{ fromJson(env.config).DEPLOYMENT_NAME }}-${{ fromJson(env.config).AZURE_LOCATION }}"
+          template: ${{ env.modulePath }}/main.bicep
+          parameters: >
+            workloadName=${{ fromJson(env.config).RESOURCE_NAME_PREFIX }} environment=${{ fromJson(env.config).ENVIRONMENT_TAG }}
+            vmUsername=${{ fromJson(env.config).VM_USERNAME }} vmPassword=${{ secrets.VM_PW }} location=${{ fromJson(env.config).AZURE_LOCATION }} 
+            accountName=${{ secrets.ACCOUNT_NAME  }} personalAccessToken=${{ secrets.PAT }} CICDAgentType=${{ fromJson(env.config).CICD_AGENT_TYPE}}
+            createRedisResource=${{ fromJson(env.config).CREATE_REDIS_RESOURCE }} redisTier=${{ fromJson(env.config).REDIS_TIER }}
