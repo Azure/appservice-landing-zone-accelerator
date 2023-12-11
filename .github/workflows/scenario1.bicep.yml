@@ -1,5 +1,27 @@
 name: 'Scenario 1: Bicep Multi-Tenant ASEv3 Secure Baseline'
 
+#########################################################
+# Concurrency allows to run 1 cycle at a time
+# If worflow is running, 2nd one will automatically go in pending state
+# if concurrency is enabled
+# If 1st running, 2nd in pending and 3rd is triggered then 2nd which was 
+# in pending will be cancelled and only 3rd (latest) will run
+#
+# If this is enabled it will cancel current running and start latest
+# cancel-in-progress: true
+#
+# When a concurrent job or workflow is queued, 
+# if another job or workflow using the same concurrency group in the repository 
+# is in progress, the queued job or workflow will be pending. 
+#
+# Any previously pending job or workflow in the concurrency group will be canceled. 
+# To also cancel any currently running job or workflow in the same concurrency group, 
+# specify cancel-in-progress: true.
+############################################################
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: false
+
 on:
   workflow_dispatch:
 
@@ -29,10 +51,17 @@ env:
   region: 'westus2'
 
 jobs:
-  validate_bicep:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run Bicep linter
+      run: az bicep build --file deploy/main.bicep
+      working-directory: ${{ env.modulePath }}
+
+  validate:
     name: "Validate Bicep files"
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -63,37 +92,17 @@ jobs:
 
 
   build-and-deploy:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    # if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
 
     timeout-minutes: 360
     name: "Deploy Bicep templates"
-    needs: validate_bicep
+    needs: [lint, validate]
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
     steps:
       # Checkout code
       - name: Checkout the code
         uses: actions/checkout@main
-
-      # - name: Variable substitution
-      #   uses: microsoft/variable-substitution@v1
-      #   with:
-      #     files: ${{ env.modulePath }}/config.yml
-      #   env:
-      #     ACCOUNT_NAME: ${{ secrets.AZURE_SUBSCRIPTION }}
-
-      # - name: Install yq to parse yaml file
-      #   run: |
-      #     sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.5.0/yq_linux_amd64
-      #     sudo chmod +x /usr/local/bin/yq
-
-      # - name: Parse config.yaml as output to GitHub Actions matrix
-      #   run: |
-      #     echo "config=$(yq e ${{ env.modulePath }}/config.yml -j -I=0)" >> $GITHUB_ENV
-
-      # - name: Write deployment information to log
-      #   run: |
-      #     echo "Deploying to ${{ fromJson(env.config).AZURE_LOCATION }} with name prefix ${{ fromJson(env.config).RESOURCE_NAME_PREFIX }}"
 
       # Log into Azure via OIDC
       - uses: azure/login@v1
@@ -102,35 +111,47 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
 
+      # Validate Bicep File
+      - name: what-if
+        uses: azure/arm-deploy@v1
+        with:
+          scope: subscription
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          region: ${{ env.region }}
+          template: ${{ env.modulePath }}/main.bicep
+          parameters: ${{ env.modulePath }}/main.parameters.jsonc
+          failOnStdErr: false
+          additionalArguments: "--what-if"
+
       # Deploy Bicep file
       - name: deploy
         uses: azure/arm-deploy@v1
         with:
           scope: subscription
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          region: ${{ env.region }}
           template: ${{ env.modulePath }}/main.bicep
           parameters: ${{ env.modulePath }}/main.parameters.jsonc
           failOnStdErr: false
 
-
-      - name: Run Preflight Validation
-        working-directory: ${{ env.modulePath }}
-        run: |
-          az deployment sub validate \
-            --location ${{ fromJson(env.config).AZURE_LOCATION }} \
-            --parameters  --template-file main.bicep
+      # - name: Run Preflight Validation
+      #   working-directory: ${{ env.modulePath }}
+      #   run: |
+      #     az deployment sub validate \
+      #       --location ${{ fromJson(env.config).AZURE_LOCATION }} \
+      #       --parameters  --template-file main.bicep
 
         # Deploy Bicep file, need to point parameters to the main.parameters.json location
-      - name: deploy
-        uses: azure/arm-deploy@v1
-        with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
-          scope: subscription
-          region: ${{ fromJson(env.config).AZURE_LOCATION }}
-          deploymentName: "${{ fromJson(env.config).DEPLOYMENT_NAME }}-${{ fromJson(env.config).AZURE_LOCATION }}"
-          template: ${{ env.modulePath }}/main.bicep
-          parameters: >
-            workloadName=${{ fromJson(env.config).RESOURCE_NAME_PREFIX }} environment=${{ fromJson(env.config).ENVIRONMENT_TAG }}
-            vmUsername=${{ fromJson(env.config).VM_USERNAME }} vmPassword=${{ secrets.VM_PW }} location=${{ fromJson(env.config).AZURE_LOCATION }} 
-            accountName=${{ secrets.ACCOUNT_NAME  }} personalAccessToken=${{ secrets.PAT }} CICDAgentType=${{ fromJson(env.config).CICD_AGENT_TYPE}}
-            createRedisResource=${{ fromJson(env.config).CREATE_REDIS_RESOURCE }} redisTier=${{ fromJson(env.config).REDIS_TIER }}
+      # - name: deploy
+      #   uses: azure/arm-deploy@v1
+      #   with:
+      #     subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+      #     scope: subscription
+      #     region: ${{ fromJson(env.config).AZURE_LOCATION }}
+      #     deploymentName: "${{ fromJson(env.config).DEPLOYMENT_NAME }}-${{ fromJson(env.config).AZURE_LOCATION }}"
+      #     template: ${{ env.modulePath }}/main.bicep
+      #     parameters: >
+      #       workloadName=${{ fromJson(env.config).RESOURCE_NAME_PREFIX }} environment=${{ fromJson(env.config).ENVIRONMENT_TAG }}
+      #       vmUsername=${{ fromJson(env.config).VM_USERNAME }} vmPassword=${{ secrets.VM_PW }} location=${{ fromJson(env.config).AZURE_LOCATION }} 
+      #       accountName=${{ secrets.ACCOUNT_NAME  }} personalAccessToken=${{ secrets.PAT }} CICDAgentType=${{ fromJson(env.config).CICD_AGENT_TYPE}}
+      #       createRedisResource=${{ fromJson(env.config).CREATE_REDIS_RESOURCE }} redisTier=${{ fromJson(env.config).REDIS_TIER }}
