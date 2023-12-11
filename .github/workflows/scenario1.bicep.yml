@@ -25,6 +25,7 @@ permissions:
 
 env:
   modulePath: 'scenarios/secure-baseline-multitenant/bicep'
+  region: 'westus2'
 
 jobs:
   validate_bicep:
@@ -51,6 +52,7 @@ jobs:
         with:
           scope: subscription
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          region: ${{ env.region }}
           template: ${{ env.modulePath }}/main.bicep
           parameters: ${{ env.modulePath }}/main.parameters.jsonc
           failOnStdErr: false
@@ -58,6 +60,8 @@ jobs:
 
 
   build-and-deploy:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
     timeout-minutes: 360
     name: "Deploy Bicep templates"
     needs: validate_bicep
