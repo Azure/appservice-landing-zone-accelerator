@@ -8,7 +8,7 @@ on:
       - main
       - refactor/iac-cicd
     paths:
-      - '.github/workflows/bicep.scenario2.yml'
+      - '.github/workflows/scenario1.bicep.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**'
       - '!scenarios/secure-baseline-multitenant/**.md'
 
@@ -16,7 +16,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/bicep.scenario2.yml'
+      - '.github/workflows/scenario1.bicep.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**'
       - '!scenarios/secure-baseline-multitenant/**.md'
 
