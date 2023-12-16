@@ -118,9 +118,8 @@ The expandable table below summarizes the available parameters and the possible 
 |sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
 
 </details>
-
-#### Locally deploy with Terraform
-
+<details>
+<summary><h4> Locally deploy with Terraform</h4></summary>
 1. Ensure you are logged in to Azure CLI and have selected the correct subscription.
 1. Navigate to the Terraform deployment directory (same directory as the `main.tf` file).
     - [scenarios/secure-baseline-multitenant/terraform/hub](scenarios/secure-baseline-multitenant/terraform/hub/)
@@ -138,6 +137,7 @@ The expandable table below summarizes the available parameters and the possible 
 1. Run `terraform init` to initialize the deployment.
 1. Run `terraform plan -var-file="Parameters/uat.tfvars"` to review the deployment plan.
 1. Run `terraform apply -var-file="Parameters/uat.tfvars"` to deploy the resources.
+</details>
 
 ### Step 3. Configure GitHub Actions
 
