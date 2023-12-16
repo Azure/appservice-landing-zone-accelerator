@@ -1,4 +1,4 @@
-# Multitenant App Service Secure Baseline
+# App Service Secure Baseline (Multitenant and ASE)
 
 This reference architecture shows how to run a web-app workload on Azure App Services in a secure configuration. This secure baseline follow [Defense in Depth](https://learn.microsoft.com/en-us/shows/azure-videos/defense-in-depth-security-in-azure) approach to protect AppService workload against cloud vulnerabilities along with additional [Well-Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/) pillars to enable a resilient solution.
 
@@ -23,7 +23,9 @@ You can deploy the current LZA directly in your azure subscription by hitting th
 
 # Architecture
 
-![image](/docs/Images/Multitenant/AppServiceLandingZoneArchitecture-multitenant.png)
+![image](/docs/Images/home-page.gif)
+
+See: [Multitenant](/docs/Images/Multitenant/AppServiceLandingZoneArchitecture-multitenant.png) | [ASE](/docs/Images/Multitenant/AppServiceLandingZoneArchitecture-ASE.png) | [Visio](/docs/App-Service-LZA.vsdx)
 
 ## Core architecture components
 
