@@ -1,7 +1,6 @@
 # App Service Landing Zone Accelerator
 
 This repository provides both enterprise architecture guidelines and a reference implementation for deploying Azure App Service solutions in multi-tenant and App Service Environment scenarios. It includes best practices, considerations, and deployable artifacts for implementing a common reference architecture.
-45
 
 ## Table of Contents
 
