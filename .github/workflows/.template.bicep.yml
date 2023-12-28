@@ -13,20 +13,10 @@ on:
         description: 'Path to the Bicep module'
         required: true
         default: 'scenarios/secure-baseline-multitenant/bicep'
-      deployStackName:
-        type: string
-        description: 'Name of the subscription scoped stack to deploy'
-        required: false
-        default: 'secure-baseline-multitenant'
       bicepParamPath:
         type: string
         description: 'Path to the Bicep variables'
         required: true
-      bicepAdditionalParams:
-        type: string
-        description: 'Optional parameters to pass to Bicep in string format'
-        required: false
-        default: --deny-settings-mode 'none'
       destroy:
         type: boolean
         description: 'Destroy resources?'
@@ -46,21 +36,20 @@ jobs:
         uses: actions/checkout@v4
 
       # Log into Azure via OIDC
-      - uses: azure/login@v2
+      - uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
 
       - name: Run Bicep linter
-        run: az bicep build --file ${{ inputs.modulePath }}
-        # working-directory: ${{ inputs.modulePath }}
+        run: az bicep build --file main.bicep
+        working-directory: ${{ inputs.modulePath }}
       
-      # TODO: Buildout PSRule policies
-      # - name: Run PSRule analysis
-      #   uses: microsoft/ps-rule@v2.9.0
-      #   with:
-      #     modules: PSRule.Rules.Azure
+      - name: Run PSRule analysis
+        uses: microsoft/ps-rule@v2.9.0
+        with:
+          modules: PSRule.Rules.Azure
 
   deploy:
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
@@ -74,7 +63,7 @@ jobs:
         uses: actions/checkout@main
     
       # Log into Azure via OIDC
-      - uses: azure/login@v2
+      - uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -82,21 +71,20 @@ jobs:
       
       - name: Deploy Bicep Scenario
         run: |
+          stackName=$(basename ${{ inputs.bicepParamPath }} )
+          
           # If Destroy flag is set, delete the stack
           if ${{ inputs.destroy }}; then
-            echo "Destroying stack ${{ inputs.deployStackName }}"
-
-            # Possible flags for delete: --delete-all, --delete-resource-groups, --delete-resources
-            az stack delete --name ${{ inputs.deployStackName }} --delete-all --yes
-
+            echo "Destroying stack $stackName"
+            az stack delete --name $stackName --yes
             exit 0 # Exit successfully
           fi
 
-          az stack sub create --name ${{ inputs.deployStackName }} \
+          az stack sub create --name $stackName \
             --location ${{ inputs.region }} \
             --template-file ${{ inputs.modulePath }} \
             --parameters ${{ inputs.bicepParamPath }} \
-            ${{ inputs.bicepAdditionalParams }}
+            --deny-settings-mode 'none' 
 
       # Potential Deny Settings
       # -----------------------------
