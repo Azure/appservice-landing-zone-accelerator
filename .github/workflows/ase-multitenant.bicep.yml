@@ -30,6 +30,7 @@ on:
       - main
       - refactor/iac-cicd
     paths:
+      - '.github/workflows/_template.bicep.yml'
       - '.github/workflows/ase-multitenant.bicep.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**.bicep'
       - 'scenarios/secure-baseline-multitenant/bicep/parameters/ase-multitenant.parameters.jsonc'
@@ -39,6 +40,7 @@ on:
     branches:
       - main
     paths:
+      - '.github/workflows/_template.bicep.yml'
       - '.github/workflows/ase-multitenant.bicep.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**.bicep'
       - 'scenarios/secure-baseline-multitenant/bicep/parameters/ase-multitenant.parameters.jsonc'
