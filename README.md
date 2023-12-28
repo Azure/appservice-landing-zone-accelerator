@@ -115,7 +115,7 @@ The expandable table below summarizes the available parameters and the possible 
 |deployAppConfig|Feature Flag: Deploy (or not) an Azure app configuration|
 |deployJumpHost|Feature Flag: Deploy (or not) an Azure virtual machine (to be used as jumphost)|
 |autoApproveAfdPrivateEndpoint|Default value: true. Set to true if you want to auto approve the Private Endpoint of the AFD Premium. See details [regarding approving the App Service private endpoint connection from Front Door](#approve-the-app-service-private-endpoint-connection-from-front-door-in-the-azure-portal) | false
-|sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
+|sqlServerAdministrators|The Microsoft Entra ID administrator group used for SQL Server authentication.  The Microsoft Entra ID group must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the Microsoft Entra ID Group <br> **sid**: the object id  of the Microsoft Entra ID Group <br> **tenantId**: The tenantId of the Microsoft Entra ID ||
 
 </details>
 <details>
@@ -146,8 +146,8 @@ The expandable table below summarizes the available parameters and the possible 
 
 GitHub Actions pipelines are located in the [`.github/workflows`](.github/workflows/) directory with templates stored in the [`.github/actions`](.github/actions/) directory.i
 
-1. Create an Azure AD Service Principal for OIDC Authentication
-    - Reference the following documentation to configure your Azure AD Service Principal: [OIDC authentication to Azure](https://learn.microsoft.com/en-us/azure/active-directory/saas-apps/github-enterprise-managed-user-oidc-provisioning-tutorial).
+1. Create an Microsoft Entra ID Service Principal for OIDC Authentication
+    - Reference the following documentation to configure your Microsoft Entra ID Service Principal: [OIDC authentication to Azure](https://learn.microsoft.com/en-us/azure/active-directory/saas-apps/github-enterprise-managed-user-oidc-provisioning-tutorial).
 1. Configure your GitHub Actions Secrets
     - In your forked repository, navigate to `Settings > Secrets and variables > Actions`.
     - Create the following secrets:

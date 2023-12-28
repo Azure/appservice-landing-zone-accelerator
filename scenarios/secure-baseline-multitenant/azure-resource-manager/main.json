@@ -171,7 +171,7 @@
       "type": "object",
       "defaultValue": {},
       "metadata": {
-        "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
+        "description": "Conditional. The Microsoft Entra ID administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
       }
     },
     "sqlAdminLogin": {
@@ -3347,7 +3347,7 @@
               "type": "object",
               "defaultValue": {},
               "metadata": {
-                "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
+                "description": "Conditional. The Microsoft Entra ID administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
               }
             },
             "sqlAdminLogin": {
@@ -8061,7 +8061,7 @@
                               "type": "bool",
                               "defaultValue": true,
                               "metadata": {
-                                "description": "Optional, default is true. Disables all authentication methods other than AAD authentication."
+                                "description": "Optional, default is true. Disables all authentication methods other than Microsoft Entra ID authentication."
                               }
                             },
                             "enablePurgeProtection": {
@@ -11716,7 +11716,7 @@
                       "type": "object",
                       "defaultValue": {},
                       "metadata": {
-                        "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
+                        "description": "Conditional. The Microsoft Entra ID administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided."
                       }
                     },
                     "sqlAdminLogin": {
@@ -11835,21 +11835,21 @@
                               "type": "string",
                               "defaultValue": "",
                               "metadata": {
-                                "description": "Conditional. The administrator username for the server. Required if no `administrators` object for AAD authentication is provided."
+                                "description": "Conditional. The administrator username for the server. Required if no `administrators` object for Microsoft Entra ID authentication is provided."
                               }
                             },
                             "administratorLoginPassword": {
                               "type": "securestring",
                               "defaultValue": "",
                               "metadata": {
-                                "description": "Conditional. The administrator login password. Required if no `administrators` object for AAD authentication is provided."
+                                "description": "Conditional. The administrator login password. Required if no `administrators` object for Microsoft Entra ID authentication is provided."
                               }
                             },
                             "administrators": {
                               "type": "object",
                               "defaultValue": {},
                               "metadata": {
-                                "description": "Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided."
+                                "description": "Conditional. The Microsoft Entra ID administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided."
                               }
                             },
                             "primaryUserAssignedIdentityId": {

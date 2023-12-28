@@ -106,7 +106,7 @@
                 "deployment": "bicep"
             }
         },
-        // The Azure Active Directory (AAD) administrator group used for SQL Server authentication
+        // The Microsoft Entra ID administrator group used for SQL Server authentication
         "sqlServerAdministrators": {
             "value": {
                 // Azure AD group where your Azure administrators are members

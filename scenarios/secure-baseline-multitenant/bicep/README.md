@@ -41,7 +41,7 @@ The table below summarizes the available parameters and the possible values that
 |deployJumpHost|Feature Flag: Deploy (or not) an Azure virtual machine (to be used as jumphost)|
 |deployOpenAi|Feature Flag: Deploy (or not) an Azure OpenAI account. ATTENTION: At the time of writing, [OpenAI is in preview](https://learn.microsoft.com/azure/ai-services/openai/chatgpt-quickstart#prerequisites) and available in limited regions. |false
 |autoApproveAfdPrivateEndpoint|Default value: true. Set to true if you want to auto approve the Private Endpoint of the AFD Premium. See details [regarding approving the App Service private endpoint connection from Front Door](#approve-the-app-service-private-endpoint-connection-from-front-door-in-the-azure-portal) | false
-|sqlServerAdministrators|The Azure Active Directory (AAD) administrator group used for SQL Server authentication.  The Azure AD group must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the AAD Group <br> **sid**: the object id  of the AAD Group <br> **tenantId**: The tenantId of the AAD ||
+|sqlServerAdministrators|The Microsoft Entra ID administrator group used for SQL Server authentication.  The Microsoft Entra ID group must be created before running deployment. This has three values that need to be filled, as shown below <br> **login**: the name of the Microsoft Entra ID Group <br> **sid**: the object id  of the Microsoft Entra ID Group <br> **tenantId**: The tenantId of the Microsoft Entra ID ||
 
 After the parameters have been initialized, you can deploy the Landing Zone Accelerator resources with the following `az cli` command:
 
@@ -106,9 +106,9 @@ Go to the portal, find the spoke resource group you have just deployed, and iden
 
 ### Connect to the Jumpbox VM (deployed in the spoke resource group)
 
-You can connect to the jumpbox win 11 VM only through bastion. The default parameters deploy a Bastion in Standard SKU, with native client support enabled. The jumpbox VM is AADJoined by default. This means that you can connect to the jumpbox, either with the local user/password combination (azureuser is the default username) or with a valid AAD account. In certain circumstances your organization may not allow the device to be enrolled. If the jumpbox VM is AAD joined and properly intune enrolled, you can use native rdp client to connect by running the below Az CLI commands 
+You can connect to the jumpbox win 11 VM only through bastion. The default parameters deploy a Bastion in Standard SKU, with native client support enabled. The jumpbox VM is Microsoft Entra ID Joined by default. This means that you can connect to the jumpbox, either with the local user/password combination (azureuser is the default username) or with a valid Microsoft Entra ID account. In certain circumstances your organization may not allow the device to be enrolled. If the jumpbox VM is Microsoft Entra ID joined and properly intune enrolled, you can use native rdp client to connect by running the below Az CLI commands 
 
-From a PowerShell terminal, connect to the DevOps VM using your Azure AD credentials (or Windows Hello). 
+From a PowerShell terminal, connect to the DevOps VM using your Microsoft Entra ID credentials (or Windows Hello). 
 
 ```powershell
 az upgrade
@@ -122,18 +122,18 @@ az network bastion rdp --name bast-bastion --resource-group rg-hub --target-reso
 
 More  details on how to [connect to a windows VM with native rdp client, can be found here](https://learn.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-windows)
 
-The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
+The Microsoft Entra ID enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
-If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"),login to the VM with local user (i.e. azureuser) and enroll the Jumpbox to Azure AD by following the steps in Edge: 
+If your organization requires device enrollment before accessing corporate resources (i.e. if you see an error "You can't get there from here." or "This device does not meet your organization's compliance requirements"),login to the VM with local user (i.e. azureuser) and enroll the Jumpbox to Microsoft Entra ID by following the steps in Edge: 
 - open Edge and click "Sign in to sync data", 
 - select "Work or school account", 
 - and then press OK on "Allow my organization to manage my device". 
 
 It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
 
-If you experience issues connecting to the DevOps VM using your AAD credentials, see [Unable to connect to DevOps VM using AAD credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-aad-credentials)
+If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-aad-credentials)
 
-Once completed, and if you provided a valid (AAD) administrator group used for SQL Server authentication (and not only local SQL user administrator), you should be able to connect to the SQL Server using the Azure AD account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions:
+Once completed, and if you provided a valid (Microsoft Entra ID) administrator group used for SQL Server authentication (and not only local SQL user administrator), you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions:
 
 ```sql
 CREATE USER [web-app-name] FROM EXTERNAL PROVIDER;

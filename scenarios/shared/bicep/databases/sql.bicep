@@ -10,14 +10,14 @@ param tags object = {}
 @description('Whether the resource has private links or not')
 param hasPrivateLinks bool
 
-@description('Conditional. The administrator username for the server. Required if no `administrators` object for AAD authentication is provided.')
+@description('Conditional. The administrator username for the server. Required if no `administrators` object for Microsoft Entra ID authentication is provided.')
 param administratorLogin string = ''
 
-@description('Conditional. The administrator login password. Required if no `administrators` object for AAD authentication is provided.')
+@description('Conditional. The administrator login password. Required if no `administrators` object for Microsoft Entra ID authentication is provided.')
 @secure()
 param administratorLoginPassword string = ''
 
-@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
+@description('Conditional. The Microsoft Entra ID administrator authentication. Required if no `administratorLogin` & `administratorLoginPassword` is provided.')
 param administrators object = {}
 
 @description('Conditional. The resource ID of a user assigned identity to be used by default. Required if "userAssignedIdentities" is not empty.')

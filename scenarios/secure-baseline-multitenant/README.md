@@ -29,7 +29,7 @@ See: [Multitenant](/docs/Images/Multitenant/AppServiceLandingZoneArchitecture-mu
 
 ## Core architecture components
 
-- The application's users are authenticated by [Azure Active Directory (Azure AD)](https://azure.microsoft.com/services/active-directory/) or [Azure AD B2C](https://azure.microsoft.com/services/active-directory/external-identities/b2c/). The browser performs DNS lookups to resolve addresses to Azure Front Door.
+- The application's users are authenticated by [Microsoft Entra ID](https://azure.microsoft.com/services/active-directory/) or [Microsoft Entra ID B2C](https://azure.microsoft.com/services/active-directory/external-identities/b2c/). The browser performs DNS lookups to resolve addresses to Azure Front Door.
 - [Virtual Network](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-group-how-it-works) enables Azure resources to securely communicate with each other, the internet, and on-premises networks by creating boundaries, isolation and segmentation of your workloads in the cloud, much like a physical network.
 - [Network Security Group](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview?toc=%2Fazure%2Fnetworking%2Ffundamentals%2Ftoc.json) is a set of security policies that Allow or Deny Inbound/Outbound traffic (Protocols/Ports).
 - [Azure Front Door](https://azure.microsoft.com/services/frontdoor/) is a public front-end for all internet requests, acting as a global HTTP reverse proxy and cache in front of several Azure services. Front Door also provides automatic protection from layer 3 and 4 DDoS attacks, and a range of other features including WAF (web application firewall), caching, and custom rules to enhance the security and performance of your application.
@@ -57,7 +57,7 @@ For network and subnet topology details, see the [Azure sample template](https:/
 
 ## Alternatives
 
-- Either Azure AD or Azure AD B2C can be used as an identity provider in this scenario. Azure AD is designed for internal applications and business-to-business (B2B) scenarios, while Azure AD B2C is designed for business-to-consumer (B2C) scenarios.
+- Either Microsoft Entra ID or Microsoft Entra ID B2C can be used as an identity provider in this scenario. Microsoft Entra ID is designed for internal applications and business-to-business (B2B) scenarios, while Microsoft Entra ID B2C is designed for business-to-consumer (B2C) scenarios.
 - You can choose to bring your own DNS provider or use Azure-managed DNS, which is recommended.
 - Azure Application Gateway can be used solely instead of Azure Front Door when most users are located close to the Azure region that hosts your workload, and when content caching isn't required. Azure DDoS Network Protection is recommended for protecting internet-facing Application Gateway services.
 
@@ -125,7 +125,7 @@ For more recommendations and information, see [Azure Redis Cache Security Baseli
 
 Deploy this reference architecture using this [Azure sample on GitHub](/scenarios/secure-baseline-multitenant/README.md).
 
-- Azure AD, Azure AD B2C, and Azure DNS aren't deployed by this sample.
+- Microsoft Entra ID, Microsoft Entra ID B2C, and Azure DNS aren't deployed by this sample.
 - Custom domain names and TLS/SSL certificates aren't created and configured. Default frontend DNS names are used instead.
 - The scripts are modular so you if you already have an existing environment, you can pick and choose the relevant section or adjust the relevant pieces according to your needs (deploy only SPOKE, replace SQL DB with PostgreSQL and etc.).
 

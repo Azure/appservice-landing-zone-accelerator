@@ -14,7 +14,7 @@ param location string
 @description('Optional. Tags of the resource.')
 param tags object = {}
 
-@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.')
+@description('Conditional. The Microsoft Entra ID administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.')
 param administrators object = {}
 
 @description('Conditional. If sqlServerAdministrators is given, this is not required')
