@@ -76,7 +76,10 @@ jobs:
           # If Destroy flag is set, delete the stack
           if ${{ inputs.destroy }}; then
             echo "Destroying stack $stackName"
-            az stack delete --name $stackName --yes
+
+            # Possible flags for delete: --delete-all, --delete-resource-groups, --delete-resources
+            az stack delete --name $stackName --delete-all --yes
+            
             exit 0 # Exit successfully
           fi
 
