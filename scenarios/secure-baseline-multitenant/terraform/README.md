@@ -28,7 +28,7 @@ This section is organized using folders that match the steps outlined below. Mak
 
 ### Create terraform.tfvars file
 
-An Azure AD user for the DevOps VM admin account and an Azure AD group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the `terraform.tfvars` file that can be created in the [solutions](./solutions) folder.:
+An Microsoft Entra ID user for the DevOps VM admin account and an Microsoft Entra ID group is required for the SQL Admins. The group must be created before running the Terraform code. This is the minimum required information for the `terraform.tfvars` file that can be created in the [solutions](./solutions) folder.:
 
 ```bash
 application_name = "secure-webapp"
@@ -38,7 +38,7 @@ location_short   = "swe"
 
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_name      = "Azure AD SQL Admins"
+aad_admin_group_name      = "Microsoft Entra ID SQL Admins"
 vm_aad_admin_username     = "bob@contoso.com"
 
 # Optionally provide non-AAD admin credentials for the VM
@@ -165,16 +165,16 @@ done
 
 ### Connect to the DevOps VM
 
-From a PowerShell terminal, connect to the DevOps VM using your Azure AD credentials (or Windows Hello). The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
+From a PowerShell terminal, connect to the DevOps VM using your Microsoft Entra ID credentials (or Windows Hello). The exact `az network bastion rdp` command will be provided in the output of the Terraform deployment.
 
 ```powershell
 az upgrade
 az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
-If you experience issues connecting to the DevOps VM using your AAD credentials, see [Unable to connect to DevOps VM using AAD credentials](#unable-to-connect-to-devops-vm-using-aad-credentials)
+If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](#unable-to-connect-to-devops-vm-using-aad-credentials)
 
-Once completed, you should be able to connect to the SQL Server using the Azure AD account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
+Once completed, you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
 
 ```sql
 CREATE USER [web-app-name] FROM EXTERNAL PROVIDER;
@@ -204,8 +204,8 @@ az network front-door frontend-endpoint show --front-door-name <front-door-name>
 
 ## Troubleshooting
 
-### Unable to connect to DevOps VM using AAD credentials
-The Azure AD enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
+### Unable to connect to DevOps VM using Microsoft Entra ID credentials
+The Microsoft Entra ID enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
 Verify in the Azure Portal if the `aad-login-for-windows` VM extension was deployed successfully. 
 
@@ -260,4 +260,4 @@ Connect to the VM using the local VM admin credentials and run `dsregcmd /status
      DeviceManagementSrvId : urn:ms-drs:enterpriseregistration.windows.net
 ```
 
-If the VM is AAD joined, try to login in with the Azure AD credentials again after a few minutes. If it's not AAD joined, attempt to re-install the VM extension or manually enroll the VM to AAD by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+If the VM is Microsoft Entra ID joined, try to login in with the Microsoft Entra ID credentials again after a few minutes. If it's not Microsoft Entra ID joined, attempt to re-install the VM extension or manually enroll the VM to Microsoft Entra ID by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.

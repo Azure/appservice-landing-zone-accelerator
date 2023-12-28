@@ -635,7 +635,7 @@
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": "[equals(steps('extra').jumpBoxSection.deployJumpHost, true)]",
                                     "options": {
-                                        "text": "Give the CredentialsCombo for your windows Jump-box. The VM will be AAD Joined, so you can use your AAD credentials to login. The password must contain at least 12 characters, with at least 1 uppercase, 1 lowercase and 1 number.",
+                                        "text": "Give the CredentialsCombo for your windows Jump-box. The VM will be Microsoft Entra ID Joined, so you can use your Microsoft Entra ID credentials to login. The password must contain at least 12 characters, with at least 1 uppercase, 1 lowercase and 1 number.",
                                         "link": {
                                             "label": "Learn more for Windows VM Password Policy",
                                             "uri": "https://learn.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm-"

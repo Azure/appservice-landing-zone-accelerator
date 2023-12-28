@@ -85,7 +85,7 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Conditional. The Azure Active Directory (AAD) administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.')
+@description('Conditional. The Microsoft Entra ID administrator authentication. Required if no `sqlAdminLogin` & `sqlAdminPassword` is provided.')
 param sqlServerAdministrators object = {}
 
 @description('Conditional. If sqlServerAdministrators is given, this is not required')

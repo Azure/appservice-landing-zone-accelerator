@@ -1026,7 +1026,7 @@
   },
   {
     "ID": "/subscriptions/0a52391c-0d81-434e-90b4-d04f5c670e8a/providers/Microsoft.Authorization/roleDefinitions/420fcaa2-552c-430f-98ca-3264be4806c7",
-    "description": "Lets your app server access SignalR Service with AAD auth options.",
+    "description": "Lets your app server access SignalR Service with Microsoft Entra ID auth options.",
     "roleName": "SignalR App Server"
   },
   {

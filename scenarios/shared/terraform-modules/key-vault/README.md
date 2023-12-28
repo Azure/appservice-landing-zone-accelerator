@@ -44,7 +44,7 @@ No modules.
 | <a name="input_secret_reader_identities"></a> [secret\_reader\_identities](#input\_secret\_reader\_identities) | The list of identities that will be granted secret reader permissions | `list(string)` | n/a | yes |
 | <a name="input_sku_name"></a> [sku\_name](#input\_sku\_name) | The sku name for the app service plan | `string` | `"standard"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the resource. | `map(string)` | `{}` | no |
-| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Azure AD tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
+| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Microsoft Entra ID tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
 | <a name="input_unique_id"></a> [unique\_id](#input\_unique\_id) | The unique id | `string` | n/a | yes |
 
 ## Outputs

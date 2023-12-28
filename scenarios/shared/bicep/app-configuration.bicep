@@ -22,7 +22,7 @@ param userAssignedIdentities object = {}
 @description('Optional. Pricing tier of App Configuration.')
 param sku string = 'Standard'
 
-@description('Optional, default is true. Disables all authentication methods other than AAD authentication.')
+@description('Optional, default is true. Disables all authentication methods other than Microsoft Entra ID authentication.')
 param disableLocalAuth bool = true
 
 @description('Optional default is false. Property specifying whether protection against purge is enabled for this configuration store.')
