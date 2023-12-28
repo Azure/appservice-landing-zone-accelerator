@@ -46,10 +46,11 @@ jobs:
         run: az bicep build --file ${{ inputs.modulePath }}
         # working-directory: ${{ inputs.modulePath }}
       
-      - name: Run PSRule analysis
-        uses: microsoft/ps-rule@v2.9.0
-        with:
-          modules: PSRule.Rules.Azure
+      # TODO: Buildout PSRule policies, review and refactor accordingly. Disabling for now.
+      # - name: Run PSRule analysis
+      #   uses: microsoft/ps-rule@v2.9.0
+      #   with:
+      #     modules: PSRule.Rules.Azure
 
   deploy:
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
