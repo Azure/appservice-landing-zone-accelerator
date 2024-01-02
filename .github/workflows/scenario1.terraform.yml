@@ -13,7 +13,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/scenario1.terraform.hub.yml'
+      - '.github/workflows/scenario1.terraform.yml'
       - '.github/workflows/_template.terraform.yml'
       - 'scenarios/secure-baseline-multitenant/terraform/hub/**'
       - '!scenarios/secure-baseline-multitenant/terraform/hub/**.md'
@@ -22,10 +22,10 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/scenario1.terraform.hub.yml'
+      - '.github/workflows/scenario1.terraform.yml'
       - '.github/workflows/_template.terraform.yml'
-      - 'scenarios/secure-baseline-multitenant/terraform/hub/**'
-      - '!scenarios/secure-baseline-multitenant/terraform/hub/**.md'
+      - 'scenarios/secure-baseline-multitenant/terraform/**'
+      - '!scenarios/secure-baseline-multitenant/terraform/**.md'
 
 permissions:
   id-token: write
@@ -33,10 +33,10 @@ permissions:
   pull-requests: write
 
 env:
-  modulePath: 'scenarios/secure-baseline-multitenant/terraform/hub'
+  modulePath: 'scenarios/secure-baseline-multitenant/terraform/'
   terraformVersion: 1.5.2 # must be greater than or equal to 1.2 for OIDC
   backendStateKey: 'scenario1.hub.tfstate'
-  tfvarPath: 'Parameters/uat.tfvars'
+  tfvarPath: 'parameters/ase-multitenant.parameters.tfvars'
 
 jobs:
   prepare-environment:
@@ -45,15 +45,30 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@main
     outputs:
-      modulePath: ${{ env.modulePath }}
+      modulePath: ${{ env.modulePath }}/hub
       terraformVersion: ${{ env.terraformVersion }}
       backendStateKey: ${{ env.backendStateKey }}
       tfvarPath: ${{ env.tfvarPath }}
 
-  call-workflow-passing-data:
-    name: 'Terraform CICD'
+  terraform-deploy-hub:
+    name: 'Terraform CICD (Hub Multi-tenant Secure Baseline)'
     needs: 
     - prepare-environment
+    uses: ./.github/workflows/.template.terraform.yml
+    with:
+      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}/spoke
+      terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
+      backendStateKey: ${{ needs.prepare-environment.outputs.backendStateKey }}
+      tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
+      # Ensure this value is a boolean
+      destroy: ${{ github.event.inputs.destroy == 'true' }}
+    secrets: inherit
+
+  terraform-deploy-spoke:
+    name: 'Terraform CICD (Spoke Multi-tenant Secure Baseline)'
+    needs: 
+    - prepare-environment
+    - terraform-deploy-hub
     uses: ./.github/workflows/.template.terraform.yml
     with:
       modulePath: ${{ needs.prepare-environment.outputs.modulePath }}

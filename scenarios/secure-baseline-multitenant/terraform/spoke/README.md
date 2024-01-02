@@ -14,8 +14,8 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.26 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.75.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.85.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.6.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Modules
@@ -71,6 +71,7 @@
 | <a name="input_firewall_subnet_name"></a> [firewall\_subnet\_name](#input\_firewall\_subnet\_name) | [Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet' | `string` | `"AzureFirewallSubnet"` | no |
 | <a name="input_front_door_subnet_cidr"></a> [front\_door\_subnet\_cidr](#input\_front\_door\_subnet\_cidr) | The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.0.64/26"<br>]</pre> | no |
 | <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | [Optional] Global settings to configure each module with the appropriate naming standards. | `map(any)` | `{}` | no |
+| <a name="input_hub_settings"></a> [hub\_settings](#input\_hub\_settings) | The settings for the hub virtual network. | <pre>object({<br>    rg_name   = string<br>    vnet_name = string<br><br>    firewall = object({<br>      private_ip = optional(string)<br>    })<br>  })</pre> | `null` | no |
 | <a name="input_hub_state_container_name"></a> [hub\_state\_container\_name](#input\_hub\_state\_container\_name) | The name of the container that holds the Terraform state for the hub | `string` | n/a | yes |
 | <a name="input_hub_state_key"></a> [hub\_state\_key](#input\_hub\_state\_key) | The key of the Terraform state for the hub | `string` | n/a | yes |
 | <a name="input_hub_state_resource_group_name"></a> [hub\_state\_resource\_group\_name](#input\_hub\_state\_resource\_group\_name) | The name of the resource group that holds the Terraform state for the hub | `string` | n/a | yes |
