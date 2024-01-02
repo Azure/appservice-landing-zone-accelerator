@@ -31,7 +31,7 @@ on:
       - refactor/iac-cicd
     paths:
       - '.github/workflows/_template.bicep.yml'
-      - '.github/workflows/ase-multitenant.bicep.yml'
+      - '.github/workflows/scenario1.bicep.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**.bicep'
       - 'scenarios/secure-baseline-multitenant/bicep/parameters/ase-multitenant.parameters.jsonc'
       - '!scenarios/secure-baseline-multitenant/**.md'
@@ -57,6 +57,7 @@ env:
 
 jobs:
   prepare-environment:
+    name: 'Prepare CICD Environment for Bicep Workflow'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout the code

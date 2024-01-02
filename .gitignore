@@ -24,6 +24,7 @@ crash.*.log
 # to change depending on the environment.
 #
 *.tfvars
+!*.parameters.tfvars
 !uat.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so
