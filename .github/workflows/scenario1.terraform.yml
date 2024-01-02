@@ -46,7 +46,7 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@main
     outputs:
-      modulePath: ${{ env.modulePath }}/hub
+      modulePath: ${{ env.modulePath }}
       terraformVersion: ${{ env.terraformVersion }}
       backendStateKey: ${{ env.backendStateKey }}
       tfvarPath: ${{ env.tfvarPath }}
@@ -57,7 +57,7 @@ jobs:
     - prepare-environment
     uses: ./.github/workflows/.template.terraform.yml
     with:
-      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}/spoke
+      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}/hub
       terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
       backendStateKey: ${{ needs.prepare-environment.outputs.backendStateKey }}
       tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
@@ -72,7 +72,7 @@ jobs:
     - terraform-deploy-hub
     uses: ./.github/workflows/.template.terraform.yml
     with:
-      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}
+      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}/spoke
       terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
       backendStateKey: ${{ needs.prepare-environment.outputs.backendStateKey }}
       tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
