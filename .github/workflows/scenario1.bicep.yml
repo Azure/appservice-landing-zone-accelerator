@@ -41,7 +41,7 @@ on:
       - main
     paths:
       - '.github/workflows/_template.bicep.yml'
-      - '.github/workflows/ase-multitenant.bicep.yml'
+      - '.github/workflows/scenario1.bicep.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**.bicep'
       - 'scenarios/secure-baseline-multitenant/bicep/parameters/ase-multitenant.parameters.jsonc'
       - '!scenarios/secure-baseline-multitenant/**.md'

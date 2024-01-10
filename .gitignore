@@ -8,6 +8,7 @@ deployment/bicep/main.json
 **/.vscode/*
 
 # Local .terraform directories
+.terraform
 **/.terraform/*
 *.lock.hcl
 # .tfstate files

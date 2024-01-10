@@ -1,4 +1,4 @@
-name: 'Scenario 1: Terraform HUB Multi-tenant Secure Baseline'
+name: 'Scenario 1: Terraform Multi-Tenant ASEv3 Secure Baseline'
 
 on:
   workflow_dispatch:
@@ -59,7 +59,7 @@ jobs:
     with:
       modulePath: ${{ needs.prepare-environment.outputs.modulePath }}/hub
       terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
-      backendStateKey: ${{ needs.prepare-environment.outputs.backendStateKey }}
+      backendStateKey: 'scenario1.hub.tfstate'
       tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
       # Ensure this value is a boolean
       destroy: ${{ github.event.inputs.destroy == 'true' }}
@@ -74,7 +74,7 @@ jobs:
     with:
       modulePath: ${{ needs.prepare-environment.outputs.modulePath }}/spoke
       terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
-      backendStateKey: ${{ needs.prepare-environment.outputs.backendStateKey }}
+      backendStateKey: 'scenario1.spoke.tfstate'
       tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
       # Ensure this value is a boolean
       destroy: ${{ github.event.inputs.destroy == 'true' }}
