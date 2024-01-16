@@ -1,5 +1,9 @@
 name: 'Scenario 1: Terraform Multi-Tenant ASEv3 Secure Baseline'
 
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: false
+
 on:
   workflow_dispatch:
     inputs:
@@ -16,8 +20,9 @@ on:
     paths:
       - '.github/workflows/scenario1.terraform.yml'
       - '.github/workflows/_template.terraform.yml'
-      - 'scenarios/secure-baseline-multitenant/terraform/hub/**'
-      - '!scenarios/secure-baseline-multitenant/terraform/hub/**.md'
+      - 'scenarios/secure-baseline-multitenant/terraform/**.tf'
+      - 'scenarios/secure-baseline-multitenant/terraform/**/parameters/ase-multitenant.parameters.tfvars'
+      - '!scenarios/secure-baseline-multitenant/terraform/**.md'
 
   pull_request:
     branches:
@@ -26,6 +31,7 @@ on:
       - '.github/workflows/scenario1.terraform.yml'
       - '.github/workflows/_template.terraform.yml'
       - 'scenarios/secure-baseline-multitenant/terraform/**'
+      - 'scenarios/secure-baseline-multitenant/terraform/**/parameters/ase-multitenant.parameters.tfvars'
       - '!scenarios/secure-baseline-multitenant/terraform/**.md'
 
 permissions:
