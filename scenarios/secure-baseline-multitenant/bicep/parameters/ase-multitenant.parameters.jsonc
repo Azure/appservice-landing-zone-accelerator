@@ -4,7 +4,7 @@
     "parameters": {
         // max length: 10. Suffix that will be used to name the resources in a pattern like <resourceAbbreviation>-<workloadName>
         "workloadName": {
-            "value": "ase-zones"
+            "value": "ase-mul"
             // "value": "merge-mul"
         },
         //Required. The name of the environmentName (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.
