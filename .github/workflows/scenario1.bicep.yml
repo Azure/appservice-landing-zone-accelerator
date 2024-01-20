@@ -1,5 +1,9 @@
 name: 'Scenario 1: Bicep Multi-Tenant ASEv3 Secure Baseline'
 
+# This workflow tests the ASEv3 Secure Baseline Multi-Tenant scenario deployment.
+# This will use the default parameter file (main.parameters.jsonc) with an overridden
+#   SKU to deploy ASEv3
+
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: false
@@ -14,7 +18,7 @@ on:
       - '.github/workflows/_template.bicep.yml'
       - '.github/workflows/scenario1.bicep.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**.bicep'
-      - 'scenarios/secure-baseline-multitenant/bicep/parameters/ase-multitenant.parameters.jsonc'
+      - 'scenarios/secure-baseline-multitenant/bicep/main.parameters.jsonc'
       - '!scenarios/secure-baseline-multitenant/**.md'
 
   pull_request:
@@ -24,7 +28,7 @@ on:
       - '.github/workflows/_template.bicep.yml'
       - '.github/workflows/scenario1.bicep.yml'
       - 'scenarios/secure-baseline-multitenant/bicep/**.bicep'
-      - 'scenarios/secure-baseline-multitenant/bicep/parameters/ase-multitenant.parameters.jsonc'
+      - 'scenarios/secure-baseline-multitenant/bicep/main.parameters.jsonc'
       - '!scenarios/secure-baseline-multitenant/**.md'
 
 permissions:
@@ -32,9 +36,12 @@ permissions:
   contents: read
 
 env:
+  deployStackName: 'Scenario1-ASEv3-Secure-Baseline-MultiTenant'
   deploymentPath: 'scenarios/secure-baseline-multitenant/bicep/main.bicep'
   scenarioName: 'ase-multitenant'
   region: 'westus2'
+  # webAppPlanSKU is the only parameter that is overridden for ASEv3
+  webAppPlanSku: 'ASE_I3V2_AZ'
 
 jobs:
   prepare-environment:
@@ -44,9 +51,11 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@main
     outputs:
+      deployStackName: ${{ env.deployStackName }}
       region: ${{ env.region }}
       modulePath: ${{ env.deploymentPath }}
-      bicepParamPath: ${{ env.deploymentPath }}/parameters/${{ env.scenarioName }}.parameters.jsonc
+      bicepParamPath: ${{ env.deploymentPath }}/main.parameters.jsonc
+      bicepAdditionalParams: -p webAppPlanSku=${{ env.webAppPlanSku }} --deny-settings-mode 'none'
 
   call-workflow-passing-data:
     name: 'Bicep CICD'
@@ -54,9 +63,11 @@ jobs:
     - prepare-environment
     uses: ./.github/workflows/.template.bicep.yml
     with:
+      deployStackName: ${{ needs.prepare-environment.outputs.deployStackName }}
       region: ${{ needs.prepare-environment.outputs.region }}
       modulePath: ${{ needs.prepare-environment.outputs.modulePath }}
       bicepParamPath: ${{ needs.prepare-environment.outputs.bicepParamPath }}
+      bicepAdditionalParams: ${{ needs.prepare-environment.outputs.bicepAdditionalParams }}
       # Ensure this value is a boolean
       destroy: ${{ github.event.inputs.destroy == 'true' }}
     secrets: inherit
