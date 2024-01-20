@@ -13,10 +13,20 @@ on:
         description: 'Path to the Bicep module'
         required: true
         default: 'scenarios/secure-baseline-multitenant/bicep'
+      deployStackName:
+        type: string
+        description: 'Name of the subscription scoped stack to deploy'
+        required: false
+        default: 'secure-baseline-multitenant'
       bicepParamPath:
         type: string
         description: 'Path to the Bicep variables'
         required: true
+      bicepAdditionalParams:
+        type: string
+        description: 'Optional parameters to pass to Bicep in string format'
+        required: false
+        default: --deny-settings-mode 'none'
       destroy:
         type: boolean
         description: 'Destroy resources?'
@@ -72,23 +82,21 @@ jobs:
       
       - name: Deploy Bicep Scenario
         run: |
-          stackName=$(basename ${{ inputs.bicepParamPath }} )
-          
           # If Destroy flag is set, delete the stack
           if ${{ inputs.destroy }}; then
-            echo "Destroying stack $stackName"
+            echo "Destroying stack ${{ inputs.deployStackName }}"
 
             # Possible flags for delete: --delete-all, --delete-resource-groups, --delete-resources
-            az stack delete --name $stackName --delete-all --yes
+            az stack delete --name ${{ inputs.deployStackName }} --delete-all --yes
 
             exit 0 # Exit successfully
           fi
 
-          az stack sub create --name $stackName \
+          az stack sub create --name ${{ inputs.deployStackName }} \
             --location ${{ inputs.region }} \
             --template-file ${{ inputs.modulePath }} \
             --parameters ${{ inputs.bicepParamPath }} \
-            --deny-settings-mode 'none' 
+            ${{ inputs.bicepAdditionalParams }}
 
       # Potential Deny Settings
       # -----------------------------
