@@ -1,0 +1,107 @@
+name: '.Template - Bicep Deployment'
+
+on:
+  workflow_call:
+    inputs:
+      # bicepVersion:
+      #   type: string
+      #   description: 'Bicep version'
+      #   required: true
+      #   default: 'v0.24.24'
+      modulePath:
+        type: string
+        description: 'Path to the Bicep module'
+        required: true
+        default: 'scenarios/secure-baseline-multitenant/bicep'
+      deployStackName:
+        type: string
+        description: 'Name of the subscription scoped stack to deploy'
+        required: false
+        default: 'secure-baseline-multitenant'
+      bicepParamPath:
+        type: string
+        description: 'Path to the Bicep variables'
+        required: true
+      bicepAdditionalParams:
+        type: string
+        description: 'Optional parameters to pass to Bicep in string format'
+        required: false
+        default: --deny-settings-mode 'none'
+      destroy:
+        type: boolean
+        description: 'Destroy resources?'
+        default: false
+      region:
+        type: string
+        description: 'Azure region'
+        required: true
+        default: 'westus2'
+
+jobs:
+  validate:
+    name: "Validate Bicep files"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      # Log into Azure via OIDC
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+
+      - name: Run Bicep linter
+        run: az bicep build --file ${{ inputs.modulePath }}
+        # working-directory: ${{ inputs.modulePath }}
+      
+      # TODO: Buildout PSRule policies
+      # - name: Run PSRule analysis
+      #   uses: microsoft/ps-rule@v2.9.0
+      #   with:
+      #     modules: PSRule.Rules.Azure
+
+  deploy:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    name: 'Deploy'
+    environment: production
+    needs: validate
+    timeout-minutes: 360
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@main
+    
+      # Log into Azure via OIDC
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
+      
+      - name: Deploy Bicep Scenario
+        run: |
+          # If Destroy flag is set, delete the stack
+          if ${{ inputs.destroy }}; then
+            echo "Destroying stack ${{ inputs.deployStackName }}"
+
+            # Possible flags for delete: --delete-all, --delete-resource-groups, --delete-resources
+            az stack delete --name ${{ inputs.deployStackName }} --delete-all --yes
+
+            exit 0 # Exit successfully
+          fi
+
+          az stack sub create --name ${{ inputs.deployStackName }} \
+            --location ${{ inputs.region }} \
+            --template-file ${{ inputs.modulePath }} \
+            --parameters ${{ inputs.bicepParamPath }} \
+            ${{ inputs.bicepAdditionalParams }}
+
+      # Potential Deny Settings
+      # -----------------------------
+      # deny-settings-mode: Defines the operations that are prohibited on the managed resources to safeguard against unauthorized security principals attempting to delete or update them. This restriction applies to everyone unless explicitly granted access. The values include: none, denyDelete, and denyWriteAndDelete.
+      # deny-settings-apply-to-child-scopes: Deny settings are applied to child Azure management scopes.
+      # deny-settings-excluded-actions: List of role-based access control (RBAC) management operations excluded from the deny settings. Up to 200 actions are allowed.
+      # deny-settings-excluded-principals: List of Microsoft Entra principal IDs excluded from the lock. Up to five principals are allowed.
+      

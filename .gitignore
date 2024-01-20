@@ -8,6 +8,7 @@ deployment/bicep/main.json
 **/.vscode/*
 
 # Local .terraform directories
+.terraform
 **/.terraform/*
 *.lock.hcl
 # .tfstate files
@@ -24,6 +25,7 @@ crash.*.log
 # to change depending on the environment.
 #
 *.tfvars
+!*.parameters.tfvars
 !uat.tfvars
 
 # Ignore override files as they are usually used to override resources locally and so
