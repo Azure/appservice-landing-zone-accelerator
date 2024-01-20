@@ -56,7 +56,7 @@ jobs:
         run: az bicep build --file ${{ inputs.modulePath }}
         # working-directory: ${{ inputs.modulePath }}
       
-      # TODO: Buildout PSRule policies, review and refactor accordingly. Disabling for now.
+      # TODO: Buildout PSRule policies
       # - name: Run PSRule analysis
       #   uses: microsoft/ps-rule@v2.9.0
       #   with:
