@@ -1,0 +1,19 @@
+
+# Require a minimum version of PSRule for Azure.
+requires:
+  PSRule.Rules.Azure: '>=1.29.0'
+
+# Automatically use rules for Azure.
+include:
+  module:
+  - PSRule.Rules.Azure
+
+# Ignore all files except .bicepparam files.
+input:
+  pathIgnore:
+  - '**'
+  - '!**/*.bicepparam'
+
+# YAML: Enable expansion for Bicep source files.
+configuration:
+  AZURE_BICEP_FILE_EXPANSION: true
