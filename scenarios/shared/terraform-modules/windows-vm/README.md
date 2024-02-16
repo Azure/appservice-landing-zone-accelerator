@@ -9,10 +9,10 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | 2.39.0 |
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.25 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.60.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
+| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | 2.47.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.27 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.92.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.6.0 |
 
 ## Modules
 

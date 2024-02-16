@@ -1,8 +1,13 @@
+# Spoke application deployment
+# ------
+# - App Service
+#   - 
 locals {
   sql_connstring   = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "SQL_NOT_PROVISIONED"
   redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_connection_string : "REDIS_NOT_PROVISIONED"
 }
 
+# Deploy the App Service
 module "app_service" {
   source = "../../../shared/terraform-modules/app-service"
 

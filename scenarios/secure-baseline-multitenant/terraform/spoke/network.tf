@@ -1,8 +1,31 @@
 # Spoke network config
+# -----
+# - Spoke Resource Group
+#   - VNet
+#      - Server Farm Subnet (App Service/compute resources)
+#      - Ingress Subnet (Azure Front Door network ingress subnet)
+#      - Private Link Subnet (Private DNS Zones)
+#      - DevOps Subnet (optional Self Hosted CICD agent)
+#   - Private DNS Zones
+#   - User Defined Routes [optional]
+#   - Azure FrontDoor
 
-resource "random_integer" "unique_id" {
-  min = 1
-  max = 9999
+## Create Spoke Resource Group with the name generated from global_settings
+resource "azurecaf_name" "caf_name_spoke_rg" {
+  name          = var.application_name
+  resource_type = "azurerm_resource_group"
+  prefixes      = concat(["spoke"], local.global_settings.prefixes)
+  random_length = local.global_settings.random_length
+  clean_input   = true
+  passthrough   = local.global_settings.passthrough
+  use_slug      = local.global_settings.use_slug
+}
+
+resource "azurerm_resource_group" "spoke" {
+  name     = azurecaf_name.caf_name_spoke_rg.result
+  location = var.location
+
+  tags = local.base_tags
 }
 
 resource "azurecaf_name" "appsvc_subnet" {
@@ -15,6 +38,7 @@ resource "azurecaf_name" "appsvc_subnet" {
   use_slug      = local.global_settings.use_slug
 }
 
+## Deploy Spoke VNet with Server Farm, Ingress, Private Link and DevOps subnets
 module "network" {
   source = "../../../shared/terraform-modules/network"
 
@@ -61,6 +85,7 @@ module "network" {
   tags = local.base_tags
 }
 
+## Deploy Private DNS Zones
 module "private_dns_zones" {
   source = "../../../shared/terraform-modules/private-dns-zone"
   count  = length(local.private_dns_zones)
@@ -77,30 +102,13 @@ module "private_dns_zones" {
   tags = local.base_tags
 }
 
-module "user_defined_routes" {
-  count = var.deployment_options.enable_egress_lockdown ? 1 : 0
-
-  source = "../../../shared/terraform-modules/user-defined-routes"
-
-  resource_group   = azurerm_resource_group.spoke.name
-  location         = var.location
-  route_table_name = "egress-lockdown"
-  global_settings  = local.global_settings
-
-  routes = [
-    {
-      name                   = "defaultRoute"
-      address_prefix         = "0.0.0.0/0"
-      next_hop_type          = "VirtualAppliance"
-      next_hop_in_ip_address = data.terraform_remote_state.hub.outputs.firewall_private_ip
-    }
-  ]
-
-  subnet_ids = module.network.subnet_ids
-  tags       = local.base_tags
+# TODO: Deprecate the random_integer unique_id logic
+resource "random_integer" "unique_id" {
+  min = 1
+  max = 9999
 }
 
-
+## Deploy Azure Front Door with basic endpoint configuration for the web app
 module "frontdoor" {
   source = "../../../shared/terraform-modules/frontdoor"
 
@@ -128,4 +136,28 @@ module "frontdoor" {
   depends_on = [
     module.app_service
   ]
+}
+
+## Deploy User Defined Routes (UDR) to route all traffic to the Azure Firewall (enabled via deployment option)
+module "user_defined_routes" {
+  count = var.deployment_options.enable_egress_lockdown ? 1 : 0
+
+  source = "../../../shared/terraform-modules/user-defined-routes"
+
+  resource_group   = azurerm_resource_group.spoke.name
+  location         = var.location
+  route_table_name = "egress-lockdown"
+  global_settings  = local.global_settings
+
+  routes = [
+    {
+      name                   = "defaultRoute"
+      address_prefix         = "0.0.0.0/0"
+      next_hop_type          = "VirtualAppliance"
+      next_hop_in_ip_address = data.terraform_remote_state.hub.outputs.firewall_private_ip
+    }
+  ]
+
+  subnet_ids = module.network.subnet_ids
+  tags       = local.base_tags
 }

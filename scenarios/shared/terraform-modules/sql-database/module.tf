@@ -10,6 +10,11 @@ resource "azurecaf_name" "caf_name_sqlserver" {
   use_slug = var.global_settings.use_slug
 }
 
+data "azuread_group" "sql_admin_group" {
+  display_name     = var.entra_admin_group_name
+  object_id        = var.entra_admin_group_object_id
+  security_enabled = true
+}
 
 # Create the SQL Server 
 resource "azurerm_mssql_server" "this" {
