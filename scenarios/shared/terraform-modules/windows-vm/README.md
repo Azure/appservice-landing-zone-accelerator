@@ -9,10 +9,10 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | 2.39.0 |
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.25 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.60.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
+| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | 2.47.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.27 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.92.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.6.0 |
 
 ## Modules
 
@@ -35,10 +35,10 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aad_admin_object_id"></a> [aad\_admin\_object\_id](#input\_aad\_admin\_object\_id) | The Microsoft Entra ID object ID for the VM admin user/group. If aad\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
-| <a name="input_aad_admin_username"></a> [aad\_admin\_username](#input\_aad\_admin\_username) | [Optional] The Microsoft Entra ID username for the VM admin account. If aad\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
 | <a name="input_admin_password"></a> [admin\_password](#input\_admin\_password) | n/a | `string` | `null` | no |
 | <a name="input_admin_username"></a> [admin\_username](#input\_admin\_username) | n/a | `string` | `null` | no |
+| <a name="input_entra_admin_object_id"></a> [entra\_admin\_object\_id](#input\_entra\_admin\_object\_id) | The Azure AD object ID for the VM admin user/group. If entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_entra_admin_username"></a> [entra\_admin\_username](#input\_entra\_admin\_username) | [Optional] The Azure AD username for the VM admin account. If entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
 | <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | Global settings for the naming convention module. | `any` | n/a | yes |
 | <a name="input_identity"></a> [identity](#input\_identity) | The identity type and the list of identities ids | <pre>object({<br>    type         = string<br>    identity_ids = optional(list(string))<br>  })</pre> | <pre>{<br>  "identity_ids": [],<br>  "type": "SystemAssigned"<br>}</pre> | no |
 | <a name="input_key_vault_id"></a> [key\_vault\_id](#input\_key\_vault\_id) | Optional ID of the key vault to store the VM password | `string` | `null` | no |

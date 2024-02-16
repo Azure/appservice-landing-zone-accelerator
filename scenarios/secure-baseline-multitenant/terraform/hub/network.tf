@@ -1,5 +1,13 @@
 # Hub network config
+# -----
+# - Hub Resource Group
+#   - VNet
+#      - Firewall Subnet
+#      - Bastion Subnet
+#   - Azure Firewall [optional]
+#   - Bastion [optional]
 
+## Create Hub Resource Group with the name generated from global_settings
 resource "azurecaf_name" "caf_name_hub_rg" {
   name          = var.application_name
   resource_type = "azurerm_resource_group"
@@ -17,6 +25,7 @@ resource "azurerm_resource_group" "hub" {
   tags = local.base_tags
 }
 
+## Deploy Hub VNet with Firewall and Bastion subnets
 module "network" {
   source = "../../../shared/terraform-modules/network"
 
@@ -41,6 +50,7 @@ module "network" {
   tags = local.base_tags
 }
 
+## Deploy Azure Firewall (enabled via deployment option)
 module "firewall" {
   count = var.deployment_options.enable_egress_lockdown ? 1 : 0
 
@@ -60,6 +70,7 @@ module "firewall" {
   tags = local.base_tags
 }
 
+## Deploy Bastion (enabled via deployment option)
 module "bastion" {
   count = var.deployment_options.deploy_bastion ? 1 : 0
 

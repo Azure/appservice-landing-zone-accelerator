@@ -4,21 +4,23 @@ location         = "westus3"
 owner            = "cloudops@contoso.com"
 
 # For the hub state, use the same settings as the remote state config on the hub deployment from /hub/main.tf
-hub_state_resource_group_name  = "backend-appsrvc-dev-westus2-001"
-hub_state_storage_account_name = "stbackendappsrwestus2001"
-hub_state_container_name       = "tfstate"
-hub_state_key                  = "scenario1.hub.tfstate"
+hub_remote_state_settings = {
+  storage_account_name = "stbackendappsrwestus2001"
+  container_name       = "tfstate"
+  key                  = "scenario1.hub.tfstate"
+  resource_group_name  = "backend-appsrvc-dev-westus2-001"
+}
 
-aad_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
-aad_admin_group_name      = "AppSvcLZA Azure AD SQL Admins"
+entra_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
+entra_admin_group_name      = "AppSvcLZA Azure AD SQL Admins"
 
 ## Lookup the Azure AD User
-# vm_aad_admin_username = "my-user@contoso.com"
+# vm_entra_admin_username = "my-user@contoso.com"
 ## Reference an existing Azure AD User/Group Object ID to bypass lookup
-vm_aad_admin_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884" # "AppSvcLZA Azure AD SQL Admins"
+vm_entra_admin_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884" # "AppSvcLZA Azure AD SQL Admins"
 
 
-## Optionally provide non-AAD admin credentials for the VM
+## Optionally provide non-entra admin credentials for the VM
 # vm_admin_username         = "daniem"
 # vm_admin_password         = "**************"
 

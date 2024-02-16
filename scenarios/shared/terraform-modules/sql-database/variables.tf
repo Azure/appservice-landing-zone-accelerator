@@ -30,12 +30,14 @@ variable "tenant_id" {
   description = "The tenant id where the resources will be created"
 }
 
-variable "aad_admin_group_object_id" {
-  type = string
+variable "entra_admin_group_object_id" {
+  type    = string
+  default = null
 }
 
-variable "aad_admin_group_name" {
-  type = string
+variable "entra_admin_group_name" {
+  type    = string
+  default = null
 }
 
 variable "private_link_subnet_id" {

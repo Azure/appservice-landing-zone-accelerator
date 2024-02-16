@@ -1,4 +1,4 @@
-# spoke variables.tf
+# terraform variables.tf
 
 #####################################
 # Common variables for naming and tagging
@@ -60,8 +60,8 @@ variable "hub_remote_state_settings" {
   default = null
 
   validation {
-    condition     = var.hub_vnet_settings == null && var.hub_remote_state_settings != null ? (var.hub_remote_state_settings.resource_group_name != null && var.hub_remote_state_settings.storage_account_name != null && var.hub_remote_state_settings.container_name != null && var.hub_remote_state_settings.key != null) : true
-    error_message = "Either `hub_remote_state_settings` or hub_vnet_settings` must be provided. If hub_remote_state_settings is not null, `resource_group_name`, `storage_account_name`, `container_name` and `key` attributes of the hub remote state must all be provided."
+    condition     = var.hub_remote_state_settings != null ? (var.hub_remote_state_settings.resource_group_name != null && var.hub_remote_state_settings.storage_account_name != null && var.hub_remote_state_settings.container_name != null && var.hub_remote_state_settings.key != null) : true
+    error_message = "Either `hub_remote_state_settings` or `hub_vnet_settings` must be provided. If hub_remote_state_settings is not null, `resource_group_name`, `storage_account_name`, `container_name` and `key` attributes of the hub remote state must all be provided."
   }
 }
 
@@ -70,10 +70,9 @@ variable "hub_vnet_settings" {
     resource_group_name = string
     name                = string
 
-    firewall = optional(object({
+    firewall = {
       private_ip = optional(string)
-      })
-    )
+    }
   })
 
   description = "The settings for the hub virtual network."
@@ -88,11 +87,13 @@ variable "hub_vnet_settings" {
 variable "entra_admin_group_object_id" {
   type        = string
   description = "The object ID of the Azure AD group that should be granted SQL Admin permissions to the SQL Server"
+  default     = null
 }
 
 variable "entra_admin_group_name" {
   type        = string
   description = "The name of the Azure AD group that should be granted SQL Admin permissions to the SQL Server"
+  default     = null
 }
 
 variable "spoke_vnet_cidr" {
@@ -172,7 +173,6 @@ variable "deployment_options" {
     enable_waf                 = bool
     enable_egress_lockdown     = bool
     enable_diagnostic_settings = bool
-    deploy_asev3               = bool
     deploy_bastion             = bool
     deploy_redis               = bool
     deploy_sql_database        = bool
@@ -187,7 +187,6 @@ variable "deployment_options" {
     enable_waf                 = true
     enable_egress_lockdown     = true
     enable_diagnostic_settings = true
-    deploy_asev3               = false
     deploy_bastion             = true
     deploy_redis               = true
     deploy_sql_database        = true
