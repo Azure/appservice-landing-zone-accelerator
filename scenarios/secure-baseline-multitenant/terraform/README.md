@@ -1,4 +1,4 @@
-# Multitenant App Service Secure Baseline Terraform Implementation
+# Multi-tenant App Service Secure Baseline Terraform Implementation
 
 ## Steps of Implementation for App Service Construction Set
 
@@ -37,11 +37,11 @@ location         = "swedencentral"
 location_short   = "swe"
 
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_name      = "Microsoft Entra ID SQL Admins"
-vm_aad_admin_username     = "bob@contoso.com"
+entra_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+entra_admin_group_name      = "Microsoft Entra ID SQL Admins"
+vm_entra_admin_username     = "bob@contoso.com"
 
-# Optionally provide non-AAD admin credentials for the VM
+# Optionally provide non-Entra admin credentials for the VM
 # vm_admin_username         = "daniem"
 # vm_admin_password         = "**************"
 
@@ -172,7 +172,7 @@ az upgrade
 az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
-If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](#unable-to-connect-to-devops-vm-using-aad-credentials)
+If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](#unable-to-connect-to-devops-vm-using-microsoft-entra-id-credentials)
 
 Once completed, you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
 

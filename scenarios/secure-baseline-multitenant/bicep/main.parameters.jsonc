@@ -109,11 +109,11 @@
         // The Microsoft Entra ID administrator group used for SQL Server authentication
         "sqlServerAdministrators": {
             "value": {
-                // Azure AD group where your Azure administrators are members
-                "login": "Azure AD SQL Admins",
-                // Azure AD object ID of the group
+                // Microsoft Entra group where your Azure administrators are members
+                "login": "Microsoft Entra SQL Admins",
+                // Microsoft Entra object ID of the group
                 "sid": "xxx-xxxx-xxxx-xxxx",
-                // Azure AD tenant ID where the group is located
+                // Microsoft Entra tenant ID where the group is located
                 "tenantId": "xxxx-xxxxxx-xxxxx-xxxxx-xxx"
             }
         }

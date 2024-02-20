@@ -9,16 +9,16 @@ hub_state_storage_account_name = "stbackendappsrwestus2001"
 hub_state_container_name       = "tfstate"
 hub_state_key                  = "scenario1.hub.tfstate"
 
-aad_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
-aad_admin_group_name      = "AppSvcLZA Azure AD SQL Admins"
+entra_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
+entra_admin_group_name      = "AppSvcLZA Microsoft Entra SQL Admins"
 
-## Lookup the Azure AD User
-# vm_aad_admin_username = "my-user@contoso.com"
-## Reference an existing Azure AD User/Group Object ID to bypass lookup
-vm_aad_admin_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884" # "AppSvcLZA Azure AD SQL Admins"
+## Lookup the Microsoft Entra User
+# vm_entra_admin_username = "my-user@contoso.com"
+## Reference an existing Microsoft Entra User/Group Object ID to bypass lookup
+vm_entra_admin_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884" # "AppSvcLZA Microsoft Entra SQL Admins"
 
 
-## Optionally provide non-AAD admin credentials for the VM
+## Optionally provide non-Entra ID admin credentials for the VM
 # vm_admin_username         = "daniem"
 # vm_admin_password         = "**************"
 

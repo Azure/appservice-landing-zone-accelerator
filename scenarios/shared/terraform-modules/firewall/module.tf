@@ -217,7 +217,7 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
   action              = "Allow"
 
   rule {
-    name = "allow-entra-id-join"
+    name = "allow-entra-idS-join"
 
     source_addresses = var.devops_subnet_cidr
 

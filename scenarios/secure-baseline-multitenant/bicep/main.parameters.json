@@ -79,7 +79,7 @@
         }, 
         "sqlServerAdministrators": {
             "value": {
-                "login": "Azure AD SQL Admins",
+                "login": "Microsoft Entra SQL Admins",
                 "sid": "xxx-xxxx-xxxx-xxxx",
                 "tenantId": "xxx-xxxx-xxxx-xxxx"
             }
