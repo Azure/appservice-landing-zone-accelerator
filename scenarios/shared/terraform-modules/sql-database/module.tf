@@ -24,8 +24,8 @@ resource "azurerm_mssql_server" "this" {
   tags = local.tags
 
   azuread_administrator {
-    login_username              = var.aad_admin_group_name
-    object_id                   = var.aad_admin_group_object_id
+    login_username              = var.entra_admin_group_name
+    object_id                   = var.entra_admin_group_object_id
     azuread_authentication_only = true
     tenant_id                   = var.tenant_id
   }
