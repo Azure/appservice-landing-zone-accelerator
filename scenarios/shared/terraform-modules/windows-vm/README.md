@@ -35,10 +35,10 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aad_admin_object_id"></a> [aad\_admin\_object\_id](#input\_aad\_admin\_object\_id) | The Microsoft Entra ID object ID for the VM admin user/group. If aad\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
-| <a name="input_aad_admin_username"></a> [aad\_admin\_username](#input\_aad\_admin\_username) | [Optional] The Microsoft Entra ID username for the VM admin account. If aad\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
 | <a name="input_admin_password"></a> [admin\_password](#input\_admin\_password) | n/a | `string` | `null` | no |
 | <a name="input_admin_username"></a> [admin\_username](#input\_admin\_username) | n/a | `string` | `null` | no |
+| <a name="input_entra_admin_object_id"></a> [entra\_admin\_object\_id](#input\_entra\_admin\_object\_id) | The Microsoft Entra ID for the VM admin user/group. If entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_entra_admin_username"></a> [entra\_admin\_username](#input\_entra\_admin\_username) | [Optional] The Microsoft Entra ID username for the VM admin account. If entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
 | <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | Global settings for the naming convention module. | `any` | n/a | yes |
 | <a name="input_identity"></a> [identity](#input\_identity) | The identity type and the list of identities ids | <pre>object({<br>    type         = string<br>    identity_ids = optional(list(string))<br>  })</pre> | <pre>{<br>  "identity_ids": [],<br>  "type": "SystemAssigned"<br>}</pre> | no |
 | <a name="input_key_vault_id"></a> [key\_vault\_id](#input\_key\_vault\_id) | Optional ID of the key vault to store the VM password | `string` | `null` | no |

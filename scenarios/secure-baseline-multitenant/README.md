@@ -1,4 +1,4 @@
-# App Service Secure Baseline (Multitenant and ASE)
+# App Service Secure Baseline (Multi-tenant and ASE)
 
 This reference architecture shows how to run a web-app workload on Azure App Services in a secure configuration. This secure baseline follow [Defense in Depth](https://learn.microsoft.com/en-us/shows/azure-videos/defense-in-depth-security-in-azure) approach to protect AppService workload against cloud vulnerabilities along with additional [Well-Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/) pillars to enable a resilient solution.
 
