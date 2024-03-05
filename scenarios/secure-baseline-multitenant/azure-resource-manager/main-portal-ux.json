@@ -383,7 +383,7 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "Hub Subnet CIDR for Bastion Service",
                             "subLabel": "",
-                            "defaultValue": "10.242.0.64/26",
+                            "defaultValue": "10.242.0.128/26",
                             "toolTip": "CIDR of the subnet hosting the Bastion Service - optional if you want to use an existing hub vnet (vnetHubResourceId)",
                             "constraints": {
                                 "required": false,
