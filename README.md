@@ -88,7 +88,7 @@ Before deploying the Bicep IaC artifacts, you need to review and customize the v
 The expandable table below summarizes the available parameters and the possible values that can be set.
 
 <details>
-<summary><h4>Bicep Configuration Parameters Table</h4></summary>
+<summary>Bicep Configuration Parameters Table</summary>
 
 | Name | Description | Example | 
 |------|-------------|---------|
@@ -119,7 +119,7 @@ The expandable table below summarizes the available parameters and the possible 
 
 </details>
 <details>
-<summary><h4> Locally deploy with Terraform</h4></summary>
+<summary> Locally deploy with Terraform </summary>
 1. Ensure you are logged in to Azure CLI and have selected the correct subscription.
 1. Navigate to the Terraform deployment directory (same directory as the `main.tf` file).
     - [scenarios/secure-baseline-multitenant/terraform/hub](scenarios/secure-baseline-multitenant/terraform/hub/)
