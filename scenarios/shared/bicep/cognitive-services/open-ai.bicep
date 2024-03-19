@@ -104,7 +104,7 @@ param allowedFqdnList array = []
 @description('Optional. The API properties for special APIs.')
 param apiProperties object = {}
 
-@description('Optional. Allow only Azure AD authentication. Should be enabled for security reasons.')
+@description('Optional. Allow only Microsoft Entra authentication. Should be enabled for security reasons.')
 param disableLocalAuth bool = true
 
 @description('Conditional. The resource ID of a key vault to reference a customer managed key for encryption from. Required if \'cMKKeyName\' is not empty.')

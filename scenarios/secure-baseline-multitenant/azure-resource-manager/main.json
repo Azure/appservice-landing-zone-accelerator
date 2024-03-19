@@ -1653,7 +1653,7 @@
                       ]
                     },
                     {
-                      "name": "allow-azure-ad-join",
+                      "name": "allow-entra-join",
                       "protocols": [
                         {
                           "port": "443",
@@ -1707,7 +1707,7 @@
                         "*.manage-beta.microsoft.com",
                         "*.manage.microsoft.com"
                       ],
-                      "name": "allow-azure-ad-join",
+                      "name": "allow-entra-join",
                       "protocols": [
                         {
                           "port": "443",
@@ -9962,7 +9962,7 @@
                           "subnetId": {
                             "value": "[parameters('subnetDevOpsId')]"
                           },
-                          "enableAzureAdJoin": {
+                          "enableEntraJoin": {
                             "value": true
                           },
                           "userAssignedIdentities": {
@@ -10047,7 +10047,7 @@
                                 "description": "mandatory, the password of the admin user"
                               }
                             },
-                            "enableAzureAdJoin": {
+                            "enableEntraJoin": {
                               "type": "bool",
                               "defaultValue": true
                             },
@@ -10116,7 +10116,7 @@
                             }
                           },
                           "variables": {
-                            "aadLoginExtensionName": "AADLoginForWindows",
+                            "entraLoginExtensionName": "AADLoginForWindows",
                             "vmNameMaxLength": 64,
                             "vmName": "[if(greater(length(parameters('name')), variables('vmNameMaxLength')), substring(parameters('name'), 0, variables('vmNameMaxLength')), parameters('name'))]",
                             "computerNameLength": 15,
@@ -10190,14 +10190,14 @@
                               ]
                             },
                             {
-                              "condition": "[parameters('enableAzureAdJoin')]",
+                              "condition": "[parameters('enableEntraJoin')]",
                               "type": "Microsoft.Compute/virtualMachines/extensions",
                               "apiVersion": "2022-11-01",
-                              "name": "[format('{0}/{1}', variables('vmName'), variables('aadLoginExtensionName'))]",
+                              "name": "[format('{0}/{1}', variables('vmName'), variables('entraLoginExtensionName'))]",
                               "location": "[parameters('location')]",
                               "properties": {
                                 "publisher": "Microsoft.Azure.ActiveDirectory",
-                                "type": "[variables('aadLoginExtensionName')]",
+                                "type": "[variables('entraLoginExtensionName')]",
                                 "typeHandlerVersion": "1.0",
                                 "autoUpgradeMinorVersion": true
                               },
@@ -12972,7 +12972,7 @@
                               "type": "bool",
                               "defaultValue": true,
                               "metadata": {
-                                "description": "Optional. Allow only Azure AD authentication. Should be enabled for security reasons."
+                                "description": "Optional. Allow only Microsoft Entra authentication. Should be enabled for security reasons."
                               }
                             },
                             "cMKKeyVaultResourceId": {

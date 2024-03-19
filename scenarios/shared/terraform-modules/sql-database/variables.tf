@@ -30,11 +30,11 @@ variable "tenant_id" {
   description = "The tenant id where the resources will be created"
 }
 
-variable "aad_admin_group_object_id" {
+variable "entra_admin_group_object_id" {
   type = string
 }
 
-variable "aad_admin_group_name" {
+variable "entra_admin_group_name" {
   type = string
 }
 

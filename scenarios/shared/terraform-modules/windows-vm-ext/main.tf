@@ -1,5 +1,5 @@
-resource "azurerm_virtual_machine_extension" "aad" {
-  count = var.enable_azure_ad_join ? 1 : 0
+resource "azurerm_virtual_machine_extension" "entra" {
+  count = var.enable_microsoft_entra_join ? 1 : 0
 
   name                       = "aad-login-for-windows"
   publisher                  = "Microsoft.Azure.ActiveDirectory"

@@ -8,10 +8,10 @@ variable "install_extensions" {
   default = false
 }
 
-variable "enable_azure_ad_join" {
+variable "enable_microsoft_entra_join" {
   type        = bool
   default     = true
-  description = "True to enable Azure AD join of the VM."
+  description = "True to enable Microsoft Entra join of the VM."
 }
 
 variable "enroll_with_mdm" {

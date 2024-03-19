@@ -45,17 +45,17 @@ module "sql_database" {
 
   source = "../../../shared/terraform-modules/sql-database"
 
-  resource_group            = azurerm_resource_group.spoke.name
-  application_name          = var.application_name
-  environment               = var.environment
-  location                  = var.location
-  unique_id                 = random_integer.unique_id.result
-  tenant_id                 = var.tenant_id
-  aad_admin_group_object_id = var.aad_admin_group_object_id
-  aad_admin_group_name      = var.aad_admin_group_name
-  private_link_subnet_id    = module.network.subnets["privateLink"].id
-  global_settings           = local.global_settings
-  tags                      = local.base_tags
+  resource_group              = azurerm_resource_group.spoke.name
+  application_name            = var.application_name
+  environment                 = var.environment
+  location                    = var.location
+  unique_id                   = random_integer.unique_id.result
+  tenant_id                   = var.tenant_id
+  entra_admin_group_object_id = var.entra_admin_group_object_id
+  entra_admin_group_name      = var.entra_admin_group_name
+  private_link_subnet_id      = module.network.subnets["privateLink"].id
+  global_settings             = local.global_settings
+  tags                        = local.base_tags
   sql_databases = [
     {
       name     = "sample-db"

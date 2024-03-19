@@ -131,7 +131,7 @@ If your organization requires device enrollment before accessing corporate resou
 
 It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
 
-If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-aad-credentials)
+If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-microsoft-entra-id-credentials)
 
 Once completed, and if you provided a valid (Microsoft Entra ID) administrator group used for SQL Server authentication (and not only local SQL user administrator), you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions:
 

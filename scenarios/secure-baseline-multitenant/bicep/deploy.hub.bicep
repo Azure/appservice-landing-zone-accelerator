@@ -137,7 +137,7 @@ var applicationRules =  [
               ]
             }
             {
-              name: 'allow-azure-ad-join'
+              name: 'allow-entra-join'
               protocols: [
                 {
                   port: '443'
@@ -195,7 +195,7 @@ var applicationRules =  [
                 '*.manage-beta.microsoft.com'
                 '*.manage.microsoft.com'
               ]
-              name: 'allow-azure-ad-join'
+              name: 'allow-entra-join'
               protocols: [               
                 {
                   port: '443'
