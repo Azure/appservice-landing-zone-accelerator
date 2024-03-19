@@ -923,7 +923,7 @@
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": true,
                                     "options": {
-                                        "text": "Select the authentication method for the SQL Server administrator. Azure AD for SQL Server administrator authentication is suggested."
+                                        "text": "Select the authentication method for the SQL Server administrator. Microsoft Entra for SQL Server administrator authentication is suggested."
                                     }
                                 },
                                 {
@@ -931,13 +931,13 @@
                                     "type": "Microsoft.Common.DropDown",
                                     "label": "Azure Sql Server Authentication",
                                     "subLabel": "",
-                                    "defaultValue": "Azure AD",
-                                    "toolTip": "Select Azure AD for SQL Server administrator authentication for better security and passwordless access. If you select SQL Server local user, you will need to provide a password for the SQL Server administrator.",
+                                    "defaultValue": "Microsoft Entra",
+                                    "toolTip": "Select Microsoft Entra for SQL Server administrator authentication for better security and password-less access. If you select SQL Server local user, you will need to provide a password for the SQL Server administrator.",
                                     "constraints": {
                                         "required": false,
                                         "allowedValues": [
                                             {
-                                                "label": "Azure AD",
+                                                "label": "Microsoft Entra",
                                                 "value": "AAD"
                                             },
                                             {
@@ -955,7 +955,7 @@
                                     "type": "Microsoft.Common.TextBlock",
                                     "visible": "[equals(steps('SQL').sqlServerDeploySection.azureSqlAuthentication, 'AAD')]",
                                     "options": {
-                                        "text": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value (xxxx-xxxx-xxxx-xxxx-xxxx) with Azure AD object ID of that group. The current tenantId value is already filled in."
+                                        "text": "Replace ENTRA_SQL_ADMIN_GROUP with Microsoft Entra group where your Azure administrators are members, sid value (xxxx-xxxx-xxxx-xxxx-xxxx) with Microsoft Entra object ID of that group. The current tenantId value is already filled in."
                                     }
                                 },
                                 {
@@ -963,9 +963,9 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "label": "Sql Server Administrators",
                                     "subLabel": "",
-                                    "defaultValue": "[concat('{\n\t\"login\": \"AAD_SQL_ADMIN_GROUP\",\n\t\"sid\": \"xxxx-xxxx-xxxx-xxxx-xxxx\",\n\t\"tenantId\": \"', steps('basics').resourceScope.subscription.tenantId, '\"\n}')]",
+                                    "defaultValue": "[concat('{\n\t\"login\": \"ENTRA_SQL_ADMIN_GROUP\",\n\t\"sid\": \"xxxx-xxxx-xxxx-xxxx-xxxx\",\n\t\"tenantId\": \"', steps('basics').resourceScope.subscription.tenantId, '\"\n}')]",
                                     "multiLine": true,
-                                    "toolTip": "Replace AAD_SQL_ADMIN_GROUP with Azure AD group where your Azure administrators are members, sid value with Azure AD object ID of that group and tenantId value with Azure AD tenant ID where the group is located",
+                                    "toolTip": "Replace ENTRA_SQL_ADMIN_GROUP with Microsoft Entra group where your Azure administrators are members, sid value with Microsoft Entra object ID of that group and tenantId value with Microsoft Entra tenant ID where the group is located",
                                     "constraints": {
                                         "required": false,
                                         "regex": "",

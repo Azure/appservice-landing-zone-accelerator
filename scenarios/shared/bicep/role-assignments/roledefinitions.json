@@ -1686,12 +1686,12 @@
   },
   {
     "ID": "/subscriptions/0a52391c-0d81-434e-90b4-d04f5c670e8a/providers/Microsoft.Authorization/roleDefinitions/361898ef-9ed1-48c2-849c-a832951106bb",
-    "description": "Can view Azure AD Domain Services and related network configurations",
+    "description": "Can view Microsoft Entra Domain Services and related network configurations",
     "roleName": "Domain Services Reader"
   },
   {
     "ID": "/subscriptions/0a52391c-0d81-434e-90b4-d04f5c670e8a/providers/Microsoft.Authorization/roleDefinitions/eeaeda52-9324-47f6-8069-5d5bade478b2",
-    "description": "Can manage Azure AD Domain Services and related network configurations",
+    "description": "Can manage Microsoft Entra Domain Services and related network configurations",
     "roleName": "Domain Services Contributor"
   },
   {
@@ -1701,7 +1701,7 @@
   },
   {
     "ID": "/subscriptions/0a52391c-0d81-434e-90b4-d04f5c670e8a/providers/Microsoft.Authorization/roleDefinitions/959f8984-c045-4866-89c7-12bf9737be2e",
-    "description": "Provides permissions to upload data to empty managed disks, read, or export data of managed disks (not attached to running VMs) and snapshots using SAS URIs and Azure AD authentication.",
+    "description": "Provides permissions to upload data to empty managed disks, read, or export data of managed disks (not attached to running VMs) and snapshots using SAS URIs and Microsoft Entra authentication.",
     "roleName": "Data Operator for Managed Disks"
   },
   {

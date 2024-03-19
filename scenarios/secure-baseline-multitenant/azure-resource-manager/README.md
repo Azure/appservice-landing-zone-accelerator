@@ -1,10 +1,10 @@
-# Multitenant App Service Secure Baseline - ARM Implementation
+# Multi-tenant App Service Secure Baseline - ARM Implementation
 You can deploy the current LZA directly in your azure subscription by hitting the button below. 
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#view/Microsoft_Azure_CreateUIDef/CustomDeploymentBlade/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fazure%2Fappservice-landing-zone-accelerator%2Fmain%2Fscenarios%2Fsecure-baseline-multitenant%2Fazure-resource-manager%2Fmain.json/uiFormDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2Fazure%2Fappservice-landing-zone-accelerator%2Fmain%2Fscenarios%2Fsecure-baseline-multitenant%2Fazure-resource-manager%2Fmain-portal-ux.json)
 
 
-Alternatively, you can clone the repo and follow the instractions below
+Alternatively, you can clone the repo and follow the instructions below
 
 ## Prerequisites 
 - Clone this repo
@@ -24,7 +24,7 @@ The table below summarizes the available parameters and the possible values that
 |location|Azure region where the resources will be deployed in||
 |environment|Required. The name of the environment (e.g. "dev", "test", "prod", "preprod", "staging", "uat", "dr", "qa"). Up to 8 characters long.||
 |vnetHubResourceId|If empty, then a new hub will be created. If you select not to deploy a new Hub resource group, set the resource id of the Hub Virtual Network that you want to peer to. In that case, no new hub will be created and a peering will be created between the new spoke and and existing hub vnet|/subscriptions/<subscription_id>/ resourceGroups/<rg_name>/providers/ Microsoft.Network/virtualNetworks/<vnet_name>|
-|firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewal so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
+|firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewall so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
 |vnetHubAddressSpace|If you deploy a new hub, you need to set the appropriate CIDR of the newly created Hub virtual network|10.242.0.0/20|
 |subnetHubFirewallAddressSpace|CIDR of the subnet that will host the azure Firewall|10.242.0.0/26|
 |subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.64/26|
@@ -92,7 +92,7 @@ done
 
 ### Connect to the Jumpbox VM (deployed in the spoke resource group)
 
-You can connect to the jumpbox win 11 VM only through bastion. The default parameters deploy a Bastion in Standard SKU, with native client support enabled. The jumpbox VM is Microsoft Entra IDJoined by default. This means that you can connect to the jumpbox, either with the local user/password compination (azureuser is the default username) or with a valid Microsoft Entra ID account. In certain circumastances your organization may not allow the device to be enrolled. If the jumpbox VM is Microsoft Entra ID joined and properly intune enrolled, you can use native rdp client to connect by running the below Az CLI commands 
+You can connect to the jumpbox win 11 VM only through bastion. The default parameters deploy a Bastion in Standard SKU, with native client support enabled. The jumpbox VM is Microsoft Entra IDJoined by default. This means that you can connect to the jumpbox, either with the local user/password combination (azureuser is the default username) or with a valid Microsoft Entra ID account. In certain circumstances your organization may not allow the device to be enrolled. If the jumpbox VM is Microsoft Entra ID joined and properly Intune enrolled, you can use native rdp client to connect by running the below Az CLI commands 
 
 From a PowerShell terminal, connect to the DevOps VM using your Microsoft Entra ID credentials (or Windows Hello). 
 
@@ -117,9 +117,9 @@ If your organization requires device enrollment before accessing corporate resou
 
 It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
 
-If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-aad-credentials)
+If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-microsoft-entra-id-credentials)
 
-Once completed, and if you provided a valid (Microsoft Entra ID administrator group used for SQL Server authentication (and not only local SQL user administrator), you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions:
+Once completed, and if you provided a valid Microsoft Entra ID administrator group used for SQL Server authentication (and not only local SQL user administrator), you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions:
 
 ```sql
 CREATE USER [web-app-name] FROM EXTERNAL PROVIDER;

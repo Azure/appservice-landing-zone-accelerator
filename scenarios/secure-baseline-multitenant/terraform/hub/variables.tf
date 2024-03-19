@@ -22,7 +22,7 @@ variable "owner" {
 
 # variable "tenant_id" {
 #   type        = string
-#   description = "[Required] The Azure AD tenant ID for the identities"
+#   description = "[Required] The Microsoft Entra tenant ID for the identities"
 # }
 
 variable "tags" {

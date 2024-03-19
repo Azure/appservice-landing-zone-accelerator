@@ -13,15 +13,15 @@ module "devops_vm" {
 
   source = "../../../shared/terraform-modules/windows-vm"
 
-  resource_group      = azurerm_resource_group.spoke.name
-  vm_name             = "devops"
-  location            = var.location
-  vm_subnet_id        = module.network.subnets["devops"].id
-  admin_username      = var.vm_admin_username
-  admin_password      = var.vm_admin_password
-  aad_admin_username  = var.vm_aad_admin_username
-  aad_admin_object_id = var.vm_aad_admin_object_id
-  global_settings     = local.global_settings
+  resource_group        = azurerm_resource_group.spoke.name
+  vm_name               = "devops"
+  location              = var.location
+  vm_subnet_id          = module.network.subnets["devops"].id
+  admin_username        = var.vm_admin_username
+  admin_password        = var.vm_admin_password
+  entra_admin_username  = var.vm_entra_admin_username
+  entra_admin_object_id = var.vm_entra_admin_object_id
+  global_settings       = local.global_settings
 
   tags = local.base_tags
 

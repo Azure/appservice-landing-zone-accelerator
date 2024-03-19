@@ -27,7 +27,7 @@ param adminUsername string = 'azureuser'
 @secure()
 param adminPassword string
 
-param enableAzureAdJoin bool = true
+param enableEntraJoin bool = true
 
 @description('optional, default value is Standard_B2ms')
 param vmSize string = 'Standard_B2ms'
@@ -63,7 +63,7 @@ param installSsms bool = false
 // Variables   //
 // =========== //
 
-var aadLoginExtensionName = 'AADLoginForWindows'
+var entraLoginExtensionName = 'AADLoginForWindows'
 
 var vmNameMaxLength = 64
 var vmName = length(name) > vmNameMaxLength ? substring(name, 0, vmNameMaxLength) : name
@@ -151,13 +151,13 @@ resource jumphost 'Microsoft.Compute/virtualMachines@2022-08-01' = {
   }
 }
 
-resource virtualMachineName_aadLoginExtensionName 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = if (enableAzureAdJoin) {
+resource virtualMachineName_entraLoginExtensionName 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = if (enableEntraJoin) {
   parent: jumphost
-  name: aadLoginExtensionName
+  name: entraLoginExtensionName
   location: location
   properties: {
     publisher: 'Microsoft.Azure.ActiveDirectory'
-    type: aadLoginExtensionName
+    type: entraLoginExtensionName
     typeHandlerVersion: '1.0'
     autoUpgradeMinorVersion: true
   }

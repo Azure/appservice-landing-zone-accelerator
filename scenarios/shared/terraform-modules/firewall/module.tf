@@ -217,11 +217,11 @@ resource "azurerm_firewall_application_rule_collection" "windows_vm_devops" {
   action              = "Allow"
 
   rule {
-    name = "allow-azure-ad-join"
+    name = "allow-entra-idS-join"
 
     source_addresses = var.devops_subnet_cidr
 
-    # https://learn.microsoft.com/en-us/azure/active-directory/devices/howto-vm-sign-in-azure-ad-windows
+    # https://learn.microsoft.com/en-us/entra/identity/devices/howto-vm-sign-in-azure-ad-windows
     target_fqdns = [
       "enterpriseregistration.windows.net",
       "pas.windows.net",
