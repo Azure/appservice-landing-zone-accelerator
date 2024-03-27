@@ -33,3 +33,9 @@ done
 
 
  # test
+
+#  https://portal.azure.com/#view/Microsoft_Azure_CreateUIDef/CustomDeploymentBlade/uri/URL_TEMPLATE/uiFormDefinitionUri/CUSTOM_UI_DEF_JSON
+# <!-- URL_TEMPLATE: The URL Encoded version of the URI to the remote Azure ARM deployment template -->
+# <!-- CUSTOM_UI_DEF_JSON: The URL Encoded version of the URI to the custom UI Definition json file -->
+
+# <!-- The actual link for our sample deployment  -->

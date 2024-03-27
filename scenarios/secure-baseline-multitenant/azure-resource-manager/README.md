@@ -27,7 +27,8 @@ The table below summarizes the available parameters and the possible values that
 |firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewall so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
 |vnetHubAddressSpace|If you deploy a new hub, you need to set the appropriate CIDR of the newly created Hub virtual network|10.242.0.0/20|
 |subnetHubFirewallAddressSpace|CIDR of the subnet that will host the azure Firewall|10.242.0.0/26|
-|subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.64/26|
+|subnetHubFirewallManagementAddressSpace|CIDR to use for the AzureFirewallManagementSubnet, which is required by AzFW Basic|10.242.0.64/26|
+|subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.128/26|
 |vnetSpokeAddressSpace|CIDR of the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)|10.240.0.0/20|
 |subnetSpokeAppSvcAddressSpace|CIDR of the subnet that will hold the app services plan|10.240.0.0/26|
 |subnetSpokeDevOpsAddressSpace|CIDR of the subnet that will hold devOps agents etc|10.240.10.128/26|
