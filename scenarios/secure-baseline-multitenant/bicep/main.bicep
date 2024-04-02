@@ -24,8 +24,11 @@ param vnetHubAddressSpace string = '10.242.0.0/20'
 @description('CIDR of the subnet hosting the azure Firewall - optional if you want to use an existing hub vnet (vnetHubResourceId)')
 param subnetHubFirewallAddressSpace string = '10.242.0.0/26'
 
+@description('CIDR to use for the AzureFirewallManagementSubnet, which is required by AzFW Basic.')
+param subnetHubFirewallManagementAddressSpace string = '10.242.0.64/26'
+
 @description('CIDR of the subnet hosting the Bastion Service - optional if you want to use an existing hub vnet (vnetHubResourceId)')
-param subnetHubBastionAddressSpace string = '10.242.0.64/26'
+param subnetHubBastionAddressSpace string = '10.242.0.128/26'
 
 @description('CIDR of the SPOKE vnet i.e. 192.168.0.0/24')
 param vnetSpokeAddressSpace string = '10.240.0.0/20'
@@ -189,6 +192,7 @@ module hub 'deploy.hub.bicep' =  if ( empty(vnetHubResourceId) ) {
     tags: tags
     subnetHubBastionAddressSpace: subnetHubBastionAddressSpace
     subnetHubFirewallAddressSpace: subnetHubFirewallAddressSpace
+    subnetHubFirewallManagementAddressSpace: subnetHubFirewallManagementAddressSpace
     vnetSpokeAddressSpace: vnetSpokeAddressSpace
     subnetSpokeDevOpsAddressSpace: subnetSpokeDevOpsAddressSpace
   }
