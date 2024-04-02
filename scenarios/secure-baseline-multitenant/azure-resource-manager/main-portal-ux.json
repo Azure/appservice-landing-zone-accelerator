@@ -379,11 +379,32 @@
                             "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
                         },
                         {
+                            "name": "subnetHubFirewallManagementAddressSpace",
+                            "type": "Microsoft.Common.TextBox",
+                            "label": "Azure Firewall Management Subnet Address Prefix (azFW Basic)",
+                            "subLabel": "",
+                            "defaultValue": "10.242.0.64/26",
+                            "toolTip": "CIDR to use for the Azure Firewall Management subnet  (Azure Firewall Basic). Optional if you want to use an existing hub vnet (vnetHubResourceId)",
+                            "constraints": {
+                                "required": true,
+                                "regex": "",
+                                "validationMessage": "",
+                                "validations": [
+                                    {
+                                        "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(2[0-6]))$",
+                                        "message": "Invalid CIDR range. The address prefix must be in the range [20,26]."
+                                    }
+                                ]
+                            },
+                            "infoMessages": [],
+                            "visible": "[equals(steps('networking').sectionHubSelector.deployHub, 'deployNew')]"
+                        },
+                        {
                             "name": "subnetHubBastionAddressSpace",
                             "type": "Microsoft.Common.TextBox",
                             "label": "Hub Subnet CIDR for Bastion Service",
                             "subLabel": "",
-                            "defaultValue": "10.242.0.64/26",
+                            "defaultValue": "10.242.0.128/26",
                             "toolTip": "CIDR of the subnet hosting the Bastion Service - optional if you want to use an existing hub vnet (vnetHubResourceId)",
                             "constraints": {
                                 "required": false,
@@ -1168,6 +1189,7 @@
                 "environmentName": "[steps('basics').environmentName]",
                 "vnetHubAddressSpace": "[steps('networking').vnetHubAddressSpace]",
                 "subnetHubFirewallAddressSpace": "[steps('networking').subnetHubFirewallAddressSpace]",
+                "subnetHubFirewallManagementAddressSpace": "[steps('networking').subnetHubFirewallManagementAddressSpace]",
                 "subnetHubBastionAddressSpace": "[steps('networking').subnetHubBastionAddressSpace]",
                 "vnetSpokeAddressSpace": "[steps('networking').vnetSpokeAddressSpace]",
                 "subnetSpokeAppSvcAddressSpace": "[if( equals ( steps('basics').appSvcPlanSection.deployAseV3, true), steps('networking').subnetSpokeAppSvcAddressSpaceAse , steps('networking').subnetSpokeAppSvcAddressSpace )]",
