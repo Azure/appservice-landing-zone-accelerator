@@ -8,6 +8,16 @@ module "hub" {
   location         = var.location
   owner            = var.owner
 
+  # Optional Network Config Variables
+  hub_vnet_cidr        = var.hub_vnet_cidr
+  spoke_vnet_cidr      = var.spoke_vnet_cidr
+  firewall_subnet_name = var.firewall_subnet_name
+  firewall_subnet_cidr = var.firewall_subnet_cidr
+  bastion_subnet_name  = var.bastion_subnet_name
+  bastion_subnet_cidr  = var.bastion_subnet_cidr
+  devops_subnet_cidr   = var.devops_subnet_cidr
+
+  # Optional Deployment Variables
   deployment_options = var.deployment_options
   global_settings    = var.global_settings
   tags               = var.tags
@@ -22,53 +32,27 @@ module "spoke" {
   owner            = var.owner
   tenant_id        = var.tenant_id
 
-  hub_vnet_settings = {
-    resource_group_name = module.hub.rg_name
-    name                = module.hub.vnet_name
-
-    firewall = {
-      private_ip = module.hub.firewall_private_ip
-    }
-  }
-
-  ##
   entra_admin_group_name      = var.entra_admin_group_name
   entra_admin_group_object_id = var.entra_admin_group_object_id
+  appsvc_options              = var.appsvc_options
 
-  vm_entra_admin_object_id = var.vm_entra_admin_object_id
-
-}
-
-# Create Spoke via module
-module "spoke" {
-  source = "./spoke"
-
-  application_name = var.application_name
-  environment      = var.environment
-  location         = var.location
-  owner            = var.owner
-  tenant_id        = var.tenant_id
-
+  # Spoke Network Configuration Variables
+  hub_virtual_network      = module.hub.virtual_network
+  firewall_private_ip      = module.hub.firewall_private_ip
+  firewall_rules           = module.hub.firewall_rules
   spoke_vnet_cidr          = var.spoke_vnet_cidr
   devops_subnet_cidr       = var.devops_subnet_cidr
   appsvc_subnet_cidr       = var.appsvc_subnet_cidr
   front_door_subnet_cidr   = var.front_door_subnet_cidr
   private_link_subnet_cidr = var.private_link_subnet_cidr
-  vm_admin_password        = var.vm_admin_password
-  vm_admin_username        = var.vm_admin_username
+
+  # Optional Self-hosted Agent Config Variables
+  vm_admin_username = "jinlelocal"
+  # vm_admin_username = var.vm_admin_password
+  # vm_admin_password = var.vm_admin_password
   vm_entra_admin_username  = var.vm_entra_admin_username
-
-  deployment_options = var.deployment_options
-
-  global_settings = var.global_settings
-  tags            = var.tags
-
-  entra_admin_group_name      = var.entra_admin_group_name
-  entra_admin_group_object_id = var.entra_admin_group_object_id
-
   vm_entra_admin_object_id = var.vm_entra_admin_object_id
 
-  depends_on = [
-    module.hub
-  ]
+  # Spoke Resource Configuration Variables
+  sql_databases = var.sql_databases
 }

@@ -11,7 +11,7 @@ resource "azurecaf_name" "caf_name_sqlserver" {
 }
 
 data "azuread_group" "sql_admin_group" {
-  display_name     = var.entra_admin_group_name
+  display_name     = var.entra_admin_group_object_id == null ? var.entra_admin_group_name : null
   object_id        = var.entra_admin_group_object_id
   security_enabled = true
 }
