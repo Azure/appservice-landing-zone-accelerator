@@ -48,9 +48,9 @@ module "network" {
   name            = var.application_name
   vnet_cidr       = var.spoke_vnet_cidr
   peering_vnet = {
-    id             = data.azurerm_virtual_network.hub.id
-    name           = data.azurerm_virtual_network.hub.name
-    resource_group = data.azurerm_virtual_network.hub.resource_group_name
+    id             = var.hub_virtual_network.id
+    name           = var.hub_virtual_network.name
+    resource_group = var.hub_virtual_network.resource_group_name
   }
 
   subnets = [
@@ -90,13 +90,13 @@ module "private_dns_zones" {
   source = "../../../shared/terraform-modules/private-dns-zone"
   count  = length(local.private_dns_zones)
 
-  resource_group  = data.terraform_remote_state.hub.outputs.rg_name
+  resource_group  = var.hub_virtual_network.resource_group_name
   global_settings = local.global_settings
 
   dns_zone_name = local.private_dns_zones[count.index].name
   dns_records   = lookup(local.private_dns_zones[count.index], "records", [])
   vnet_links = [
-    data.azurerm_virtual_network.hub.id
+    var.hub_virtual_network.id
   ]
 
   tags = local.base_tags
@@ -154,7 +154,7 @@ module "user_defined_routes" {
       name                   = "defaultRoute"
       address_prefix         = "0.0.0.0/0"
       next_hop_type          = "VirtualAppliance"
-      next_hop_in_ip_address = data.terraform_remote_state.hub.outputs.firewall_private_ip
+      next_hop_in_ip_address = var.firewall_private_ip
     }
   ]
 

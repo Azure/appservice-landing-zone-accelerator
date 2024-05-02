@@ -22,8 +22,7 @@ module "devops_vm" {
   entra_admin_username  = var.vm_entra_admin_username
   entra_admin_object_id = var.vm_entra_admin_object_id
   global_settings       = local.global_settings
-
-  tags = local.base_tags
+  tags                  = local.base_tags
 
   identity = {
     type = "UserAssigned"

@@ -100,20 +100,20 @@ variable "devops_subnet_cidr" {
 
 variable "appsvc_subnet_cidr" {
   type        = list(string)
-  description = "The CIDR block for the subnet."
+  description = "[Optional] The CIDR block for the subnet."
   default     = ["10.240.0.0/26"]
 }
 
 variable "front_door_subnet_cidr" {
   type        = list(string)
-  description = "The CIDR block for the subnet."
+  description = "[Optional] The CIDR block for the subnet."
   default     = ["10.240.0.64/26"]
 }
 
 
 variable "private_link_subnet_cidr" {
   type        = list(string)
-  description = "The CIDR block for the subnet."
+  description = "[Optional] The CIDR block for the subnet."
   default     = ["10.240.11.0/24"]
 }
 
@@ -147,7 +147,7 @@ variable "sql_databases" {
     sku_name = string
   }))
 
-  description = "The settings for the SQL databases."
+  description = "[Optional] The settings for the SQL databases."
 
   default = [
     {
@@ -216,7 +216,7 @@ variable "appsvc_options" {
     })
   })
 
-  description = "The options for the app service"
+  description = "[Optional] The options for the app service"
 
   default = {
     service_plan = {
@@ -262,7 +262,7 @@ variable "devops_settings" {
     }))
   })
 
-  description = "The settings for the Azure DevOps agent or GitHub runner"
+  description = "[Optional] The settings for the Azure DevOps agent or GitHub runner"
 
   default = {
     github_runner = null

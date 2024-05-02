@@ -163,7 +163,7 @@ module "private_endpoint_slot" {
   subnet_id                      = var.frontend_subnet_id
   private_connection_resource_id = azurerm_windows_web_app.this.id
 
-  subresource_names = ["sites-${var.webapp_options.slots[0]}"]
+  subresource_names = length(var.webapp_options.slots) < 1 ? null : ["sites-${var.webapp_options.slots[0]}"]
 
   private_dns_zone = var.private_dns_zone
 

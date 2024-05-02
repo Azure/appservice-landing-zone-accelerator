@@ -112,7 +112,7 @@ variable "webapp_options" {
     })
   })
 
-  description = "The options for the app service"
+  description = "[Required] The options for the app service"
 
   validation {
     condition     = contains(["dotnet", "dotnetcore", "java", "php", "python", "node"], var.webapp_options.application_stack.current_stack)
