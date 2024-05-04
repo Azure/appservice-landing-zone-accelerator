@@ -47,12 +47,15 @@ module "spoke" {
   private_link_subnet_cidr = var.private_link_subnet_cidr
 
   # Optional Self-hosted Agent Config Variables
-  vm_admin_username = "jinlelocal"
-  # vm_admin_username = var.vm_admin_password
-  # vm_admin_password = var.vm_admin_password
+  vm_admin_username        = var.vm_admin_username
   vm_entra_admin_username  = var.vm_entra_admin_username
   vm_entra_admin_object_id = var.vm_entra_admin_object_id
 
   # Spoke Resource Configuration Variables
   sql_databases = var.sql_databases
+
+  # Optional Deployment Variables
+  deployment_options = var.deployment_options
+  global_settings    = var.global_settings
+  tags               = var.tags
 }

@@ -4,13 +4,13 @@ resource "azurecaf_name" "caf_name_asev3" {
 
   name          = var.application_name
   resource_type = "azurerm_app_service_environment"
-  prefixes      = var.global_settings.prefixes
-  suffixes      = var.global_settings.suffixes
-  random_length = var.global_settings.random_length
+  prefixes      = local.global_settings.prefixes
+  suffixes      = local.global_settings.suffixes
+  random_length = local.global_settings.random_length
   clean_input   = true
-  passthrough   = var.global_settings.passthrough
+  passthrough   = local.global_settings.passthrough
 
-  use_slug = var.global_settings.use_slug
+  use_slug = local.global_settings.use_slug
 }
 
 resource "azurerm_app_service_environment_v3" "this" {
