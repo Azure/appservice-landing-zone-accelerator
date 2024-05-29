@@ -91,6 +91,33 @@ variable "devops_subnet_cidr" {
 #####################################
 # Spoke Resource Configuration Variables
 #####################################
+variable "oai_sku_name" {
+  description = "[Optional] The SKU name for the OpenAI resource"
+  type        = string
+  default     = "F1"
+}
+
+variable "oai_deployment_models" {
+  description = "[Optional] Map to specify deployment models for the OpenAI resource"
+  type        = any
+  default = {
+    "text-embedding-ada-002" = {
+      name          = "text-embedding-ada-002"
+      model_format  = "OpenAI"
+      model_name    = "text-embedding-ada-002"
+      model_version = "2"
+      scale_type    = "Standard"
+    }
+    "gpt-35-turbo" = {
+      name          = "gpt-35-turbo"
+      model_format  = "OpenAI"
+      model_name    = "gpt-35-turbo"
+      model_version = "0613"
+      scale_type    = "Standard"
+    }
+  }
+}
+
 variable "entra_admin_group_object_id" {
   type        = string
   description = "[Required] The object ID of the Azure AD group that should be granted SQL Admin permissions to the SQL Server"

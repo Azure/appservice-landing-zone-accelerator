@@ -142,6 +142,33 @@ variable "sql_databases" {
   ]
 }
 
+variable "oai_sku_name" {
+  description = "[Optional] The SKU name for the OpenAI resource"
+  type        = string
+  default     = null
+}
+
+variable "oai_deployment_models" {
+  description = "[Optional] Map to specify deployment models for the OpenAI resource"
+  type        = any
+  default = {
+    "text-embedding-ada-002" = {
+      name          = "text-embedding-ada-002"
+      model_format  = "OpenAI"
+      model_name    = "text-embedding-ada-002"
+      model_version = "2"
+      scale_type    = "Standard"
+    }
+    "gpt-35-turbo" = {
+      name          = "gpt-35-turbo"
+      model_format  = "OpenAI"
+      model_name    = "gpt-35-turbo"
+      model_version = "0613"
+      scale_type    = "Standard"
+    }
+  }
+}
+
 variable "deployment_options" {
   type = object({
     enable_waf                 = bool
