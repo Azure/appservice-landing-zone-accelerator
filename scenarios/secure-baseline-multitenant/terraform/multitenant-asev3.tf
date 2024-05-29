@@ -36,6 +36,9 @@ module "spoke" {
   entra_admin_group_object_id = var.entra_admin_group_object_id
   appsvc_options              = var.appsvc_options
 
+  oai_deployment_models = var.oai_deployment_models
+  oai_sku_name          = var.oai_sku_name
+
   # Spoke Network Configuration Variables
   hub_virtual_network      = module.hub.virtual_network
   firewall_private_ip      = module.hub.firewall_private_ip

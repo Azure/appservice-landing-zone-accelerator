@@ -92,7 +92,7 @@ variable "identity" {
     type         = string
     identity_ids = optional(list(string))
   })
-  default     = {
+  default = {
     type = "SystemAssigned"
   }
   description = <<-DESCRIPTION
@@ -144,7 +144,7 @@ variable "pe_subresource" {
 }
 
 variable "pe_private_link_subnet_id" {
-  type = string
+  type        = string
   description = "The ID of the Subnet which the Private Endpoint should be created in. Changing this forces a new resource to be created."
 }
 
@@ -208,7 +208,7 @@ variable "public_network_access_enabled" {
 
 variable "sku_name" {
   type        = string
-  default     = "S0"
+  default     = "F0"
   description = "Specifies the SKU Name for this Cognitive Service Account. Possible values are `F0`, `F1`, `S0`, `S`, `S1`, `S2`, `S3`, `S4`, `S5`, `S6`, `P0`, `P1`, `P2`, `E0` and `DC0`. Default to `S0`."
 }
 
