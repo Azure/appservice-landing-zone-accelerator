@@ -94,7 +94,7 @@ variable "devops_subnet_cidr" {
 variable "oai_sku_name" {
   description = "[Optional] The SKU name for the OpenAI resource"
   type        = string
-  default     = "F1"
+  default     = "S0"
 }
 
 variable "oai_deployment_models" {

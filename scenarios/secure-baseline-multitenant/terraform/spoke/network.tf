@@ -15,7 +15,9 @@ resource "azurecaf_name" "caf_name_spoke_rg" {
   name          = var.application_name
   resource_type = "azurerm_resource_group"
   # prefixes      = concat(["spoke"], local.global_settings.prefixes)
-  prefixes      = local.global_settings.prefixes
+  prefixes = local.global_settings.prefixes
+  suffixes = local.global_settings.suffixes
+
   random_length = local.global_settings.random_length
   clean_input   = true
   passthrough   = local.global_settings.passthrough
@@ -33,6 +35,8 @@ resource "azurecaf_name" "appsvc_subnet" {
   name          = var.application_name
   resource_type = "azurerm_subnet"
   prefixes      = concat(["spoke"], local.global_settings.prefixes)
+  suffixes      = local.global_settings.suffixes
+
   random_length = local.global_settings.random_length
   clean_input   = true
   passthrough   = local.global_settings.passthrough

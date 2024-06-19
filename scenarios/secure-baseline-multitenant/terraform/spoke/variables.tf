@@ -160,7 +160,7 @@ variable "sql_databases" {
 variable "oai_sku_name" {
   description = "[Optional] The SKU name for the OpenAI resource"
   type        = string
-  default     = null
+  default     = "S0"
 }
 
 variable "oai_deployment_models" {
