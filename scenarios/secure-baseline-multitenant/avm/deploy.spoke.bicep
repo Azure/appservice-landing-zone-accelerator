@@ -3,6 +3,13 @@ targetScope = 'resourceGroup'
 // reference to the BICEP naming module
 param naming object
 
+@allowed([
+  'None'
+  'CanNotDelete'
+  'ReadOnly'
+])
+@description('Optional. Specify the type of lock.')
+param lock string
 
 @description('Azure region where the resources will be deployed in')
 param location string = resourceGroup().location
@@ -212,6 +219,19 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.1' = {
     name: resourceNames.vnetSpoke
     location: location
     subnets: subnets
+    peerings: [
+      {
+        allowForwardedTraffic: false
+        allowGatewayTransit: false
+        allowVirtualNetworkAccess: true
+        remotePeeringAllowForwardedTraffic: true
+        remotePeeringAllowVirtualNetworkAccess: true
+        remotePeeringEnabled: true
+        remotePeeringName: 'customName'
+        remoteVirtualNetworkId: vnetHub.id
+        useRemoteGateways: false
+      }
+    ]
     tags: tags
   }
 }
@@ -227,7 +247,7 @@ module logAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0
   }
 }
 
-@description('NSG Rules for the private enpoint subnet.')
+@description('NSG Rules for the private endpoint subnet.')
 module networkSecurityGroupPEP 'br/public:avm/res/network/network-security-group:0.1.1' = {
   name: take('nsgPep-${deployment().name}', 64)
   params: {
@@ -275,22 +295,187 @@ module routeTable 'br/public:avm/res/network/route-table:0.2.2' = {
   }
 }
 
-module keyVault 'br/public:avm/res/key-vault/vault:0.6.2' = {
+resource snetPe 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
+  name: '${virtualNetwork.outputs.name}/${resourceNames.snetPe}'
+}
+
+resource snetAppSvc 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
+  name: '${virtualNetwork.outputs.name}/${resourceNames.snetAppSvc}'
+}
+
+resource snetDevOps 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
+  name: '${virtualNetwork.outputs.name}/${resourceNames.snetDevOps}'
+}
+
+module keyVault './modules/keyvault.module.bicep' = {
   name: take('${resourceNames.keyvault}-keyvaultModule-Deployment', 64)
   params: {
     name: resourceNames.keyvault
+    vnetHubResourceId: vnetHubResourceId
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks
     location: location
     tags: tags
   }
 }
-var keyvaultDnsZoneName = 'privatelink.vaultcore.azure.net'
 
-module keyVaultDnsZone 'br/public:avm/res/network/private-dns-zone:0.3.0' = {
-  scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
-  name: take('${resourceNames.keyvault}-dnsZoneModule-Deployment', 64)
+// Web App
+
+module webApp './modules/app-service.module.bicep' = {
+  name: 'webApp-Deployment'
   params: {
-    name: keyvaultDnsZoneName
     location: location
+    logAnalyticsWsId: logAnalyticsWorkspace.outputs.logAnalyticsWorkspaceId
+    lock: lock
+    virtualNetworkLinks: virtualNetworkLinks
+    keyvaultName: keyVault.outputs.keyvaultName
+    deployAseV3: deployAseV3
+    aseName: resourceNames.aseName
+    subnetIdForVnetInjection: snetAppSvc.id
+    appServicePlanName: resourceNames.aspName
+    sku: webAppPlanSku
+    webAppBaseOs: webAppBaseOs
+    webAppName: resourceNames.webApp
+    subnetPrivateEndpointId: snetPe.id
+    redisConnectionStringSecretName: (deployRedis) ? redisCache.outputs.redisConnectionStringSecretName : ''
+    sqlDbConnectionString: (deployAzureSql) ?  'Server=tcp:${sqlServerAndDefaultDb.outputs.sqlServerName}${environment().suffixes.sqlServerHostname};Authentication=Active Directory Default;Database=${resourceNames.sqlDb};' : ''
+    managedIdentityName: resourceNames.appSvcUserAssignedManagedIdentity
+    deployAppConfig: deployAppConfig 
+    appConfigurationName: resourceNames.appConfig
+    vnetHubResourceId: vnetHubResourceId
     tags: tags
   }
 }
+
+module asePrivateDnsZone '../../shared/bicep/avm/private-dns-zone.bicep' = if ( deployAseV3 ) {
+  scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
+  name: 'asev3-hub-PrivateDnsZone-Deployment'
+  params: {
+    name: deployAseV3 ? '${webApp.outputs.aseName}.appserviceenvironment.net' : ''
+    virtualNetworkLinks: virtualNetworkLinks
+    tags: tags
+    aRecords: [
+      {
+        name: '*'
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
+        ttl: 3600
+      }
+      {
+        name: '*.scm'
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
+        ttl: 3600
+      }
+      {
+        name: '@'
+        ipv4Address: deployAseV3 ? webApp.outputs.internalInboundIpAddress : ''
+        ttl: 3600
+      }
+    ]
+  }
+  dependsOn: [
+    webApp
+  ]
+} 
+
+module afd './modules/front-door.module.bicep' = {
+  name: take ('AzureFrontDoor-${resourceNames.frontDoor}-deployment', 64)
+  params: {
+    afdName: resourceNames.frontDoor
+    diagnosticWorkspaceId: logAnalyticsWorkspace.outputs.resourceId
+    endpointName: resourceNames.frontDoorEndPoint
+    originGroupName: resourceNames.frontDoorEndPoint
+    origins: [
+      {
+          name: webApp.outputs.webAppName  //1-50 Alphanumerics and hyphens
+          hostname: webApp.outputs.webAppHostName
+          enabledState: true
+          privateLinkOrigin: {
+            privateEndpointResourceId: webApp.outputs.webAppResourceId
+            privateLinkResourceType: 'sites'
+            privateEndpointLocation: webApp.outputs.webAppLocation
+          }
+      }
+    ]
+    skuName:'Premium_AzureFrontDoor'
+    wafPolicyName: resourceNames.frontDoorWaf 
+  }
+}
+
+module autoApproveAfdPe 'modules/approve-afd-pe.module.bicep' = if (autoApproveAfdPrivateEndpoint) {
+  name: take ('autoApproveAfdPe-${resourceNames.frontDoor}-deployment', 64)
+  params: { 
+    location: location
+    idAfdPeAutoApproverName: resourceNames.idAfdApprovePeAutoApprover
+  }
+  dependsOn: [
+    afd
+  ]
+}
+module vmWindowsModule 'modules/vmJumphost.module.bicep' = if (deployJumpHost) {
+  name: 'vmWindowsModule-Deployment'
+  params: {
+    adminPassword: adminPassword
+    adminUsername: adminUsername
+    location: location
+    tags: tags
+    vmJumpHostUserAssignedManagedIdentityName: resourceNames.vmJumpHostUserAssignedManagedIdentity
+    vmWindowsJumpboxName: resourceNames.vmWindowsJumpbox
+    keyvaultName: keyVault.outputs.keyvaultName
+    appConfigStoreId: webApp.outputs.appConfigStoreId
+    subnetId: snetDevOps.id
+    githubRepository: githubRepository
+    githubToken: githubToken
+    adoOrganization: adoOrganization
+    adoToken: adoToken
+    installClis: installClis
+    installSsms: installSsms 
+  }
+}
+
+module redisCache 'modules/redis.module.bicep' = if (deployRedis) {
+  name: take('${resourceNames.redisCache}-redisModule-Deployment', 64)
+  params: {
+    name: resourceNames.redisCache
+    location: location
+    tags: tags
+    logAnalyticsWsId: logAnalyticsWorkspace.outputs.logAnalyticsWorkspaceId  
+    vnetHubResourceId: vnetHubResourceId
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks
+    keyvaultName: keyVault.outputs.keyvaultName
+  }
+}
+
+module sqlServerAndDefaultDb 'modules/sql-database.module.bicep' = if (deployAzureSql) {
+  name: take('${resourceNames.sqlServer}-sqlServer-Deployment', 64)
+  params: {
+    name: resourceNames.sqlServer
+    databaseName: resourceNames.sqlDb
+    location: location
+    tags: tags 
+    vnetHubResourceId: vnetHubResourceId
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks
+    administrators: sqlServerAdministrators
+    sqlAdminLogin: sqlAdminLogin
+    sqlAdminPassword: sqlAdminPassword
+  }
+}
+
+module openAi 'modules/open-ai.module.bicep'= if(deployOpenAi) {
+  name: take('${resourceNames.openAiAccount}-openAiModule-Deployment', 64)
+  params: {
+    name: resourceNames.openAiAccount
+    deploymentName: resourceNames.openAiDeployment
+    location: location
+    tags: tags
+    vnetHubResourceId: vnetHubResourceId
+    subnetPrivateEndpointId: snetPe.id
+    virtualNetworkLinks: virtualNetworkLinks
+    logAnalyticsWsId: logAnalyticsWorkspace.outputs.logAnalyticsWorkspaceId
+    deployOpenAiGptModel: deployOpenAiGptModel
+  }
+}
+
+output vnetSpokeName string = virtualNetwork.outputs.name
+output vnetSpokeId string = virtualNetwork.outputs.resourceId
