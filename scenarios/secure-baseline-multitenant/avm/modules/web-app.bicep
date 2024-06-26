@@ -135,9 +135,9 @@ param hasPrivateLink bool
 ])
 param redundancyMode string = 'None'
 
-// =========== //
-// Variables   //
-// =========== //
+// ------------------
+//    VARIABLES
+// ------------------
 var diagnosticsLogsSpecified = [for category in filter(diagnosticLogCategoriesToEnable, item => item != 'allLogs'): {
   category: category
   enabled: true
@@ -164,10 +164,6 @@ var identity = identityType != 'None' ? {
 } : null
 
 var webapp_dns_name = '.azurewebsites.net'
-
-// ============ //
-// Dependencies //
-// ============ //
 
 var siteConfigConfigurationMap  = {
   windowsNet6 : {    
@@ -217,6 +213,10 @@ var siteConfigConfigurationMap  = {
     use32BitWorkerProcess: false    
   }
 }
+
+// ------------------
+//    RESOURCES
+// ------------------
 
 module webApp 'br/public:avm/res/web/site:0.3.8' = {
   name: 'app-${uniqueString(deployment().name, location)}'
@@ -294,7 +294,7 @@ module webApp 'br/public:avm/res/web/site:0.3.8' = {
   }
 }
 
-resource webAppExisting 'Microsoft.Web/sites@2023-12-01' existing = {
+resource webAppExisting 'Microsoft.Web/sites@2023-01-01' existing = {
   name: name
 }
 
@@ -308,9 +308,9 @@ resource webAppHostBinding 'Microsoft.Web/sites/hostNameBindings@2022-03-01' = i
 }
 
 
-// =========== //
-// Outputs     //
-// =========== //
+// ------------------
+//    OUTPUTS
+// ------------------
 
 @description('The name of the site.')
 output name string = webApp.outputs.name

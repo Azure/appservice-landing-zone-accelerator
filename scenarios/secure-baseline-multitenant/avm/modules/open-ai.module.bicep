@@ -36,6 +36,10 @@ param deployOpenAiGptModel bool = false
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 var openAiDnsZoneName = 'privatelink.openai.azure.com' 
 
+// ------------------
+//    RESOURCES
+// ------------------
+
 module openAI '../../../shared/bicep/cognitive-services/open-ai.bicep' = {
   name: 'openAI-${name}-Deployment'
   params: {

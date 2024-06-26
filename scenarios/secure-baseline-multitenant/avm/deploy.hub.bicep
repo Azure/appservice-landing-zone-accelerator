@@ -1,5 +1,9 @@
 targetScope = 'resourceGroup'
 
+// ------------------
+//    PARAMETERS
+// ------------------
+
 // reference to the BICEP naming module
 param naming object
 
@@ -44,6 +48,10 @@ param azureSkuTier string = 'Standard'
 @description('Optional. Resource ID of the DDoS protection plan to assign the VNET to. If it\'s left blank, DDoS protection will not be configured. If it\'s provided, the VNET created by this template will be attached to the referenced DDoS protection plan. The DDoS protection plan can exist in the same or in a different subscription.')
 param ddosProtectionPlanId string = ''
 
+// ------------------
+//    VARIABLES
+// ------------------
+
 var resourceNames = {
   bastionService: naming.bastionHost.name
   laws: take ('${naming.logAnalyticsWorkspace.name}-hub', 63)
@@ -76,98 +84,6 @@ var subnets = [
     }
   }
 ]
-
-module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.1' = {
-  name: 'vnetHub-Deployment'
-  params: {
-    addressPrefixes: [vnetHubAddressSpace]
-    name: resourceNames.vnetHub
-    location: location
-    subnets: subnets
-    enableTelemetry: true
-    ddosProtectionPlanResourceId: !empty(ddosProtectionPlanId) ? ddosProtectionPlanId : null
-  }
-}
-
-module publicIpFWMgmt 'br/public:avm/res/network/public-ip-address:0.3.1' = {
-  name: 'AZFW-Management-PIP'
-  params: {
-    name: 'AZFW-Management-PIP'
-    location: location
-    zones: zones
-    publicIPAllocationMethod: 'Static'
-    skuName: 'Standard'
-    skuTier: 'Regional'
-    enableTelemetry: true
-  }
-}
-
-module publicipbastion 'br/public:avm/res/network/public-ip-address:0.3.1' = {
-  name: 'publicipbastion'
-  params: {
-    name: resourceNames.bastionService
-    location: location
-    publicIPAllocationMethod: 'Static'
-    skuName: 'Standard'
-    skuTier: 'Regional'
-    enableTelemetry: true
-  }
-}
-
-module bastionHost 'br/public:avm/res/network/bastion-host:0.1.1' = {
-  name: 'bastion'
-  params: {
-    name: resourceNames.bastionService
-    vNetId: virtualNetwork.outputs.resourceId
-    bastionSubnetPublicIpResourceId: publicipbastion.outputs.resourceId
-    location: location
-    enableTelemetry: true
-  }
-}
-
-module logAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0.3.5' = {
-  name: 'laws'
-  params: {
-    name: resourceNames.laws
-    location: location
-    skuName: 'PerGB2018'
-    dataRetention: 30
-    tags: tags
-  }
-}
-
-module azureFirewall 'br/public:avm/res/network/azure-firewall:0.1.1' = {
-  name: take('afw-${deployment().name}', 64)
-  params: {
-    name: virtualNetwork.outputs.name
-    location: location
-    azureSkuTier: azureSkuTier
-    virtualNetworkResourceId: virtualNetwork.outputs.resourceId
-    publicIPResourceID: publicIpFWMgmt.outputs.resourceId
-    managementIPResourceID: publicIpFWMgmt.outputs.resourceId
-    applicationRuleCollections: applicationRules
-    natRuleCollections: []
-    threatIntelMode: 'Deny'
-    networkRuleCollections: networkRules
-    diagnosticSettings: [
-      {
-        name: 'customSetting'
-        workspaceResourceId: logAnalyticsWorkspace.outputs.resourceId
-      }
-    ]
-  }
-}
-
-
-@description('Resource name of the hub vnet')
-output vnetHubName string = virtualNetwork.outputs.name
-
-@description('Resource Id of the hub vnet')
-output vnetHubId string = virtualNetwork.outputs.resourceId
-
-@description('The private IP of the Azure firewall.')
-output firewallPrivateIp string = azureFirewall.outputs.privateIp
-
 
 @description('Application Rules for the Firewall')
 var applicationRules =  [
@@ -468,3 +384,101 @@ var networkRules =  [
         }
       }
     ]
+
+// ------------------
+//    RESOURCES
+// ------------------
+
+module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.1' = {
+  name: 'vnetHub-Deployment'
+  params: {
+    addressPrefixes: [vnetHubAddressSpace]
+    name: resourceNames.vnetHub
+    location: location
+    subnets: subnets
+    enableTelemetry: true
+    ddosProtectionPlanResourceId: !empty(ddosProtectionPlanId) ? ddosProtectionPlanId : null
+  }
+}
+
+module publicIpFWMgmt 'br/public:avm/res/network/public-ip-address:0.3.1' = {
+  name: 'AZFW-Management-PIP'
+  params: {
+    name: 'AZFW-Management-PIP'
+    location: location
+    zones: zones
+    publicIPAllocationMethod: 'Static'
+    skuName: 'Standard'
+    skuTier: 'Regional'
+    enableTelemetry: true
+  }
+}
+
+module publicipbastion 'br/public:avm/res/network/public-ip-address:0.3.1' = {
+  name: 'publicipbastion'
+  params: {
+    name: resourceNames.bastionService
+    location: location
+    publicIPAllocationMethod: 'Static'
+    skuName: 'Standard'
+    skuTier: 'Regional'
+    enableTelemetry: true
+  }
+}
+
+module bastionHost 'br/public:avm/res/network/bastion-host:0.1.1' = {
+  name: 'bastion'
+  params: {
+    name: resourceNames.bastionService
+    vNetId: virtualNetwork.outputs.resourceId
+    bastionSubnetPublicIpResourceId: publicipbastion.outputs.resourceId
+    location: location
+    enableTelemetry: true
+  }
+}
+
+module logAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0.3.5' = {
+  name: 'laws'
+  params: {
+    name: resourceNames.laws
+    location: location
+    skuName: 'PerGB2018'
+    dataRetention: 30
+    tags: tags
+  }
+}
+
+module azureFirewall 'br/public:avm/res/network/azure-firewall:0.1.1' = {
+  name: take('afw-${deployment().name}', 64)
+  params: {
+    name: virtualNetwork.outputs.name
+    location: location
+    azureSkuTier: azureSkuTier
+    virtualNetworkResourceId: virtualNetwork.outputs.resourceId
+    publicIPResourceID: publicIpFWMgmt.outputs.resourceId
+    managementIPResourceID: publicIpFWMgmt.outputs.resourceId
+    applicationRuleCollections: applicationRules
+    natRuleCollections: []
+    threatIntelMode: 'Deny'
+    networkRuleCollections: networkRules
+    diagnosticSettings: [
+      {
+        name: 'customSetting'
+        workspaceResourceId: logAnalyticsWorkspace.outputs.resourceId
+      }
+    ]
+  }
+}
+
+// ------------------
+//    OUTPUTS
+// ------------------
+
+@description('Resource name of the hub vnet')
+output vnetHubName string = virtualNetwork.outputs.name
+
+@description('Resource Id of the hub vnet')
+output vnetHubId string = virtualNetwork.outputs.resourceId
+
+@description('The private IP of the Azure firewall.')
+output firewallPrivateIp string = azureFirewall.outputs.privateIp

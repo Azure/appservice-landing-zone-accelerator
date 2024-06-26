@@ -96,6 +96,10 @@ param diagnosticMetricsToEnable array = [
 @description('Has the resource private endpoint?')
 param hasPrivateLink bool = false
 
+// ------------------
+//    VARIABLES
+// ------------------
+
 var diagnosticsLogsSpecified = [for category in filter(diagnosticLogCategoriesToEnable, item => item != 'allLogs'): {
   category: category
   enabled: true
@@ -113,6 +117,10 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   timeGrain: null
   enabled: true
 }]
+
+// ------------------
+//    RESOURCES
+// ------------------
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
   name: keyvaultName
@@ -157,7 +165,7 @@ module redisCache 'br/public:avm/res/cache/redis:0.3.2' = {
   }
 }
 
-resource redisCacheExisting 'Microsoft.Cache/redis@2024-03-01' existing = {
+resource redisCacheExisting 'Microsoft.Cache/redis@2023-08-01' existing = {
   name: redisCache.outputs.name
 }
 
@@ -172,7 +180,7 @@ resource redisConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2018-02-
   ]
 } 
 
-module redisPrivateDnsZone '../../../shared/bicep/avm/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
+module redisPrivateDnsZone './private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
   // condiotional scope is not working: https://github.com/Azure/bicep/issues/7367
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
@@ -197,6 +205,9 @@ module peRedis '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(subn
   }
 }
 
+// ------------------
+//    OUTPUTS
+// ------------------
 
 @description('The resource name.')
 output name string = redisCache.outputs.name

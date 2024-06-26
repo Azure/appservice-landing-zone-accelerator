@@ -373,7 +373,7 @@ module webAppUserAssignedManagedIdenity 'br/public:avm/res/managed-identity/user
   }
 }
 
-module webAppPrivateDnsZone '../../../shared/bicep/avm/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) && !deployAseV3 ) {
+module webAppPrivateDnsZone './private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) && !deployAseV3 ) {
   // conditional scope is not working: https://github.com/Azure/bicep/issues/7367
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
@@ -429,7 +429,7 @@ module appConfigStore 'br/public:avm/res/app-configuration/configuration-store:0
   }
 }
 
-module azConfigPrivateDnsZone '../../../shared/bicep/avm/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) && deployAppConfig ) {
+module azConfigPrivateDnsZone './private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) && deployAppConfig ) {
   // conditional scope is not working: https://github.com/Azure/bicep/issues/7367
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
@@ -451,7 +451,9 @@ module webAppIdentityOnKeyvaultSecretsUser '../../../shared/bicep/role-assignmen
   }
 }
 
-
+// ------------------
+//    OUTPUTS
+// ------------------
 output appConfigStoreName string =  deployAppConfig ? appConfigStore.outputs.name : ''
 output appConfigStoreId string = deployAppConfig ? appConfigStore.outputs.resourceId : ''
 output webAppName string = webApp.outputs.name

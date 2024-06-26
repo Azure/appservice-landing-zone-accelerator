@@ -102,7 +102,9 @@ param diagnosticLogCategoriesToEnable array = [
   'allLogs'
 ]
 
-// Variables
+// ------------------
+//    VARIABLES
+// ------------------
 
 var diagnosticsLogsSpecified = [for category in filter(diagnosticLogCategoriesToEnable, item => item != 'allLogs' && item != ''): {
   category: category
@@ -117,7 +119,9 @@ var diagnosticsLogs = contains(diagnosticLogCategoriesToEnable, 'allLogs') ? [
 ] : contains(diagnosticLogCategoriesToEnable, '') ? [] : diagnosticsLogsSpecified
 
 
-// Resources
+// ------------------
+//    RESOURCES
+// ------------------
 
 module appServiceEnvironment 'br/public:avm/res/web/hosting-environment:0.1.1' = {
   name: 'appServiceEnvironment-${uniqueString(deployment().name, location)}'
@@ -162,6 +166,10 @@ module appServiceEnvironment_configurations_networking '../../../shared/bicep/ap
     remoteDebugEnabled: remoteDebugEnabled
   }
 }
+
+// ------------------
+//    OUTPUTS
+// ------------------
 
 @description('The resource ID of the App Service Environment.')
 output resourceId string = appServiceEnvironment.outputs.resourceId

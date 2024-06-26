@@ -1,0 +1,91 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workloadName" : {
+           "value": "appsvclza1"         
+        },
+        "environmentName": {
+            "value": "${AZURE_ENV_NAME}"
+        },
+        "deployAseV3": {
+            "value": false
+        },
+        "vnetHubResourceId": {
+            "value": ""
+        },
+        "firewallInternalIp": {
+            "value": ""
+        },
+        "vnetHubAddressSpace": {
+            "value": "10.242.0.0/20"
+        },
+        "enableEgressLockdown" : {
+            "value": true
+        },
+        "deployRedis": {
+            "value": false
+        },
+        "deployAzureSql": {
+            "value": false
+        },
+        "deployAppConfig": {
+            "value": false
+        },
+        "deployJumpHost": {
+            "value": false
+        },
+        "deployOpenAi": {
+            "value": false
+        },
+        "autoApproveAfdPrivateEndpoint": {
+            "value": true
+        },
+        "subnetHubFirewallAddressSpace": {
+            "value": "10.242.0.0/26"
+        },
+        "subnetHubFirewallManagementAddressSpace": {
+            "value": "10.242.0.64/26" 
+        },
+        "subnetHubBastionAddressSpace": {
+            "value": "10.242.0.128/26"
+        },
+        "vnetSpokeAddressSpace": {
+            "value": "10.240.0.0/20"
+        },
+        "subnetSpokeAppSvcAddressSpace": {
+            "value": "10.240.0.0/26"
+        },
+        "subnetSpokeDevOpsAddressSpace": {
+            "value": "10.240.10.128/26"
+        },
+        "subnetSpokePrivateEndpointAddressSpace": {
+            "value": "10.240.11.0/24"
+        },
+        "webAppPlanSku": {
+            "value": "S1"
+        },
+        "webAppBaseOs" : 
+        {
+            "value": "Windows"
+        },
+        "adminUsername": {
+            "value": "azureuser"
+        },
+        "adminPassword": {
+            "value": "zxNMasKL12()"
+        },
+        "resourceTags": {
+            "value": {
+                "deployment": "bicep"
+            }
+        }, 
+        "sqlServerAdministrators": {
+            "value": {
+                "login": "Microsoft Entra SQL Admins",
+                "sid": "xxx-xxxx-xxxx-xxxx",
+                "tenantId": "xxx-xxxx-xxxx-xxxx"
+            }
+        }
+    }
+}

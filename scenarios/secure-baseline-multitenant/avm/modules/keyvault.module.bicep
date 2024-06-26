@@ -95,7 +95,7 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.6.2' = {
     tags: tags
   }
 }
-module keyvaultPrivateDnsZone '../../../shared/bicep/avm/private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
+module keyvaultPrivateDnsZone './private-dns-zone.bicep' = if ( !empty(subnetPrivateEndpointId) ) {
     // conditional scope is not working: https://github.com/Azure/bicep/issues/7367 but workaround: https://github.com/Azure/bicep/issues/10419#issuecomment-1507708535
   //scope: empty(vnetHubResourceId) ? resourceGroup() : resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]) 
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
@@ -119,7 +119,10 @@ module peKeyvault '../../../shared/bicep/private-endpoint.bicep' = if ( !empty(s
     subresource: 'vault'
   }
 }
-//output scopeRG string = resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4]).id
+
+// ------------------
+//    OUTPUTS
+// ------------------
 
 output keyvaultId string = keyVault.outputs.resourceId
 output keyvaultName string = keyVault.outputs.name

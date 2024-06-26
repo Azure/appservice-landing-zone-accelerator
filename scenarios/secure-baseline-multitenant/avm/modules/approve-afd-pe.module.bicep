@@ -11,12 +11,18 @@ param location string
 @description('Optional. The name of the user-assigned identity to be used to auto-approve the private endpoint connection of the AFD. Changing this forces a new resource to be created.')
 param idAfdPeAutoApproverName string = guid(resourceGroup().id, 'userAssignedIdentity')
 
-// Variables
+// ------------------
+//    VARIABLES
+// ------------------
+
 var roleAssignmentName = guid(resourceGroup().id, 'contributor')
 var contributorRoleDefinitionId = resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
 var deploymentScriptName = 'runAfdApproval'
 
-// Resources
+// ------------------
+//    RESOURCES
+// ------------------
+
 @description('The User Assigned MAnaged Identity that will be given Contributor role on the Resource Group in order to auto-approve the Private Endpoint Connection of the AFD.')
 module userAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.2.2' = {
   name: 'userAssignedIdentity'
@@ -75,5 +81,8 @@ resource log 'Microsoft.Resources/deploymentScripts/logs@2020-10-01' existing = 
   name: 'default'
 }
 
+// ------------------
+//    OUTPUTS
+// ------------------
 @description('The output of the deployment script that will be used to auto-approve the Private Endpoint Connection of the AFD.')
 output logs string = log.properties.log

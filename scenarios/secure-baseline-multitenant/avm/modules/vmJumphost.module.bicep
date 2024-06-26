@@ -66,16 +66,26 @@ param dnsServers array = []
 @description('Optional. The network security group (NSG) to attach to the network interface.')
 param networkSecurityGroupResourceId string = ''
 
-resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
-  name: keyvaultName
-}
+param enableEntraJoin bool = true
 
 @description('optional, default value is Standard_B2ms')
 param vmSize string = 'Standard_B2ms'
 
-var entraLoginExtensionName = 'AADLoginForWindows'
+// ------------------
+//    VARIABLES
+// ------------------
 
-param enableEntraJoin bool = true
+var entraLoginExtensionName = 'AADLoginForWindows'
+var installClisValue = installClis ? '-install_clis' : ''
+var installSsmsValue = installSsms ? '-install_ssms' : ''
+
+// ------------------
+//    RESOURCES
+// ------------------
+
+resource keyvault 'Microsoft.KeyVault/vaults@2022-11-01' existing = {
+  name: keyvaultName
+}
 
 module networkInterface 'br/public:avm/res/network/network-interface:0.2.4' = {
   name: 'networkInterface-Deployment'
@@ -143,7 +153,7 @@ module jumpBox 'br/public:avm/res/compute/virtual-machine:0.5.1' = {
   }
 }
 
-resource jumphostExisting 'Microsoft.Compute/virtualMachines@2024-03-01' existing = {
+resource jumphostExisting 'Microsoft.Compute/virtualMachines@2023-09-01' existing = {
   name: vmWindowsJumpboxName
 }
 
@@ -159,9 +169,6 @@ resource virtualMachineName_entraLoginExtensionName 'Microsoft.Compute/virtualMa
   }
 }
 
-
-var installClisValue = installClis ? '-install_clis' : ''
-var installSsmsValue = installSsms ? '-install_ssms' : ''
 resource vmPostDeploymentScript 'Microsoft.Compute/virtualMachines/extensions@2023-03-01' = {
   parent: jumphostExisting
   name: 'customScriptExtension'

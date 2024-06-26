@@ -1,5 +1,9 @@
 targetScope = 'resourceGroup'
 
+// ------------------
+//    PARAMETERS
+// ------------------
+
 // reference to the BICEP naming module
 param naming object
 
@@ -106,6 +110,10 @@ param sqlAdminPassword string = ''
 @description('set to true if you want to auto approve the Private Endpoint of the AFD')
 param autoApproveAfdPrivateEndpoint bool = true
 
+// ------------------
+//    VARIABLES
+// ------------------
+
 var resourceNames = {
   storageAccount: naming.storageAccount.nameUnique
   vnetSpoke: take('${naming.virtualNetwork.name}-spoke', 80)
@@ -207,6 +215,10 @@ var virtualNetworkLinks = [
 
 var vnetHubSplitTokens = !empty(vnetHubResourceId) ? split(vnetHubResourceId, '/') : array('')
 
+// ------------------
+//    RESOURCES
+// ------------------
+
 resource vnetHub  'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])
   name: vnetHubSplitTokens[8]
@@ -227,11 +239,21 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.1' = {
         remotePeeringAllowForwardedTraffic: true
         remotePeeringAllowVirtualNetworkAccess: true
         remotePeeringEnabled: true
-        remotePeeringName: 'customName'
+        remotePeeringName: 'hub-to-spoke-bidirectional'
         remoteVirtualNetworkId: vnetHub.id
         useRemoteGateways: false
       }
     ]
+    tags: tags
+  }
+}
+
+module routeTable 'br/public:avm/res/network/route-table:0.2.2' = if (!empty(firewallInternalIp) &&  (enableEgressLockdown) ) {
+  name: 'routeTableToFirewall-Deployment'
+  params: {
+    name: resourceNames.routeTable
+    location: location
+    routes: udrRoutes
     tags: tags
   }
 }
@@ -252,15 +274,15 @@ module networkSecurityGroupPEP 'br/public:avm/res/network/network-security-group
   name: take('nsgPep-${deployment().name}', 64)
   params: {
     name: resourceNames.pepNsg
-    tags: tags
     diagnosticSettings: [{workspaceResourceId: logAnalyticsWorkspace.outputs.logAnalyticsWorkspaceId}]
     location: location
     securityRules: []
+    tags: tags
   }
 }
 
 @description('NSG Rules for the ASE subnet.')
-module networkSecurityGroupASE 'br/public:avm/res/network/network-security-group:0.1.1' = {
+module networkSecurityGroupASE 'br/public:avm/res/network/network-security-group:0.1.1' = if(deployAseV3) {
   name: take('nsgAse-${deployment().name}', 64)
   params: {
     name: resourceNames.aseNsg
@@ -282,16 +304,6 @@ module networkSecurityGroupASE 'br/public:avm/res/network/network-security-group
         }        
       }
     ]
-  }
-}
-
-module routeTable 'br/public:avm/res/network/route-table:0.2.2' = {
-  name: resourceNames.routeTable
-  params: {
-    name: resourceNames.routeTable
-    location: location
-    tags: tags
-    routes: udrRoutes
   }
 }
 
@@ -319,8 +331,6 @@ module keyVault './modules/keyvault.module.bicep' = {
   }
 }
 
-// Web App
-
 module webApp './modules/app-service.module.bicep' = {
   name: 'webApp-Deployment'
   params: {
@@ -347,7 +357,7 @@ module webApp './modules/app-service.module.bicep' = {
   }
 }
 
-module asePrivateDnsZone '../../shared/bicep/avm/private-dns-zone.bicep' = if ( deployAseV3 ) {
+module asePrivateDnsZone './modules/private-dns-zone.bicep' = if ( deployAseV3 ) {
   scope: resourceGroup(vnetHubSplitTokens[2], vnetHubSplitTokens[4])   //let the Private DNS zone in the same spoke network as the ASE v3 - for testing
   name: 'asev3-hub-PrivateDnsZone-Deployment'
   params: {

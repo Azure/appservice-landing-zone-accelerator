@@ -1,3 +1,7 @@
+// ------------------
+//    PARAMETERS
+// ------------------
+
 @description('Required. Name of the AFD profile.')
 param afdName string
 
@@ -58,12 +62,38 @@ param wafPolicyMode string = 'Prevention'
 @description('if no diagnostic serttings are required, provide an empty string. Resource ID of log analytics workspace.')
 param diagnosticWorkspaceId string
 
+@description('Optional. The name of logs that will be streamed. "allLogs" includes all possible logs for the resource.')
+@allowed([
+  'allLogs'
+  'FrontDoorAccessLog'
+  'FrontDoorWebApplicationFirewallLog'
+  'FrontDoorHealthProbeLog'
+])
+param diagnosticLogCategoriesToEnable array = [
+  'allLogs'
+]
+
+@description('Optional. The name of metrics that will be streamed.')
+@allowed([
+  'AllMetrics'
+])
+param diagnosticMetricsToEnable array = [
+  'AllMetrics'
+]
+
+@description('Optional. The name of the diagnostic setting, if deployed.')
+param diagnosticSettingsName string = '${afdName}-diagnosticSettings'
+
 // Create an Array of all Endpoint which includes customDomain Id and afdEndpoint Id
 // This array is needed to be attached to Microsoft.Cdn/profiles/securitypolicies
 // var customDomainIds = [for (domain, index) in customDomains: {id: custom_domains[index].id}]
 // var afdEndpointIds = [{id: endpoint.id}]
 // var endPointIdsForWaf = union(customDomainIds, afdEndpointIds)
 // var endPointIdsForWaf = [{id: profile.outputs}]
+
+// ------------------
+//    VARIABLES
+// ------------------
 
 @description('Default Content to compress')
 var contentTypeCompressionList = [
@@ -110,25 +140,6 @@ var contentTypeCompressionList = [
   'text/x-java-source'
 ]
 
-@description('Optional. The name of logs that will be streamed. "allLogs" includes all possible logs for the resource.')
-@allowed([
-  'allLogs'
-  'FrontDoorAccessLog'
-  'FrontDoorWebApplicationFirewallLog'
-  'FrontDoorHealthProbeLog'
-])
-param diagnosticLogCategoriesToEnable array = [
-  'allLogs'
-]
-
-@description('Optional. The name of metrics that will be streamed.')
-@allowed([
-  'AllMetrics'
-])
-param diagnosticMetricsToEnable array = [
-  'AllMetrics'
-]
-
 var diagnosticsLogsSpecified = [for category in filter(diagnosticLogCategoriesToEnable, item => item != 'allLogs'): {
   category: category
   enabled: true
@@ -147,9 +158,9 @@ var diagnosticsMetrics = [for metric in diagnosticMetricsToEnable: {
   enabled: true
 }]
 
-@description('Optional. The name of the diagnostic setting, if deployed.')
-param diagnosticSettingsName string = '${afdName}-diagnosticSettings'
-
+// ------------------
+//    RESOURCES
+// ------------------
 
 module profile 'br/public:avm/res/cdn/profile:0.3.0' = {
   name: 'afdProfileDeployment'
@@ -232,11 +243,11 @@ module profile 'br/public:avm/res/cdn/profile:0.3.0' = {
   }
 }
 
-resource frontDoorExisting 'Microsoft.Cdn/profiles@2024-02-01' existing = {
+resource frontDoorExisting 'Microsoft.Cdn/profiles@2023-05-01' existing = {
   name: afdName
 }
 
-resource endpointExisting 'Microsoft.Cdn/profiles/endpoints@2024-02-01' existing = {
+resource endpointExisting 'Microsoft.Cdn/profiles/endpoints@2023-05-01' existing = {
   name: endpointName
   parent: frontDoorExisting
 }
@@ -323,6 +334,9 @@ module waf 'br/public:avm/res/network/front-door-web-application-firewall-policy
   }
 }
 
+// ------------------
+//    OUTPUTS
+// ------------------
 
 @description('The name of the CDN profile.')
 output afdProfileName string = profile.name
