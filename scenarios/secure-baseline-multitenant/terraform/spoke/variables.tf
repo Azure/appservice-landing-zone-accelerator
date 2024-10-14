@@ -98,6 +98,11 @@ variable "devops_subnet_cidr" {
   default     = ["10.240.10.128/26"]
 }
 
+variable "ase_subnet_cidr" {
+  type        = list(string)
+  description = "[Optional] The CIDR block for the subnet. Defaults to 10.241.0.0/26"
+  default     = ["10.240.5.0/24"]
+}
 variable "appsvc_subnet_cidr" {
   type        = list(string)
   description = "[Optional] The CIDR block for the subnet."
@@ -155,6 +160,12 @@ variable "sql_databases" {
       sku_name = "S0"
     }
   ]
+}
+
+variable "zone_redundant" {
+  type        = bool
+  description = "[Optional] Enable zone redundancy for the app service environment. Defaults to true"
+  default     = true
 }
 
 variable "oai_sku_name" {
@@ -217,10 +228,9 @@ variable "deployment_options" {
 variable "appsvc_options" {
   type = object({
     service_plan = object({
-      os_type        = string
-      sku_name       = string
-      worker_count   = optional(number)
-      zone_redundant = optional(bool)
+      os_type      = string
+      sku_name     = string
+      worker_count = optional(number)
     })
     web_app = object({
       slots = list(string)
@@ -251,7 +261,7 @@ variable "appsvc_options" {
       sku_name = "S1"
     }
     web_app = {
-      slots = []
+      slots = null
 
       application_stack = {
         current_stack  = "dotnet"

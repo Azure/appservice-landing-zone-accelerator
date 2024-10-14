@@ -261,21 +261,21 @@ Connect to the VM using the local VM admin credentials and run `dsregcmd /status
 ```
 
 If the VM is Microsoft Entra ID joined, try to login in with the Microsoft Entra ID credentials again after a few minutes. If it's not Microsoft Entra ID joined, attempt to re-install the VM extension or manually enroll the VM to Microsoft Entra ID by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3 |
 | <a name="requirement_azurecaf"></a> [azurecaf](#requirement\_azurecaf) | >=1.2.23 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.66.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.27 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.89.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.28 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.5.0 |
 
 ## Modules
 
@@ -289,15 +289,16 @@ If the VM is Microsoft Entra ID joined, try to login in with the Microsoft Entra
 | Name | Type |
 |------|------|
 | [azurecaf_name.caf_name_spoke_rg](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurerm_resource_group.spoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_resource_group.spoke](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/resource_group) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_application_name"></a> [application\_name](#input\_application\_name) | The name of your application | `string` | `"sec-baseline-1-spoke"` | no |
-| <a name="input_appsvc_options"></a> [appsvc\_options](#input\_appsvc\_options) | The options for the app service | <pre>object({<br>    service_plan = object({<br>      os_type        = string<br>      sku_name       = string<br>      worker_count   = optional(number)<br>      zone_redundant = optional(bool)<br>    })<br>    web_app = object({<br>      slots = list(string)<br><br>      application_stack = object({<br>        current_stack       = string # required for windows<br>        dotnet_version      = optional(string)<br>        docker_image        = optional(string) # linux only<br>        docker_image_tag    = optional(string) # linux only<br>        php_version         = optional(string)<br>        node_version        = optional(string)<br>        java_version        = optional(string)<br>        python              = optional(bool)   # windows only<br>        python_version      = optional(string) # linux only<br>        java_server         = optional(string) # linux only<br>        java_server_version = optional(string) # linux only<br>        go_version          = optional(string) # linux only<br>        ruby_version        = optional(string) # linux only<br>      })<br>    })<br>  })</pre> | <pre>{<br>  "service_plan": {<br>    "os_type": "Windows",<br>    "sku_name": "S1"<br>  },<br>  "web_app": {<br>    "application_stack": {<br>      "current_stack": "dotnet",<br>      "dotnet_version": "6.0"<br>    },<br>    "slots": []<br>  }<br>}</pre> | no |
+| <a name="input_appsvc_options"></a> [appsvc\_options](#input\_appsvc\_options) | The options for the app service | <pre>object({<br>    service_plan = object({<br>      os_type        = string<br>      sku_name       = string<br>      worker_count   = optional(number)<br>      zone_redundant = optional(bool)<br>    })<br>    web_app = object({<br>      slots = optional(list(string))<br><br>      application_stack = object({<br>        current_stack       = string # required for windows<br>        dotnet_version      = optional(string)<br>        docker_image        = optional(string) # linux only<br>        docker_image_tag    = optional(string) # linux only<br>        php_version         = optional(string)<br>        node_version        = optional(string)<br>        java_version        = optional(string)<br>        python              = optional(bool)   # windows only<br>        python_version      = optional(string) # linux only<br>        java_server         = optional(string) # linux only<br>        java_server_version = optional(string) # linux only<br>        go_version          = optional(string) # linux only<br>        ruby_version        = optional(string) # linux only<br>      })<br>    })<br>  })</pre> | <pre>{<br>  "service_plan": {<br>    "os_type": "Windows",<br>    "sku_name": "S1",<br>    "zone_redundant": true<br>  },<br>  "web_app": {<br>    "application_stack": {<br>      "current_stack": "dotnet",<br>      "dotnet_version": "6.0"<br>    },<br>    "slots": []<br>  }<br>}</pre> | no |
 | <a name="input_appsvc_subnet_cidr"></a> [appsvc\_subnet\_cidr](#input\_appsvc\_subnet\_cidr) | [Optional] The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.0.0/26"<br>]</pre> | no |
+| <a name="input_ase_subnet_cidr"></a> [ase\_subnet\_cidr](#input\_ase\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.241.0.0/26 | `list(string)` | <pre>[<br>  "10.240.5.0/24"<br>]</pre> | no |
 | <a name="input_bastion_subnet_cidr"></a> [bastion\_subnet\_cidr](#input\_bastion\_subnet\_cidr) | [Optional] The CIDR block(s) for the bastion subnet. Defaults to 10.242.0.64/26 | `list(string)` | <pre>[<br>  "10.242.0.64/26"<br>]</pre> | no |
 | <a name="input_bastion_subnet_name"></a> [bastion\_subnet\_name](#input\_bastion\_subnet\_name) | [Optional] Name of the subnet to deploy bastion resource to. Defaults to 'AzureBastionSubnet' | `string` | `"AzureBastionSubnet"` | no |
 | <a name="input_deployment_options"></a> [deployment\_options](#input\_deployment\_options) | [Optional] Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache. | <pre>object({<br>    enable_waf                 = bool<br>    enable_egress_lockdown     = bool<br>    enable_diagnostic_settings = bool<br>    deploy_bastion             = bool<br>    deploy_redis               = bool<br>    deploy_sql_database        = bool<br>    deploy_app_config          = bool<br>    deploy_vm                  = bool<br>    deploy_openai              = bool<br>    deploy_asev3               = bool<br>  })</pre> | <pre>{<br>  "deploy_app_config": false,<br>  "deploy_asev3": false,<br>  "deploy_bastion": false,<br>  "deploy_openai": false,<br>  "deploy_redis": false,<br>  "deploy_sql_database": false,<br>  "deploy_vm": false,<br>  "enable_diagnostic_settings": false,<br>  "enable_egress_lockdown": false,<br>  "enable_waf": false<br>}</pre> | no |
@@ -327,4 +328,4 @@ If the VM is Microsoft Entra ID joined, try to login in with the Microsoft Entra
 ## Outputs
 
 No outputs.
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

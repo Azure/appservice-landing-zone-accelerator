@@ -1,13 +1,13 @@
 # spoke
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3 |
 | <a name="requirement_azurecaf"></a> [azurecaf](#requirement\_azurecaf) | >=1.2.23 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.66.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.5.0 |
 
 ## Providers
 
@@ -44,11 +44,11 @@
 | [azurecaf_name.caf_name_law](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.caf_name_spoke_rg](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.law](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurerm_app_service_environment_v3.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_environment_v3) | resource |
-| [azurerm_log_analytics_workspace.law](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) | resource |
-| [azurerm_resource_group.spoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
-| [azurerm_user_assigned_identity.contributor](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
-| [azurerm_user_assigned_identity.reader](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [azurerm_app_service_environment_v3.this](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/app_service_environment_v3) | resource |
+| [azurerm_log_analytics_workspace.law](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/log_analytics_workspace) | resource |
+| [azurerm_resource_group.spoke](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/resource_group) | resource |
+| [azurerm_user_assigned_identity.contributor](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/user_assigned_identity) | resource |
+| [azurerm_user_assigned_identity.reader](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/user_assigned_identity) | resource |
 | [random_integer.unique_id](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) | resource |
 
 ## Inputs
@@ -56,8 +56,9 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_application_name"></a> [application\_name](#input\_application\_name) | The name of your application | `string` | `"sec-baseline-1-spoke"` | no |
-| <a name="input_appsvc_options"></a> [appsvc\_options](#input\_appsvc\_options) | [Optional] The options for the app service | <pre>object({<br>    service_plan = object({<br>      os_type        = string<br>      sku_name       = string<br>      worker_count   = optional(number)<br>      zone_redundant = optional(bool)<br>    })<br>    web_app = object({<br>      slots = list(string)<br><br>      application_stack = object({<br>        current_stack       = string # required for windows<br>        dotnet_version      = optional(string)<br>        docker_image        = optional(string) # linux only<br>        docker_image_tag    = optional(string) # linux only<br>        php_version         = optional(string)<br>        node_version        = optional(string)<br>        java_version        = optional(string)<br>        python              = optional(bool)   # windows only<br>        python_version      = optional(string) # linux only<br>        java_server         = optional(string) # linux only<br>        java_server_version = optional(string) # linux only<br>        go_version          = optional(string) # linux only<br>        ruby_version        = optional(string) # linux only<br>      })<br>    })<br>  })</pre> | <pre>{<br>  "service_plan": {<br>    "os_type": "Windows",<br>    "sku_name": "S1"<br>  },<br>  "web_app": {<br>    "application_stack": {<br>      "current_stack": "dotnet",<br>      "dotnet_version": "6.0"<br>    },<br>    "slots": []<br>  }<br>}</pre> | no |
+| <a name="input_appsvc_options"></a> [appsvc\_options](#input\_appsvc\_options) | [Optional] The options for the app service | <pre>object({<br>    service_plan = object({<br>      os_type      = string<br>      sku_name     = string<br>      worker_count = optional(number)<br>    })<br>    web_app = object({<br>      slots = list(string)<br><br>      application_stack = object({<br>        current_stack       = string # required for windows<br>        dotnet_version      = optional(string)<br>        docker_image        = optional(string) # linux only<br>        docker_image_tag    = optional(string) # linux only<br>        php_version         = optional(string)<br>        node_version        = optional(string)<br>        java_version        = optional(string)<br>        python              = optional(bool)   # windows only<br>        python_version      = optional(string) # linux only<br>        java_server         = optional(string) # linux only<br>        java_server_version = optional(string) # linux only<br>        go_version          = optional(string) # linux only<br>        ruby_version        = optional(string) # linux only<br>      })<br>    })<br>  })</pre> | <pre>{<br>  "service_plan": {<br>    "os_type": "Windows",<br>    "sku_name": "S1"<br>  },<br>  "web_app": {<br>    "application_stack": {<br>      "current_stack": "dotnet",<br>      "dotnet_version": "6.0"<br>    },<br>    "slots": null<br>  }<br>}</pre> | no |
 | <a name="input_appsvc_subnet_cidr"></a> [appsvc\_subnet\_cidr](#input\_appsvc\_subnet\_cidr) | [Optional] The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.0.0/26"<br>]</pre> | no |
+| <a name="input_ase_subnet_cidr"></a> [ase\_subnet\_cidr](#input\_ase\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.241.0.0/26 | `list(string)` | <pre>[<br>  "10.240.5.0/24"<br>]</pre> | no |
 | <a name="input_deployment_options"></a> [deployment\_options](#input\_deployment\_options) | Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache. | <pre>object({<br>    enable_waf                 = bool<br>    enable_egress_lockdown     = bool<br>    enable_diagnostic_settings = bool<br>    deploy_asev3               = bool<br>    deploy_bastion             = bool<br>    deploy_redis               = bool<br>    deploy_sql_database        = bool<br>    deploy_app_config          = bool<br>    deploy_vm                  = bool<br>    deploy_openai              = bool<br>  })</pre> | <pre>{<br>  "deploy_app_config": true,<br>  "deploy_asev3": false,<br>  "deploy_bastion": true,<br>  "deploy_openai": true,<br>  "deploy_redis": true,<br>  "deploy_sql_database": true,<br>  "deploy_vm": true,<br>  "enable_diagnostic_settings": true,<br>  "enable_egress_lockdown": true,<br>  "enable_waf": true<br>}</pre> | no |
 | <a name="input_devops_settings"></a> [devops\_settings](#input\_devops\_settings) | [Optional] The settings for the Azure DevOps agent or GitHub runner | <pre>object({<br>    github_runner = optional(object({<br>      repository_url = string<br>      token          = string<br>    }))<br><br>    devops_agent = optional(object({<br>      organization_url = string<br>      token            = string<br>    }))<br>  })</pre> | <pre>{<br>  "devops_agent": null,<br>  "github_runner": null<br>}</pre> | no |
 | <a name="input_devops_subnet_cidr"></a> [devops\_subnet\_cidr](#input\_devops\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.240.10.128/16 | `list(string)` | <pre>[<br>  "10.240.10.128/26"<br>]</pre> | no |
@@ -82,6 +83,7 @@
 | <a name="input_vm_admin_username"></a> [vm\_admin\_username](#input\_vm\_admin\_username) | [Optional] The username for the local VM admin account. Autogenerated if null. Prefer using the Azure AD admin account. | `string` | `null` | no |
 | <a name="input_vm_entra_admin_object_id"></a> [vm\_entra\_admin\_object\_id](#input\_vm\_entra\_admin\_object\_id) | [Optional] The Azure AD object ID for the VM admin user/group. If vm\_entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
 | <a name="input_vm_entra_admin_username"></a> [vm\_entra\_admin\_username](#input\_vm\_entra\_admin\_username) | [Optional] The Azure AD username for the VM admin account. If vm\_entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_zone_redundant"></a> [zone\_redundant](#input\_zone\_redundant) | [Optional] Enable zone redundancy for the app service environment. Defaults to true | `bool` | `true` | no |
 
 ## Outputs
 
@@ -98,4 +100,4 @@
 | <a name="output_web_app_name"></a> [web\_app\_name](#output\_web\_app\_name) | n/a |
 | <a name="output_web_app_slot_name"></a> [web\_app\_slot\_name](#output\_web\_app\_slot\_name) | n/a |
 | <a name="output_web_app_uri"></a> [web\_app\_uri](#output\_web\_app\_uri) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

@@ -43,6 +43,7 @@ resource "azurecaf_name" "appsvc_subnet" {
   use_slug      = local.global_settings.use_slug
 }
 
+
 ## Deploy Spoke VNet with Server Farm, Ingress, Private Link and DevOps subnets
 module "network" {
   source = "../../../shared/terraform-modules/network"
@@ -58,6 +59,7 @@ module "network" {
     resource_group = var.hub_virtual_network.resource_group_name
   }
 
+
   subnets = [
     {
       name        = "serverFarm"
@@ -70,6 +72,17 @@ module "network" {
         }
       }
     },
+    var.deployment_options.deploy_asev3 ? {
+      name        = "hostingEnvironments"
+      subnet_cidr = var.ase_subnet_cidr
+      delegation = {
+        name = "Microsoft.Web.hostingEnvironments"
+        service_delegation = {
+          name    = "Microsoft.Web/hostingEnvironments"
+          actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+        }
+      }
+    } : null,
     {
       name        = "ingress"
       subnet_cidr = var.front_door_subnet_cidr

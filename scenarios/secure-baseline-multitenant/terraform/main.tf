@@ -6,7 +6,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">=3.66.0"
+      version = "4.5.0"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"

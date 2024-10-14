@@ -33,6 +33,10 @@ module "openai" {
     {
       default_action = "Deny"
       virtual_network_rules = [
+        var.deployment_options.deploy_asev3 ? {
+          subnet_id                            = module.network.subnets["hostingEnvironments"].id
+          ignore_missing_vnet_service_endpoint = true
+        } : null,
         {
           subnet_id                            = module.network.subnets["serverFarm"].id
           ignore_missing_vnet_service_endpoint = true

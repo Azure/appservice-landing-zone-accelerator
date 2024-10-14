@@ -1,16 +1,18 @@
 # key-vault
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.25 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.60.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.28 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.5.0 |
 
 ## Modules
 
@@ -44,7 +46,7 @@ No modules.
 | <a name="input_secret_reader_identities"></a> [secret\_reader\_identities](#input\_secret\_reader\_identities) | The list of identities that will be granted secret reader permissions | `list(string)` | n/a | yes |
 | <a name="input_sku_name"></a> [sku\_name](#input\_sku\_name) | The sku name for the app service plan | `string` | `"standard"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the resource. | `map(string)` | `{}` | no |
-| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Microsoft Entra tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
+| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Azure AD tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
 | <a name="input_unique_id"></a> [unique\_id](#input\_unique\_id) | The unique id | `string` | n/a | yes |
 
 ## Outputs
@@ -53,4 +55,4 @@ No modules.
 |------|-------------|
 | <a name="output_vault_name"></a> [vault\_name](#output\_vault\_name) | n/a |
 | <a name="output_vault_uri"></a> [vault\_uri](#output\_vault\_uri) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

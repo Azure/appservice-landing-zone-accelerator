@@ -44,6 +44,7 @@ module "spoke" {
   firewall_private_ip      = module.hub.firewall_private_ip
   firewall_rules           = module.hub.firewall_rules
   spoke_vnet_cidr          = var.spoke_vnet_cidr
+  ase_subnet_cidr          = var.ase_subnet_cidr
   devops_subnet_cidr       = var.devops_subnet_cidr
   appsvc_subnet_cidr       = var.appsvc_subnet_cidr
   front_door_subnet_cidr   = var.front_door_subnet_cidr

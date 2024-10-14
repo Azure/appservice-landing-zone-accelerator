@@ -9,7 +9,7 @@ resource "azurerm_private_endpoint" "this" {
     name                           = var.name
     private_connection_resource_id = var.private_connection_resource_id
 
-    subresource_names    = length(var.subresource_names) == 0 ? null : var.subresource_names
+    subresource_names    = var.subresource_names
     is_manual_connection = false
   }
 

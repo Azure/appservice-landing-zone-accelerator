@@ -47,22 +47,24 @@ variable "deployment" {
     model_format    = string
     model_name      = string
     model_version   = string
-    scale_type      = string
     rai_policy_name = optional(string)
+    sku_name        = optional(string)
+    sku_tier        = optional(string)
+    sku_size        = optional(string)
+    sku_family      = optional(string)
+    sku_capacity    = optional(number)
   }))
-  default     = {}
+
   description = <<-DESCRIPTION
       type = map(object({
         name                 = (Required) The name of the Cognitive Services Account Deployment. Changing this forces a new resource to be created.
         cognitive_account_id = (Required) The ID of the Cognitive Services Account. Changing this forces a new resource to be created.
-        model = {
-          model_format  = (Required) The format of the Cognitive Services Account Deployment model. Changing this forces a new resource to be created. Possible value is OpenAI.
-          model_name    = (Required) The name of the Cognitive Services Account Deployment model. Changing this forces a new resource to be created.
-          model_version = (Required) The version of Cognitive Services Account Deployment model.
-        }
-        scale = {
-          scale_type = (Required) Deployment scale type. Possible value is Standard. Changing this forces a new resource to be created.
-        }
+        model_format  = (Required) The format of the Cognitive Services Account Deployment model. Changing this forces a new resource to be created. Possible value is OpenAI.
+        model_name    = (Required) The name of the Cognitive Services Account Deployment model. Changing this forces a new resource to be created.
+        model_version = (Required) The version of Cognitive Services Account Deployment model.
+        sku_name = (Required) The name of the SKU.  Possible values are `Standard`, `GlobalBatch`, `GlobalStandard`, and `ProvisionedManaged
+        sku_tier = (Optional) The tier of the SKU. Possible values are `Free`, `Basic`, `Standard`, `Premium`, and `Enterprise`
+        
         rai_policy_name = (Optional) The name of RAI policy. Changing this forces a new resource to be created.
       }))
   DESCRIPTION
