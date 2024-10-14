@@ -63,7 +63,7 @@
             "value": "10.240.11.0/24"
         },
         "webAppPlanSku": {
-            "value": "S1"
+            "value": "P1V3_AZ"
         },
         "webAppBaseOs" : 
         {

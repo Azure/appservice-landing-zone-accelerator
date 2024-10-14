@@ -203,7 +203,7 @@ variable "appsvc_options" {
       os_type        = string
       sku_name       = string
       worker_count   = optional(number)
-      zone_redundant = optional(bool)
+      zone_redundant = optional(bool, true)
     })
     web_app = object({
       slots = list(string)
@@ -231,7 +231,9 @@ variable "appsvc_options" {
   default = {
     service_plan = {
       os_type  = "Windows"
-      sku_name = "S1"
+      sku_name = "P1V3"
+      worker_count = 3
+      zone_redundant = true
     }
     web_app = {
       slots = []
