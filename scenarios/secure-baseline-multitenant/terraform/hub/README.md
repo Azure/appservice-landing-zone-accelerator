@@ -54,10 +54,10 @@
 
 | Name | Description |
 |------|-------------|
-| <a name="output_bastion_name"></a> [bastion\_name](#output\_bastion\_name) | n/a |
 | <a name="output_firewall_private_ip"></a> [firewall\_private\_ip](#output\_firewall\_private\_ip) | n/a |
 | <a name="output_firewall_rules"></a> [firewall\_rules](#output\_firewall\_rules) | n/a |
-| <a name="output_rg_name"></a> [rg\_name](#output\_rg\_name) | n/a |
-| <a name="output_vnet_id"></a> [vnet\_id](#output\_vnet\_id) | n/a |
-| <a name="output_vnet_name"></a> [vnet\_name](#output\_vnet\_name) | n/a |
+| <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a |
+| <a name="output_virtual_network"></a> [virtual\_network](#output\_virtual\_network) | n/a |
+| <a name="output_virtual_network_id"></a> [virtual\_network\_id](#output\_virtual\_network\_id) | n/a |
+| <a name="output_virtual_network_name"></a> [virtual\_network\_name](#output\_virtual\_network\_name) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

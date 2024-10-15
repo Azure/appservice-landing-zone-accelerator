@@ -42,20 +42,26 @@ variable "log_analytics_workspace_id" {
   description = "The log analytics workspace id"
 }
 
+variable "app_service_environment_id" {
+  type        = string
+  description = "The app service environment id"
+  default     = null
+}
+
 variable "service_plan_options" {
   type = object({
-    os_type                    = string
-    sku_name                   = string
-    app_service_environment_id = optional(string)
-    worker_count               = optional(number)
-    zone_redundant             = optional(bool)
+    os_type        = string
+    sku_name       = string
+    worker_count   = optional(number)
+    zone_redundant = optional(bool)
   })
 
   description = "The options for the app service"
 
   default = {
-    os_type  = "Windows"
-    sku_name = "S1"
+    os_type      = "Windows"
+    sku_name     = "S1"
+    worker_count = 3
   }
 
   validation {
@@ -90,7 +96,12 @@ variable "identity" {
 
 variable "webapp_options" {
   type = object({
-    slots = optional(list(string))
+    slots                    = list(string)
+    instrumentation_key      = optional(string)
+    ai_connection_string     = optional(string)
+    vnet_route_all_enabled   = optional(bool)
+    use_32_bit_worker        = optional(bool)
+    vnet_integration_enabled = optional(bool)
 
     application_stack = optional(object({
       current_stack       = optional(string) # required for windows
@@ -119,6 +130,8 @@ variable "webapp_options" {
   default = {
     slots             = []
     application_stack = {}
+
+
   }
 }
 

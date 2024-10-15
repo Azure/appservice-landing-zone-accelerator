@@ -1,5 +1,5 @@
 locals {
-  deployment_name = "sec-baseline-1-hub"
+  deployment_name = "sec-baseline-hub"
 
   global_settings = merge({
     environment = try(var.global_settings.environment, var.environment)
