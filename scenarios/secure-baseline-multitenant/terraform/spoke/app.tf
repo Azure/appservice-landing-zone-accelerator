@@ -65,12 +65,7 @@ module "sql_database" {
   private_link_subnet_id      = module.network.subnets["privateLink"].id
   global_settings             = local.global_settings
   tags                        = local.base_tags
-  sql_databases = [
-    {
-      name     = "sample-db"
-      sku_name = "S0"
-    }
-  ]
+  sql_databases               = var.sql_databases
 
   private_dns_zone = local.provisioned_dns_zones["privatelink.database.windows.net"]
 }
