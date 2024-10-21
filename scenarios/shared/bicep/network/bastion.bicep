@@ -23,15 +23,16 @@ var snetBastion = {
   id: '${vnetId}/subnets/AzureBastionSubnet' 
 }
 
-
-module publicIp 'publicIp.bicep' = {
-  name: 'pipBastionHostDeployment'
-  params: {
-    location: location
-    name: 'pip-${bastionNameSantized}'
-    skuTier: 'Regional'
-    skuName: 'Standard'
-    publicIPAllocationMethod: 'Static'    
+resource publicIp 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
+  name: 'pip-${bastionNameSantized}'
+  location: location
+  tags: tags
+  sku: {
+    name: 'Standard'
+    tier: 'Regional'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
   }
 }
 
@@ -50,7 +51,7 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-07-01' = {
         properties: {
           subnet: snetBastion
           publicIPAddress: {
-            id: publicIp.outputs.pipResourceId
+            id: publicIp.id
           }
         }
       }
@@ -59,4 +60,4 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-07-01' = {
 }
 
 @description('The standard public IP assigned to the Bastion Service')
-output bastionPublicIp string = publicIp.outputs.ipAddress
+output bastionPublicIp string = publicIp.properties.ipAddress

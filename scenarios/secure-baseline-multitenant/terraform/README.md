@@ -1,4 +1,4 @@
-# Multitenant App Service Secure Baseline Terraform Implementation
+# Multi-tenant App Service Secure Baseline Terraform Implementation
 
 ## Steps of Implementation for App Service Construction Set
 
@@ -37,6 +37,9 @@ location         = "swedencentral"
 location_short   = "swe"
 
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+entra_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+entra_admin_group_name      = "Microsoft Entra ID SQL Admins"
+vm_entra_admin_username     = "bob@contoso.com"
 entra_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 entra_admin_group_name      = "Microsoft Entra ID SQL Admins"
 vm_entra_admin_username     = "bob@contoso.com"

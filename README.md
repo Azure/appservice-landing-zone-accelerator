@@ -13,7 +13,6 @@ This repository provides both enterprise architecture guidelines and a reference
     - [Step 2. Configure and test the deployment in your own environment](#step-2-configure-and-test-the-deployment-in-your-own-environment)
       - [Deploy with Azure Portal (Bicep/ARM)](#deploy-with-azure-portal-biceparm)
       - [Locally deploy with Bicep](#locally-deploy-with-bicep)
-      - [Locally deploy with Terraform](#locally-deploy-with-terraform)
     - [Step 3. Configure GitHub Actions](#step-3-configure-github-actions)
     - [App Patterns](#app-patterns)
   - [Got a feedback](#got-a-feedback)
@@ -89,7 +88,7 @@ Before deploying the Bicep IaC artifacts, you need to review and customize the v
 The expandable table below summarizes the available parameters and the possible values that can be set.
 
 <details>
-<summary><h4>Bicep Configuration Parameters Table</h4></summary>
+<summary>Bicep Configuration Parameters Table</summary>
 
 | Name | Description | Example | 
 |------|-------------|---------|
@@ -101,7 +100,8 @@ The expandable table below summarizes the available parameters and the possible 
 |firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewal so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
 |vnetHubAddressSpace|If you deploy a new hub, you need to set the appropriate CIDR of the newly created Hub virtual network|10.242.0.0/20|
 |subnetHubFirewallAddressSpace|CIDR of the subnet that will host the azure Firewall|10.242.0.0/26|
-|subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.64/26|
+|subnetHubFirewallManagementAddressSpace|CIDR to use for the AzureFirewallManagementSubnet, which is required by AzFW Basic|10.242.0.64/26|
+|subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.128/26|
 |vnetSpokeAddressSpace|CIDR of the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)|10.240.0.0/20|
 |subnetSpokeAppSvcAddressSpace|CIDR of the subnet that will hold the app services plan. ATTENTION: If you deploy ASEv3 this CIDR should be x.x.x.x/24 |10.240.0.0/26 (*USE 10.240.0.0/24 if deployAseV3=true*)|
 |subnetSpokeDevOpsAddressSpace|CIDR of the subnet that will hold devOps agents etc|10.240.10.128/26|
@@ -119,7 +119,7 @@ The expandable table below summarizes the available parameters and the possible 
 
 </details>
 <details>
-<summary><h4> Locally deploy with Terraform</h4></summary>
+<summary> Locally deploy with Terraform </summary>
 1. Ensure you are logged in to Azure CLI and have selected the correct subscription.
 1. Navigate to the Terraform deployment directory (same directory as the `main.tf` file).
     - [scenarios/secure-baseline-multitenant/terraform/hub](scenarios/secure-baseline-multitenant/terraform/hub/)

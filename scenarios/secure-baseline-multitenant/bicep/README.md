@@ -26,7 +26,8 @@ The table below summarizes the available parameters and the possible values that
 |firewallInternalIp|If you select to create a new Hub, the UDR for locking the egress traffic will be created as well, no matter what value you set to that variable. However, if you select to connect to an existing hub, then you need to provide the internal IP of the azure firewall so that the deployment can create the UDR for locking down egress traffic. If not given, no UDR will be created||
 |vnetHubAddressSpace|If you deploy a new hub, you need to set the appropriate CIDR of the newly created Hub virtual network|10.242.0.0/20|
 |subnetHubFirewallAddressSpace|CIDR of the subnet that will host the azure Firewall|10.242.0.0/26|
-|subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.64/26|
+|subnetHubFirewallManagementAddressSpace|CIDR to use for the AzureFirewallManagementSubnet, which is required by AzFW Basic|10.242.0.64/26|
+|subnetHubBastionAddressSpace|CIDR of the subnet that will host the Bastion Service|10.242.0.128/26|
 |vnetSpokeAddressSpace|CIDR of the spoke vnet that will hold the app services plan and the rest supporting services (and their private endpoints)|10.240.0.0/20|
 |subnetSpokeAppSvcAddressSpace|CIDR of the subnet that will hold the app services plan. ATTENTION: If you deploy ASEv3 this CIDR should be x.x.x.x/24 |10.240.0.0/26 (*USE 10.240.0.0/24 if deployAseV3=true*)|
 |subnetSpokeDevOpsAddressSpace|CIDR of the subnet that will hold devOps agents etc|10.240.10.128/26|
@@ -54,7 +55,7 @@ az deployment sub create \
     --template-file main.bicep \
     --location $location \
     --name $deploymentName \
-    --parameters ./main.parameters.jsonc
+    --parameters ./main.parameters.local.jsonc
 ```
 
 ### Powershell (windows based OS)
@@ -131,7 +132,7 @@ If your organization requires device enrollment before accessing corporate resou
 
 It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
 
-If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-aad-credentials)
+If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](../terraform/README.md#unable-to-connect-to-devops-vm-using-microsoft-entra-id-credentials)
 
 Once completed, and if you provided a valid (Microsoft Entra ID) administrator group used for SQL Server authentication (and not only local SQL user administrator), you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions:
 

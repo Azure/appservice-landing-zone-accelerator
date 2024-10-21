@@ -63,7 +63,7 @@ module vmWindows '../../../shared/bicep/compute/jumphost-win11.bicep' = {
     adminPassword: adminPassword
     adminUsername: adminUsername
     subnetId: subnetDevOpsId
-    enableAzureAdJoin: true
+    enableEntraJoin: true
     userAssignedIdentities: {
       '${vmJumpHostUserAssignedManagedIdentity.outputs.id}': {}
     }
