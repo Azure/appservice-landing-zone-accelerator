@@ -15,7 +15,7 @@ terraform {
   # If called as a module, this backend configuration block will have no effect.
   # backend "azurerm" {}
 }
- 
+
 provider "azurerm" {
   features {
     resource_group {

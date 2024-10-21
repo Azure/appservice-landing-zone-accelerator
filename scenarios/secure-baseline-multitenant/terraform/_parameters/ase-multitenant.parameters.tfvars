@@ -36,14 +36,14 @@ oai_deployment_models = {
     model_format  = "OpenAI"
     model_name    = "text-embedding-ada-002"
     model_version = "2"
-    sku_name    = "Standard"
+    sku_name      = "Standard"
   }
   "gpt-35-turbo" = {
     name          = "gpt-35-turbo"
     model_format  = "OpenAI"
     model_name    = "gpt-35-turbo"
     model_version = "0613"
-    sku_name    = "Standard"
+    sku_name      = "Standard"
   }
 }
 

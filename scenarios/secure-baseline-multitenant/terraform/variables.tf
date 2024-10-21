@@ -4,7 +4,7 @@
 # Common variables for naming and tagging
 #####################################
 variable "global_settings" {
-  type = map(any)
+  type        = map(any)
   description = <<EOT
     [Optional] Global settings to configure each module with appropriate naming standards.
     - name_prefix: A string to prepend to all resource names.

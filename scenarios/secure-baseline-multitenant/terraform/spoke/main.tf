@@ -17,7 +17,7 @@ terraform {
   # If called as a module, this backend configuration block will have no effect.
   # backend "azurerm" {}
 }
- 
+
 provider "azurerm" {
   features {
     resource_group {
@@ -25,7 +25,7 @@ provider "azurerm" {
     }
 
     virtual_machine {
-      delete_os_disk_on_deletion     = true 
+      delete_os_disk_on_deletion     = true
       graceful_shutdown              = false
       skip_shutdown_and_force_delete = true
     }

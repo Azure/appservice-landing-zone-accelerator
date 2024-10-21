@@ -71,8 +71,8 @@ No modules.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.28 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.6.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | n/a |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >= 4.0 |
 
 ## Modules
 

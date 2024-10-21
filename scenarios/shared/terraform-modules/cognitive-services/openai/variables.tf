@@ -56,10 +56,10 @@ variable "deployment" {
   }))
   default = {
     default_deployment = {
-      name            = "default"
-      model_format    = "OpenAI"
-      model_name      = "gpt-35-turbo"
-      sku_name        = "Standard"
+      name         = "default"
+      model_format = "OpenAI"
+      model_name   = "gpt-35-turbo"
+      sku_name     = "Standard"
     }
   }
 
