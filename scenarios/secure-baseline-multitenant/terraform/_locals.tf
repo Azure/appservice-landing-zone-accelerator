@@ -1,44 +1,6 @@
 locals {
   deployment_name = "sec-baseline-1"
 
-  # # used in spoke-network.tf
-  # private_dns_zones = [for each in
-  #   [
-  #     {
-  #       name : "privatelink.azurewebsites.net"
-  #       records : []
-  #       enabled : true
-  #     },
-  #     {
-  #       name : "privatelink.vaultcore.azure.net"
-  #       records : []
-  #       enabled : true
-  #     },
-  #     {
-  #       name : "privatelink.database.windows.net"
-  #       records : []
-  #       enabled : var.deployment_options.deploy_sql_database
-  #     },
-  #     {
-  #       name : "privatelink.azconfig.io"
-  #       records : []
-  #       enabled : var.deployment_options.deploy_app_config
-  #     },
-  #     {
-  #       name : "privatelink.redis.cache.windows.net"
-  #       records : []
-  #       enabled : var.deployment_options.deploy_redis
-  #     },
-  #     {
-  #       name : "privatelink.openai.azure.com"
-  #       records : []
-  #       enabled : var.deployment_options.deploy_openai
-  #     }
-  #   ] : each if each.enabled
-  # ]
-
-  # provisioned_dns_zones = { for i, dns_zone in module.private_dns_zones : dns_zone.name => dns_zone.dns_zone }
-
   global_settings = merge({
     environment   = try(var.global_settings.environment, var.environment)
     passthrough   = try(var.global_settings.passthrough, false)

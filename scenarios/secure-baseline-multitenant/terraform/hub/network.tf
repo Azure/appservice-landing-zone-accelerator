@@ -12,6 +12,7 @@ resource "azurecaf_name" "caf_name_hub_rg" {
   name          = var.application_name
   resource_type = "azurerm_resource_group"
   prefixes      = local.global_settings.prefixes
+  suffixes      = local.global_settings.suffixes
   random_length = local.global_settings.random_length
   clean_input   = true
   passthrough   = local.global_settings.passthrough

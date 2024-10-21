@@ -88,13 +88,19 @@ variable "devops_subnet_cidr" {
   default     = ["10.240.10.128/26"]
 }
 
+variable "ase_subnet_cidr" {
+  type        = list(string)
+  description = "[Optional] The CIDR block for the subnet. Defaults to 10.241.0.0/26"
+  default     = ["10.240.5.0/24"]
+}
+
 #####################################
 # Spoke Resource Configuration Variables
 #####################################
 variable "oai_sku_name" {
   description = "[Optional] The SKU name for the OpenAI resource"
   type        = string
-  default     = "F1"
+  default     = "S0"
 }
 
 variable "oai_deployment_models" {
@@ -231,7 +237,7 @@ variable "appsvc_options" {
       zone_redundant = optional(bool)
     })
     web_app = object({
-      slots = list(string)
+      slots = optional(list(string))
 
       application_stack = object({
         current_stack       = string # required for windows
@@ -255,8 +261,9 @@ variable "appsvc_options" {
 
   default = {
     service_plan = {
-      os_type  = "Windows"
-      sku_name = "S1"
+      os_type        = "Windows"
+      sku_name       = "S1"
+      zone_redundant = true
     }
     web_app = {
       slots = []

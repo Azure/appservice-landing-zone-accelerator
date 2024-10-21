@@ -91,9 +91,12 @@ variable "service_plan_options" {
 
 variable "webapp_options" {
   type = object({
-    instrumentation_key  = string
-    ai_connection_string = string
-    slots                = list(string)
+    slots                    = list(string)
+    instrumentation_key      = optional(string)
+    ai_connection_string     = optional(string)
+    vnet_route_all_enabled   = optional(bool)
+    use_32_bit_worker        = optional(bool)
+    vnet_integration_enabled = optional(bool)
 
     application_stack = object({
       current_stack       = string # required for windows

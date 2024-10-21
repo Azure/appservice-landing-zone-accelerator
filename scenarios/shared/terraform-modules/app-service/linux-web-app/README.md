@@ -3,14 +3,16 @@
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.26 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.75.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.28 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.6.0 |
 
 ## Modules
 
@@ -58,8 +60,8 @@ No requirements.
 | <a name="output_web_app_id"></a> [web\_app\_id](#output\_web\_app\_id) | n/a |
 | <a name="output_web_app_name"></a> [web\_app\_name](#output\_web\_app\_name) | n/a |
 | <a name="output_web_app_principal_id"></a> [web\_app\_principal\_id](#output\_web\_app\_principal\_id) | n/a |
-| <a name="output_web_app_slot_hostname"></a> [web\_app\_slot\_hostname](#output\_web\_app\_slot\_hostname) | n/a |
-| <a name="output_web_app_slot_id"></a> [web\_app\_slot\_id](#output\_web\_app\_slot\_id) | n/a |
-| <a name="output_web_app_slot_name"></a> [web\_app\_slot\_name](#output\_web\_app\_slot\_name) | n/a |
-| <a name="output_web_app_slot_principal_id"></a> [web\_app\_slot\_principal\_id](#output\_web\_app\_slot\_principal\_id) | n/a |
+| <a name="output_web_app_slot_hostnames"></a> [web\_app\_slot\_hostnames](#output\_web\_app\_slot\_hostnames) | n/a |
+| <a name="output_web_app_slot_identities"></a> [web\_app\_slot\_identities](#output\_web\_app\_slot\_identities) | n/a |
+| <a name="output_web_app_slot_ids"></a> [web\_app\_slot\_ids](#output\_web\_app\_slot\_ids) | n/a |
+| <a name="output_web_app_slot_names"></a> [web\_app\_slot\_names](#output\_web\_app\_slot\_names) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -5,6 +5,9 @@
 locals {
   sql_connstring   = length(module.sql_database) > 0 ? module.sql_database[0].sql_db_connection_string : "SQL_NOT_PROVISIONED"
   redis_connstring = length(module.redis_cache) > 0 ? module.redis_cache[0].redis_connection_string : "REDIS_NOT_PROVISIONED"
+
+  # If isolated SKU (using App Service Environment) then do not enable vnet integration
+  is_isolated_sku = can(regex("(?i)^I.*v2$", var.appsvc_options.service_plan.sku_name))
 }
 
 # Deploy the App Service
@@ -18,10 +21,11 @@ module "app_service" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
   enable_diagnostic_settings = var.deployment_options.enable_diagnostic_settings
 
-  appsvc_subnet_id     = module.network.subnets["serverFarm"].id
-  frontend_subnet_id   = module.network.subnets["ingress"].id
-  service_plan_options = var.appsvc_options.service_plan
-
+  # If isolated SKU (using App Service Environment) then do not enable vnet integration
+  appsvc_subnet_id           = local.is_isolated_sku == true ? null : module.network.subnets["serverFarm"].id
+  frontend_subnet_id         = module.network.subnets["ingress"].id
+  service_plan_options       = var.appsvc_options.service_plan
+  app_service_environment_id = var.deployment_options.deploy_asev3 ? azurerm_app_service_environment_v3.this[0].id : null
   identity = {
     type = "UserAssigned"
     identity_ids = [

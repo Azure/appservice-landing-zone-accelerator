@@ -48,13 +48,13 @@ variable "admin_password" {
 
 variable "entra_admin_username" {
   type        = string
-  description = "[Optional] The Azure AD username for the VM admin account. If entra_admin_object_id is not specified, this value will be used."
+  description = "[Optional] The Microsoft Entra ID username for the VM admin account. If entra_admin_object_id is not specified, this value will be used."
   default     = null
 }
 
 variable "entra_admin_object_id" {
   type        = string
-  description = "The Azure AD object ID for the VM admin user/group. If entra_admin_username is not specified, this value will be used."
+  description = "The Microsoft Entra ID for the VM admin user/group. If entra_admin_username is not specified, this value will be used."
   default     = null
 }
 

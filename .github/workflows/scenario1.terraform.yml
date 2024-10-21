@@ -1,3 +1,4 @@
+
 name: 'Scenario 1: Terraform Multi-Tenant ASEv3 Secure Baseline'
 
 concurrency:
@@ -40,7 +41,7 @@ permissions:
 
 env:
   modulePath: 'scenarios/secure-baseline-multitenant/terraform'
-  terraformVersion: 1.5.2 # must be greater than or equal to 1.2 for OIDC
+  terraformVersion: 1.9.7 # must be greater than or equal to 1.2 for OIDC
   backendStateKey: 'scenario1.hub.tfstate'
   tfvarPath: 'parameters/ase-multitenant.parameters.tfvars'
 
