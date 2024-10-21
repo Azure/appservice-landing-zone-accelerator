@@ -46,14 +46,22 @@ variable "deployment" {
     name            = string
     model_format    = string
     model_name      = string
-    model_version   = string
+    model_version   = optional(string)
     rai_policy_name = optional(string)
-    sku_name        = optional(string)
+    sku_name        = string
     sku_tier        = optional(string)
     sku_size        = optional(string)
     sku_family      = optional(string)
     sku_capacity    = optional(number)
   }))
+  default = {
+    default_deployment = {
+      name            = "default"
+      model_format    = "OpenAI"
+      model_name      = "gpt-35-turbo"
+      sku_name        = "Standard"
+    }
+  }
 
   description = <<-DESCRIPTION
       type = map(object({

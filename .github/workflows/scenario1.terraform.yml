@@ -43,7 +43,7 @@ env:
   modulePath: 'scenarios/secure-baseline-multitenant/terraform'
   terraformVersion: 1.9.7 # must be greater than or equal to 1.2 for OIDC
   backendStateKey: 'scenario1.hub.tfstate'
-  tfvarPath: 'parameters/ase-multitenant.parameters.tfvars'
+  tfvarPath: '_parameters/ase-multitenant.parameters.tfvars'
 
 jobs:
   prepare-environment:

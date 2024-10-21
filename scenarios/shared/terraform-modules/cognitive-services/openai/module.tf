@@ -82,9 +82,9 @@ resource "azurerm_cognitive_deployment" "this" {
   sku {
     name     = each.value.sku_name
     tier     = each.value.sku_tier
-    size     = coalesce(each.value.sku_size, null)
-    family   = coalesce(each.value.sku_family, null)
-    capacity = coalesce(each.value.sku_capacity, null)
+    size     = each.value.sku_size
+    family   = each.value.sku_family
+    capacity = each.value.sku_capacity
   }
 }
 

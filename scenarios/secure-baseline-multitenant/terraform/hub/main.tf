@@ -4,16 +4,18 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">=3.66.0"
+      version = "4.5.0"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"
       version = ">=1.2.23"
     }
   }
-  backend "azurerm" {}
-}
 
+  # If called as a module, this backend configuration block will have no effect.
+  # backend "azurerm" {}
+}
+ 
 provider "azurerm" {
   features {
     resource_group {
@@ -31,6 +33,3 @@ provider "azurerm" {
   disable_terraform_partner_id = false
   partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
 }
-
-provider "azurecaf" {}
-

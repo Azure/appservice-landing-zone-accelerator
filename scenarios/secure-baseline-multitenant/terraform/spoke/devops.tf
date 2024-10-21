@@ -3,7 +3,7 @@ locals {
   az_cli_commands = <<-EOT
     az login --identity --username ${azurerm_user_assigned_identity.contributor.principal_id} --allow-no-subscriptions
     az keyvault secret set --vault-name ${module.key_vault.vault_name} --name 'redis-connstring' --value '${local.redis_connstring}'
-    az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key 'sql-connstring' --value '${local.sql_connstring}' --label '${var.environment}' -y
+    ${var.deployment_options.deploy_app_config ? "az appconfig kv set --auth-mode login --endpoint ${module.app_configuration[0].endpoint} --key 'sql-connstring' --value '${local.sql_connstring}' --label '${var.environment}' -y" : ""}
   EOT
 }
 

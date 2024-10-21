@@ -37,11 +37,11 @@ location         = "swedencentral"
 location_short   = "swe"
 
 tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-aad_admin_group_name      = "Microsoft Entra ID SQL Admins"
-vm_aad_admin_username     = "bob@contoso.com"
+entra_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+entra_admin_group_name      = "Microsoft Entra ID SQL Admins"
+vm_entra_admin_username     = "bob@contoso.com"
 
-# Optionally provide non-AAD admin credentials for the VM
+# Optionally provide non-entra admin credentials for the VM
 # vm_admin_username         = "daniem"
 # vm_admin_password         = "**************"
 
@@ -172,7 +172,7 @@ az upgrade
 az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
-If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](#unable-to-connect-to-devops-vm-using-aad-credentials)
+If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](#unable-to-connect-to-devops-vm-using-entra-credentials)
 
 Once completed, you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
 
@@ -207,7 +207,7 @@ az network front-door frontend-endpoint show --front-door-name <front-door-name>
 ### Unable to connect to DevOps VM using Microsoft Entra ID credentials
 The Microsoft Entra ID enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
-Verify in the Azure Portal if the `aad-login-for-windows` VM extension was deployed successfully. 
+Verify in the Azure Portal if the `entra-login-for-windows` VM extension was deployed successfully. 
 
 Connect to the VM using the local VM admin credentials and run `dsregcmd /status`. The output should look similar to this:
 
@@ -304,8 +304,8 @@ If the VM is Microsoft Entra ID joined, try to login in with the Microsoft Entra
 | <a name="input_deployment_options"></a> [deployment\_options](#input\_deployment\_options) | [Optional] Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache. | <pre>object({<br>    enable_waf                 = bool<br>    enable_egress_lockdown     = bool<br>    enable_diagnostic_settings = bool<br>    deploy_bastion             = bool<br>    deploy_redis               = bool<br>    deploy_sql_database        = bool<br>    deploy_app_config          = bool<br>    deploy_vm                  = bool<br>    deploy_openai              = bool<br>    deploy_asev3               = bool<br>  })</pre> | <pre>{<br>  "deploy_app_config": false,<br>  "deploy_asev3": false,<br>  "deploy_bastion": false,<br>  "deploy_openai": false,<br>  "deploy_redis": false,<br>  "deploy_sql_database": false,<br>  "deploy_vm": false,<br>  "enable_diagnostic_settings": false,<br>  "enable_egress_lockdown": false,<br>  "enable_waf": false<br>}</pre> | no |
 | <a name="input_devops_settings"></a> [devops\_settings](#input\_devops\_settings) | [Optional] The settings for the Azure DevOps agent or GitHub runner | <pre>object({<br>    github_runner = optional(object({<br>      repository_url = string<br>      token          = string<br>    }))<br><br>    devops_agent = optional(object({<br>      organization_url = string<br>      token            = string<br>    }))<br>  })</pre> | <pre>{<br>  "devops_agent": null,<br>  "github_runner": null<br>}</pre> | no |
 | <a name="input_devops_subnet_cidr"></a> [devops\_subnet\_cidr](#input\_devops\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.240.10.128/16 | `list(string)` | <pre>[<br>  "10.240.10.128/26"<br>]</pre> | no |
-| <a name="input_entra_admin_group_name"></a> [entra\_admin\_group\_name](#input\_entra\_admin\_group\_name) | [Required] The name of the Azure AD group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
-| <a name="input_entra_admin_group_object_id"></a> [entra\_admin\_group\_object\_id](#input\_entra\_admin\_group\_object\_id) | [Required] The object ID of the Azure AD group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
+| <a name="input_entra_admin_group_name"></a> [entra\_admin\_group\_name](#input\_entra\_admin\_group\_name) | [Required] The name of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
+| <a name="input_entra_admin_group_object_id"></a> [entra\_admin\_group\_object\_id](#input\_entra\_admin\_group\_object\_id) | [Required] The object ID of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment (dev, qa, staging, prod) | `string` | `"dev"` | no |
 | <a name="input_firewall_subnet_cidr"></a> [firewall\_subnet\_cidr](#input\_firewall\_subnet\_cidr) | [Optional] The CIDR block(s) for the firewall subnet. Defaults to 10.242.0.0/26 | `list(string)` | <pre>[<br>  "10.242.0.0/26"<br>]</pre> | no |
 | <a name="input_firewall_subnet_name"></a> [firewall\_subnet\_name](#input\_firewall\_subnet\_name) | [Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet' | `string` | `"AzureFirewallSubnet"` | no |
@@ -320,10 +320,10 @@ If the VM is Microsoft Entra ID joined, try to login in with the Microsoft Entra
 | <a name="input_spoke_vnet_cidr"></a> [spoke\_vnet\_cidr](#input\_spoke\_vnet\_cidr) | [Optional] The CIDR block(s) for the virtual network for whitelisting on the firewall. Defaults to 10.240.0.0/20 | `list(string)` | <pre>[<br>  "10.240.0.0/20"<br>]</pre> | no |
 | <a name="input_sql_databases"></a> [sql\_databases](#input\_sql\_databases) | [Optional] The settings for the SQL databases. | <pre>list(object({<br>    name     = string<br>    sku_name = string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "sample-db",<br>    "sku_name": "S0"<br>  }<br>]</pre> | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | [Optional] Additional tags to assign to your resources | `map(string)` | `{}` | no |
-| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Azure AD tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
-| <a name="input_vm_admin_username"></a> [vm\_admin\_username](#input\_vm\_admin\_username) | [Optional] The username for the local VM admin account. Autogenerated if null. Prefer using the Azure AD admin account. | `string` | `null` | no |
-| <a name="input_vm_entra_admin_object_id"></a> [vm\_entra\_admin\_object\_id](#input\_vm\_entra\_admin\_object\_id) | [Optional] The Azure AD object ID for the VM admin user/group. If vm\_entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
-| <a name="input_vm_entra_admin_username"></a> [vm\_entra\_admin\_username](#input\_vm\_entra\_admin\_username) | [Optional] The Azure AD username for the VM admin account. If vm\_entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Entra tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
+| <a name="input_vm_admin_username"></a> [vm\_admin\_username](#input\_vm\_admin\_username) | [Optional] The username for the local VM admin account. Autogenerated if null. Prefer using the Entra admin account. | `string` | `null` | no |
+| <a name="input_vm_entra_admin_object_id"></a> [vm\_entra\_admin\_object\_id](#input\_vm\_entra\_admin\_object\_id) | [Optional] The Entra object ID for the VM admin user/group. If vm\_entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_vm_entra_admin_username"></a> [vm\_entra\_admin\_username](#input\_vm\_entra\_admin\_username) | [Optional] The Entra username for the VM admin account. If vm\_entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
 
 ## Outputs
 
@@ -372,8 +372,8 @@ No outputs.
 | <a name="input_deployment_options"></a> [deployment\_options](#input\_deployment\_options) | [Optional] Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache. | <pre>object({<br>    enable_waf                 = bool<br>    enable_egress_lockdown     = bool<br>    enable_diagnostic_settings = bool<br>    deploy_bastion             = bool<br>    deploy_redis               = bool<br>    deploy_sql_database        = bool<br>    deploy_app_config          = bool<br>    deploy_vm                  = bool<br>    deploy_openai              = bool<br>    deploy_asev3               = bool<br>  })</pre> | <pre>{<br>  "deploy_app_config": false,<br>  "deploy_asev3": false,<br>  "deploy_bastion": false,<br>  "deploy_openai": false,<br>  "deploy_redis": false,<br>  "deploy_sql_database": false,<br>  "deploy_vm": false,<br>  "enable_diagnostic_settings": false,<br>  "enable_egress_lockdown": false,<br>  "enable_waf": false<br>}</pre> | no |
 | <a name="input_devops_settings"></a> [devops\_settings](#input\_devops\_settings) | [Optional] The settings for the Azure DevOps agent or GitHub runner | <pre>object({<br>    github_runner = optional(object({<br>      repository_url = string<br>      token          = string<br>    }))<br><br>    devops_agent = optional(object({<br>      organization_url = string<br>      token            = string<br>    }))<br>  })</pre> | <pre>{<br>  "devops_agent": null,<br>  "github_runner": null<br>}</pre> | no |
 | <a name="input_devops_subnet_cidr"></a> [devops\_subnet\_cidr](#input\_devops\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.240.10.128/16 | `list(string)` | <pre>[<br>  "10.240.10.128/26"<br>]</pre> | no |
-| <a name="input_entra_admin_group_name"></a> [entra\_admin\_group\_name](#input\_entra\_admin\_group\_name) | [Required] The name of the Azure AD group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
-| <a name="input_entra_admin_group_object_id"></a> [entra\_admin\_group\_object\_id](#input\_entra\_admin\_group\_object\_id) | [Required] The object ID of the Azure AD group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
+| <a name="input_entra_admin_group_name"></a> [entra\_admin\_group\_name](#input\_entra\_admin\_group\_name) | [Required] The name of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
+| <a name="input_entra_admin_group_object_id"></a> [entra\_admin\_group\_object\_id](#input\_entra\_admin\_group\_object\_id) | [Required] The object ID of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment (dev, qa, staging, prod) | `string` | `"dev"` | no |
 | <a name="input_firewall_subnet_cidr"></a> [firewall\_subnet\_cidr](#input\_firewall\_subnet\_cidr) | [Optional] The CIDR block(s) for the firewall subnet. Defaults to 10.242.0.0/26 | `list(string)` | <pre>[<br>  "10.242.0.0/26"<br>]</pre> | no |
 | <a name="input_firewall_subnet_name"></a> [firewall\_subnet\_name](#input\_firewall\_subnet\_name) | [Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet' | `string` | `"AzureFirewallSubnet"` | no |
@@ -388,10 +388,10 @@ No outputs.
 | <a name="input_spoke_vnet_cidr"></a> [spoke\_vnet\_cidr](#input\_spoke\_vnet\_cidr) | [Optional] The CIDR block(s) for the virtual network for whitelisting on the firewall. Defaults to 10.240.0.0/20 | `list(string)` | <pre>[<br>  "10.240.0.0/20"<br>]</pre> | no |
 | <a name="input_sql_databases"></a> [sql\_databases](#input\_sql\_databases) | [Optional] The settings for the SQL databases. | <pre>list(object({<br>    name     = string<br>    sku_name = string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "sample-db",<br>    "sku_name": "S0"<br>  }<br>]</pre> | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | [Optional] Additional tags to assign to your resources | `map(string)` | `{}` | no |
-| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Azure AD tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
-| <a name="input_vm_admin_username"></a> [vm\_admin\_username](#input\_vm\_admin\_username) | [Optional] The username for the local VM admin account. Autogenerated if null. Prefer using the Azure AD admin account. | `string` | `null` | no |
-| <a name="input_vm_entra_admin_object_id"></a> [vm\_entra\_admin\_object\_id](#input\_vm\_entra\_admin\_object\_id) | [Optional] The Azure AD object ID for the VM admin user/group. If vm\_entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
-| <a name="input_vm_entra_admin_username"></a> [vm\_entra\_admin\_username](#input\_vm\_entra\_admin\_username) | [Optional] The Azure AD username for the VM admin account. If vm\_entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Entra tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
+| <a name="input_vm_admin_username"></a> [vm\_admin\_username](#input\_vm\_admin\_username) | [Optional] The username for the local VM admin account. Autogenerated if null. Prefer using the Entra admin account. | `string` | `null` | no |
+| <a name="input_vm_entra_admin_object_id"></a> [vm\_entra\_admin\_object\_id](#input\_vm\_entra\_admin\_object\_id) | [Optional] The Entra object ID for the VM admin user/group. If vm\_entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_vm_entra_admin_username"></a> [vm\_entra\_admin\_username](#input\_vm\_entra\_admin\_username) | [Optional] The Entra username for the VM admin account. If vm\_entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
 
 ## Outputs
 

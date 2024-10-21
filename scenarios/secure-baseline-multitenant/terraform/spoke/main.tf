@@ -6,16 +6,18 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">=3.66.0"
+      version = "4.5.0"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"
       version = ">=1.2.23"
     }
   }
-  backend "azurerm" {}
-}
 
+  # If called as a module, this backend configuration block will have no effect.
+  # backend "azurerm" {}
+}
+ 
 provider "azurerm" {
   features {
     resource_group {
@@ -23,7 +25,7 @@ provider "azurerm" {
     }
 
     virtual_machine {
-      delete_os_disk_on_deletion     = true
+      delete_os_disk_on_deletion     = true 
       graceful_shutdown              = false
       skip_shutdown_and_force_delete = true
     }
@@ -34,21 +36,4 @@ provider "azurerm" {
   partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
 }
 
-provider "azurecaf" {}
-
-resource "azurecaf_name" "caf_name_spoke_rg" {
-  name          = var.application_name
-  resource_type = "azurerm_resource_group"
-  prefixes      = concat(["spoke"], local.global_settings.prefixes)
-  random_length = local.global_settings.random_length
-  clean_input   = true
-  passthrough   = local.global_settings.passthrough
-  use_slug      = local.global_settings.use_slug
-}
-
-resource "azurerm_resource_group" "spoke" {
-  name     = azurecaf_name.caf_name_spoke_rg.result
-  location = var.location
-
-  tags = local.base_tags
-}
+# provider "azurecaf" {}

@@ -8,6 +8,8 @@ deployment/bicep/main.json
 # local .vscode folder
 **/.vscode/*
 
+backend.hcl
+
 # Local .terraform directories
 .terraform
 **/.terraform/*
