@@ -1,5 +1,5 @@
-application_name = "eslz"
-environment      = "prod"
+application_name = "eslztest"
+environment      = "local"
 location         = "westus3"
 owner            = "cloudops@contoso.com"
 
@@ -38,13 +38,6 @@ oai_deployment_models = {
     model_version = "2"
     sku_name      = "Standard"
   }
-  "gpt-35-turbo" = {
-    name          = "gpt-35-turbo"
-    model_format  = "OpenAI"
-    model_name    = "gpt-35-turbo"
-    model_version = "0613"
-    sku_name      = "Standard"
-  }
 }
 
 ## Optionally deploy a Github runner, DevOps agent, or both to the VM. 
@@ -63,7 +56,7 @@ oai_deployment_models = {
 appsvc_options = {
   service_plan = {
     os_type  = "Windows"
-    sku_name = "S1"
+    sku_name = "I1v2"
 
     # Optionally configure zone redundancy (requires a minimum of three workers and Premium SKU service plan) 
     # worker_count   = 3

@@ -270,7 +270,7 @@ variable "appsvc_options" {
   default = {
     service_plan = {
       os_type        = "Windows"
-      sku_name       = "S1"
+      sku_name       = "I1v2"
       zone_redundant = true
     }
     web_app = {
