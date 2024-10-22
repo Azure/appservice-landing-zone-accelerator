@@ -57,13 +57,13 @@ jobs:
       backendStateKey: ${{ env.backendStateKey }}
       tfvarPath: ${{ env.tfvarPath }}
 
-  terraform-deploy-hub:
-    name: 'Terraform CICD (Hub Multi-tenant Secure Baseline)'
+  terraform-deploy:
+    name: 'Terraform CICD (Hub & Spoke Multi-tenant Secure Baseline)'
     needs: 
     - prepare-environment
     uses: ./.github/workflows/.template.terraform.yml
     with:
-      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}/hub
+      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}
       terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
       backendStateKey: 'scenario1.hub.tfstate'
       tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
@@ -71,17 +71,3 @@ jobs:
       destroy: ${{ github.event.inputs.destroy == 'true' }}
     secrets: inherit
 
-  terraform-deploy-spoke:
-    name: 'Terraform CICD (Spoke Multi-tenant Secure Baseline)'
-    needs: 
-    - prepare-environment
-    - terraform-deploy-hub
-    uses: ./.github/workflows/.template.terraform.yml
-    with:
-      modulePath: ${{ needs.prepare-environment.outputs.modulePath }}/spoke
-      terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
-      backendStateKey: 'scenario1.spoke.tfstate'
-      tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
-      # Ensure this value is a boolean
-      destroy: ${{ github.event.inputs.destroy == 'true' }}
-    secrets: inherit
