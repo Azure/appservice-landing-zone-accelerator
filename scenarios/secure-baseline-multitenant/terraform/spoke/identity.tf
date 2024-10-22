@@ -1,3 +1,6 @@
+# Creates two user-assigned-identities for Reader and Contributor roles
+# to be consumed in app.tf
+
 resource "azurecaf_name" "caf_name_id_reader" {
   name          = var.application_name
   resource_type = "azurerm_user_assigned_identity"

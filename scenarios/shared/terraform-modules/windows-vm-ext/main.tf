@@ -1,4 +1,4 @@
-resource "azurerm_virtual_machine_extension" "entra" {
+resource "azurerm_virtual_machine_extension" "aad" {
   count = var.enable_microsoft_entra_join ? 1 : 0
 
   name                       = "aad-login-for-windows"

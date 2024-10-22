@@ -7,7 +7,7 @@ resource "azurerm_route_table" "this" {
   name                          = azurecaf_name.route_table.result
   location                      = var.location
   resource_group_name           = var.resource_group
-  disable_bgp_route_propagation = false
+  bgp_route_propagation_enabled = false
 
   tags = local.tags
 }

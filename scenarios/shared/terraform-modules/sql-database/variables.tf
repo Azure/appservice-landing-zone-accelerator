@@ -31,11 +31,13 @@ variable "tenant_id" {
 }
 
 variable "entra_admin_group_object_id" {
-  type = string
+  type    = string
+  default = null
 }
 
 variable "entra_admin_group_name" {
-  type = string
+  type    = string
+  default = null
 }
 
 variable "private_link_subnet_id" {

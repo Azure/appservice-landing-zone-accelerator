@@ -1,3 +1,4 @@
+backend.hcl
 deployment/bicep/localparam*.json
 deployment/bicep/localmain.bicep
 deployment/bicep/localtestscript.ps1
@@ -6,6 +7,8 @@ deployment/bicep/main.json
 
 # local .vscode folder
 **/.vscode/*
+
+backend.hcl
 
 # Local .terraform directories
 .terraform

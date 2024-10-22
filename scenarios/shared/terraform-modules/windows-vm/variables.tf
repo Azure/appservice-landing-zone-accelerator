@@ -38,8 +38,7 @@ variable "key_vault_id" {
 }
 
 variable "admin_username" {
-  type    = string
-  default = null
+  type = string
 }
 
 variable "admin_password" {

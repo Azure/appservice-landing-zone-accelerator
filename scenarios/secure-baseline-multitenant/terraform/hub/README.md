@@ -7,14 +7,14 @@
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3 |
 | <a name="requirement_azurecaf"></a> [azurecaf](#requirement\_azurecaf) | >=1.2.23 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.66.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.26 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.85.0 |
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | >=1.2.23 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.5.0 |
 
 ## Modules
 
@@ -29,7 +29,7 @@
 | Name | Type |
 |------|------|
 | [azurecaf_name.caf_name_hub_rg](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurerm_resource_group.hub](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_resource_group.hub](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/resource_group) | resource |
 
 ## Inputs
 
@@ -54,10 +54,10 @@
 
 | Name | Description |
 |------|-------------|
-| <a name="output_bastion_name"></a> [bastion\_name](#output\_bastion\_name) | n/a |
 | <a name="output_firewall_private_ip"></a> [firewall\_private\_ip](#output\_firewall\_private\_ip) | n/a |
 | <a name="output_firewall_rules"></a> [firewall\_rules](#output\_firewall\_rules) | n/a |
-| <a name="output_rg_name"></a> [rg\_name](#output\_rg\_name) | n/a |
-| <a name="output_vnet_id"></a> [vnet\_id](#output\_vnet\_id) | n/a |
-| <a name="output_vnet_name"></a> [vnet\_name](#output\_vnet\_name) | n/a |
+| <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a |
+| <a name="output_virtual_network"></a> [virtual\_network](#output\_virtual\_network) | n/a |
+| <a name="output_virtual_network_id"></a> [virtual\_network\_id](#output\_virtual\_network\_id) | n/a |
+| <a name="output_virtual_network_name"></a> [virtual\_network\_name](#output\_virtual\_network\_name) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

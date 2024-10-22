@@ -1,3 +1,8 @@
+# spoke variables.tf
+
+#####################################
+# Common variables for naming and tagging
+#####################################
 variable "global_settings" {
   type        = map(any)
   description = "[Optional] Global settings to configure each module with the appropriate naming standards."
@@ -7,26 +12,6 @@ variable "global_settings" {
 variable "owner" {
   type        = string
   description = "[Required] Owner of the deployment."
-}
-
-variable "hub_state_resource_group_name" {
-  type        = string
-  description = "The name of the resource group that holds the Terraform state for the hub"
-}
-
-variable "hub_state_storage_account_name" {
-  type        = string
-  description = "The name of the storage account that holds the Terraform state for the hub"
-}
-
-variable "hub_state_container_name" {
-  type        = string
-  description = "The name of the container that holds the Terraform state for the hub"
-}
-
-variable "hub_state_key" {
-  type        = string
-  description = "The key of the Terraform state for the hub"
 }
 
 variable "application_name" {
@@ -49,7 +34,7 @@ variable "location" {
 
 variable "tenant_id" {
   type        = string
-  description = "The Microsoft Entra tenant ID for the identities. If no value provided, will use current deployment environment tenant."
+  description = "The Entra tenant ID for the identities. If no value provided, will use current deployment environment tenant."
   default     = null
 }
 
@@ -62,43 +47,27 @@ variable "tags" {
 #####################################
 # Spoke Resource Configuration Variables
 #####################################
+variable "hub_virtual_network" {
+  type        = any
+  description = "[Required] Hub virtual network object that is live in Azure. Use either a data block or output of the `Hub` module (virtual_network) to provide this value"
+}
+
+variable "firewall_private_ip" {
+  type = string
+}
+
+variable "firewall_rules" {
+  type = any
+}
+
 variable "entra_admin_group_object_id" {
   type        = string
-  description = "The object ID of the Microsoft Entra group that should be granted SQL Admin permissions to the SQL Server"
+  description = "[Required] The object ID of the Entra group that should be granted SQL Admin permissions to the SQL Server"
 }
 
 variable "entra_admin_group_name" {
   type        = string
-  description = "The name of the Microsoft Entra group that should be granted SQL Admin permissions to the SQL Server"
-}
-
-variable "bastion_subnet_name" {
-  type        = string
-  description = "[Optional] Name of the subnet to deploy bastion resource to. Defaults to 'AzureBastionSubnet'"
-  default     = "AzureBastionSubnet"
-}
-
-variable "firewall_subnet_name" {
-  type        = string
-  description = "[Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet'"
-  default     = "AzureFirewallSubnet"
-}
-variable "hub_vnet_cidr" {
-  type        = list(string)
-  description = "[Optional] The CIDR block(s) for the hub virtual network. Defaults to 10.242.0.0/20"
-  default     = ["10.242.0.0/20"]
-}
-
-variable "firewall_subnet_cidr" {
-  type        = list(string)
-  description = "[Optional] The CIDR block(s) for the firewall subnet. Defaults to 10.242.0.0/26"
-  default     = ["10.242.0.0/26"]
-}
-
-variable "bastion_subnet_cidr" {
-  type        = list(string)
-  description = "[Optional] The CIDR block(s) for the bastion subnet. Defaults to 10.242.0.64/26"
-  default     = ["10.242.0.64/26"]
+  description = "[Required] The name of the Entra group that should be granted SQL Admin permissions to the SQL Server"
 }
 
 variable "spoke_vnet_cidr" {
@@ -113,67 +82,110 @@ variable "devops_subnet_cidr" {
   default     = ["10.240.10.128/26"]
 }
 
+variable "ase_subnet_cidr" {
+  type        = list(string)
+  description = "[Optional] The CIDR block for the subnet. Defaults to 10.241.0.0/26"
+  default     = ["10.240.5.0/24"]
+}
 variable "appsvc_subnet_cidr" {
   type        = list(string)
-  description = "The CIDR block for the subnet."
+  description = "[Optional] The CIDR block for the subnet."
   default     = ["10.240.0.0/26"]
 }
 
 variable "front_door_subnet_cidr" {
   type        = list(string)
-  description = "The CIDR block for the subnet."
+  description = "[Optional] The CIDR block for the subnet."
   default     = ["10.240.0.64/26"]
 }
 
 
 variable "private_link_subnet_cidr" {
   type        = list(string)
-  description = "The CIDR block for the subnet."
+  description = "[Optional] The CIDR block for the subnet."
   default     = ["10.240.11.0/24"]
 }
 
-variable "hub_settings" {
-  type = object({
-    rg_name   = string
-    vnet_name = string
-
-    firewall = object({
-      private_ip = optional(string)
-    })
-  })
-
-  description = "The settings for the hub virtual network."
-
-  default = null
-}
 
 variable "vm_admin_username" {
   type        = string
-  description = "The username for the local VM admin account. Autogenerated if null. Prefer using the Microsoft Entra admin account."
+  description = "[Optional] The username for the local VM admin account. Autogenerated if null. Prefer using the Entra admin account."
   default     = null
 }
 
 variable "vm_admin_password" {
   type        = string
-  description = "The password for the local VM admin account. Autogenerated if null. Prefer using the Microsoft Entra admin account."
+  description = "[Optional] The password for the local VM admin account. Autogenerated if null. Prefer using the Entra admin account."
   default     = null
 }
 
 variable "vm_entra_admin_username" {
   type        = string
-  description = "[Optional] The Microsoft Entra username for the VM admin account. If vm_entra_admin_object_id is not specified, this value will be used."
+  description = "[Optional] The Entra username for the VM admin account. If vm_entra_admin_object_id is not specified, this value will be used."
   default     = null
 }
+
 variable "vm_entra_admin_object_id" {
   type        = string
-  description = "The Microsoft Entra object ID for the VM admin user/group. If vm_entra_admin_username is not specified, this value will be used."
+  description = "[Optional] The Entra object ID for the VM admin user/group. If vm_entra_admin_username is not specified, this value will be used."
   default     = null
 }
+
+variable "sql_databases" {
+  type = list(object({
+    name     = string
+    sku_name = string
+  }))
+
+  description = "[Optional] The settings for the SQL databases."
+
+  default = [
+    {
+      name     = "sample-db"
+      sku_name = "S0"
+    }
+  ]
+}
+
+variable "zone_redundant" {
+  type        = bool
+  description = "[Optional] Enable zone redundancy for the app service environment. Defaults to true"
+  default     = true
+}
+
+variable "oai_sku_name" {
+  description = "[Optional] The SKU name for the OpenAI resource"
+  type        = string
+  default     = "S0"
+}
+
+variable "oai_deployment_models" {
+  description = "[Optional] Map to specify deployment models for the OpenAI resource"
+  type        = any
+  default = {
+    "text-embedding-ada-002" = {
+      name          = "text-embedding-ada-002"
+      model_format  = "OpenAI"
+      model_name    = "text-embedding-ada-002"
+      model_version = "2"
+      scale_type    = "Standard"
+    }
+    "gpt-35-turbo" = {
+      name          = "gpt-35-turbo"
+      model_format  = "OpenAI"
+      model_name    = "gpt-35-turbo"
+      model_version = "0613"
+      scale_type    = "Standard"
+    }
+  }
+}
+
 variable "deployment_options" {
   type = object({
     enable_waf                 = bool
     enable_egress_lockdown     = bool
     enable_diagnostic_settings = bool
+    deploy_asev3               = bool
     deploy_bastion             = bool
     deploy_redis               = bool
     deploy_sql_database        = bool
@@ -188,6 +200,7 @@ variable "deployment_options" {
     enable_waf                 = true
     enable_egress_lockdown     = true
     enable_diagnostic_settings = true
+    deploy_asev3               = false
     deploy_bastion             = true
     deploy_redis               = true
     deploy_sql_database        = true
@@ -200,10 +213,9 @@ variable "deployment_options" {
 variable "appsvc_options" {
   type = object({
     service_plan = object({
-      os_type        = string
-      sku_name       = string
-      worker_count   = optional(number)
-      zone_redundant = optional(bool)
+      os_type      = string
+      sku_name     = string
+      worker_count = optional(number)
     })
     web_app = object({
       slots = list(string)
@@ -226,7 +238,7 @@ variable "appsvc_options" {
     })
   })
 
-  description = "The options for the app service"
+  description = "[Optional] The options for the app service"
 
   default = {
     service_plan = {
@@ -234,11 +246,11 @@ variable "appsvc_options" {
       sku_name = "S1"
     }
     web_app = {
-      slots = []
+      slots = null
 
       application_stack = {
         current_stack  = "dotnet"
-        dotnet_version = "6.0"
+        dotnet_version = "v6.0"
       }
     }
   }
@@ -272,7 +284,7 @@ variable "devops_settings" {
     }))
   })
 
-  description = "The settings for the Azure DevOps agent or GitHub runner"
+  description = "[Optional] The settings for the Azure DevOps agent or GitHub runner"
 
   default = {
     github_runner = null
