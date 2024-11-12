@@ -90,22 +90,11 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   enabled_log {
     category_group = "allLogs"
 
-    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
-    # retention_policy {
-    #   days    = 0
-    #   enabled = false
-    # }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = false
-
-    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
-    # retention_policy {
-    #   days    = 0
-    #   enabled = false
-    # }
   }
 }
 
@@ -159,23 +148,17 @@ resource "azurerm_linux_web_app_slot" "slot" {
   }
 }
 
-resource "azurecaf_name" "slot" {
-  count         = length(var.webapp_options.slots)
-  name          = "${azurecaf_name.caf_name_linwebapp.result}-${var.webapp_options.slots[count.index]}"
-  resource_type = "azurerm_private_endpoint"
-}
-
 module "private_endpoint_slot" {
   source = "../../private-endpoint"
-  count  = length(var.webapp_options.slots)
+  count = length(azurerm_linux_web_app_slot.slot)
 
-  name                           = "${azurecaf_name.slot[count.index].result}-${azurerm_linux_web_app_slot.slot[count.index].name}"
+  name                           = "${azurerm_linux_web_app.this.name}-${azurerm_linux_web_app_slot.slot[count.index].name}"
   resource_group                 = var.resource_group
   location                       = var.location
   subnet_id                      = var.frontend_subnet_id
-  private_connection_resource_id = azurerm_linux_web_app.this.id
+  private_connection_resource_id = azurerm_linux_web_app.this.id // Change this line
 
-  subresource_names = ["sites"]
+  subresource_names = ["sites-${azurerm_linux_web_app_slot.slot[count.index].name}"]
 
   private_dns_zone = var.private_dns_zone
 

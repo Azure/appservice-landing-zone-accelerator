@@ -43,7 +43,6 @@ module "windows_web_app" {
 
   resource_group = var.resource_group
   web_app_name   = var.application_name
-  # environment           = var.environment
   location              = var.location
   service_plan_id       = azurerm_service_plan.this.id
   service_plan_resource = azurerm_service_plan.this
@@ -68,7 +67,6 @@ module "linux_web_app" {
 
   resource_group = var.resource_group
   web_app_name   = var.application_name
-  # environment           = var.environment
   location              = var.location
   service_plan_id       = azurerm_service_plan.this.id
   service_plan_resource = azurerm_service_plan.this

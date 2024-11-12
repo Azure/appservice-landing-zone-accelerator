@@ -30,16 +30,6 @@ variable "tenant_id" {
   description = "The tenant id where the resources will be created"
 }
 
-variable "entra_admin_group_object_id" {
-  type    = string
-  default = null
-}
-
-variable "entra_admin_group_name" {
-  type    = string
-  default = null
-}
-
 variable "private_link_subnet_id" {
   type        = string
   description = "The subnet id where the SQL database will be integrated"

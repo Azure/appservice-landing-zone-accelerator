@@ -10,10 +10,10 @@ resource "azurecaf_name" "caf_name_sqlserver" {
   use_slug = var.global_settings.use_slug
 }
 
-data "azuread_group" "sql_admin_group" {
-  display_name     = var.entra_admin_group_object_id == null ? var.entra_admin_group_name : null
-  object_id        = var.entra_admin_group_object_id
-  security_enabled = true
+data "azurerm_client_config" "current" { }
+
+data "azuread_user" "current_user" {
+  object_id = data.azurerm_client_config.current.object_id
 }
 
 # Create the SQL Server 
@@ -29,8 +29,8 @@ resource "azurerm_mssql_server" "this" {
   tags = local.tags
 
   azuread_administrator {
-    login_username              = data.azuread_group.sql_admin_group.display_name
-    object_id                   = data.azuread_group.sql_admin_group.object_id
+    login_username              = data.azuread_user.current_user.display_name
+    object_id                   = data.azurerm_client_config.current.object_id
     azuread_authentication_only = true
     tenant_id                   = var.tenant_id
   }

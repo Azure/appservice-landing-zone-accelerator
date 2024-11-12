@@ -81,23 +81,11 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
 
   enabled_log {
     category_group = "AllLogs"
-
-    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
-    # retention_policy {
-    #   days    = 0
-    #   enabled = false
-    # }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = false
-
-    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
-    # retention_policy {
-    #   days    = 0
-    #   enabled = false
-    # }
   }
 }
 
@@ -151,29 +139,26 @@ resource "azurerm_windows_web_app_slot" "slot" {
   }
 }
 
-resource "azurecaf_name" "slot" {
-  count         = length(var.webapp_options.slots)
-  name          = "${var.web_app_name}-${var.webapp_options.slots[count.index]}"
-  resource_type = "azurerm_private_endpoint"
+module "private_endpoint_slot" {
+  source = "../../private-endpoint"
+  count = length(azurerm_windows_web_app_slot.slot)
+
+  name                           = "${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot[count.index].name}"
+  resource_group                 = var.resource_group
+  location                       = var.location
+  subnet_id                      = var.frontend_subnet_id
+  private_connection_resource_id = azurerm_windows_web_app.this.id // Change this line
+
+  subresource_names = ["sites-${azurerm_windows_web_app_slot.slot[count.index].name}"]
+
+  private_dns_zone = var.private_dns_zone
+
+  private_dns_records = [
+    lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot[count.index].name}"),
+    lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot[count.index].name}.scm")
+  ]
+
+  depends_on = [
+    azurerm_windows_web_app_slot.slot
+  ]
 }
-
-# module "private_endpoint_slot" {
-#   source = "../../private-endpoint"
-
-#   count = length(var.webapp_options.slots)
-
-#   name                           = "${azurecaf_name.slot[count.index].result}-${azurerm_windows_web_app_slot.slot[count.index].name}"
-#   resource_group                 = var.resource_group
-#   location                       = var.location
-#   subnet_id                      = var.frontend_subnet_id
-#   private_connection_resource_id = azurerm_windows_web_app_slot.slot[count.index].id
-
-#   subresource_names = ["sites"]
-
-#   private_dns_zone = var.private_dns_zone
-
-#   private_dns_records = [
-#     lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot[count.index].name}"),
-#     lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot[count.index].name}.scm")
-#   ]
-# }
