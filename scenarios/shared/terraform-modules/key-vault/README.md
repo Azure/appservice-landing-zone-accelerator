@@ -109,6 +109,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_vault_id"></a> [vault\_id](#output\_vault\_id) | n/a |
 | <a name="output_vault_name"></a> [vault\_name](#output\_vault\_name) | n/a |
 | <a name="output_vault_uri"></a> [vault\_uri](#output\_vault\_uri) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
