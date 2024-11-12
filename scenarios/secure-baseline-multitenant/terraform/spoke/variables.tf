@@ -60,16 +60,6 @@ variable "firewall_rules" {
   type = any
 }
 
-variable "entra_admin_group_object_id" {
-  type        = string
-  description = "[Required] The object ID of the Entra group that should be granted SQL Admin permissions to the SQL Server"
-}
-
-variable "entra_admin_group_name" {
-  type        = string
-  description = "[Required] The name of the Entra group that should be granted SQL Admin permissions to the SQL Server"
-}
-
 variable "spoke_vnet_cidr" {
   type        = list(string)
   description = "[Optional] The CIDR block(s) for the virtual network for whitelisting on the firewall. Defaults to 10.240.0.0/20"

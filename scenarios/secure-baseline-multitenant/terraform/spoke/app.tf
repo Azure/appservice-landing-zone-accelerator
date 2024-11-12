@@ -60,8 +60,6 @@ module "sql_database" {
   location                    = var.location
   unique_id                   = random_integer.unique_id.result
   tenant_id                   = var.tenant_id
-  entra_admin_group_object_id = var.entra_admin_group_object_id
-  entra_admin_group_name      = var.entra_admin_group_name
   private_link_subnet_id      = module.network.subnets["privateLink"].id
   global_settings             = local.global_settings
   tags                        = local.base_tags

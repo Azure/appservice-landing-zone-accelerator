@@ -32,8 +32,6 @@ module "spoke" {
   owner            = var.owner
   tenant_id        = var.tenant_id
 
-  entra_admin_group_name      = var.entra_admin_group_name
-  entra_admin_group_object_id = var.entra_admin_group_object_id
   appsvc_options              = var.appsvc_options
 
   oai_deployment_models = var.oai_deployment_models

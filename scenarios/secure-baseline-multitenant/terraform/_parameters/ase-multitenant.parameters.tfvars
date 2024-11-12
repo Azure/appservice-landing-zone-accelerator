@@ -1,10 +1,10 @@
 application_name = "eslztest"
-environment      = "local"
+environment      = "dev"
 location         = "westus3"
 owner            = "cloudops@contoso.com"
 
-entra_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
-entra_admin_group_name      = "AppSvcLZA Entra SQL Admins"
+# entra_admin_group_object_id = "bda41c64-1493-4d8d-b4b5-7135159d4884"
+# entra_admin_group_name      = "AppSvcLZA Entra SQL Admins"
 
 ## Lookup the Entra User
 # vm_entra_admin_username = "my-user@contoso.com"

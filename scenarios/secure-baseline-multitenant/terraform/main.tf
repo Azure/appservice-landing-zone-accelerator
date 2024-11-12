@@ -35,20 +35,3 @@ provider "azurerm" {
   disable_terraform_partner_id = false
   partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
 }
-
-resource "azurecaf_name" "caf_name_spoke_rg" {
-  name          = var.application_name
-  resource_type = "azurerm_resource_group"
-  prefixes      = concat(["spoke"], local.global_settings.prefixes)
-  random_length = local.global_settings.random_length
-  clean_input   = true
-  passthrough   = local.global_settings.passthrough
-  use_slug      = local.global_settings.use_slug
-}
-
-resource "azurerm_resource_group" "spoke" {
-  name     = azurecaf_name.caf_name_spoke_rg.result
-  location = var.location
-
-  tags = local.base_tags
-}

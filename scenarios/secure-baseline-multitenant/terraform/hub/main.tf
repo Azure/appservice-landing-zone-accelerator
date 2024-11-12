@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.5.0"
+      version = ">=4.0"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"
@@ -32,4 +32,23 @@ provider "azurerm" {
   # DO NOT CHANGE THE BELOW VALUES
   disable_terraform_partner_id = false
   partner_id                   = "cf7e9f0a-f872-49db-b72f-f2e318189a6d"
+}
+
+## Create Hub Resource Group with the name generated from global_settings
+resource "azurecaf_name" "caf_name_hub_rg" {
+  name          = var.application_name
+  resource_type = "azurerm_resource_group"
+  prefixes      = local.global_settings.prefixes
+  suffixes      = local.global_settings.suffixes
+  random_length = local.global_settings.random_length
+  clean_input   = true
+  passthrough   = local.global_settings.passthrough
+  use_slug      = local.global_settings.use_slug
+}
+
+resource "azurerm_resource_group" "hub" {
+  name     = azurecaf_name.caf_name_hub_rg.result
+  location = var.location
+
+  tags = local.base_tags
 }

@@ -1,6 +1,5 @@
 # Spoke network config
 # -----
-# - Spoke Resource Group
 #   - VNet
 #      - Server Farm Subnet (App Service/compute resources)
 #      - Ingress Subnet (Azure Front Door network ingress subnet)
@@ -9,27 +8,6 @@
 #   - Private DNS Zones
 #   - User Defined Routes [optional]
 #   - Azure FrontDoor
-
-## Create Spoke Resource Group with the name generated from global_settings
-resource "azurecaf_name" "caf_name_spoke_rg" {
-  name          = var.application_name
-  resource_type = "azurerm_resource_group"
-  # prefixes      = concat(["spoke"], local.global_settings.prefixes)
-  prefixes = local.global_settings.prefixes
-  suffixes = local.global_settings.suffixes
-
-  random_length = local.global_settings.random_length
-  clean_input   = true
-  passthrough   = local.global_settings.passthrough
-  use_slug      = local.global_settings.use_slug
-}
-
-resource "azurerm_resource_group" "spoke" {
-  name     = azurecaf_name.caf_name_spoke_rg.result
-  location = var.location
-
-  tags = local.base_tags
-}
 
 resource "azurecaf_name" "appsvc_subnet" {
   name          = var.application_name
