@@ -40,7 +40,7 @@ resource "azurerm_mssql_server" "this" {
   tags = local.tags
 
   administrator_login          = var.administrator_login == null ? "sqladmin" : var.administrator_login
-  administrator_login_password = azurerm_key_vault_secret.sql_admin_password.0.value
+  administrator_login_password = azurerm_key_vault_secret.sql_admin_password.value
   # azuread_administrator {
   #   login_username              = data.azuread_user.current_user.display_name
   #   object_id                   = data.azurerm_client_config.current.object_id
