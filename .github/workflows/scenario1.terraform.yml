@@ -65,7 +65,7 @@ jobs:
     with:
       modulePath: ${{ needs.prepare-environment.outputs.modulePath }}
       terraformVersion: ${{ needs.prepare-environment.outputs.terraformVersion }}
-      backendStateKey: ${{ env.backendStateKey }}
+      backendStateKey: ${{ needs.prepare-environment.outputs.backendStateKey }}
       tfvarPath: ${{ needs.prepare-environment.outputs.tfvarPath }}
       # Ensure this value is a boolean
       destroy: ${{ github.event.inputs.destroy == 'true' }}
