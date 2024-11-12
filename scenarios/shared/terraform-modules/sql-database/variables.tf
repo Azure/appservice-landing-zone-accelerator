@@ -1,3 +1,14 @@
+variable "administrator_login" {
+  type        = string
+  description = "The administrator login for the SQL Server"
+  default     = null
+}
+
+variable "key_vault_id" {
+  type        = string
+  description = "The id of the key vault where the password will be stored"
+}
+
 variable "application_name" {
   type        = string
   description = "The name of your application"

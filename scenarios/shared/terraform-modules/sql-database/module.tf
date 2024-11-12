@@ -10,10 +10,21 @@ resource "azurecaf_name" "caf_name_sqlserver" {
   use_slug = var.global_settings.use_slug
 }
 
-data "azurerm_client_config" "current" { }
+# data "azurerm_client_config" "current" { }
 
-data "azuread_user" "current_user" {
-  object_id = data.azurerm_client_config.current.object_id
+# data "azuread_user" "current_user" {
+#   object_id = data.azurerm_client_config.current.object_id
+# }
+
+resource "random_password" "sql_admin_password" {
+  length  = 16
+  special = true
+}
+
+resource "azurerm_key_vault_secret" "sql_admin_password" {
+  name         = "sql-admin-password"
+  value        = random_password.sql_admin_password.result
+  key_vault_id = var.key_vault_id
 }
 
 # Create the SQL Server 
@@ -28,12 +39,14 @@ resource "azurerm_mssql_server" "this" {
 
   tags = local.tags
 
-  azuread_administrator {
-    login_username              = data.azuread_user.current_user.display_name
-    object_id                   = data.azurerm_client_config.current.object_id
-    azuread_authentication_only = true
-    tenant_id                   = var.tenant_id
-  }
+  administrator_login          = var.administrator_login == null ? "sqladmin" : var.administrator_login
+  administrator_login_password = azurerm_key_vault_secret.sql_admin_password.0.value
+  # azuread_administrator {
+  #   login_username              = data.azuread_user.current_user.display_name
+  #   object_id                   = data.azurerm_client_config.current.object_id
+  #   azuread_authentication_only = true
+  #   tenant_id                   = var.tenant_id
+  # }
 }
 
 # Create a the SQL database 

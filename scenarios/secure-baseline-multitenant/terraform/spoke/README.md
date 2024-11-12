@@ -108,14 +108,14 @@
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3 |
 | <a name="requirement_azurecaf"></a> [azurecaf](#requirement\_azurecaf) | >=1.2.23 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.5.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | >=1.2.23 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.5.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=4.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
@@ -145,11 +145,11 @@
 | [azurecaf_name.caf_name_law](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.caf_name_spoke_rg](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
 | [azurecaf_name.law](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
-| [azurerm_app_service_environment_v3.this](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/app_service_environment_v3) | resource |
-| [azurerm_log_analytics_workspace.law](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/log_analytics_workspace) | resource |
-| [azurerm_resource_group.spoke](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/resource_group) | resource |
-| [azurerm_user_assigned_identity.contributor](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/user_assigned_identity) | resource |
-| [azurerm_user_assigned_identity.reader](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/user_assigned_identity) | resource |
+| [azurerm_app_service_environment_v3.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_environment_v3) | resource |
+| [azurerm_log_analytics_workspace.law](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) | resource |
+| [azurerm_resource_group.spoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_user_assigned_identity.contributor](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [azurerm_user_assigned_identity.reader](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
 | [random_integer.unique_id](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) | resource |
 
 ## Inputs
@@ -163,8 +163,6 @@
 | <a name="input_deployment_options"></a> [deployment\_options](#input\_deployment\_options) | Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache. | <pre>object({<br>    enable_waf                 = bool<br>    enable_egress_lockdown     = bool<br>    enable_diagnostic_settings = bool<br>    deploy_asev3               = bool<br>    deploy_bastion             = bool<br>    deploy_redis               = bool<br>    deploy_sql_database        = bool<br>    deploy_app_config          = bool<br>    deploy_vm                  = bool<br>    deploy_openai              = bool<br>  })</pre> | <pre>{<br>  "deploy_app_config": true,<br>  "deploy_asev3": false,<br>  "deploy_bastion": true,<br>  "deploy_openai": true,<br>  "deploy_redis": true,<br>  "deploy_sql_database": true,<br>  "deploy_vm": true,<br>  "enable_diagnostic_settings": true,<br>  "enable_egress_lockdown": true,<br>  "enable_waf": true<br>}</pre> | no |
 | <a name="input_devops_settings"></a> [devops\_settings](#input\_devops\_settings) | [Optional] The settings for the Azure DevOps agent or GitHub runner | <pre>object({<br>    github_runner = optional(object({<br>      repository_url = string<br>      token          = string<br>    }))<br><br>    devops_agent = optional(object({<br>      organization_url = string<br>      token            = string<br>    }))<br>  })</pre> | <pre>{<br>  "devops_agent": null,<br>  "github_runner": null<br>}</pre> | no |
 | <a name="input_devops_subnet_cidr"></a> [devops\_subnet\_cidr](#input\_devops\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.240.10.128/16 | `list(string)` | <pre>[<br>  "10.240.10.128/26"<br>]</pre> | no |
-| <a name="input_entra_admin_group_name"></a> [entra\_admin\_group\_name](#input\_entra\_admin\_group\_name) | [Required] The name of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | n/a | yes |
-| <a name="input_entra_admin_group_object_id"></a> [entra\_admin\_group\_object\_id](#input\_entra\_admin\_group\_object\_id) | [Required] The object ID of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment (dev, qa, staging, prod) | `string` | `"dev"` | no |
 | <a name="input_firewall_private_ip"></a> [firewall\_private\_ip](#input\_firewall\_private\_ip) | n/a | `string` | n/a | yes |
 | <a name="input_firewall_rules"></a> [firewall\_rules](#input\_firewall\_rules) | n/a | `any` | n/a | yes |

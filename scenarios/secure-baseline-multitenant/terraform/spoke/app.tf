@@ -49,25 +49,6 @@ module "app_service" {
   tags = local.base_tags
 }
 
-module "sql_database" {
-  count = var.deployment_options.deploy_sql_database ? 1 : 0
-
-  source = "../../../shared/terraform-modules/sql-database"
-
-  resource_group              = azurerm_resource_group.spoke.name
-  application_name            = var.application_name
-  environment                 = var.environment
-  location                    = var.location
-  unique_id                   = random_integer.unique_id.result
-  tenant_id                   = var.tenant_id
-  private_link_subnet_id      = module.network.subnets["privateLink"].id
-  global_settings             = local.global_settings
-  tags                        = local.base_tags
-  sql_databases               = var.sql_databases
-
-  private_dns_zone = local.provisioned_dns_zones["privatelink.database.windows.net"]
-}
-
 module "key_vault" {
   source = "../../../shared/terraform-modules/key-vault"
 
@@ -89,6 +70,27 @@ module "key_vault" {
     azurerm_user_assigned_identity.contributor.principal_id
   ]
   private_dns_zone = local.provisioned_dns_zones["privatelink.vaultcore.azure.net"]
+}
+
+
+module "sql_database" {
+  count = var.deployment_options.deploy_sql_database ? 1 : 0
+
+  source = "../../../shared/terraform-modules/sql-database"
+
+  resource_group         = azurerm_resource_group.spoke.name
+  application_name       = var.application_name
+  environment            = var.environment
+  location               = var.location
+  unique_id              = random_integer.unique_id.result
+  tenant_id              = var.tenant_id
+  private_link_subnet_id = module.network.subnets["privateLink"].id
+  global_settings        = local.global_settings
+  tags                   = local.base_tags
+  sql_databases          = var.sql_databases
+  key_vault_id           = module.key_vault.vault_id
+
+  private_dns_zone = local.provisioned_dns_zones["privatelink.database.windows.net"]
 }
 
 module "app_configuration" {
