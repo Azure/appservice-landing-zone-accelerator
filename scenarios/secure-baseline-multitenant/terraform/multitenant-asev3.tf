@@ -32,7 +32,7 @@ module "spoke" {
   owner            = var.owner
   tenant_id        = var.tenant_id
 
-  appsvc_options              = var.appsvc_options
+  appsvc_options = var.appsvc_options
 
   oai_deployment_models = var.oai_deployment_models
   oai_sku_name          = var.oai_sku_name
