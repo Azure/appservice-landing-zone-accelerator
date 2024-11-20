@@ -1,17 +1,17 @@
-output "rg_name" {
+output "resource_group_name" {
   value = azurerm_resource_group.hub.name
 }
 
-output "vnet_name" {
+output "virtual_network_name" {
   value = module.network.vnet_name
 }
 
-output "vnet_id" {
+output "virtual_network_id" {
   value = module.network.vnet_id
 }
 
-output "bastion_name" {
-  value = var.deployment_options.deploy_bastion ? module.bastion[0].name : null
+output "virtual_network" {
+  value = module.network.vnet
 }
 
 output "firewall_private_ip" {

@@ -11,7 +11,7 @@ resource "azurecaf_name" "caf_name_winwebapp" {
 }
 
 resource "azurerm_windows_web_app" "this" {
-  name                      = var.web_app_name
+  name                      = azurecaf_name.caf_name_winwebapp.result
   resource_group_name       = var.resource_group
   location                  = var.location
   https_only                = true
@@ -24,8 +24,8 @@ resource "azurerm_windows_web_app" "this" {
   }
 
   site_config {
-    vnet_route_all_enabled = true
-    use_32_bit_worker      = false
+    vnet_route_all_enabled = coalesce(var.webapp_options.vnet_route_all_enabled, true)
+    use_32_bit_worker      = coalesce(var.webapp_options.use_32_bit_worker, true)
 
     application_stack {
       current_stack  = coalesce(var.webapp_options.application_stack.current_stack, "dotnet")
@@ -81,23 +81,11 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
 
   enabled_log {
     category_group = "AllLogs"
-
-    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
-    # retention_policy {
-    #   days    = 0
-    #   enabled = false
-    # }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = false
-
-    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
-    # retention_policy {
-    #   days    = 0
-    #   enabled = false
-    # }
   }
 }
 
@@ -126,17 +114,19 @@ module "private_endpoint" {
 }
 
 resource "azurerm_windows_web_app_slot" "slot" {
-  name                      = var.webapp_options.slots[0]
+  count                     = length(var.webapp_options.slots)
+  name                      = var.webapp_options.slots[count.index]
   app_service_id            = azurerm_windows_web_app.this.id
   virtual_network_subnet_id = var.appsvc_subnet_id
   https_only                = true
 
   identity {
     type         = var.identity.type
-    identity_ids = var.identity.type == "SystemAssigned" ? [] : var.identity.identity_ids
+    identity_ids = var.identity.type == "SystemAssigned" ? null : var.identity.identity_ids
   }
 
   site_config {
+
     vnet_route_all_enabled = true
     use_32_bit_worker      = false
 
@@ -149,26 +139,26 @@ resource "azurerm_windows_web_app_slot" "slot" {
   }
 }
 
-resource "azurecaf_name" "slot" {
-  name          = "${var.web_app_name}-${var.webapp_options.slots[0]}"
-  resource_type = "azurerm_private_endpoint"
-}
-
 module "private_endpoint_slot" {
   source = "../../private-endpoint"
+  count = length(azurerm_windows_web_app_slot.slot)
 
-  name                           = azurecaf_name.slot.result
+  name                           = "${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot[count.index].name}"
   resource_group                 = var.resource_group
   location                       = var.location
   subnet_id                      = var.frontend_subnet_id
-  private_connection_resource_id = azurerm_windows_web_app.this.id
+  private_connection_resource_id = azurerm_windows_web_app.this.id // Change this line
 
-  subresource_names = ["sites-${var.webapp_options.slots[0]}"]
+  subresource_names = ["sites-${azurerm_windows_web_app_slot.slot[count.index].name}"]
 
   private_dns_zone = var.private_dns_zone
 
   private_dns_records = [
-    lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}"),
-    lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot.name}.scm")
+    lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot[count.index].name}"),
+    lower("${azurerm_windows_web_app.this.name}-${azurerm_windows_web_app_slot.slot[count.index].name}.scm")
+  ]
+
+  depends_on = [
+    azurerm_windows_web_app_slot.slot
   ]
 }

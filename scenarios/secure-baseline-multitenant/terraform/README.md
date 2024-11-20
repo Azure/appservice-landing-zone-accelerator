@@ -40,8 +40,11 @@ tenant_id                 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 entra_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 entra_admin_group_name      = "Microsoft Entra ID SQL Admins"
 vm_entra_admin_username     = "bob@contoso.com"
+entra_admin_group_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+entra_admin_group_name      = "Microsoft Entra ID SQL Admins"
+vm_entra_admin_username     = "bob@contoso.com"
 
-# Optionally provide non-Entra admin credentials for the VM
+# Optionally provide non-entra admin credentials for the VM
 # vm_admin_username         = "daniem"
 # vm_admin_password         = "**************"
 
@@ -172,7 +175,7 @@ az upgrade
 az network bastion rdp --name bast-bastion --resource-group rg-hub --target-resource-id /subscriptions/{subscription-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/virtualMachines/{vm-name} --disable-gateway
 ```
 
-If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](#unable-to-connect-to-devops-vm-using-microsoft-entra-id-credentials)
+If you experience issues connecting to the DevOps VM using your Microsoft Entra ID credentials, see [Unable to connect to DevOps VM using Microsoft Entra ID credentials](#unable-to-connect-to-devops-vm-using-entra-credentials)
 
 Once completed, you should be able to connect to the SQL Server using the Microsoft Entra ID account from SQL Server Management Studio. On the sample database (sample-db by default), run the following commands to create the user and grant minimal permissions (the exact command will be provided in the output of the Terraform deployment):
 
@@ -207,7 +210,7 @@ az network front-door frontend-endpoint show --front-door-name <front-door-name>
 ### Unable to connect to DevOps VM using Microsoft Entra ID credentials
 The Microsoft Entra ID enrollment can take a few minutes to complete. Check: [https://portal.manage-beta.microsoft.com/devices](https://portal.manage-beta.microsoft.com/devices)
 
-Verify in the Azure Portal if the `aad-login-for-windows` VM extension was deployed successfully. 
+Verify in the Azure Portal if the `entra-login-for-windows` VM extension was deployed successfully. 
 
 Connect to the VM using the local VM admin credentials and run `dsregcmd /status`. The output should look similar to this:
 
@@ -261,3 +264,133 @@ Connect to the VM using the local VM admin credentials and run `dsregcmd /status
 ```
 
 If the VM is Microsoft Entra ID joined, try to login in with the Microsoft Entra ID credentials again after a few minutes. If it's not Microsoft Entra ID joined, attempt to re-install the VM extension or manually enroll the VM to Microsoft Entra ID by following the steps in Edge: open Edge and click "Sign in to sync data", select "Work or school account", and then press OK on "Allow my organization to manage my device". It takes a few minutes for the policies to be applied, device scanned and confirmed as secure to access corporate resources. You will know that the process is complete.
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3 |
+| <a name="requirement_azurecaf"></a> [azurecaf](#requirement\_azurecaf) | >=1.2.23 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.5.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_azurecaf"></a> [azurecaf](#provider\_azurecaf) | 1.2.28 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.5.0 |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_hub"></a> [hub](#module\_hub) | ./hub | n/a |
+| <a name="module_spoke"></a> [spoke](#module\_spoke) | ./spoke | n/a |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [azurecaf_name.caf_name_spoke_rg](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/name) | resource |
+| [azurerm_resource_group.spoke](https://registry.terraform.io/providers/hashicorp/azurerm/4.5.0/docs/resources/resource_group) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_application_name"></a> [application\_name](#input\_application\_name) | The name of your application | `string` | `"sec-baseline-1-spoke"` | no |
+| <a name="input_appsvc_options"></a> [appsvc\_options](#input\_appsvc\_options) | The options for the app service | <pre>object({<br>    service_plan = object({<br>      os_type        = string<br>      sku_name       = string<br>      worker_count   = optional(number)<br>      zone_redundant = optional(bool)<br>    })<br>    web_app = object({<br>      slots = optional(list(string))<br><br>      application_stack = object({<br>        current_stack       = string # required for windows<br>        dotnet_version      = optional(string)<br>        docker_image        = optional(string) # linux only<br>        docker_image_tag    = optional(string) # linux only<br>        php_version         = optional(string)<br>        node_version        = optional(string)<br>        java_version        = optional(string)<br>        python              = optional(bool)   # windows only<br>        python_version      = optional(string) # linux only<br>        java_server         = optional(string) # linux only<br>        java_server_version = optional(string) # linux only<br>        go_version          = optional(string) # linux only<br>        ruby_version        = optional(string) # linux only<br>      })<br>    })<br>  })</pre> | <pre>{<br>  "service_plan": {<br>    "os_type": "Windows",<br>    "sku_name": "S1",<br>    "zone_redundant": true<br>  },<br>  "web_app": {<br>    "application_stack": {<br>      "current_stack": "dotnet",<br>      "dotnet_version": "6.0"<br>    },<br>    "slots": []<br>  }<br>}</pre> | no |
+| <a name="input_appsvc_subnet_cidr"></a> [appsvc\_subnet\_cidr](#input\_appsvc\_subnet\_cidr) | [Optional] The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.0.0/26"<br>]</pre> | no |
+| <a name="input_ase_subnet_cidr"></a> [ase\_subnet\_cidr](#input\_ase\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.241.0.0/26 | `list(string)` | <pre>[<br>  "10.240.5.0/24"<br>]</pre> | no |
+| <a name="input_bastion_subnet_cidr"></a> [bastion\_subnet\_cidr](#input\_bastion\_subnet\_cidr) | [Optional] The CIDR block(s) for the bastion subnet. Defaults to 10.242.0.64/26 | `list(string)` | <pre>[<br>  "10.242.0.64/26"<br>]</pre> | no |
+| <a name="input_bastion_subnet_name"></a> [bastion\_subnet\_name](#input\_bastion\_subnet\_name) | [Optional] Name of the subnet to deploy bastion resource to. Defaults to 'AzureBastionSubnet' | `string` | `"AzureBastionSubnet"` | no |
+| <a name="input_deployment_options"></a> [deployment\_options](#input\_deployment\_options) | [Optional] Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache. | <pre>object({<br>    enable_waf                 = bool<br>    enable_egress_lockdown     = bool<br>    enable_diagnostic_settings = bool<br>    deploy_bastion             = bool<br>    deploy_redis               = bool<br>    deploy_sql_database        = bool<br>    deploy_app_config          = bool<br>    deploy_vm                  = bool<br>    deploy_openai              = bool<br>    deploy_asev3               = bool<br>  })</pre> | <pre>{<br>  "deploy_app_config": false,<br>  "deploy_asev3": false,<br>  "deploy_bastion": false,<br>  "deploy_openai": false,<br>  "deploy_redis": false,<br>  "deploy_sql_database": false,<br>  "deploy_vm": false,<br>  "enable_diagnostic_settings": false,<br>  "enable_egress_lockdown": false,<br>  "enable_waf": false<br>}</pre> | no |
+| <a name="input_devops_settings"></a> [devops\_settings](#input\_devops\_settings) | [Optional] The settings for the Azure DevOps agent or GitHub runner | <pre>object({<br>    github_runner = optional(object({<br>      repository_url = string<br>      token          = string<br>    }))<br><br>    devops_agent = optional(object({<br>      organization_url = string<br>      token            = string<br>    }))<br>  })</pre> | <pre>{<br>  "devops_agent": null,<br>  "github_runner": null<br>}</pre> | no |
+| <a name="input_devops_subnet_cidr"></a> [devops\_subnet\_cidr](#input\_devops\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.240.10.128/16 | `list(string)` | <pre>[<br>  "10.240.10.128/26"<br>]</pre> | no |
+| <a name="input_entra_admin_group_name"></a> [entra\_admin\_group\_name](#input\_entra\_admin\_group\_name) | [Required] The name of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
+| <a name="input_entra_admin_group_object_id"></a> [entra\_admin\_group\_object\_id](#input\_entra\_admin\_group\_object\_id) | [Required] The object ID of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | The environment (dev, qa, staging, prod) | `string` | `"dev"` | no |
+| <a name="input_firewall_subnet_cidr"></a> [firewall\_subnet\_cidr](#input\_firewall\_subnet\_cidr) | [Optional] The CIDR block(s) for the firewall subnet. Defaults to 10.242.0.0/26 | `list(string)` | <pre>[<br>  "10.242.0.0/26"<br>]</pre> | no |
+| <a name="input_firewall_subnet_name"></a> [firewall\_subnet\_name](#input\_firewall\_subnet\_name) | [Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet' | `string` | `"AzureFirewallSubnet"` | no |
+| <a name="input_front_door_subnet_cidr"></a> [front\_door\_subnet\_cidr](#input\_front\_door\_subnet\_cidr) | [Optional] The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.0.64/26"<br>]</pre> | no |
+| <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | [Optional] Global settings to configure each module with the appropriate naming standards. | `map(any)` | `{}` | no |
+| <a name="input_hub_vnet_cidr"></a> [hub\_vnet\_cidr](#input\_hub\_vnet\_cidr) | [Optional] The CIDR block(s) for the hub virtual network. Defaults to 10.242.0.0/20 | `list(string)` | <pre>[<br>  "10.242.0.0/20"<br>]</pre> | no |
+| <a name="input_location"></a> [location](#input\_location) | The Azure region where all resources in this example should be created | `string` | `"westus2"` | no |
+| <a name="input_oai_deployment_models"></a> [oai\_deployment\_models](#input\_oai\_deployment\_models) | [Optional] Map to specify deployment models for the OpenAI resource | `any` | <pre>{<br>  "gpt-35-turbo": {<br>    "model_format": "OpenAI",<br>    "model_name": "gpt-35-turbo",<br>    "model_version": "0613",<br>    "name": "gpt-35-turbo",<br>    "scale_type": "Standard"<br>  },<br>  "text-embedding-ada-002": {<br>    "model_format": "OpenAI",<br>    "model_name": "text-embedding-ada-002",<br>    "model_version": "2",<br>    "name": "text-embedding-ada-002",<br>    "scale_type": "Standard"<br>  }<br>}</pre> | no |
+| <a name="input_oai_sku_name"></a> [oai\_sku\_name](#input\_oai\_sku\_name) | [Optional] The SKU name for the OpenAI resource | `string` | `"S0"` | no |
+| <a name="input_owner"></a> [owner](#input\_owner) | [Required] Owner of the deployment. | `string` | n/a | yes |
+| <a name="input_private_link_subnet_cidr"></a> [private\_link\_subnet\_cidr](#input\_private\_link\_subnet\_cidr) | [Optional] The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.11.0/24"<br>]</pre> | no |
+| <a name="input_spoke_vnet_cidr"></a> [spoke\_vnet\_cidr](#input\_spoke\_vnet\_cidr) | [Optional] The CIDR block(s) for the virtual network for whitelisting on the firewall. Defaults to 10.240.0.0/20 | `list(string)` | <pre>[<br>  "10.240.0.0/20"<br>]</pre> | no |
+| <a name="input_sql_databases"></a> [sql\_databases](#input\_sql\_databases) | [Optional] The settings for the SQL databases. | <pre>list(object({<br>    name     = string<br>    sku_name = string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "sample-db",<br>    "sku_name": "S0"<br>  }<br>]</pre> | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | [Optional] Additional tags to assign to your resources | `map(string)` | `{}` | no |
+| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Entra tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
+| <a name="input_vm_admin_username"></a> [vm\_admin\_username](#input\_vm\_admin\_username) | [Optional] The username for the local VM admin account. Autogenerated if null. Prefer using the Entra admin account. | `string` | `null` | no |
+| <a name="input_vm_entra_admin_object_id"></a> [vm\_entra\_admin\_object\_id](#input\_vm\_entra\_admin\_object\_id) | [Optional] The Entra object ID for the VM admin user/group. If vm\_entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_vm_entra_admin_username"></a> [vm\_entra\_admin\_username](#input\_vm\_entra\_admin\_username) | [Optional] The Entra username for the VM admin account. If vm\_entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3 |
+| <a name="requirement_azurecaf"></a> [azurecaf](#requirement\_azurecaf) | >=1.2.23 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~>4.5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_hub"></a> [hub](#module\_hub) | ./hub | n/a |
+| <a name="module_spoke"></a> [spoke](#module\_spoke) | ./spoke | n/a |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_application_name"></a> [application\_name](#input\_application\_name) | The name of your application | `string` | `"sec-baseline-1-spoke"` | no |
+| <a name="input_appsvc_options"></a> [appsvc\_options](#input\_appsvc\_options) | The options for the app service | <pre>object({<br>    service_plan = object({<br>      os_type        = string<br>      sku_name       = string<br>      worker_count   = optional(number)<br>      zone_redundant = optional(bool)<br>    })<br>    web_app = object({<br>      slots = optional(list(string))<br><br>      application_stack = object({<br>        current_stack       = string # required for windows<br>        dotnet_version      = optional(string)<br>        docker_image        = optional(string) # linux only<br>        docker_image_tag    = optional(string) # linux only<br>        php_version         = optional(string)<br>        node_version        = optional(string)<br>        java_version        = optional(string)<br>        python              = optional(bool)   # windows only<br>        python_version      = optional(string) # linux only<br>        java_server         = optional(string) # linux only<br>        java_server_version = optional(string) # linux only<br>        go_version          = optional(string) # linux only<br>        ruby_version        = optional(string) # linux only<br>      })<br>    })<br>  })</pre> | <pre>{<br>  "service_plan": {<br>    "os_type": "Windows",<br>    "sku_name": "I1v2",<br>    "zone_redundant": true<br>  },<br>  "web_app": {<br>    "application_stack": {<br>      "current_stack": "dotnet",<br>      "dotnet_version": "v6.0"<br>    },<br>    "slots": []<br>  }<br>}</pre> | no |
+| <a name="input_appsvc_subnet_cidr"></a> [appsvc\_subnet\_cidr](#input\_appsvc\_subnet\_cidr) | [Optional] The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.0.0/26"<br>]</pre> | no |
+| <a name="input_ase_subnet_cidr"></a> [ase\_subnet\_cidr](#input\_ase\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.241.0.0/26 | `list(string)` | <pre>[<br>  "10.240.5.0/24"<br>]</pre> | no |
+| <a name="input_bastion_subnet_cidr"></a> [bastion\_subnet\_cidr](#input\_bastion\_subnet\_cidr) | [Optional] The CIDR block(s) for the bastion subnet. Defaults to 10.242.0.64/26 | `list(string)` | <pre>[<br>  "10.242.0.64/26"<br>]</pre> | no |
+| <a name="input_bastion_subnet_name"></a> [bastion\_subnet\_name](#input\_bastion\_subnet\_name) | [Optional] Name of the subnet to deploy bastion resource to. Defaults to 'AzureBastionSubnet' | `string` | `"AzureBastionSubnet"` | no |
+| <a name="input_deployment_options"></a> [deployment\_options](#input\_deployment\_options) | [Optional] Opt-in settings for the deployment: enable WAF in Front Door, deploy Azure Firewall and UDRs in the spoke network to force outbound traffic to the Azure Firewall, deploy Redis Cache. | <pre>object({<br>    enable_waf                 = bool<br>    enable_egress_lockdown     = bool<br>    enable_diagnostic_settings = bool<br>    deploy_bastion             = bool<br>    deploy_redis               = bool<br>    deploy_sql_database        = bool<br>    deploy_app_config          = bool<br>    deploy_vm                  = bool<br>    deploy_openai              = bool<br>    deploy_asev3               = bool<br>  })</pre> | <pre>{<br>  "deploy_app_config": false,<br>  "deploy_asev3": false,<br>  "deploy_bastion": false,<br>  "deploy_openai": false,<br>  "deploy_redis": false,<br>  "deploy_sql_database": false,<br>  "deploy_vm": false,<br>  "enable_diagnostic_settings": false,<br>  "enable_egress_lockdown": false,<br>  "enable_waf": false<br>}</pre> | no |
+| <a name="input_devops_settings"></a> [devops\_settings](#input\_devops\_settings) | [Optional] The settings for the Azure DevOps agent or GitHub runner | <pre>object({<br>    github_runner = optional(object({<br>      repository_url = string<br>      token          = string<br>    }))<br><br>    devops_agent = optional(object({<br>      organization_url = string<br>      token            = string<br>    }))<br>  })</pre> | <pre>{<br>  "devops_agent": null,<br>  "github_runner": null<br>}</pre> | no |
+| <a name="input_devops_subnet_cidr"></a> [devops\_subnet\_cidr](#input\_devops\_subnet\_cidr) | [Optional] The CIDR block for the subnet. Defaults to 10.240.10.128/16 | `list(string)` | <pre>[<br>  "10.240.10.128/26"<br>]</pre> | no |
+| <a name="input_entra_admin_group_name"></a> [entra\_admin\_group\_name](#input\_entra\_admin\_group\_name) | [Required] The name of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
+| <a name="input_entra_admin_group_object_id"></a> [entra\_admin\_group\_object\_id](#input\_entra\_admin\_group\_object\_id) | [Required] The object ID of the Entra group that should be granted SQL Admin permissions to the SQL Server | `string` | `null` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | The environment (dev, qa, staging, prod) | `string` | `"dev"` | no |
+| <a name="input_firewall_subnet_cidr"></a> [firewall\_subnet\_cidr](#input\_firewall\_subnet\_cidr) | [Optional] The CIDR block(s) for the firewall subnet. Defaults to 10.242.0.0/26 | `list(string)` | <pre>[<br>  "10.242.0.0/26"<br>]</pre> | no |
+| <a name="input_firewall_subnet_name"></a> [firewall\_subnet\_name](#input\_firewall\_subnet\_name) | [Optional] Name of the subnet for firewall resources. Defaults to 'AzureFirewallSubnet' | `string` | `"AzureFirewallSubnet"` | no |
+| <a name="input_front_door_subnet_cidr"></a> [front\_door\_subnet\_cidr](#input\_front\_door\_subnet\_cidr) | [Optional] The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.0.64/26"<br>]</pre> | no |
+| <a name="input_global_settings"></a> [global\_settings](#input\_global\_settings) | [Optional] Global settings to configure each module with appropriate naming standards.<br>    - name\_prefix: A string to prepend to all resource names.<br>    - name\_suffix: A string to append to all resource names.<br>    - use\_slug: Whether to use a random slug in resource names for uniqueness.<br>    - random\_length: The length of the random string to use in the slug.<br>    - resource\_prefixes: A map of resource type to prefix string.<br>    - resource\_suffixes: A map of resource type to suffix string. | `map(any)` | `{}` | no |
+| <a name="input_hub_vnet_cidr"></a> [hub\_vnet\_cidr](#input\_hub\_vnet\_cidr) | [Optional] The CIDR block(s) for the hub virtual network. Defaults to 10.242.0.0/20 | `list(string)` | <pre>[<br>  "10.242.0.0/20"<br>]</pre> | no |
+| <a name="input_location"></a> [location](#input\_location) | The Azure region where all resources in this example should be created | `string` | `"westus2"` | no |
+| <a name="input_oai_deployment_models"></a> [oai\_deployment\_models](#input\_oai\_deployment\_models) | [Optional] Map to specify deployment models for the OpenAI resource | `any` | <pre>{<br>  "gpt-35-turbo": {<br>    "model_format": "OpenAI",<br>    "model_name": "gpt-35-turbo",<br>    "model_version": "0613",<br>    "name": "gpt-35-turbo",<br>    "scale_type": "Standard"<br>  },<br>  "text-embedding-ada-002": {<br>    "model_format": "OpenAI",<br>    "model_name": "text-embedding-ada-002",<br>    "model_version": "2",<br>    "name": "text-embedding-ada-002",<br>    "scale_type": "Standard"<br>  }<br>}</pre> | no |
+| <a name="input_oai_sku_name"></a> [oai\_sku\_name](#input\_oai\_sku\_name) | [Optional] The SKU name for the OpenAI resource | `string` | `"S0"` | no |
+| <a name="input_owner"></a> [owner](#input\_owner) | [Required] Owner of the deployment. | `string` | n/a | yes |
+| <a name="input_private_link_subnet_cidr"></a> [private\_link\_subnet\_cidr](#input\_private\_link\_subnet\_cidr) | [Optional] The CIDR block for the subnet. | `list(string)` | <pre>[<br>  "10.240.11.0/24"<br>]</pre> | no |
+| <a name="input_spoke_vnet_cidr"></a> [spoke\_vnet\_cidr](#input\_spoke\_vnet\_cidr) | [Optional] The CIDR block(s) for the virtual network for whitelisting on the firewall. Defaults to 10.240.0.0/20 | `list(string)` | <pre>[<br>  "10.240.0.0/20"<br>]</pre> | no |
+| <a name="input_sql_databases"></a> [sql\_databases](#input\_sql\_databases) | [Optional] The settings for the SQL databases. | <pre>list(object({<br>    name     = string<br>    sku_name = string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "sample-db",<br>    "sku_name": "S0"<br>  }<br>]</pre> | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | [Optional] Additional tags to assign to your resources | `map(string)` | `{}` | no |
+| <a name="input_tenant_id"></a> [tenant\_id](#input\_tenant\_id) | The Entra tenant ID for the identities. If no value provided, will use current deployment environment tenant. | `string` | `null` | no |
+| <a name="input_vm_admin_username"></a> [vm\_admin\_username](#input\_vm\_admin\_username) | [Optional] The username for the local VM admin account. Autogenerated if null. Prefer using the Entra admin account. | `string` | `null` | no |
+| <a name="input_vm_entra_admin_object_id"></a> [vm\_entra\_admin\_object\_id](#input\_vm\_entra\_admin\_object\_id) | [Optional] The Entra object ID for the VM admin user/group. If vm\_entra\_admin\_username is not specified, this value will be used. | `string` | `null` | no |
+| <a name="input_vm_entra_admin_username"></a> [vm\_entra\_admin\_username](#input\_vm\_entra\_admin\_username) | [Optional] The Entra username for the VM admin account. If vm\_entra\_admin\_object\_id is not specified, this value will be used. | `string` | `null` | no |
+
+## Outputs
+
+No outputs.
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

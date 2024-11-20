@@ -1,0 +1,10 @@
+### To use this template, rename the file to `backend.tf` 
+###   and update the values below to match your remote state config
+###
+### To use this file as part of your deployment, provide the following flag as you initialize:
+###   terraform init -backend-config=backend.tf
+
+resource_group_name  = "my-tf-remote-state-rg-name"
+storage_account_name = "my-tf-remote-state-sa-name"
+container_name       = "my-tf-remote-state-container-name"
+key                  = "my-state-file-name.tfstate"

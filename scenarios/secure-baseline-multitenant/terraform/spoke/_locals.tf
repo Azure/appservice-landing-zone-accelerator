@@ -1,5 +1,5 @@
 locals {
-  deployment_name = "sec-baseline-1-spoke"
+  deployment_name = "sec-baseline-spoke"
 
   # used in spoke-network.tf
   private_dns_zones = [for each in

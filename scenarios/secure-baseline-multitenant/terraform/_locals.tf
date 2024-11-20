@@ -1,13 +1,11 @@
 locals {
-  deployment_name = "sec-baseline-hub"
+  deployment_name = "sec-baseline-1"
 
   global_settings = merge({
-    environment = try(var.global_settings.environment, var.environment)
-    passthrough = try(var.global_settings.passthrough, false)
-    prefixes    = try(var.global_settings.prefixes, [local.deployment_name, local.short_location])
-    suffixes    = try(var.global_settings.suffixes, [var.environment])
-    # prefixes    = try(var.global_settings.prefixes, [var.application_name, local.short_location])
-
+    environment   = try(var.global_settings.environment, var.environment)
+    passthrough   = try(var.global_settings.passthrough, false)
+    prefixes      = try(var.global_settings.prefixes, [local.deployment_name, local.short_location])
+    suffixes      = try(var.global_settings.suffixes, [var.environment])
     random_length = try(var.global_settings.random_length, 0)
     regions       = try(var.global_settings.regions, null)
     tags          = try(var.global_settings.tags, null)
@@ -30,7 +28,6 @@ locals {
     "Terraform"   = true
     "Environment" = local.global_settings.environment
     "Owner"       = var.owner
-    "Project"     = "[Scenario 1: HUB] App Service Landing Zone Accelerator"
+    "Project"     = "[Scenario 1] App Service Landing Zone Accelerator"
   }, var.tags)
 }
-

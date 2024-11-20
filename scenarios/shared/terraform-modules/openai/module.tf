@@ -1,4 +1,4 @@
-resource "azurecaf_name" "caf_name_akv" {
+resource "azurecaf_name" "caf_name_oai" {
   name          = var.application_name
   resource_type = "azurerm_cognitive_account"
   prefixes      = var.global_settings.prefixes
@@ -10,13 +10,14 @@ resource "azurecaf_name" "caf_name_akv" {
   use_slug = var.global_settings.use_slug
 }
 
+
 resource "azurerm_cognitive_account" "this" {
   kind                               = "OpenAI"
   location                           = var.location
-  name                               = azurecaf_name.caf_name_akv.result
+  name                               = azurecaf_name.caf_name_oai.result
   resource_group_name                = var.resource_group_name
   sku_name                           = var.sku_name
-  custom_subdomain_name              = var.custom_subdomain_name
+  custom_subdomain_name              = coalesce(var.custom_subdomain_name, azurecaf_name.caf_name_oai.result)
   dynamic_throttling_enabled         = var.dynamic_throttling_enabled
   fqdns                              = var.fqdns
   local_auth_enabled                 = var.local_auth_enabled
@@ -37,14 +38,15 @@ resource "azurerm_cognitive_account" "this" {
       identity_ids = identity.value.identity_ids
     }
   }
+
   dynamic "network_acls" {
-    for_each = var.network_acls != null ? [var.network_acls] : []
+    for_each = var.network_acls != null ? var.network_acls : []
     content {
       default_action = network_acls.value.default_action
-      ip_rules       = network_acls.value.ip_rules
+      ip_rules       = lookup(network_acls.value, "ip_rules", null)
 
       dynamic "virtual_network_rules" {
-        for_each = network_acls.value.virtual_network_rules != null ? network_acls.value.virtual_network_rules : []
+        for_each = lookup(network_acls.value, "virtual_network_rules", [])
         content {
           subnet_id                            = virtual_network_rules.value.subnet_id
           ignore_missing_vnet_service_endpoint = virtual_network_rules.value.ignore_missing_vnet_service_endpoint
@@ -52,6 +54,7 @@ resource "azurerm_cognitive_account" "this" {
       }
     }
   }
+
   dynamic "storage" {
     for_each = var.storage
     content {
@@ -75,7 +78,12 @@ resource "azurerm_cognitive_deployment" "this" {
     name    = each.value.model_name
     version = each.value.model_version
   }
-  scale {
-    type = each.value.scale_type
+
+  sku {
+    name     = each.value.sku_name
+    tier     = each.value.sku_tier
+    size     = coalesce(each.value.sku_size, null)
+    family   = coalesce(each.value.sku_family, null)
+    capacity = coalesce(each.value.sku_capacity, null)
   }
 }

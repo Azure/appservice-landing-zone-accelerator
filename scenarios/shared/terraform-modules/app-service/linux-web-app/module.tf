@@ -28,12 +28,11 @@ resource "azurerm_linux_web_app" "this" {
     use_32_bit_worker      = false
 
     application_stack {
-      docker_image     = var.webapp_options.application_stack.docker_image
-      docker_image_tag = var.webapp_options.application_stack.docker_image_tag
-      dotnet_version   = var.webapp_options.application_stack.dotnet_version
-      java_version     = var.webapp_options.application_stack.java_version
-      php_version      = var.webapp_options.application_stack.php_version
-      node_version     = var.webapp_options.application_stack.node_version
+      docker_image_name = "${var.webapp_options.application_stack.docker_image}:${var.webapp_options.application_stack.docker_image_tag}"
+      dotnet_version    = var.webapp_options.application_stack.dotnet_version
+      java_version      = var.webapp_options.application_stack.java_version
+      php_version       = var.webapp_options.application_stack.php_version
+      node_version      = var.webapp_options.application_stack.node_version
     }
   }
 
@@ -91,22 +90,11 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   enabled_log {
     category_group = "allLogs"
 
-    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
-    # retention_policy {
-    #   days    = 0
-    #   enabled = false
-    # }
   }
 
   metric {
     category = "AllMetrics"
     enabled  = false
-
-    ## `retention_policy` has been deprecated in favor of `azurerm_storage_management_policy` resource - to learn more https://aka.ms/diagnostic_settings_log_retention
-    # retention_policy {
-    #   days    = 0
-    #   enabled = false
-    # }
   }
 }
 
@@ -135,7 +123,8 @@ module "private_endpoint" {
 }
 
 resource "azurerm_linux_web_app_slot" "slot" {
-  name                      = var.webapp_options.slots[0]
+  count                     = length(var.webapp_options.slots)
+  name                      = var.webapp_options.slots[count.index]
   app_service_id            = azurerm_linux_web_app.this.id
   virtual_network_subnet_id = var.appsvc_subnet_id
   https_only                = true
@@ -150,37 +139,32 @@ resource "azurerm_linux_web_app_slot" "slot" {
     use_32_bit_worker      = false
 
     application_stack {
-      docker_image     = var.webapp_options.application_stack.docker_image
-      docker_image_tag = var.webapp_options.application_stack.docker_image_tag
-      dotnet_version   = var.webapp_options.application_stack.dotnet_version
-      java_version     = var.webapp_options.application_stack.java_version
-      php_version      = var.webapp_options.application_stack.php_version
-      node_version     = var.webapp_options.application_stack.node_version
+      docker_image_name = "${var.webapp_options.application_stack.docker_image}:${var.webapp_options.application_stack.docker_image_tag}"
+      dotnet_version    = var.webapp_options.application_stack.dotnet_version
+      java_version      = var.webapp_options.application_stack.java_version
+      php_version       = var.webapp_options.application_stack.php_version
+      node_version      = var.webapp_options.application_stack.node_version
     }
   }
 }
 
-resource "azurecaf_name" "slot" {
-  name          = "${azurecaf_name.caf_name_linwebapp.result}-${var.webapp_options.slots[0]}"
-  resource_type = "azurerm_private_endpoint"
-}
-
 module "private_endpoint_slot" {
   source = "../../private-endpoint"
+  count = length(azurerm_linux_web_app_slot.slot)
 
-  name                           = azurecaf_name.slot.result
+  name                           = "${azurerm_linux_web_app.this.name}-${azurerm_linux_web_app_slot.slot[count.index].name}"
   resource_group                 = var.resource_group
   location                       = var.location
   subnet_id                      = var.frontend_subnet_id
-  private_connection_resource_id = azurerm_linux_web_app.this.id
+  private_connection_resource_id = azurerm_linux_web_app.this.id // Change this line
 
-  subresource_names = ["sites-${var.webapp_options.slots[0]}"]
+  subresource_names = ["sites-${azurerm_linux_web_app_slot.slot[count.index].name}"]
 
   private_dns_zone = var.private_dns_zone
 
   private_dns_records = [
-    lower("${azurerm_linux_web_app.this.name}-${azurerm_linux_web_app_slot.slot.name}"),
-    lower("${azurerm_linux_web_app.this.name}-${azurerm_linux_web_app_slot.slot.name}.scm")
+    lower("${azurerm_linux_web_app.this.name}-${azurerm_linux_web_app_slot.slot[count.index].name}"),
+    lower("${azurerm_linux_web_app.this.name}-${azurerm_linux_web_app_slot.slot[count.index].name}.scm")
   ]
 
   depends_on = [

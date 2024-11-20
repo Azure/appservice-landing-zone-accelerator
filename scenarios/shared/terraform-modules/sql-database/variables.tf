@@ -1,3 +1,14 @@
+variable "administrator_login" {
+  type        = string
+  description = "The administrator login for the SQL Server"
+  default     = null
+}
+
+variable "key_vault_id" {
+  type        = string
+  description = "The id of the key vault where the password will be stored"
+}
+
 variable "application_name" {
   type        = string
   description = "The name of your application"
@@ -28,14 +39,6 @@ variable "location" {
 variable "tenant_id" {
   type        = string
   description = "The tenant id where the resources will be created"
-}
-
-variable "entra_admin_group_object_id" {
-  type = string
-}
-
-variable "entra_admin_group_name" {
-  type = string
 }
 
 variable "private_link_subnet_id" {
