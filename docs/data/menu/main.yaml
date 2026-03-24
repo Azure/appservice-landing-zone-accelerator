@@ -1,0 +1,5 @@
+---
+main:
+  - name: Home
+    ref: /
+    icon: gdoc_home

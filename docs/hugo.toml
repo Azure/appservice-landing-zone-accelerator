@@ -1,0 +1,70 @@
+baseURL = "https://azure.github.io/appservice-landing-zone-accelerator"
+languageCode = "en-us"
+title = "App Service Application Landing Zone Accelerator"
+description = "Documentation for the App Service Landing Zone Accelerator — Azure App Service deployment aligned with the Cloud Adoption Framework, powered by Azure Verified Modules."
+theme = "hugo-geekdoc"
+
+[outputs]
+home = ['html', 'rss', 'TXT']
+page = ['html', 'rss', 'TXT']
+section = ['html', 'rss', 'TXT']
+
+[outputFormats]
+  [outputFormats.TXT]
+    mediaType = "text/plain"
+    baseName = "llms"
+    isPlainText = true
+
+# Required to get well formatted code blocks
+pygmentsUseClasses = true
+pygmentsCodeFences = true
+disablePathToLower = true
+enableGitInfo = true
+
+# Required if you want to render robots.txt template
+enableRobotsTXT = true
+
+[markup]
+[markup.goldmark.renderer]
+# Needed for mermaid shortcode
+unsafe = true
+[markup.tableOfContents]
+startLevel = 1
+endLevel = 9
+
+[taxonomies]
+tag = "tags"
+
+[params]
+description = "Documentation for the App Service Landing Zone Accelerator — Azure App Service deployment aligned with the Cloud Adoption Framework, powered by Azure Verified Modules."
+geekdocToC = 2
+
+geekdocLogo = "img/AppServiceLandingZoneArchitecture-multitenant.png"
+
+geekdocMenuBundle = false
+geekdocCollapseAllSections = false
+geekdocAlign = "left"
+geekdockNav = true
+geekdocNextPrev = true
+geekdocBreadcrumb = true
+
+geekdocRepo = "https://github.com/Azure/appservice-landing-zone-accelerator"
+geekdocEditPath = "edit/main/docs"
+
+geekdocSearch = true
+geekdocSearchShowParent = true
+
+geekdocAnchor = true
+geekdocAnchorCopy = true
+geekdocImageLazyLoading = true
+geekdocOverwriteHTMLBase = false
+geekdocDarkModeToggle = true
+geekdocDarkModeDim = false
+geekdocDarkModeCode = false
+geekdocBackToTop = true
+geekdocTagsToMenu = false
+geekdocFileTreeSortBy = "title"
+
+[params.geekdocContentLicense]
+name = "MIT License"
+link = "https://github.com/Azure/appservice-landing-zone-accelerator?tab=MIT-1-ov-file#readme"

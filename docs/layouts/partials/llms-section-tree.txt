@@ -1,0 +1,22 @@
+{{- $section := .section -}}
+{{- $depth := .depth -}}
+{{- $base := .base -}}
+{{- $renderHeading := .renderHeading -}}
+{{- $renderSelf := .renderSelf -}}
+
+{{- if $renderHeading }}
+{{ printf "%s %s\n" (strings.Repeat (add 2 $depth) "#") $section.Title }}
+{{- end }}
+
+{{- if and $renderSelf $section.File }}
+{{ printf "- [%s](%s/%s)\n" $section.Title $base (replaceRE "^/?(.+)\\.md$" "$1.md" (replaceRE "\\\\" "/" $section.File.Path)) }}
+{{- end }}
+
+{{- range $page := $section.RegularPages.ByWeight }}
+{{ printf "- [%s](%s/%s)\n" $page.Title $base (replaceRE "^/?(.+)\\.md$" "$1.md" (replaceRE "\\\\" "/" $page.File.Path)) }}
+{{- end }}
+
+{{- range $sub := $section.Sections.ByWeight }}
+{{ printf "\n" }}
+{{ partial "llms-section-tree.txt" (dict "section" $sub "depth" (add $depth 1) "base" $base "renderHeading" true "renderSelf" true) }}
+{{- end }}

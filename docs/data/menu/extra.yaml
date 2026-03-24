@@ -1,0 +1,13 @@
+---
+header:
+  - name: Home
+    ref: /
+    icon: gdoc_home
+  - name: GitHub
+    ref: https://github.com/Azure/appservice-landing-zone-accelerator
+    icon: gdoc_github
+    external: true
+  - name: Issue
+    ref: https://github.com/Azure/appservice-landing-zone-accelerator/issues/new
+    icon: bug
+    external: true

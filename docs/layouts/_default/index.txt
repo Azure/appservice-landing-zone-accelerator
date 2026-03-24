@@ -1,0 +1,20 @@
+# {{ .Site.Title }}
+
+{{ .Site.Title }} - Documentation - {{ .Site.Params.description }}
+
+## Summary
+{{ .Site.Params.description }}
+
+{{- $baseGithubURL := "https://raw.githubusercontent.com/Azure/appservice-landing-zone-accelerator/refs/heads/main/docs/content" -}}
+
+## Documentation Sections
+
+{{- range .Site.Sections.ByWeight }}
+{{- partial "llms-section-tree.txt" (dict "section" . "depth" 1 "base" $baseGithubURL "renderHeading" true "renderSelf" true) }}
+{{ printf "\n" }}
+{{- end }}
+
+## All Pages (Alphabetical)
+{{- range .Site.RegularPages.ByTitle }}
+- [{{ .Title }}]({{ $baseGithubURL }}/{{ .File.Path | replaceRE "^/?(.+)\\.md$" "$1.md" | replaceRE "\\\\" "/" }})
+{{- end }}

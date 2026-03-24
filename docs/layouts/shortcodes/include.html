@@ -1,0 +1,29 @@
+{{ $file := .Get "file" }}
+{{ $url := .Get "url" }}
+{{ $type := .Get "type" }}
+{{ $language := .Get "language" }}
+{{ $options := .Get "options" }}
+
+<div class="gdoc-include">
+  {{- if $url -}}
+    {{- $resource := resources.GetRemote $url -}}
+    {{- $content := $resource.Content -}}
+    {{- if $language -}}
+      {{- highlight $content $language (default "linenos=table" $options) -}}
+    {{- else if eq $type "html" -}}
+      {{- $content | safeHTML -}}
+    {{- else -}}
+      {{- $content -}}
+    {{- end -}}
+  {{- else -}}
+    {{- if $language -}}
+      {{- highlight ($file | readFile) $language (default "linenos=table" $options) -}}
+    {{- else if eq $type "html" -}}
+      {{- $file | readFile | safeHTML -}}
+    {{- else if eq $type "page" -}}
+      {{- with .Site.GetPage $file }}{{ .Content }}{{ end -}}
+    {{- else -}}
+      {{- $file | readFile | $.Page.RenderString -}}
+    {{- end -}}
+  {{- end -}}
+</div>

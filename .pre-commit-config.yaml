@@ -10,3 +10,33 @@ repos:
       - --hook-config=--path-to-file=README.md        # Valid UNIX path. I.e. ../TFDOC.md or docs/README.md etc.
       - --hook-config=--add-to-existing-file=true     # Boolean. true or false
       - --hook-config=--create-file-if-not-exist=true # Boolean. true or false
+
+    # --- New hooks for infra/ structure ---
+    - id: terraform_fmt
+      name: terraform_fmt (infra)
+      files: ^infra/terraform/
+    - id: terraform_validate
+      name: terraform_validate (infra)
+      files: ^infra/terraform/
+    - id: terraform_tflint
+      name: terraform_tflint (infra)
+      files: ^infra/terraform/
+    - id: terraform_docs
+      name: terraform_docs (infra)
+      files: ^infra/terraform/
+      args:
+      - --hook-config=--path-to-file=README.md
+      - --hook-config=--add-to-existing-file=true
+      - --hook-config=--create-file-if-not-exist=true
+
+- repo: https://github.com/aquasecurity/trivy
+  rev: v0.50.0 # Get the latest from: https://github.com/aquasecurity/trivy/releases
+  hooks:
+    - id: trivy-config
+      name: trivy (infra/terraform)
+      args: ['--severity', 'HIGH,CRITICAL', 'infra/terraform/']
+      files: ^infra/terraform/
+    - id: trivy-config
+      name: trivy (infra/bicep)
+      args: ['--severity', 'HIGH,CRITICAL', 'infra/bicep/']
+      files: ^infra/bicep/
