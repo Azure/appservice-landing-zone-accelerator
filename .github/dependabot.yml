@@ -4,6 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "terraform"
     directory: "/scenarios/secure-baseline-ase/terraform"
     schedule:
